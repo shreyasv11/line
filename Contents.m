@@ -1,22 +1,13 @@
 % LINE
 % Performance and reliability analysis engine.
-% Version 2.0.0 beta 1 (June 2018)
-% Website http://line-solver.sf.net
+% Version 2.0.0 beta 1 (July 2018)
+% Website https://github.com/line-solver/line
 %
 % Copyright (C) 2011-2018, Imperial College London, UK,
 %
-% LINE is released under the CC BY-NC-ND 4.0 license.
+% LINE is released under the BSD-3 license.
 %
 % Folder structure
-% bench/ - solver benchmarking
-% deprecated/ - obsolete scripts
+% bin/ - binary distribution
 % doc/ - manual
 % examples/ - sample models
-% lib/ - internal libraries
-% scratch/ - working folder
-% src/ - source code
-% test/ - unit tests
-% util/ - utility functions
-%
-% Functions
-% deploy - generates binary version of LINE
