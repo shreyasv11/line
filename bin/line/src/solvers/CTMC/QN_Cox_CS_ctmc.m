@@ -1,0 +1,2 @@
+%  generate local state spaces
+%

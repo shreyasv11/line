@@ -1,0 +1,74 @@
+clearvars -except handleFig;
+model = Network('model');
+
+node{1} = DelayStation(model, 'Delay');
+node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS);
+jobclass{1} = ClosedClass(model, 'Class1', 5, node{2}, 0);
+
+node{1}.setService(jobclass{1}, Exp(1));
+node{2}.setService(jobclass{1}, Exp(0.7));
+
+M = model.getNumberOfStations();
+K = model.getNumberOfClasses();
+
+P = cell(K,K);
+P{1} = circul(2);
+
+model.linkNetwork(P);
+[Qt,Ut,Tt] = model.getTransientHandles();
+options = Solver.defaultOptions;
+options.verbose=0;
+options.samples=1e4;
+options.stiff=true;
+options.timespan = [0,40];
+disp('This example shows the execution of the transient solver on a 2-class 2-node class-switching model.')
+
+%% This part illustrates the execution of different solvers
+solver={};
+solver{end+1} = SolverCTMC(model,options);
+%solver{end+1} = SolverJMT(model,options);
+%solver{end+1} = SolverSSA(model,options);
+solver{end+1} = SolverFluid(model,options);
+%solver{end+1} = SolverAMVA(model,options);
+dashing = {'-','+'};
+
+%%
+model.initDefault;
+disp('Prior 1: prior all on default initialization')
+disp('Initial state is:')
+state=model.getState();
+[state{1}(1,:),state{2}(1,:)]
+for s=1:length(solver)
+    fprintf(1,'SOLVER: %s\n',solver{s}.getName());
+    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    subplot(1,2,1);
+    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    solver{s}.reset();
+end
+title('Prior on default state');
+ylabel('Queue length - station 2, class 1');
+ylim([3,5])
+xlabel('Time t');
+xlim(options.timespan)
+legend('ctmc','fluid','Location','SouthEast')
+
+%%
+model.initFromMarginal([2;3]);
+disp('Prior 2: prior all on first found state with given marginal')
+disp('Initial state is:')
+state=model.getState();
+[state{1}(1,:),state{2}(1,:)]
+for s=1:length(solver)
+    solver{s}.reset();
+    fprintf(1,'SOLVER: %s\n',solver{s}.getName());
+    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    subplot(1,2,2);
+    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    solver{s}.reset();
+end
+title('Prior on state with 3 jobs in station 2');
+ylabel('Queue length - station 2, class 1');
+ylim([3,5])
+xlabel('Time t');
+xlim(options.timespan)
+%legend('ctmc','fluid')

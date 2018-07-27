@@ -1,0 +1,2 @@
+%  i: station identificator
+%

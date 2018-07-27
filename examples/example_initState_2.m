@@ -1,0 +1,101 @@
+clearvars -except handleFig;
+model = Network('model');
+
+node{1} = DelayStation(model, 'Delay');
+node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS);
+jobclass{1} = ClosedClass(model, 'Class1', 3, node{2}, 0);
+jobclass{2} = ClosedClass(model, 'Class2', 2, node{2}, 0);
+node{2}.setNumServers(3);
+
+node{1}.setService(jobclass{1}, Exp(1));
+node{1}.setService(jobclass{2}, Exp(1));
+node{2}.setService(jobclass{1}, Exp(1.2));
+node{2}.setService(jobclass{2}, Erlang.fitMoments(1.0,0.5));
+
+M = model.getNumberOfStations();
+K = model.getNumberOfClasses();
+
+P = cell(K,K);
+P{1,1} = [0.3,0.1; 0.2,0];
+P{1,2} = [0.6,0; 0.8,0];
+P{2,2} = [0,1; 0,0];
+P{2,1} = [0,0; 1,0];
+
+model.linkNetwork(P);
+[Qt,Ut,Tt] = model.getTransientHandles();
+options = Solver.defaultOptions;
+options.verbose=1;
+options.samples=1e4;
+options.stiff=true;
+options.timespan = [0,150];
+disp('This example shows the execution of the transient solver on a 2-class 2-node class-switching model.')
+%% This part illustrates the execution of different solvers
+solver={};
+solver{end+1} = SolverCTMC(model,options);
+%solver{end+1} = SolverJMT(model,options);
+%solver{end+1} = SolverSSA(model,options);
+solver{end+1} = SolverFluid(model,options);
+%solver{end+1} = SolverAMVA(model,options);
+dashing = {'-','+'};
+%%
+model.initDefault;
+disp('Prior 1: prior all on default initialization')
+disp('Initial state is:')
+state=model.getState();
+[state{1}(1,:),state{2}(1,:)]
+for s=1:length(solver)
+    fprintf(1,'SOLVER: %s\n',solver{s}.getName());
+    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    subplot(1,3,1);
+    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    solver{s}.reset();
+end
+title('Prior on default state');
+ylabel('Queue length - station 2, class 1');
+ylim([0,3])
+xlabel('Time t');
+xlim(options.timespan)
+legend('ctmc','fluid')
+%%
+model.initFromMarginal([0,0;4,1]);
+disp('Prior 2: prior all on first found state with given marginal')
+disp('Initial state is:')
+state=model.getState();
+[state{1}(1,:),state{2}(1,:)]
+for s=1:length(solver)
+    solver{s}.reset();
+    fprintf(1,'SOLVER: %s\n',solver{s}.getName());
+    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    subplot(1,3,2);
+    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    solver{s}.reset();
+end
+title('Prior on first state with given marginal');
+ylabel('Queue length - station 2, class 1');
+ylim([0,3])
+xlabel('Time t');
+xlim(options.timespan)
+legend('ctmc','fluid')
+%%
+disp('Prior 3: uniform prior over all states with given marginal')
+model.initFromMarginal([0,0;4,1]);
+disp('Initial states are:')
+state=model.getState();
+[repmat(state{1}(1,:),size(state{2},1),1),state{2}]
+prior = node{2}.getStatePrior;
+prior = 0*prior; prior=ones(size(prior))/length(prior);
+node{2}.setStatePrior(prior);
+for s=1:length(solver)
+    solver{s}.reset();
+    fprintf(1,'SOLVER: %s\n',solver{s}.getName());
+    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    subplot(1,3,3);
+    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+end
+title('Uniform prior on states with given marginal');
+ylabel('Queue length - station 2, class 1');
+ylim([0,3])
+xlabel('Time t');
+xlim(options.timespan)
+legend('ctmc','fluid')
+hold off

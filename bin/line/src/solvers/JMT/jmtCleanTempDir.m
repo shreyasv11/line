@@ -1,0 +1,2 @@
+%jmtCleanTempDir is a script.
+%
