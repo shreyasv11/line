@@ -5,7 +5,7 @@ Current version: 2.0.0-BETA1 (BSD-3 License)
 
 URL: https://github.com/line-solver/line
 
-LINE is a hybrid tool for performance and reliability analysis of complex systems based on queueing theory and stochastic modeling. Using LINE, it is possible to decouple the model description from the solvers used for its solution. LINE acts as a bridge, offering model-to-model transformations that automatically translate the model specification to the target solver.
+LINE is a hybrid tool for performance and reliability analysis of complex systems based on queueing theory and stochastic modeling. Using LINE decouples the model description from the solvers used for its solution. The engine acts as a bridge between model and solvers, implementing model-to-model transformations that automatically translate the model specification into the input format or data structure accepted by the target solver.
 
 Supported models include extended queueing networks and layered queueing networks. Wrappers are integrated in LINE for external solvers such as [JMT](http://jmt.sourceforge.net/) and [LQNS/LQSIM](http://www.sce.carleton.ca/rads/lqns/lqn-documentation/). LINE also features several native model solvers based on continuous-time Markov chains (CTMC), fluid ordinary differential equations, matrix analytic methods (MAM), and approximate mean-value analysis (AMVA). 
 
