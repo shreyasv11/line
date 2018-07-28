@@ -4,9 +4,9 @@ model = Network('model');
 node{1} = DelayStation(model, 'Delay');
 node{2} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
 
-jobclass{1} = ClosedClass(model, 'ClosedClass1', 1, node{1}, 0);
-jobclass{2} = ClosedClass(model, 'ClosedClass2', 0, node{1}, 0);
-jobclass{3} = ClosedClass(model, 'ClosedClass3', 0, node{1}, 0);
+jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
+jobclass{2} = ClosedClass(model, 'Class2', 0, node{1}, 0);
+jobclass{3} = ClosedClass(model, 'Class3', 0, node{1}, 0);
 
 jobclass{1}.completes = false;
 
@@ -43,6 +43,7 @@ solver = SolverFluid(model, options);
 AvgRespT = solver.getAvgRespT
 solver = SolverFluid(model, options);
 FC = solver.getCdfRespT();
+
 %%
 for i=1:model.getNumberOfStations
     for c=1:model.getNumberOfClasses

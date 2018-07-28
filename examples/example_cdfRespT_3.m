@@ -5,7 +5,7 @@ node{1} = DelayStation(model, 'Delay');
 node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
 node{3} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
 
-jobclass{1} = ClosedClass(model, 'ClosedClass1', 1, node{1}, 0);
+jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 
 jobclass{1}.completes = false;
 

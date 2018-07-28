@@ -8,8 +8,8 @@ node{3} = Source(model,'Source');
 node{4} = Sink(model,'Sink');
 
 % Default: scheduling is set as FCFS everywhere, routing as Random
-jobclass{1} = ClosedClass(model, 'ClosedClass1', 2, node{1}, 0);
-jobclass{2} = OpenClass(model, 'OpenClass1', 0);
+jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);
+jobclass{2} = OpenClass(model, 'Class2', 0);
 
 node{1}.setService(jobclass{1}, Erlang(3,2));
 node{1}.setService(jobclass{2}, HyperExp(0.5,3.0,10.0));
