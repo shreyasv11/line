@@ -20,3 +20,5 @@ Finally, run the LINE demonstrators using
 allExamples
 ```
 Detailed guidance on how to use the engine is provided in the [User Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
+
+The development of LINE has been partially funded by the European Commission grants FP7-318484 (MODAClouds), H2020-644869 (DICE), and by the EPSRC grant EP/M009211/1 (OptiMAM).
