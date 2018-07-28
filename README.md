@@ -21,8 +21,6 @@ allExamples
 ```
 Detailed guidance on how to use the engine is provided in the [User Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
 
-To cite LINE, please refer to the following article:
-
-J. F. Pérez and G. Casale, "LINE: Evaluating Software Applications in Unreliable Environments", IEEE Transactions on Reliability, 66(3), pp. 837 - 853, Sept 2017. Online: [IEEE Xplore](http://ieeexplore.ieee.org/document/7843645/).
+To cite LINE, please refer to the following article: J. F. Pérez and G. Casale, "LINE: Evaluating Software Applications in Unreliable Environments", IEEE Transactions on Reliability, 66(3), pp. 837 - 853, Sept 2017. Online: [IEEE Xplore](http://ieeexplore.ieee.org/document/7843645/).
 
 The development of LINE has been partially funded by the European Commission grants FP7-318484 (MODAClouds), H2020-644869 (DICE), and by the EPSRC grant EP/M009211/1 (OptiMAM).
