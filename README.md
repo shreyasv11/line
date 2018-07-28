@@ -3,7 +3,7 @@ LINE: Performance and Reliability Analysis Engine
 
 Current version: 2.0.0 BETA1 (BSD-3 License)
 
-Website: http://line-solver.sf.net
+URL: https://github.com/line-solver/line
 
 To get started, download the latest release from the [Releases](https://github.com/line-solver/line/releases) page. Unzip the file in the chosen installation folder.
 
