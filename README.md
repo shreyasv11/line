@@ -5,16 +5,14 @@ Current version: 2.0.0 BETA1 (BSD-3 License)
 
 Website: http://line-solver.sf.net
 
-To get started, first add all directories to the MATLAB path
+To get started, download the latest release from the [Releases](https://github.com/line-solver/line/releases) page. Unzip the file in the chosen installation folder.
 
+Start MATLAB and change the active directory to the installation folder. Then add all LINE folders to the path
 ```
-addpath(genpath(LINE_INSTALLATION_FOLDER))
+addpath(genpath(pwd))
 ```
-
-Then run the solver examples
-
+Finally, run the LINE demonstrators using
 ```
 allExamples
 ```
-
-Solver documentation can be found under the doc/ folder.
+Guidance on how to use LINE is provided in the [LINE Manual](https://github.com/line-solver/line/blob/master/doc/LINE.pdf).
