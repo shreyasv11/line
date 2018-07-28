@@ -19,4 +19,4 @@ Finally, run the LINE demonstrators using
 ```
 allExamples
 ```
-Detailed guidance on how to use the engine is provided in the [LINE Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
+Detailed guidance on how to use the engine is provided in the [User Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
