@@ -15,4 +15,4 @@ Finally, run the LINE demonstrators using
 ```
 allExamples
 ```
-Guidance on how to use LINE is provided in the [LINE Manual](https://github.com/line-solver/line/blob/master/doc/LINE.pdf).
+Guidance on how to use the engine is provided in the [LINE Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
