@@ -21,7 +21,6 @@ options.verbose=0;
 options.samples=1e4;
 options.stiff=true;
 options.timespan = [0,40];
-disp('This example shows the execution of the transient solver on a 2-class 2-node class-switching model.')
 
 %% This part illustrates the execution of different solvers
 solver={};

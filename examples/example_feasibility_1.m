@@ -35,10 +35,6 @@ M = model.getNumberOfNodes;
 K = model.getNumberOfClasses;
 T = model.getAvgTputHandles();
 
-fprintf(1,'This example shows that LINE automatically checks if a solver is feasible for a given model.\n');
-fprintf(1,'If not, an empty result set is returned.\n');
-
-
 solver={};
 options = Solver.defaultOptions;
 solver{end+1} = SolverCTMC(model,options);

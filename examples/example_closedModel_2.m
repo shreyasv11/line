@@ -1,4 +1,3 @@
-clear;
 model = Network('model');
 
 node{1} = DelayStation(model, 'Delay');
@@ -19,23 +18,18 @@ M = model.getNumberOfStations();
 K = model.getNumberOfClasses();
 
 P = cell(K,K);
-P{1,1} = [0.3,0.1;
-    0.2,0];
-P{1,2} = [0.6,0;
-    0.8,0];
-P{2,2} = [0,1  ;
-    0,0];
-P{2,1} = [0,0  ;
-    1,0];
+P{1,1} = [0.3,0.1; 0.2,0];
+P{1,2} = [0.6,0; 0.8,0];
+P{2,2} = [0,1; 0,0];
+P{2,1} = [0,0; 1,0];
 
 model.linkNetwork(P);
-%%
+
 options = Solver.defaultOptions;
 options.keep=true;
 options.verbose=1;
 options.samples=5e3;
-disp('This example shows the execution of the solver on a 2-class 2-node class-switching model.')
-% This part illustrates the execution of different solvers
+
 solver={};
 solver{end+1} = SolverCTMC(model,options);
 solver{end+1} = SolverJMT(model,options);

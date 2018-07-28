@@ -1,4 +1,3 @@
-clear;
 model = Network('model');
 
 node{1} = DelayStation(model, 'Delay');
@@ -40,15 +39,9 @@ model.linkNetwork(P);
 options = Solver.defaultOptions;
 options.keep=true;
 options.verbose=1;
-%options.samples=2e4;
 
-disp('This example shows the execution of the solver on a 3-class 2-chain 2-node model.')
-disp('Performance indexes by chain are calculated.')
-% This part illustrates the execution of different solvers
 solver={};
 solver{end+1} = SolverCTMC(model,options);
-%solver{end+1} = SolverJMT(model,options);
-%solver{end+1} = SolverSSA(model,options);
 solver{end+1} = SolverFluid(model,options);
 solver{end+1} = SolverAMVA(model,options);
 solver{end+1} = SolverNC(model,options);
