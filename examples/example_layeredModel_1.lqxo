@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<!-- lqns -x -->
+<lqn-model name="example_layeredModel_1" description="lqns 6.0 solution for model from: example_layeredModel_1.xml." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///C:/Program Files/LQN Solvers/lqn.xsd">
+   <solver-params comment="0" conv_val="1e-005" it_limit="50" underrelax_coeff="0.9" print_int="10">
+      <result-general valid="YES" conv-val="4.16037e-006" iterations="5" platform-info="" user-cpu-time=" 0:00:00.000" system-cpu-time=" 0:00:00.000" elapsed-time=" 0:00:00.000">
+         <mva-info submodels="2" core="10" step="72" step-squared="912" wait="2600" wait-squared="4.15047e+006" faults="0"/>
+      </result-general>
+   </solver-params>
+   <processor name="P1" scheduling="ps" quantum="0.001">
+      <result-processor utilization="0.142057"/>
+      <task name="T1" scheduling="ref" multiplicity="10" think-time="100">
+         <!--  reference task T1  -->
+         <result-task throughput="0.0887855" utilization="1.12145" phase1-utilization="1.12145" proc-utilization="0.142057"/>
+         <entry name="E1" type="NONE">
+            <result-entry utilization="1.12145" throughput="0.0887855" squared-coeff-variation="0.630303" proc-utilization="0.142057" throughput-bound="0.0929368" phase1-service-time="12.631" phase1-service-time-variance="100.56" phase1-utilization="1.12145"/>
+         </entry>
+         <task-activities>
+            <activity name="AS1" bound-to-entry="E1" host-demand-mean="1.6">
+               <result-activity proc-waiting="0.232671" service-time="1.83267" utilization="0.162715" service-time-variance="2.56" throughput="0.0887855" proc-utilization="0.142057"/>
+            </activity>
+            <activity name="AS2" host-demand-mean="0">
+               <result-activity proc-waiting="0" service-time="10.7983" utilization="0.958736" service-time-variance="98" throughput="0.0887855" proc-utilization="0"/>
+               <synch-call dest="E2" calls-mean="1">
+                  <result-call waiting="4.79833"/>
+               </synch-call>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS1"/>
+               </pre>
+               <post>
+                  <activity name="AS2"/>
+               </post>
+            </precedence>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P2" scheduling="ps" quantum="0.001">
+      <result-processor utilization="0.532713"/>
+      <task name="T2" scheduling="fcfs">
+         <result-task throughput="0.0887855" utilization="0.532713" phase1-utilization="0.532713" proc-utilization="0.532713"/>
+         <entry name="E2" type="NONE">
+            <result-entry utilization="0.532713" throughput="0.0887855" squared-coeff-variation="0.722222" proc-utilization="0.532713" throughput-bound="0.166667" phase1-service-time="6" phase1-service-time-variance="26" phase1-utilization="0.532713"/>
+         </entry>
+         <task-activities>
+            <activity name="AS3" bound-to-entry="E2" host-demand-mean="5">
+               <result-activity proc-waiting="0" service-time="5" utilization="0.443928" service-time-variance="25" throughput="0.0887855" proc-utilization="0.443928"/>
+            </activity>
+            <activity name="AS4" host-demand-mean="1">
+               <result-activity proc-waiting="0" service-time="1" utilization="0.0887855" service-time-variance="1" throughput="0.0887855" proc-utilization="0.0887855"/>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS3"/>
+               </pre>
+               <post>
+                  <activity name="AS4"/>
+               </post>
+            </precedence>
+            <reply-entry name="E2">
+               <reply-activity name="AS4"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+</lqn-model>
