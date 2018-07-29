@@ -9,7 +9,7 @@ node{3} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
 node{4} = QueueingStation(model, 'Queue3', SchedStrategy.PS);
 node{5} = QueueingStation(model, 'Queue4', SchedStrategy.PS);
 
-% Default: scheduling is set as FCFS everywhere, routing as Random
+
 jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 2, node{1}, 0);
 

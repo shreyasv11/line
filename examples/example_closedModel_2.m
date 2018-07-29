@@ -4,7 +4,7 @@ node{1} = DelayStation(model, 'Delay');
 node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS);
 node{2}.setNumServers(2);
 
-% Default: scheduling is set as FCFS everywhere, routing as Random
+
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 2, node{1}, 0);
 
@@ -32,11 +32,11 @@ options.samples=5e3;
 % This part illustrates the execution of different solvers
 solver={};
 solver{end+1} = SolverCTMC(model,options);
-solver{end+1} = SolverJMT(model,options);
-solver{end+1} = SolverSSA(model,options);
-solver{end+1} = SolverFluid(model,options);
+%solver{end+1} = SolverJMT(model,options);
+%solver{end+1} = SolverSSA(model,options);
+%solver{end+1} = SolverFluid(model,options);
 solver{end+1} = SolverAMVA(model,options);
-solver{end+1} = SolverNC(model,options);
+%solver{end+1} = SolverNC(model,options);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     AvgTable = solver{s}.getAvgTable()

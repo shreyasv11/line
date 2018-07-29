@@ -6,7 +6,7 @@ node{1} = DelayStation(model, 'Delay');
 node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
 node{3} = QueueingStation(model, 'Queue2', SchedStrategy.DPS);
 
-% Default: scheduling is set as FCFS everywhere, routing as Random
+
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 1, node{1}, 0);
 

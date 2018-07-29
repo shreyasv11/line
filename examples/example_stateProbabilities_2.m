@@ -8,7 +8,7 @@ node{3} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
 
 node{3}.setNumServers(2);
 
-% Default: scheduling is set as FCFS everywhere, routing as Random
+
 N=[1,0,4,0];
 jobclass{1} = ClosedClass(model, 'Class1', N(1), node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', N(2), node{1}, 0);

@@ -7,7 +7,7 @@ node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS);
 node{3} = Source(model,'Source');
 node{4} = Sink(model,'Sink');
 
-% Default: scheduling is set as FCFS everywhere, routing as Random
+
 jobclass{1} = OpenClass(model, 'Class1', 0);
 
 node{1}.setService(jobclass{1}, HyperExp(0.5,3.0,10.0));
