@@ -4,3 +4,7 @@
 %  License: CC BY-NC-ND 4.0
 %  All rights reserved.
 %
+%    Reference page in Doc Center
+%       doc ClassSwitch
+%
+%

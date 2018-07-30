@@ -32,13 +32,6 @@ clear; example_closedModel_4;  space, spaceRunning, spaceStarted, fprintf(1,'Pau
 fprintf(1,'\n\nExample: <strong>example_closedModel_5</strong>\n'); 
 fprintf(1,'This example shows a 1-line solution of a cyclic queueing network.\n');
 clear; example_closedModel_5; fprintf(1,'Pausing...'); pause(3.0); 
-
-%%
-fprintf(1,'<strong>Running example_feasibility_*</strong>');
-fprintf(1,'\n\nExample: <strong>example_feasibility_1</strong>\n'); 
-fprintf(1,'This example shows that LINE automatically checks if a solver is feasible for a given model.\n');
-fprintf(1,'If not, an empty result set is returned.\n');
-clear; example_feasibility_1; fprintf(1,'Pausing...'); pause(3.0); 
 %%
 fprintf(1,'<strong>Running example_initState_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_initState_1</strong>\n'); 
@@ -56,10 +49,6 @@ fprintf(1,'<strong>Running example_mixedModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_mixedModel_1</strong>\n'); 
 clear; example_mixedModel_1; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_scheduling_*</strong>');
-fprintf(1,'\n\nExample: <strong>example_scheduling_1</strong>\n'); 
-clear; example_scheduling_1; fprintf(1,'Pausing...'); pause(3.0); 
-%%
 fprintf(1,'<strong>Running example_stateProbabilities</strong>');
 fprintf(1,'\n\nExample: <strong>example_stateProbabilities_1</strong>\n'); 
 clear; example_stateProbabilities_1; fprintf(1,'Pausing...'); pause(3.0); 
@@ -72,7 +61,11 @@ clear; example_cdfRespT_1; fprintf(1,'Pausing...'); pause(3.0); try close(handle
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_2</strong>\n'); 
 clear; example_cdfRespT_2; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_3</strong>\n'); 
-clear; example_cdfRespT_3; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
+%clear; example_cdfRespT_3; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
+fprintf(1,'\n\nExample: <strong>example_cdfRespT_4</strong>\n'); 
+clear; example_cdfRespT_4; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
+fprintf(1,'\n\nExample: <strong>example_cdfRespT_5</strong>\n'); 
+clear; example_cdfRespT_5; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
 %%
 fprintf(1,'<strong>Running example_randomEnvironment_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_randomEnvironment_1</strong>\n'); 
@@ -86,14 +79,16 @@ clear; example_layeredModel_1; fprintf(1,'Pausing...'); pause(3.0);
 fprintf(1,'\n\nExample: <strong>example_layeredModel_2</strong>\n'); 
 clear; example_layeredModel_2; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_syntax_*</strong>');
-fprintf(1,'\n\nExample: <strong>example_syntax_1</strong>\n'); 
-clear; example_syntax_1; fprintf(1,'Pausing...'); pause(3.0); 
-fprintf(1,'\n\nExample: <strong>example_syntax_2</strong>\n'); 
-clear; example_syntax_2; fprintf(1,'Pausing...'); pause(3.0); 
-fprintf(1,'\n\nExample: <strong>example_syntax_3</strong>\n'); 
-clear; example_syntax_3; fprintf(1,'Pausing...'); pause(3.0); 
-fprintf(1,'\n\nExample: <strong>example_syntax_4</strong>\n'); 
-clear; example_syntax_4; 
+fprintf(1,'<strong>Running example_misc_*</strong>');
+fprintf(1,'\n\nExample: <strong>example_misc_1</strong>\n'); 
+clear; example_misc_1; fprintf(1,'Pausing...'); pause(3.0); 
+fprintf(1,'\n\nExample: <strong>example_misc_2</strong>\n'); 
+clear; example_misc_2; fprintf(1,'Pausing...'); pause(3.0); 
+fprintf(1,'\n\nExample: <strong>example_misc_3</strong>\n'); 
+clear; example_misc_3; fprintf(1,'Pausing...'); pause(3.0); 
+fprintf(1,'\n\nExample: <strong>example_misc_4</strong>\n'); 
+fprintf(1,'This example shows that LINE automatically checks if a solver is feasible for a given model.\n');
+fprintf(1,'If not, an empty result set is returned.\n');
+clear; example_misc_4; fprintf(1,'Pausing...'); pause(3.0); 
 %%
 fprintf(1,'Examples completed.')

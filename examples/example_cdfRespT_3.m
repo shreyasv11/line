@@ -1,51 +1,66 @@
-figure;
-label = {};
-nJobs = [1,2,4,8,16];
-for N = nJobs
-    model = Network('model');
-    
-    node{1} = DelayStation(model, 'Delay');
-    node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
-    node{3} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
-    
-    jobclass{1} = ClosedClass(model, 'Class1', N, node{1}, 0);
-    
-    jobclass{1}.completes = false;
-    
-    node{1}.setService(jobclass{1}, Exp(1/1));
-    node{2}.setService(jobclass{1}, Exp(1/2));
-    node{3}.setService(jobclass{1}, Exp(1/2));
-    
-    M = model.getNumberOfStations();
-    K = model.getNumberOfClasses();
-    
-    P = circul(M);
-    model.linkNetwork(P);
-    %%
-    options = SolverFluid.defaultOptions;
-    options.iter_max = 100;
-    solver = SolverFluid(model, options);
-    AvgRespT = solver.getAvgRespT
-    SolverAMVA(model).getAvgRespT
-%    model.set
-    solver = SolverFluid(model, options);    
-    FC = solver.getCdfRespT();
-    %%
-    for i=2%:model.getNumberOfStations
-        for c=1:model.getNumberOfClasses
-            plot(FC{i,c}(:,2),FC{i,c}(:,1)); hold all;
-            %        AvgRespTfromCDF(i,c) = diff(FC{i,c}(:,1))'*FC{i,c}(2:end,2); %mean
-            %        PowerMoment2_R(i,c) = diff(FC{i,c}(:,1))'*(FC{i,c}(2:end,2).^2);
-            %        Variance_R(i,c) = PowerMoment2_R(i,c)-AvgRespTfromCDF(i,c)^2; %variance
-            %        SqCoeffOfVariationRespTfromCDF(i,c) = (Variance_R(i,c))/AvgRespTfromCDF(i,c)^2; %scv
-        end
-    end
-    %AvgRespTfromCDF;
-    %SqCoeffOfVariationRespTfromCDF;
-    label{end+1} = ['N=', num2str(N),' jobs'];
+model = Network('myModel');
+node{1} = Source(model, 'Source');
+node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS); node{2}.setNumServers(1);
+node{3} = QueueingStation(model, 'Queue2', SchedStrategy.FCFS); node{3}.setNumServers(1);
+node{4} = Sink(model, 'Sink');
+jobclass{1} = OpenClass(model, 'Class1', 0);
+node{1}.setArrival(jobclass{1}, Cox2.fitMoments(2.000000,1.000000));
+node{2}.setService(jobclass{1}, Cox2.fitMoments(1.000000,1.000000));
+node{3}.setService(jobclass{1}, Cox2.fitMoments(1.000000,1.000000));
+jobclass{2} = OpenClass(model, 'Class2', 0);
+node{1}.setArrival(jobclass{2}, Disabled());
+node{2}.setService(jobclass{2}, Cox2.fitMoments(1.000000,1.000000));
+node{3}.setService(jobclass{2}, Cox2.fitMoments(1.000000,1.000000));
+P = cell(2);
+P{1,1} = [0 1 0 0;0 0 0 0;0 0 0 1;0 0 0 0];
+P{1,2} = [0 0 0 0;0 0 1 0;0 0 0 0;0 0 0 0];
+P{2,1} = [0 0 0 0;0 0 0 0;0 0 0 1;0 0 0 0];
+P{2,2} = [0 1 0 0;0 0 1 0;0 0 0 0;0 0 0 0];
+model.linkNetwork(P);
+RD = SolverFluid(model).getCdfRespT()
+
+%
+ctmcoptions = SolverCTMC.defaultOptions; ctmcoptions.cutoff = 3;
+simoptions = Solver.defaultOptions; simoptions.seed = 23000;
+solver = {};
+%solver{end+1} = SolverCTMC(model, ctmcoptions);
+solver{end+1} = SolverJMT(model, simoptions);
+%solver{end+1} = SolverSSA(model, simoptions);
+%solver{end+1} = SolverFluid(model);
+solver{end+1} = SolverAMVA(model);
+%solver{end+1} = SolverNC(model);
+for s=1:length(solver)
+    fprintf(1,'SOLVER: %s\n',solver{s}.getName());    
+    AvgTable = solver{s}.getAvgTable()
 end
-legend(label);
-xlim([0,200])
-title('Response time CDF at station 3 under increasing populations')
-ylabel('Pr[RespT < t]')
-xlabel('Response time t')
+
+cdfmodel = model.copy;
+cdfmodel.resetNetwork;
+logpath = [fileparts(mfilename('fullpath')),filesep,'example_cdfRespT_4_logs'];
+isNodeLogged = true(1,cdfmodel.getNumberOfNodes); % log only the delay node
+cdfmodel.linkNetworkAndLog(P, isNodeLogged, logpath);
+logData = SolverJMT.parseLogs(cdfmodel);
+
+%%
+figure;
+for i=2:model.getNumberOfStations
+    subplot(2,2,2*(i-2)+1)
+    if ~isempty(logData{i,1}.RespT)
+    [F,X]=ecdf(logData{i,1}.RespT);
+    semilogx(X,1-F);
+    hold all;
+    semilogx(RD{i,1}(:,2),1-RD{i,1}(:,1),'--')
+    legend('jmt','fluid','Location','Best');
+    title(['CCDF: Node ',num2str(i),', Class ',num2str(1),', ',node{i}.serviceProcess{1}.name, ' service']);
+    end
+    
+    subplot(2,2,2*(i-2)+2)
+    if ~isempty(logData{i,2}.RespT)
+    [F,X]=ecdf(logData{i,2}.RespT);
+    semilogx(X,1-F);
+    hold all;
+    semilogx(RD{i,2}(:,2),1-RD{i,2}(:,1),'--')
+    legend('jmt','fluid','Location','Best');
+    title(['CCDF: Node ',num2str(i),', Class ',num2str(2),', ',node{i}.serviceProcess{2}.name, ' service']);
+    end
+end
