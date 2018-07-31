@@ -1,3 +1,3 @@
 %Network/resetNetwork is a function.
-%    self = resetNetwork(self)
+%    nodes = resetNetwork(self, deleteCSNodes)
 %

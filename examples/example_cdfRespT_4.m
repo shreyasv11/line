@@ -24,34 +24,24 @@ P{2,2} = circul(2);
 
 % model
 model.linkNetwork(P);
-RD = SolverFluid(model).getCdfRespT()
-
-% cdf model
-cdfmodel = model.copy;
-cdfmodel.resetNetwork;
-logpath = [fileparts(mfilename('fullpath')),filesep,'example_cdfRespT_4_logs'];
-isStationLogged = [true; true]; % log only the delay node
-cdfmodel.linkNetworkAndLog(P, isStationLogged, logpath);
-
-SolverJMT(cdfmodel).getAvgTable()
-logData = SolverJMT.parseLogs(cdfmodel)
+RDfluid = SolverFluid(model).getCdfRespT()
+jmtoptions = SolverJMT.defaultOptions; jmtoptions.samples = 1e5;
+RDsim = SolverJMT(model, jmtoptions).getTransientCdfRespT();
 
 %%
 figure;
 for i=1:model.getNumberOfStations
     subplot(model.getNumberOfStations,2,2*(i-1)+1)
-    [F,X]=ecdf(logData{i,1}.RespT);
-    semilogx(X,1-F);
+    semilogx(RDsim{i,1}(:,2),1-RDsim{i,1}(:,1),'r')
     hold all;
-    semilogx(RD{i,1}(:,2),1-RD{i,1}(:,1),'--')
-    legend('jmt','fluid','Location','Best');
-    title(['CCDF: Node ',num2str(i),', Class ',num2str(1),', ',node{i}.serviceProcess{1}.name, ' service']);
+    semilogx(RDfluid{i,1}(:,2),1-RDfluid{i,1}(:,1),'--')
+    legend('jmt-transient','fluid-steady','Location','Best');
+    title(['Tail: Node ',num2str(i),', Class ',num2str(1),', ',node{i}.serviceProcess{1}.name, ' service']);
     
     subplot(model.getNumberOfStations,2,2*(i-1)+2)
-    [F,X]=ecdf(logData{i,2}.RespT);
-    semilogx(X,1-F);
+    semilogx(RDsim{i,2}(:,2),1-RDsim{i,2}(:,1),'r')
     hold all;
-    semilogx(RD{i,2}(:,2),1-RD{i,2}(:,1),'--')
-    legend('jmt','fluid','Location','Best');
-    title(['CCDF: Node ',num2str(i),', Class ',num2str(2),', ',node{i}.serviceProcess{2}.name, ' service']);
+    semilogx(RDfluid{i,2}(:,2),1-RDfluid{i,2}(:,1),'--')
+    legend('jmt-transient','fluid-steady','Location','Best');
+    title(['Tail: Node ',num2str(i),', Class ',num2str(2),', ',node{i}.serviceProcess{2}.name, ' service']);
 end

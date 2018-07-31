@@ -13,11 +13,14 @@ model.addLink(node{1}, node{2});
 model.addLink(node{2}, node{1}); 
 model.addLink(node{2}, node{2});
 
+node{1}.setRouting(jobclass{1},RoutingStrategy.PROB);
+node{2}.setRouting(jobclass{1},RoutingStrategy.PROB);
+
 node{1}.setProbRouting(jobclass{1}, node{1}, 0.7)
 node{1}.setProbRouting(jobclass{1}, node{2}, 0.3)
 node{2}.setProbRouting(jobclass{1}, node{1}, 1.0)
 
-simoptions = Solver.defaultOptions; simoptions.seed = 23000;
+simoptions = Solver.defaultOptions; simoptions.seed = 23000; simoptions.verbose = true
 solver = {};
 solver{end+1} = SolverCTMC(model);
 solver{end+1} = SolverJMT(model, simoptions);

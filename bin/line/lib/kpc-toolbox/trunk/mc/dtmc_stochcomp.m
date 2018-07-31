@@ -1,4 +1,4 @@
-function [S,P11,P12,P21,P22]=dtmc_stochcomp(P,I)
+function [S,P11,P12,P21,P22,S2]=dtmc_stochcomp(P,I)
 % function [S,P11,P12,P21,P22]=dtmc_stochcomp(P,I) - stochastic complementation in DTMCs
 if nargin==1 
     I=1:ceil(length(P)/2);

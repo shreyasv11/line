@@ -1,4 +1,4 @@
-%  QN_Cox_fluid_RT(myQN, y0, RTrange, options, completes)
+%  QN_Cox_fluid_PassT(myQN, y0, RTrange, options, completes)
 %  computes the response time distribution of the original classes in the
 %  closed multi-class queueing network A
 % 

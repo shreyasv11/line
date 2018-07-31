@@ -27,7 +27,7 @@ options = Solver.defaultOptions;
 options.verbose=1;
 options.samples=1e4;
 options.stiff=true;
-options.timespan = [0,150];
+options.timespan = [0,15];
 %% This part illustrates the execution of different solvers
 solver={};
 solver{end+1} = SolverCTMC(model,options);
@@ -45,12 +45,12 @@ state=model.getState();
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
-    subplot(1,3,1);
+    subplot(3,1,1);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on default state');
-ylabel('Queue length - station 2, class 1');
+ylabel('QLen- station 2, class 1');
 ylim([0,3])
 xlabel('Time t');
 xlim(options.timespan)
@@ -65,12 +65,12 @@ for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
-    subplot(1,3,2);
+    subplot(3,1,2);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on first state with given marginal');
-ylabel('Queue length - station 2, class 1');
+ylabel('QLen- station 2, class 1');
 ylim([0,3])
 xlabel('Time t');
 xlim(options.timespan)
@@ -88,11 +88,11 @@ for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
-    subplot(1,3,3);
+    subplot(3,1,3);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
 end
 title('Uniform prior on states with given marginal');
-ylabel('Queue length - station 2, class 1');
+ylabel('QLen- station 2, class 1');
 ylim([0,3])
 xlabel('Time t');
 xlim(options.timespan)

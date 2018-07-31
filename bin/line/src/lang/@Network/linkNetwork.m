@@ -1,3 +1,3 @@
 %Network/linkNetwork is a function.
-%    linkNetwork(self, P)
+%    self = linkNetwork(self, P)
 %
