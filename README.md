@@ -5,7 +5,7 @@ Current version: 2.0.0-ALPHA (BSD-3 License)
 
 URL: https://github.com/line-solver/line
 
-LINE is a MALAB toolbox for performance and reliability analysis of systems amd processes that can be modeled using queueing theory. The engine decouples the model description from the solvers used for its solution. This is done through model-to-model transformations that automatically translate the model specification into the input format or data structure accepted by the target solver.
+LINE is a MALAB toolbox for performance and reliability analysis of systems amd processes that can be modeled using queueing theory. The engine offers a native language to specify queueing models and decouples the model description from the solvers used for its solution. This is done through model-to-model transformations that automatically translate the model specification into the input format or data structure accepted by the target solver.
 
 Supported models include extended queueing networks, both open and closed, and layered queueing networks. Wrappers are integrated in LINE that are able to invoke external solvers such as [JMT](http://jmt.sourceforge.net/) and [LQNS/LQSIM](http://www.sce.carleton.ca/rads/lqns/lqn-documentation/). LINE also features several native model solvers written in MATLAB language and based on continuous-time Markov chains (CTMC), fluid ordinary differential equations, matrix analytic methods (MAM), normalizing constant analysis, and approximate mean-value analysis (AMVA). 
 
