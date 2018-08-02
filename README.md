@@ -1,5 +1,4 @@
-# LINE
-Performance and Reliability Analysis Engine
+## LINE: Performance and Reliability Analysis Engine
 
 Current version: 2.0.0-ALPHA1 (BSD-3 License)
 
