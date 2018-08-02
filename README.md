@@ -10,7 +10,7 @@ Supported models include extended queueing networks, both open and closed, and l
 
 ### Getting started
 
-To get started, clone the repository (dev release) or download the latest stable release from the [Releases](https://github.com/line-solver/line/releases) page and unzip the file in the chosen installation folder.
+To get started, either clone the repository ([dev release](https://github.com/line-solver/line)) or download the latest [stable release](https://github.com/line-solver/line/releases) page and unzip the file in the chosen installation folder.
 
 Start MATLAB and change the active directory to the installation folder. Then add all LINE folders to the path
 ```
