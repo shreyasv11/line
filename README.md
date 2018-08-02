@@ -20,6 +20,8 @@ Finally, run the LINE demonstrators using
 ```
 allExamples
 ```
+
+### Documentation
 Detailed guidance on how to use LINE is provided in the [User Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
 
 ### References
