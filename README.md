@@ -8,7 +8,7 @@ LINE is a MATLAB toolbox for performance and reliability analysis of systems and
 
 Supported models include *extended queueing networks*, both open and closed, and *layered queueing networks*. Models can be solved with either external solvers or native solvers. Wrappers are integrated in LINE that are able to invoke external solvers such as [JMT](http://jmt.sourceforge.net/) and [LQNS](http://www.sce.carleton.ca/rads/lqns/lqn-documentation/) and transparently import back their results in LINE format. 
 
-Native model solvers written in the MATLAB language are also available. They are based on continuous-time Markov chains (CTMC), fluid ordinary differential equations, matrix analytic methods (MAM), normalizing constant analysis, and approximate mean-value analysis (AMVA). 
+Native model solvers written in the MATLAB language are also available. They are based on continuous-time Markov chains (CTMC), fluid ordinary differential equations, matrix analytic methods (MAM), normalizing constant analysis, and mean-value analysis (MVA). 
 
 ### Getting started
 
