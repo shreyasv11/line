@@ -1,5 +1,5 @@
 # LINE
-LINE: Performance and Reliability Analysis Engine
+## LINE: Performance and Reliability Analysis Engine
 
 Current version: 2.0.0-ALPHA1 (BSD-3 License)
 
@@ -9,7 +9,7 @@ LINE is a MALAB toolbox for performance and reliability analysis of systems and 
 
 Supported models include extended queueing networks, both open and closed, and layered queueing networks. Wrappers are integrated in LINE that are able to invoke external solvers such as [JMT](http://jmt.sourceforge.net/) and [LQNS/LQSIM](http://www.sce.carleton.ca/rads/lqns/lqn-documentation/). LINE also features several native model solvers written in the MATLAB language and based on continuous-time Markov chains (CTMC), fluid ordinary differential equations, matrix analytic methods (MAM), normalizing constant analysis, and approximate mean-value analysis (AMVA). 
 
-GETTING STARTED
+# Getting started
 
 To get started, clone the repository (dev release) or download the latest stable release from the [Releases](https://github.com/line-solver/line/releases) page and unzip the file in the chosen installation folder.
 
@@ -23,7 +23,7 @@ allExamples
 ```
 Detailed guidance on how to use LINE is provided in the [User Manual](https://github.com/line-solver/line/raw/master/doc/LINE.pdf).
 
-REFERENCES
+# References
 
 To cite LINE, please refer to the following article: J. F. Pérez and G. Casale, "LINE: Evaluating Software Applications in Unreliable Environments", IEEE Transactions on Reliability, 66(3), pp. 837 - 853, Sept 2017. Online: [IEEE Xplore](http://ieeexplore.ieee.org/document/7843645/).
 
