@@ -1,3 +1,3 @@
 %SolverJMT.parseLogs is a function.
-%    logData = parseLogs(model)
+%    logData = parseLogs(model, isNodeLogged, metric)
 %

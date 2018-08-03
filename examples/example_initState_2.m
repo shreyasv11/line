@@ -22,7 +22,7 @@ P{2,2} = [0,1; 0,0];
 P{2,1} = [0,0; 1,0];
 
 model.linkNetwork(P);
-[Qt,Ut,Tt] = model.getTransientHandles();
+[Qt,Ut,Tt] = model.getTranHandles();
 options = Solver.defaultOptions;
 options.verbose=1;
 options.samples=1e4;
@@ -34,7 +34,7 @@ solver{end+1} = SolverCTMC(model,options);
 %solver{end+1} = SolverJMT(model,options);
 %solver{end+1} = SolverSSA(model,options);
 solver{end+1} = SolverFluid(model,options);
-%solver{end+1} = SolverAMVA(model,options);
+%solver{end+1} = SolverMVA(model,options);
 dashing = {'-','+'};
 %%
 model.initDefault;
@@ -44,7 +44,7 @@ state=model.getState();
 [state{1}(1,:),state{2}(1,:)]
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,1);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
     solver{s}.reset();
@@ -64,7 +64,7 @@ state=model.getState();
 for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,2);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
     solver{s}.reset();
@@ -87,7 +87,7 @@ node{2}.setStatePrior(prior);
 for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    [QNt,UNt,TNt] = solver{s}.getTransientAvg(Qt,Ut,Tt);
+    [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,3);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
 end

@@ -26,7 +26,7 @@ for N = nJobs
     options.iter_max = 100;
     solver = SolverFluid(model, options);
     AvgRespT = solver.getAvgRespT
-    SolverAMVA(model).getAvgRespT
+    SolverMVA(model).getAvgRespT
 %    model.set
     solver = SolverFluid(model, options);    
     FC = solver.getCdfRespT();

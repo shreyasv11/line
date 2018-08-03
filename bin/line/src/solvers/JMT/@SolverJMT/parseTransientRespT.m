@@ -1,3 +1,3 @@
 %SolverJMT.parseTransientRespT is a function.
-%    [classResT, jobRespT] = parseTransientRespT(fileArv, fileDep)
+%    [classResT, jobRespT, jobResTArvTS] = parseTransientRespT(fileArv, fileDep)
 %

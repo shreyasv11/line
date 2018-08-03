@@ -35,8 +35,9 @@ solver{end+1} = SolverCTMC(model,options);
 %solver{end+1} = SolverJMT(model,options);
 %solver{end+1} = SolverSSA(model,options);
 %solver{end+1} = SolverFluid(model,options);
-solver{end+1} = SolverAMVA(model,options);
+solver{end+1} = SolverMVA(model,options);
 %solver{end+1} = SolverNC(model,options);
+solver{end+1} = SolverAdapt(model, {}, SolverAdapt.defaultOptions);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     AvgTable = solver{s}.getAvgTable()
