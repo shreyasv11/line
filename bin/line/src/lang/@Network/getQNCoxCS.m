@@ -1,2 +1,2 @@
-%  getQNCoxCS : export model in CQN Cox CS representation
+%  getQN : export model in CQN Cox CS representation
 %

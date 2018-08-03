@@ -27,5 +27,5 @@ lnoptions = SolverLN.defaultOptions;
 lnoptions.verbose = 1;
 AvgTable = SolverLN(model, @SolverNC, lnoptions).getAvgTable
 
-AvgTableAdaptive = SolverLN(model, @(model) SolverAdapt(model, {}, SolverAdapt.defaultOptions), lnoptions).getAvgTable
+AvgTableAdaptive = SolverLN(model, @(model) SolverAuto(model, SolverAuto.defaultOptions), lnoptions).getAvgTable
 

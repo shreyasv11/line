@@ -2,6 +2,6 @@
 %  All rights reserved.
 %
 %    Reference page in Doc Center
-%       doc SolverAdapt
+%       doc SolverAuto
 %
 %

@@ -1,2 +1,2 @@
-%  getQNCoxCS : export model in the default QN representation
+%  getQN : export model in the default QN representation
 %
