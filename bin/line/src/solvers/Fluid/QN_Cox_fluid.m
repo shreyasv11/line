@@ -1,9 +1,9 @@
-%  Q = QN_Cox_fluid(myQN, options) computes the fixed point Q of the ODE
+%  Q = QN_Cox_fluid(qn, options) computes the fixed point Q of the ODE
 %  system that describes a Closed Multi-Class Queueing Network with Class Switching
-%  and Cox processing times (QNCox) myQN.
+%  and Cox processing times (QNCox) qn.
 % 
 %  Parameters:
-%  myQN:      CQN model to analyze
+%  qn:      CQN model to analyze
 % 
 %  Output:
 %  QN:         expected number of jobs of each class in each station (fixed point)

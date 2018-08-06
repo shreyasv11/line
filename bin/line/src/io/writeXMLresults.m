@@ -3,7 +3,7 @@
 %  Parameters: 
 %  filenameLQN:  File path of the LQN XML file 
 %  filenameRE:   File path of the EXT XML file 
-%  myQN:        Queueing Network model used for analysis
+%  qn:        Queueing Network model used for analysis
 %  util:         Utilization of each processor
 %  XN:           Throughput for each job class
 %  RT:           Total response time for each job class

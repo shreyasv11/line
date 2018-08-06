@@ -7,7 +7,7 @@
 %  verbose:      1 for screen output
 %  
 %  Output:
-%  myQN:    Queueing Network model for analysis
+%  qn:    Queueing Network model for analysis
 % 
 %  Copyright (c) 2012-2018, Imperial College London 
 %  All rights reserved.

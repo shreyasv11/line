@@ -5,7 +5,7 @@
 %  on the LINE documentation
 % 
 %  Parameters:
-%  myQN:         a QNCoxCS model to analyze
+%  qn:         a QNCoxCS model to analyze
 %  options:      options data structure
 % 
 %  Ouput:

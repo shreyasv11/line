@@ -4,11 +4,11 @@ model = Network('model');
 node{1} = DelayStation(model, 'Delay');
 node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
 
-jobclass{1} = ClosedClass(model, 'Class1', 10, node{1}, 0);
+jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 node{1}.setService(jobclass{1}, Exp.fitMoments(1.0));
 node{2}.setService(jobclass{1}, Exp.fitMoments(2.0));
 
-jobclass{2} = ClosedClass(model, 'Class2', 5, node{1}, 0);
+jobclass{2} = ClosedClass(model, 'Class2', 3, node{1}, 0);
 node{1}.setService(jobclass{2}, Erlang.fitMeanAndOrder(4.0,2));
 node{2}.setService(jobclass{2}, HyperExp.fitMoments(5.0,30.0));
 

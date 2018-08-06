@@ -1,7 +1,7 @@
-%  [Q,U,R,X,resEntry,RT_CDF,resEntry_CDF,runtime] =  = QN_Cox_CS_amva_analysis(myQN) solves the QN by the AMVA method
+%  [Q,U,R,X,resEntry,RT_CDF,resEntry_CDF,runtime] =  = QN_Cox_CS_amva_analysis(qn) solves the QN by the AMVA method
 % 
 %  Parameters:
-%  myQN:      CQN model to analyze
+%  qn:      CQN model to analyze
 % 
 %  Output:
 %  QN:         expected number of jobs for each class in each station (fixed point)

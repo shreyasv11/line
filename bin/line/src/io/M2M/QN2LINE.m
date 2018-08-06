@@ -1,3 +1,3 @@
 %QN2LINE is a function.
-%    model = QN2LINE(myQN, modelName)
+%    model = QN2LINE(qn, modelName)
 %

@@ -1,7 +1,7 @@
-%  [QN,XN, runtime] = CQN_ssa_analysis(myQN) solves the QN by the ssa method
+%  [QN,XN, runtime] = CQN_ssa_analysis(qn) solves the QN by the ssa method
 % 
 %  Parameters:
-%  myQN:      CQN model to analyze
+%  qn:      CQN model to analyze
 % 
 %  Output:
 %  QN:         expected number of jobs for each class in each station

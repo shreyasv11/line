@@ -1,7 +1,7 @@
-%  [QN,XN, runtime] = QN_Cox_CS_mam_analysis(myQN) solves the QN by the MAM method
+%  [QN,XN, runtime] = QN_Cox_CS_mam_analysis(qn) solves the QN by the MAM method
 % 
 %  Parameters:
-%  myQN:      CQN model to analyze
+%  qn:      CQN model to analyze
 % 
 %  Output:
 %  QN:         expected number of jobs for each class in each station
