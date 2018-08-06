@@ -10,13 +10,13 @@ clear;
 close all;
 
 %% LINE examples
-fprintf(1,'\n<strong>Running example_closedModel_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_closedModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_closedModel_1</strong>\n'); 
 fprintf(1,'This example shows all solvers on a basic single-class closed model.\n')
 clear; example_closedModel_1; fprintf(1,'Pausing...'); pause(3.0); 
 
 fprintf(1,'\n\nExample: <strong>example_closedModel_2</strong>\n'); 
-fprintf('This example shows a model with a multiclass FCFS station\n.')
+fprintf('This example shows a model with a multiclass FCFS station.\n')
 clear; example_closedModel_2; fprintf(1,'Pausing...'); pause(3.0); 
 
 fprintf(1,'\n\nExample: <strong>example_closedModel_3</strong>\n'); 
@@ -33,7 +33,7 @@ fprintf(1,'\n\nExample: <strong>example_closedModel_5</strong>\n');
 fprintf(1,'This example shows a 1-line solution of a cyclic queueing network.\n');
 clear; example_closedModel_5; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_initState_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_initState_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_initState_1</strong>\n'); 
 fprintf(1,'This example shows the execution of the transient solver on a 2-class 2-node class-switching model.')
 clear; example_initState_1; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end 
@@ -41,21 +41,21 @@ fprintf(1,'\n\nExample: <strong>example_initState_2</strong>\n');
 fprintf(1,'This example shows the execution of the transient solver on a 2-class 2-node class-switching model.')
 clear; example_initState_2; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end
 %%
-fprintf(1,'<strong>Running example_openModel_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_openModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_openModel_1</strong>\n'); 
 clear; example_openModel_1; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_mixedModel_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_mixedModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_mixedModel_1</strong>\n'); 
 clear; example_mixedModel_1; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_stateProbabilities</strong>');
+fprintf(1,'\n<strong>RUNNING: example_stateProbabilities</strong>');
 fprintf(1,'\n\nExample: <strong>example_stateProbabilities_1</strong>\n'); 
 clear; example_stateProbabilities_1; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_stateProbabilities_2</strong>\n'); 
 clear; example_stateProbabilities_2; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_cdfRespT_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_cdfRespT_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_1</strong>\n'); 
 clear; example_cdfRespT_1; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_2</strong>\n'); 
@@ -67,19 +67,19 @@ clear; example_cdfRespT_4; fprintf(1,'Pausing...'); pause(3.0); try close(handle
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_5</strong>\n'); 
 clear; example_cdfRespT_5; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
 %%
-fprintf(1,'<strong>Running example_randomEnvironment_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_randomEnvironment_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_randomEnvironment_1</strong>\n'); 
 clear; example_randomEnvironment_1; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_randomEnvironment_2</strong>\n'); 
 clear; example_randomEnvironment_2; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_layeredModel_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_layeredModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_layeredModel_1</strong>\n'); 
 clear; example_layeredModel_1; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_layeredModel_2</strong>\n'); 
 clear; example_layeredModel_2; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'<strong>Running example_misc_*</strong>');
+fprintf(1,'\n<strong>RUNNING: example_misc_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_misc_1</strong>\n'); 
 clear; example_misc_1; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_misc_2</strong>\n'); 
@@ -91,4 +91,4 @@ fprintf(1,'This example shows that LINE automatically checks if a solver is feas
 fprintf(1,'If not, an empty result set is returned.\n');
 clear; example_misc_4; fprintf(1,'Pausing...'); pause(3.0); 
 %%
-fprintf(1,'Examples completed.')
+fprintf(1,'\nExamples completed.\n')

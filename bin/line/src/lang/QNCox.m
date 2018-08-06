@@ -22,8 +22,8 @@
 %  chains:       binary CxK matrix where 1 in entry (i,j) indicates that class
 %                j belongs to chain i. Column sum must be 1. (CxK int)
 %  refstat:      index of the reference node for each request class (Kx1 int)
-%  bufsz:        (Mx1) matrix - entry i is the buffer size of station i
-%  bufsz_class:  (MxK) matrix - entry (i,j) is the buffer size of station i
+%  capacity:        (Mx1) matrix - entry i is the buffer size of station i
+%  classcapacity:  (MxK) matrix - entry (i,j) is the buffer size of station i
 %                 for class j
 %  stationnames:    name of each node
 %                (Mx1 cell with string entries) - optional

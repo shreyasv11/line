@@ -1,0 +1,2 @@
+% fid = fopen(filename,'w+');
+%
