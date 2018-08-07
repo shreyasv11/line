@@ -28,7 +28,7 @@ options = Solver.defaultOptions;
 options.timespan = [0,Inf];
 options.iter_max = 100;
 options.iter_tol = 0.05;
-options.method = 'std';
+options.method = 'default';
 
 soptions = SolverFluid.defaultOptions;
 soptions.timespan = [0,Inf];
