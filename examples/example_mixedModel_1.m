@@ -33,12 +33,13 @@ model.linkNetwork(P);
 options = Solver.defaultOptions;
 options.keep=true;
 options.verbose=1;
+options.cutoff = 3;
 %options.samples=2e4;
 
 disp('This example shows the execution of the solver on a 2-class 2-node mixed model.')
 % This part illustrates the execution of different solvers
 solver={};
-%solver{end+1} = SolverCTMC(model,options); % CTMC is infinite on this model
+solver{end+1} = SolverCTMC(model,options); % CTMC is infinite on this model
 solver{end+1} = SolverJMT(model,options);
 solver{end+1} = SolverSSA(model,options);
 %solver{end+1} = SolverFluid(model,options);
