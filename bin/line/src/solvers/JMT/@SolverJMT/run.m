@@ -1,3 +1,3 @@
-%SolverJMT/run is a function.
-%    Tsim = run(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

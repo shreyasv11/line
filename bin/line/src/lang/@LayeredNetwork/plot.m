@@ -1,3 +1,3 @@
-%LayeredNetwork/plot is a function.
-%    plot(self, useNodes, showProcs)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

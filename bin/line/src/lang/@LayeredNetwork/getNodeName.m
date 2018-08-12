@@ -1,3 +1,3 @@
-%LayeredNetwork/getNodeName is a function.
-%    name = getNodeName(self, node, useNode)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

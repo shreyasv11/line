@@ -1,3 +1,3 @@
-%JMT2LINE is a function.
-%    model = JMT2LINE(filename, modelName)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

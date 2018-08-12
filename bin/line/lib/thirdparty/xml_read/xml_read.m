@@ -451,8 +451,8 @@ if (len>10000 && option==1), return; end % Str2Num="smart" and string is very lo
 digits = '(Inf)|(NaN)|(pi)|[\t\n\d\+\-\*\.ei EI\[\]\;\,]';
 s = regexprep(str, digits, ''); % remove all the digits and other allowed characters
 if (~all(~isempty(s)))          % if nothing left than this is probably a number
-  if (~isempty(strfind(str, ' '))), option=2; end %if str has white-spaces assume by default that it is not a date string
-  if (~isempty(strfind(str, '['))), option=2; end % same with brackets
+  if (contains(str, ' ')), option=2; end %if str has white-spaces assume by default that it is not a date string
+  if (contains(str, '[')), option=2; end % same with brackets
   str(strfind(str, '\n')) = ';';% parse data tables into 2D arrays, if any
   if (option==1)                % the 'smart' option
     try                         % try to convert to a date, like 2007-12-05

@@ -1,3 +1,3 @@
-%SolverJMT/saveXMLHeader is a function.
-%    [simElem, simNode] = saveXMLHeader(self, logPath)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

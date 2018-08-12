@@ -1,3 +1,3 @@
-%Network/refreshChains is a function.
-%    [chains, visits, rt] = refreshChains(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

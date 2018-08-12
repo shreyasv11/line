@@ -1,3 +1,3 @@
-%SolverJMT/saveDropStrategy is a function.
-%    [simNode, section] = saveDropStrategy(self, simNode, section)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

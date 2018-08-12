@@ -1,3 +1,3 @@
-%NetworkSolver/getAvg is a function.
-%    [QNclass, UNclass, RNclass, TNclass] = getAvg(self, Q, U, R, T)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

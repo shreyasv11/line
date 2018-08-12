@@ -1,3 +1,3 @@
-%getCdfPT is a function.
-%    CDc = getCdfPT(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

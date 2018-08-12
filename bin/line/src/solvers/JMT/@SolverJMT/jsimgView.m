@@ -1,3 +1,3 @@
-%SolverJMT/jsimgView is a function.
-%    jsimgView(self, options)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

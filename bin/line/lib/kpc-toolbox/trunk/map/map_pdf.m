@@ -4,7 +4,7 @@ function f=map_pdf(MAP,tset)
 % MAP:  Markovian arrival process to evaluate
 % tset: time-point to evaluate the PDF of the MAP
 %
-% Copyright (c) 2012-2014, Imperial College London 
+% Copyright (c) 2015-2014, Imperial College London 
 % All rights reserved.
 
 

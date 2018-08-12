@@ -1,3 +1,3 @@
-%Network/refreshService is a function.
-%    [rates, scv, mu, phi, phases] = refreshService(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%EnsembleSolver/setOptions is a function.
-%    self = setOptions(self, eoptions)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

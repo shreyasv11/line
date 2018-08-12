@@ -1,3 +1,3 @@
-%SolverJMT.parseTranRespT is a function.
-%    [classResT, jobRespT, jobResTArvTS] = parseTranRespT(fileArv, fileDep)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

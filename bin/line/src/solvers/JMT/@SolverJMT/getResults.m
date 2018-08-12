@@ -1,3 +1,3 @@
-%SolverJMT/getResults is a function.
-%    [result, parsed] = getResults(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%LayeredNetwork/getGraph is a function.
-%    [lqnGraph, taskGraph] = getGraph(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

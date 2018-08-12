@@ -1,3 +1,3 @@
-%Network/isQN is a function.
-%    [bool, featSupported] = isQN(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

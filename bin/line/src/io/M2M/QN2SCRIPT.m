@@ -1,3 +1,3 @@
-%QN2SCRIPT is a function.
-%    QN2SCRIPT(qn, modelName, fid)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

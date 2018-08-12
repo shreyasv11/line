@@ -1,3 +1,3 @@
-%LayeredNetwork/update is a function.
-%    self = update(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

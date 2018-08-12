@@ -1,3 +1,3 @@
-%SolverJMT.parseTranState is a function.
-%    state = parseTranState(fileArv, fileDep, nodePreload)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

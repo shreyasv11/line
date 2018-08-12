@@ -1,3 +1,3 @@
-%Network/enablePerfIndex is a function.
-%    self = enablePerfIndex(self, Y)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%LayeredNetwork/updateEnsemble is a function.
-%    self = updateEnsemble(self, isBuild, deepUpdate)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

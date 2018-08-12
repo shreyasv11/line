@@ -1,3 +1,3 @@
-%Network/isQNCoxCS is a function.
-%    [bool, featSupported] = isQNCoxCS(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

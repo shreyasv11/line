@@ -1,3 +1,3 @@
-%LayeredNetwork/isValid is a function.
-%    bool = isValid(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

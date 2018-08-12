@@ -1,3 +1,3 @@
-%SolverJMT/saveLinks is a function.
-%    [simElem, simNode] = saveLinks(self, simElem, simNode)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

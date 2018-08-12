@@ -1,3 +1,3 @@
-%lqnsSolve is a function.
-%    lqnsSolve(filename, maxIter, wantExact)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%Network/getRoutingMatrix is a function.
-%    [P, Pnodes, PnodesByClass, PnodesByStation] = getRoutingMatrix(self, arvRates)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

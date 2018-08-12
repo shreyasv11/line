@@ -1,3 +1,3 @@
-%LayeredNetwork/getNodeIndexInTaskGraph is a function.
-%    idx = getNodeIndexInTaskGraph(self, node)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

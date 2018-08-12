@@ -1,3 +1,3 @@
-%SolverJMT/saveRoutingStrategy is a function.
-%    [simNode, section] = saveRoutingStrategy(self, simNode, section, currentNode)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

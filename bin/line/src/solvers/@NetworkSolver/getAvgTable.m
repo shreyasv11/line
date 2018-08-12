@@ -1,3 +1,3 @@
-%NetworkSolver/getAvgTable is a function.
-%    [AvgTable, QT, UT, RT, TT] = getAvgTable(self, Q, U, R, T)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%parseLQNSResults is a function.
-%    [Gres, iterations] = parseLQNSResults(G, filename, filename_sim, verbose)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

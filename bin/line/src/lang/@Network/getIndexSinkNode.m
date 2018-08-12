@@ -1,3 +1,3 @@
-%Network/getIndexSinkNode is a function.
-%    index = getIndexSinkNode(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%State.afterEventHashedOrAdd is a function.
-%    [outhash, outrate, qn] = afterEventHashedOrAdd(qn, i, inhash, event, class)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

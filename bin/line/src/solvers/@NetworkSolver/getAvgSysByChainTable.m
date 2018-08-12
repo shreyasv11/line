@@ -1,3 +1,3 @@
-%NetworkSolver/getAvgSysByChainTable is a function.
-%    [AvgSysByChainTable, CT, XT] = getAvgSysByChainTable(self, R, T)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%Network/getChains is a function.
-%    [qnchains, chains] = getChains(self, rt)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

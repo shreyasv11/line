@@ -1,3 +1,3 @@
-%LayeredNetwork/listActivitiesOfEntry is a function.
-%    acts = listActivitiesOfEntry(self, entry)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

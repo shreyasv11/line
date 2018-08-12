@@ -1,3 +1,3 @@
-%  n(r): number of jobs at the station in class r
-%  s(r): jobs of class r that are running
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

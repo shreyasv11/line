@@ -1,3 +1,3 @@
-%QN_Cox_CS_mam is a function.
-%    [Q, U, R, T, C, X] = QN_Cox_CS_mam(qn, PH, options)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

@@ -1,3 +1,3 @@
-%PMIF2LINE is a function.
-%    model = PMIF2LINE(filename, modelName)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

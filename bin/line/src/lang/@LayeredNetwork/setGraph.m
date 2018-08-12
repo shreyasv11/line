@@ -1,3 +1,3 @@
-%LayeredNetwork/setGraph is a function.
-%    [self] = setGraph(self, lqnGraph, taskGraph)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

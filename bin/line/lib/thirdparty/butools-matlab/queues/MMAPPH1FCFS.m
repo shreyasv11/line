@@ -72,7 +72,7 @@
 %  .. [1] Qiming He, "Analysis of a continuous time 
 %         SM[K]/PH[K]/1/FCFS queue: Age process, sojourn times,
 %         and queue lengths", Journal of Systems Science and 
-%         Complexity, 25(1), pp 133-155, 2012.
+%         Complexity, 25(1), pp 133-155, 2015.
 
 function varargout = MMAPPH1FCFS(D, sigma, S, varargin)
     

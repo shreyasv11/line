@@ -1,3 +1,3 @@
-%LayeredNetwork/listEntriesOfTask is a function.
-%    entries = listEntriesOfTask(self, task)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

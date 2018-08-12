@@ -1,3 +1,3 @@
-%State.afterEvent is a function.
-%    [outspace, outrate] = afterEvent(qn, i, inspace, event, class)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

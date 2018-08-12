@@ -1,3 +1,3 @@
-%LayeredNetwork/getGraphLayers is a function.
-%    [submodels, levels] = getGraphLayers(self, lqnGraph, taskGraph)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

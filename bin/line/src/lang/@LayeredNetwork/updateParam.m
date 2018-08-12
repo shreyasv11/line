@@ -1,3 +1,3 @@
-%LayeredNetwork/updateParam is a function.
-%    self = updateParam(self, AvgTable)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

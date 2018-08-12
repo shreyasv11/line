@@ -7,11 +7,12 @@
 %  LayeredSolver - LayeredNetwork solver abstract class
 % 
 %  Network solvers:
-%  AMVA -	Approximate mean-value analysis solver.
+%  AUTO -	Automatic choice of solver.
 %  CTMC -	Exact continuous-time markov chain solver.
 %  Fluid -	Fluid ODE solver.
 %  JMT -	Wrapper for JMT's simulator (JSIM)
 %  MAM - Matrix analytic method solver
+%  MVA -	Mean-value analysis solver.
 %  NC - Normalizing constant solver
 %  SSA - Stochastic simulation
 % 

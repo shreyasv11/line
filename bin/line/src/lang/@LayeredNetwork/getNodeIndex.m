@@ -1,4 +1,3 @@
-% G = self.lqnGraph;
-% idx = findstring(G.Nodes.Name,node);
-% idx = G.findnode(node);
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

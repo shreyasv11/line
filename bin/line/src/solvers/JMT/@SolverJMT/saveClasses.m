@@ -1,3 +1,3 @@
-%SolverJMT/saveClasses is a function.
-%    [simElem, simNode] = saveClasses(self, simElem, simNode)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

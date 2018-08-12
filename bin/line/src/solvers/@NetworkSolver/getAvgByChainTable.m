@@ -1,3 +1,3 @@
-%NetworkSolver/getAvgByChainTable is a function.
-%    [AvgByChain, QTc, UTc, RTc, TTc] = getAvgByChainTable(self, Q, U, R, T)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

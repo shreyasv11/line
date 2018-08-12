@@ -1,3 +1,3 @@
-%Network/getForks is a function.
-%    ft = getForks(self, rt)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

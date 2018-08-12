@@ -1,3 +1,3 @@
-%QN2LINE is a function.
-%    model = QN2LINE(qn, modelName)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

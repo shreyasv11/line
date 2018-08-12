@@ -1,3 +1,3 @@
-%Network/addNode is a function.
-%    addNode(self, node)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

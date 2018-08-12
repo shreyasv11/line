@@ -1,3 +1,3 @@
-%QN_Cox_fluid_initsol is a function.
-%    [init_sol, state] = QN_Cox_fluid_initsol(qn, options)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

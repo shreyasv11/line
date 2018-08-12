@@ -1,3 +1,3 @@
-%Network/getReferenceStations is a function.
-%    refstat = getReferenceStations(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

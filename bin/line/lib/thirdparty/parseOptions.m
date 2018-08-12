@@ -23,7 +23,7 @@ function [outputFolder, RT, RTrange, max_iter, solver, verbose] = parseOptions(o
 % max_iter:              maximum number of iterations for the FLUID solver
 % verbose:              1 for screen output, 0 otherwise
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2015-2018, Imperial College London
 % All rights reserved.
 
 %% read options - set defaults if no options are provided

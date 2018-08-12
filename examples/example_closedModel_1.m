@@ -20,14 +20,13 @@ node{1}.setProbRouting(jobclass{1}, node{1}, 0.7)
 node{1}.setProbRouting(jobclass{1}, node{2}, 0.3)
 node{2}.setProbRouting(jobclass{1}, node{1}, 1.0)
 
-simoptions = Solver.defaultOptions; simoptions.seed = 23000; simoptions.verbose = true;
 solver = {};
 solver{end+1} = SolverCTMC(model);
-solver{end+1} = SolverJMT(model, simoptions);
-solver{end+1} = SolverSSA(model, simoptions);
+solver{end+1} = SolverJMT(model, 'seed',2300,'verbose',true);
+solver{end+1} = SolverSSA(model, 'seed',2300,'verbose',true);
 solver{end+1} = SolverFluid(model);
 solver{end+1} = SolverMVA(model);
-solver{end+1} = SolverNC(model);
+solver{end+1} = SolverNC(model,'method','exact');
 solver{end+1} = SolverAuto(model);
 
 for s=1:length(solver)

@@ -1,3 +1,3 @@
-%Network/addPerfIndex is a function.
-%    addPerfIndex(self, perfIndex)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

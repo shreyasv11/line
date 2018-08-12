@@ -1,3 +1,3 @@
-%Network/refreshCoxService is a function.
-%    [mu, phi, phases] = refreshCoxService(self)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

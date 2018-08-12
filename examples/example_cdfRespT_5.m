@@ -26,22 +26,23 @@ for N = nJobs
     options.iter_max = 100;
     solver = SolverFluid(model, options);
     AvgRespT = solver.getAvgRespT
-    SolverMVA(model).getAvgRespT
-%    model.set
-    solver = SolverFluid(model, options);    
     FC = solver.getCdfRespT();
     %%
-    for i=2%:model.getNumberOfStations
-        for c=1:model.getNumberOfClasses
-            plot(FC{i,c}(:,2),FC{i,c}(:,1)); hold all;
-            %        AvgRespTfromCDF(i,c) = diff(FC{i,c}(:,1))'*FC{i,c}(2:end,2); %mean
-            %        PowerMoment2_R(i,c) = diff(FC{i,c}(:,1))'*(FC{i,c}(2:end,2).^2);
-            %        Variance_R(i,c) = PowerMoment2_R(i,c)-AvgRespTfromCDF(i,c)^2; %variance
-            %        SqCoeffOfVariationRespTfromCDF(i,c) = (Variance_R(i,c))/AvgRespTfromCDF(i,c)^2; %scv
+    for c=1:model.getNumberOfClasses
+        for i=1:model.getNumberOfStations
+            AvgRespTfromCDF(i,c) = diff(FC{i,c}(:,1))'*FC{i,c}(2:end,2); %mean
+            PowerMoment2_R(i,c) = diff(FC{i,c}(:,1))'*(FC{i,c}(2:end,2).^2);
+            Variance_R(i,c) = PowerMoment2_R(i,c)-AvgRespTfromCDF(i,c)^2; %variance
+            SqCoeffOfVariationRespTfromCDF(i,c) = (Variance_R(i,c))/AvgRespTfromCDF(i,c)^2; %scv
         end
     end
-    %AvgRespTfromCDF;
-    %SqCoeffOfVariationRespTfromCDF;
+    for i=2
+        for c=1:model.getNumberOfClasses
+            plot(FC{i,c}(:,2),FC{i,c}(:,1)); hold all;
+        end
+    end
+    AvgRespTfromCDF
+    %SqCoeffOfVariationRespTfromCDF
     label{end+1} = ['N=', num2str(N),' jobs'];
 end
 legend(label);

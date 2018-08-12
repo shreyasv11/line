@@ -8,7 +8,7 @@ node{1}.setArrival(jobclass{1}, Cox2.fitMoments(2.000000,1.000000));
 node{2}.setService(jobclass{1}, Cox2.fitMoments(1.000000,1.000000));
 node{3}.setService(jobclass{1}, Cox2.fitMoments(1.000000,1.000000));
 jobclass{2} = OpenClass(model, 'Class2', 0);
-node{1}.setArrival(jobclass{2}, Disabled());
+node{1}.setArrival(jobclass{2}, Cox2.fitMoments(2.000000,1.000000));
 node{2}.setService(jobclass{2}, Cox2.fitMoments(1.000000,1.000000));
 node{3}.setService(jobclass{2}, Cox2.fitMoments(1.000000,1.000000));
 P = cell(2);
@@ -23,11 +23,10 @@ RD = SolverFluid(model).getCdfRespT()
 ctmcoptions = SolverCTMC.defaultOptions; ctmcoptions.cutoff = 3;
 simoptions = Solver.defaultOptions; simoptions.seed = 23000;
 solver = {};
-%solver{end+1} = SolverCTMC(model, ctmcoptions);
 solver{end+1} = SolverJMT(model, simoptions);
 %solver{end+1} = SolverSSA(model, simoptions);
-%solver{end+1} = SolverFluid(model);
-solver{end+1} = SolverMVA(model);
+solver{end+1} = SolverFluid(model);
+%solver{end+1} = SolverMVA(model);
 %solver{end+1} = SolverNC(model);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());    

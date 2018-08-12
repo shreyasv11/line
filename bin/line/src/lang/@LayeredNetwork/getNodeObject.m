@@ -1,3 +1,3 @@
-%LayeredNetwork/getNodeObject is a function.
-%    obj = getNodeObject(self, node)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %
