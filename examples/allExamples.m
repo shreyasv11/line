@@ -60,7 +60,7 @@ fprintf(1,'\n\nExample: <strong>example_cdfRespT_1</strong>\n');
 clear; example_cdfRespT_1; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_2</strong>\n'); 
 clear; example_cdfRespT_2; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
-fprintf(1,'\n\nExample: <strong>example_cdfRespT_3</strong>\n'); 
+%fprintf(1,'\n\nExample: <strong>example_cdfRespT_3</strong>\n'); 
 %clear; example_cdfRespT_3; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
 fprintf(1,'\n\nExample: <strong>example_cdfRespT_4</strong>\n'); 
 clear; example_cdfRespT_4; fprintf(1,'Pausing...'); pause(3.0); try close(handleFig); end; 
@@ -81,10 +81,12 @@ clear; example_layeredModel_2; fprintf(1,'Pausing...'); pause(3.0);
 %%
 fprintf(1,'\n<strong>RUNNING: example_misc_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_misc_1</strong>\n'); 
+fprintf(1,'This example shows how to solve only for selected performance indexes.\n');
 clear; example_misc_1; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_misc_2</strong>\n'); 
 clear; example_misc_2; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_misc_3</strong>\n'); 
+fprintf(1,'This example illustrates the solution of DPS models.\n')
 clear; example_misc_3; fprintf(1,'Pausing...'); pause(3.0); 
 fprintf(1,'\n\nExample: <strong>example_misc_4</strong>\n'); 
 fprintf(1,'This example shows that LINE automatically checks if a solver is feasible for a given model.\n');

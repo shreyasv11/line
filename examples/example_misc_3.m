@@ -37,7 +37,6 @@ M = model.getNumberOfStations();
 K = model.getNumberOfClasses();
 
 % This part illustrates the execution of different solvers
-fprintf(1,'This example illustrates the solution of DPS models.\n')
 
 solver={};
 options = Solver.defaultOptions;

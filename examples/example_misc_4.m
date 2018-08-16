@@ -31,10 +31,6 @@ node{1}.setProbRouting(jobclass{1}, node{3}, 0.7)
 node{2}.setProbRouting(jobclass{1}, node{1}, 1.0)
 node{3}.setProbRouting(jobclass{1}, node{1}, 1.0)
 
-M = model.getNumberOfNodes;
-K = model.getNumberOfClasses;
-T = model.getAvgTputHandles();
-
 solver={};
 options = Solver.defaultOptions;
 solver{end+1} = SolverCTMC(model,options);

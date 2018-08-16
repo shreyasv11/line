@@ -1,7 +1,7 @@
 %  Copyright (c) 2015-2018, Imperial College London
-%  All rights reserved.    
+%  All rights reserved.
 %
 %    Reference page in Doc Center
-%       doc SolverFeatureSet
+%       doc StatefulNode
 %
 %

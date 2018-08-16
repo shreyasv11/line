@@ -8,17 +8,8 @@ jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 node{1}.setService(jobclass{1}, Exp.fitMoments(1.0)); % mean = 1
 node{2}.setService(jobclass{1}, Exp.fitMoments(1.5)); % mean = 1.5
 
-model.addLink(node{1}, node{1}); 
-model.addLink(node{1}, node{2});
-model.addLink(node{2}, node{1}); 
-model.addLink(node{2}, node{2});
-
-node{1}.setRouting(jobclass{1},RoutingStrategy.PROB);
-node{2}.setRouting(jobclass{1},RoutingStrategy.PROB);
-
-node{1}.setProbRouting(jobclass{1}, node{1}, 0.7)
-node{1}.setProbRouting(jobclass{1}, node{2}, 0.3)
-node{2}.setProbRouting(jobclass{1}, node{1}, 1.0)
+P{1} = [0.7,0.3;1.0,0];
+model.linkNetwork(P);
 
 solver = {};
 solver{end+1} = SolverCTMC(model);

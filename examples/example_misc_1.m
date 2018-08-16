@@ -35,8 +35,6 @@ M = model.getNumberOfNodes;
 K = model.getNumberOfClasses;
 T = model.getAvgTputHandles();
 
-fprintf(1,'This example shows how to solve only for selected performance indexes.\n');
-
 solver={};
 options = Solver.defaultOptions;
 solver = SolverJMT(model,options);
