@@ -16,7 +16,7 @@
 %    PerfIndex           -	Performance index to be analyzed by a solver.
 %    QN - Queueing network data structure
 %    QNCox - QN with coxian service or interarrival times
-%    QNCoxCS - QNCox with class switching
+%    QN - QNCox with class switching
 %    Ensemble - Ensemble model
 % 
 %  Class specification
