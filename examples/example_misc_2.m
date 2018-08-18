@@ -43,7 +43,7 @@ fprintf(1, 'Time for solution without model updates: %f sec\n',toc(T0));
 T1=tic;
 for it=1:I
     node{2}.setService(jobclass{1}, Exp(it));
-    model.refresh % this forces to regenerate the internal data structures
+    model.refreshStruct % this forces to regenerate the internal data structures
     QN1 = solver.getAvg;
 end
 fprintf(1, 'Time for solution with updates and full model refreshes: %f sec\n',toc(T1));

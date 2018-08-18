@@ -1,3 +1,3 @@
 %Network/refreshLocalVars is a function.
-%    nlocalvars = refreshLocalVars(self)
+%    nvars = refreshLocalVars(self)
 %

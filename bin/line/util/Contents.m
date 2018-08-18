@@ -1,5 +1,6 @@
 %  Utility functions
 % 
+%  at - returns matrix element at specified position
 %  allbut - returns all elements in the input but the ones indicated
 %  cellat - returns cell array element at specified position
 %  cellsum - returns sum of cell array elements
