@@ -36,5 +36,5 @@ solver{end+1} = SolverCTMC(model);
 %
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    AvgTable = solver{s}.getAvgTable()
+%    AvgTable = solver{s}.getAvgTable()
 end
