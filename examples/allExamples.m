@@ -44,6 +44,10 @@ clear; example_initState_2; fprintf(1,'Pausing...'); pause(3.0); try close(handl
 fprintf(1,'\n<strong>RUNNING: example_openModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_openModel_1</strong>\n'); 
 clear; example_openModel_1; fprintf(1,'Pausing...'); pause(3.0); 
+fprintf(1,'\n\nExample: <strong>example_openModel_2</strong>\n'); 
+clear; example_openModel_2; fprintf(1,'Pausing...'); pause(3.0); 
+fprintf(1,'\n\nExample: <strong>example_openModel_3</strong>\n'); 
+clear; example_openModel_3; fprintf(1,'Pausing...'); pause(3.0); 
 %%
 fprintf(1,'\n<strong>RUNNING: example_mixedModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_mixedModel_1</strong>\n'); 
