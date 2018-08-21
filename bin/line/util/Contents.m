@@ -3,6 +3,7 @@
 %  at - returns matrix element at specified position
 %  allbut - returns all elements in the input but the ones indicated
 %  cellat - returns cell array element at specified position
+%  cellisa - returns a vector with the isa results for each cell element
 %  cellsum - returns sum of cell array elements
 %  cellzeros - returns cell array initialized with zero square matrices
 %  circul - returns a circulant matrix
