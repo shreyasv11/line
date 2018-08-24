@@ -2,7 +2,7 @@ clear;
 model = CacheNetwork('model');
 
 node{1} = DelayStation(model, 'Delay');
-node{2} = CacheRouter(model, 'Cache1', 5, [2,1], ReplacementPolicy.RR);
+node{2} = CacheRouter(model, 'Cache1', 5, [2,1], ReplacementPolicy.RAND);
 
 jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 0, node{1}, 0);

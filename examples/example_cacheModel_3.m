@@ -6,7 +6,7 @@ for it=1:2
     m = [2];
     N = [2,2]
     mainDelay = DelayStation(model, 'MainDelay');
-    cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RR);
+    cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RAND);
     hitDelay = DelayStation(model, 'HitDelay');
     missDelay = DelayStation(model, 'MissDelay');
     

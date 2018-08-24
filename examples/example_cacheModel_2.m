@@ -2,7 +2,7 @@ clear;
 model = CacheNetwork('model');
 
 mainDelay = DelayStation(model, 'MainDelay');
-cacheNode = CacheRouter(model, 'Cache', 3, [1], ReplacementPolicy.RR);
+cacheNode = CacheRouter(model, 'Cache', 3, [1], ReplacementPolicy.RAND);
 hitDelay = DelayStation(model, 'HitDelay');
 missDelay = DelayStation(model, 'MissDelay');
 
@@ -27,4 +27,5 @@ P{hitClass.index, jobClass.index}(3,1)=1;
 P{missClass.index, jobClass.index}(4,1)=1;
 
 model.linkNetwork(P);
-SolverCTMC(model,'keep',true).getAvgTable
+SolverCTMC(model,'keep',false).getAvgTable
+SolverSSA(model).getAvgTable
