@@ -1,3 +1,3 @@
-%ctmc_uniformization is a function.
-%    [pi, kmax] = ctmc_uniformization(pi0, Q, t, tol, maxiter)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

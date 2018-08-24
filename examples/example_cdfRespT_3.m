@@ -24,10 +24,10 @@ ctmcoptions = SolverCTMC.defaultOptions; ctmcoptions.cutoff = 3;
 simoptions = Solver.defaultOptions; simoptions.seed = 23000;
 solver = {};
 solver{end+1} = SolverJMT(model, simoptions);
-%solver{end+1} = SolverSSA(model, simoptions);
+solver{end+1} = SolverSSA(model, simoptions);
 solver{end+1} = SolverFluid(model);
-%solver{end+1} = SolverMVA(model);
-%solver{end+1} = SolverNC(model);
+solver{end+1} = SolverMVA(model);
+solver{end+1} = SolverNC(model);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());    
     AvgTable = solver{s}.getAvgTable()

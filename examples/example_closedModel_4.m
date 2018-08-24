@@ -12,13 +12,6 @@ jobclass{2} = ClosedClass(model, 'Class2', 1, node{1}, 0);
 jobclass{3} = ClosedClass(model, 'Class3', 1, node{1}, 0);
 jobclass{4} = ClosedClass(model, 'Class4', 1, node{1}, 0);
 
-model.addLink(node{1}, node{1});
-model.addLink(node{1}, node{2});
-model.addLink(node{1}, node{3});
-model.addLink(node{2}, node{1});
-model.addLink(node{2}, node{2});
-model.addLink(node{3}, node{1});
-
 node{1}.setService(jobclass{1}, Exp(1));
 node{1}.setService(jobclass{2}, Exp(1));
 node{1}.setService(jobclass{3}, Exp(1));

@@ -44,15 +44,15 @@ options.method = 'exact';
 % This part illustrates the execution of different solvers
 solver={};
 solver{end+1} = SolverCTMC(model,options);
-%solver{end+1} = SolverJMT(model,options);
-%solver{end+1} = SolverSSA(model,options);
-%solver{end+1} = SolverFluid(model,options);
-%solver{end+1} = SolverMVA(model,options);
+solver{end+1} = SolverJMT(model,options);
+solver{end+1} = SolverSSA(model,options);
+solver{end+1} = SolverFluid(model,options);
+solver{end+1} = SolverMVA(model,options);
 solver{end+1} = SolverNC(model,options);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    AvgTable = solver{s}.getAvgTable()
-    AvgByChainTable = solver{s}.getAvgByChainTable()
-    AvgSysByChainTable = solver{s}.getAvgSysByChainTable()
+    AvgTable{s} = solver{s}.getAvgTable()
+    AvgByChainTable{s} = solver{s}.getAvgByChainTable()
+    AvgSysByChainTable{s} = solver{s}.getAvgSysByChainTable()
 end
 

@@ -1,3 +1,3 @@
-%ctmc_transient is a function.
-%    [pi, t] = ctmc_transient(Q, pi0, t0, t1)
+%  Copyright (c) 2015-2018, Imperial College London
+%  All rights reserved.
 %

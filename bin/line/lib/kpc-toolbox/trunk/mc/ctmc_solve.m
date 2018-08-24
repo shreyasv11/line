@@ -11,12 +11,12 @@ function [PROB,Q]=ctmc_solve(Q,options)
 %  Examples:
 %  - ctmc_solve([-0.5,0.5;0.2,-0.2])
 
-if length(Q) > 6000
+if length(Q) > 6000 && ~options.force
     warning('the order of Q is greater than 6000, i.e., %d elements. Press key to continue.',length(Q));
     pause;
-end    
+end
 
-Qsav=Q;
+%Qsav=Q;
 zerocol=find(sum(abs(Q))==0);
 if length(zerocol)>1
     warning('ctmc_solve: the infinitesimal generator is reducible');
