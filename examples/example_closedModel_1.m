@@ -1,4 +1,3 @@
-clear;
 model = Network('model');
 
 node{1} = DelayStation(model, 'Delay');
@@ -13,8 +12,8 @@ model.linkNetwork(P);
 
 solver = {};
 solver{end+1} = SolverCTMC(model);
-solver{end+1} = SolverJMT(model, 'seed',2300, 'verbose',true);
-solver{end+1} = SolverSSA(model, 'seed',2300, 'verbose',true);
+solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true);
+solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true);
 solver{end+1} = SolverFluid(model);
 solver{end+1} = SolverMVA(model);
 solver{end+1} = SolverNC(model,'method','exact');
@@ -22,5 +21,6 @@ solver{end+1} = SolverAuto(model);
 
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());    
-    AvgTable = solver{s}.getAvgTable()
+    AvgTable{s} = solver{s}.getAvgTable();
+    AvgTable{s}
 end

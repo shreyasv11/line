@@ -38,5 +38,6 @@ solver{end+1} = SolverMVA(model,options);
 %solver{end+1} = SolverNC(model,options);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    AvgTable = solver{s}.getAvgTable()
+    AvgTable{s} = solver{s}.getAvgTable()
+    AvgTable{s}
 end
