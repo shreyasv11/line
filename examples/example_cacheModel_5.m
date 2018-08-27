@@ -1,7 +1,7 @@
 clear;
 model = CacheNetwork('model');
-n = 3;
-m = [2];
+n = 8;
+m = [4];
 h=length(m);
 N = [1,1];
 D11 = 1e-4; D12 = 1e-4;
@@ -11,8 +11,8 @@ D = [D11,D12; D21,D22; D31,D32];
 
 mainDelay = DelayStation(model, 'MainDelay');
 cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RAND);
-hitDelay = QueueingStation(model, 'HitQ',SchedStrategy.INF);
-missDelay = QueueingStation(model, 'MissQ',SchedStrategy.INF);
+hitDelay = QueueingStation(model,'HitQ',SchedStrategy.INF);
+missDelay = QueueingStation(model,'MissQ',SchedStrategy.INF);
 
 initClass1 = ClosedClass(model, 'InitClass1', N(1), mainDelay, 0);
 hitClass1 = ClosedClass(model, 'HitClass1', 0, mainDelay, 0);
@@ -58,8 +58,8 @@ P{missClass2, initClass2}(4,1)=1;
 
 model.linkNetwork(P);
 
-AvgTable = SolverCTMC(model,'keep',true).getAvgTable;
-%SolverSSA(model).getAvgTable
+%AvgTable = SolverCTMC(model,'keep',true).getAvgTable
+AvgTable = SolverSSA(model,'samples',1e4,'verbose',2).getAvgTable
 
 %%
 u = 2;
@@ -77,10 +77,8 @@ for k=1:n
     end
 end
 %%
-T11 = AvgTable.Tput(8);
-T12 = AvgTable.Tput(11);
-T21 =  AvgTable.Tput(15);
-T22 =  AvgTable.Tput(18);
+T11 = AvgTable.Tput(3); T21 =  AvgTable.Tput(5);
+T12 = AvgTable.Tput(4); T22 =  AvgTable.Tput(6);
 T = [T11,T12; T21,T22];
 X = ones(size(T));
 Emp{1} = RM1;

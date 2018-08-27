@@ -1,6 +1,6 @@
 clear;
 model = CacheNetwork('model');
-scale = 5;
+scale = 1;
 n = 2*scale;
 m = [1]*scale;
 N = [1,1];
