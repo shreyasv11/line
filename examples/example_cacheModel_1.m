@@ -32,4 +32,5 @@ P{2} = circul(2);
 
 model.linkNetwork(P);
 
-%SolverCTMC(model,'keep',false).getAvgTable
+SolverCTMC(model,'keep',false).getAvgTable
+SolverSSA(model,'samples',5e2).getAvgTable

@@ -32,6 +32,8 @@ P{missClass.index, jobClass.index}(4,1)=1;
 
 model.linkNetwork(P);
 AvgTable = SolverCTMC(model,'keep',true).getAvgTable
+AvgTable = SolverSSA(model,'samples',1e3).getAvgTable
+
 global keep_infgen;
 global keep_statespace;
 Q = keep_infgen;

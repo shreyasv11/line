@@ -1,6 +1,6 @@
 clear;
 model = CacheNetwork('model');
-scale = 2;
+scale = 5;
 n = 2*scale;
 m = [1]*scale;
 N = [1,1];
@@ -21,8 +21,8 @@ initClass2 = ClosedClass(model, 'InitClass2', N(2), mainDelay, 0);
 hitClass2 = ClosedClass(model, 'HitClass2', 0, mainDelay, 0);
 missClass2 = ClosedClass(model, 'MissClass2', 0, mainDelay, 0);
 
-RM1 = Empirical(repmat([0.5,0.5]/scale,1,scale));
-RM2 = Empirical(repmat([0.5,0.5]/scale,1,scale));
+RM1 = DiscreteDistrib(repmat([0.5,0.5]/scale,1,scale));
+RM2 = DiscreteDistrib(repmat([0.5,0.5]/scale,1,scale));
 cacheNode.setReference(initClass1, RM1);
 cacheNode.setReference(initClass2, RM2);
 
@@ -55,13 +55,14 @@ P{missClass2, initClass2}(4,1)=1;
 
 model.linkNetwork(P);
 
-AvgTable = SolverCTMC(model,'keep',true).getAvgTable;
+%AvgTable = SolverCTMC(model,'keep',true).getAvgTable;
+AvgTable = SolverSSA(model,'samples',1e2).getAvgTable;
 %SolverSSA(model).getAvgTable
 
 %%
 mset=[m];
 X11 = AvgTable.Tput(1); X21 =  AvgTable.Tput(4);
-Emp = Empirical((X11/(X11+X21))*RM1.getPmf+(X21/(X11+X21))*RM2.getPmf)
+Emp = DiscreteDistrib((X11/(X11+X21))*RM1.getPmf+(X21/(X11+X21))*RM2.getPmf);
 for i=1:size(mset,1)
     clear lambda R
     m=mset(i,:);
@@ -94,6 +95,7 @@ for i=1:size(mset,1)
     [gamma,u,n,h]=mucache_gamma(lambda,R);
     [M,MU,MI,pi0]=mucache_miss(gamma,m,lambda);
 end
+if 0
 %%
 OPENEX=1-pi0; OPENEX = OPENEX %/sum(EXACT)
 %%
@@ -137,13 +139,13 @@ for j=1:n
     ARVMODEL(j)=sum(pie(find(sum([SS(:,offset:offset+sum(m)-1)==j],2))));
 end
 ARVMODEL = ARVMODEL %/sum(ARVMODEL)
-
 %SolverCTMC.printInfGen(Q,SS(:,offset:offset+sum(m)=1))
 %SolverCTMC.printEventFilt(qn.sync,D,SS(:,offset:offset+sum(m)-1),2)
 ERR = norm(OPENEX-STEADY)
+end
 %%
-X11 = AvgTable.Tput(8); X21 =  AvgTable.Tput(15);
-X12 = AvgTable.Tput(11); X22 =  AvgTable.Tput(18);
+X11 = AvgTable.Tput(3); X21 =  AvgTable.Tput(5);
+X12 = AvgTable.Tput(4); X22 =  AvgTable.Tput(6);
 
 network = Network('network');
 mainDelay = DelayStation(network, 'MainDelay');
@@ -168,4 +170,4 @@ P{2,2} = [0,X12/(X12+X22),X22/(X12+X22); 1,0,0; 1,0,0];
 network.linkNetwork(P);
 
 AvgTable
-AvgTableNet = SolverCTMC(network,'keep',true).getAvgTable
+AvgTableNet = SolverMVA(network).getAvgTable
