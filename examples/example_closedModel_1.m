@@ -8,10 +8,13 @@ node{1}.setService(jobclass{1}, Exp.fitMoments(1.0)); % mean = 1
 node{2}.setService(jobclass{1}, Exp.fitMoments(1.5)); % mean = 1.5
 
 P{1} = [0.7,0.3;1.0,0];
+% This may be alternatively specified as:
+%P{1}(node{1},[node{1},node{2}]) = [0.7,0.3]; 
+%P{1}(node{2},[node{1},node{2}]) = [1.0,0]; 
 model.linkNetwork(P);
 
 solver = {};
-solver{end+1} = SolverCTMC(model);
+solver{end+1} = SolverCTMC(model,'keep',true);
 solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true);
 solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true);
 solver{end+1} = SolverFluid(model);

@@ -1,6 +1,6 @@
 clear;
 model = CacheNetwork('model');
-scale = 1;
+scale = 12;
 n = 2*scale;
 m = [1]*scale;
 N = [1,1];
@@ -21,8 +21,8 @@ initClass2 = ClosedClass(model, 'InitClass2', N(2), mainDelay, 0);
 hitClass2 = ClosedClass(model, 'HitClass2', 0, mainDelay, 0);
 missClass2 = ClosedClass(model, 'MissClass2', 0, mainDelay, 0);
 
-RM1 = DiscreteDistrib(repmat([0.5,0.5]/scale,1,scale));
-RM2 = DiscreteDistrib(repmat([0.5,0.5]/scale,1,scale));
+RM1 = DiscreteDistrib(ones(1,n)/n);
+RM2 = DiscreteDistrib(ones(1,n)/n);
 cacheNode.setReference(initClass1, RM1);
 cacheNode.setReference(initClass2, RM2);
 
@@ -56,9 +56,9 @@ P{missClass2, initClass2}(4,1)=1;
 model.linkNetwork(P);
 
 %AvgTable = SolverCTMC(model,'keep',true).getAvgTable;
-AvgTable = SolverSSA(model,'samples',1e2).getAvgTable;
+AvgTable = SolverSSA(model,'samples',1e3,'verbose',true).getAvgTable;
 %SolverSSA(model).getAvgTable
-
+toc
 %%
 mset=[m];
 X11 = AvgTable.Tput(1); X21 =  AvgTable.Tput(4);
@@ -171,3 +171,5 @@ network.linkNetwork(P);
 
 AvgTable
 AvgTableNet = SolverMVA(network).getAvgTable
+
+max(abs(1-AvgTable.RespT./AvgTableNet.RespT))

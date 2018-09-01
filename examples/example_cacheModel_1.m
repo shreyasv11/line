@@ -1,36 +1,43 @@
-% basic example
 clear;
 model = CacheNetwork('model');
-n = 5;
-node{1} = DelayStation(model, 'Delay');
-node{2} = CacheRouter(model, 'Cache1', n, [2,1], ReplacementPolicy.RAND);
 
-jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
-jobclass{2} = ClosedClass(model, 'Class2', 0, node{1}, 0);
+scale = 1;
+n = 10;
+m = [2];
+h=length(m);
+N = [1];
+S11 = 1e-4; 
+S21 = 1;
+S22 = 5;
+S = [S11; S21; S22];
 
-node{1}.setService(jobclass{1}, Exp.fitMean(1)); % mean = 1
-node{1}.setService(jobclass{2}, Exp.fitMean(7)); % mean = 1
+mainDelay = DelayStation(model, 'MainDelay');
+cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RAND);
+hitDelay = QueueingStation(model,'HitDelay',SchedStrategy.INF);
 
-node{2}.setReference(jobclass{1}, Zipf(0.5,n));
-node{2}.setReference(jobclass{2}, Zipf(0.7,n));
+jobClass = ClosedClass(model, 'InitClass1', N(1), mainDelay, 0);
+hitClass = ClosedClass(model, 'HitClass1', 0, mainDelay, 0);
+missClass = ClosedClass(model, 'MissClass1', 0, mainDelay, 0);
 
-% node{2}.setMissTime(Exp.fitMean(1)); %
-% node{2}.setHitTime(Exp.fitMean(10), 1); % cache level 1
-% node{2}.setHitTime(Exp.fitMean(100), 2); % cache level 2
+RM1 = DiscreteDistrib((1/n)*ones(1,n));
+%RM1 = Zipf(0.5,n);
+cacheNode.setReference(jobClass, RM1);
 
-%P = cell(2);
-% P{1,1} = [0.0,0.4; 
-%           0.2,0];
-% P{1,2} = [0.6,0; 
-%           0.8,0];
-% P{2,2} = [0,1; 
-%           0,0];
-% P{2,1} = [0,0; 
-%           1,0];
-P{1} = circul(2);
-P{2} = circul(2);
+mainDelay.setService(jobClass, Exp.fitMean(S11));
+hitDelay.setService(hitClass, Exp.fitMean(S21));
+hitDelay.setService(missClass, Exp.fitMean(S22));
+
+cacheNode.setHitClass(jobClass, hitClass);
+cacheNode.setMissClass(jobClass, missClass);
+
+P = cellzeros(3,3,3,3);
+P{jobClass, jobClass}(mainDelay, cacheNode)=1;
+P{hitClass, hitClass}(cacheNode, hitDelay)=1;
+P{missClass, missClass}(cacheNode, hitDelay)=1;
+P{hitClass, jobClass}(hitDelay, mainDelay)=1;
+P{missClass, jobClass}(hitDelay, mainDelay)=1;
 
 model.linkNetwork(P);
 
-SolverCTMC(model,'keep',false).getAvgTable
-SolverSSA(model,'samples',5e2).getAvgTable
+AvgTable = SolverCTMC(model,'keep',true).getAvgTable
+AvgTable = SolverSSA(model,'samples',1e4,'verbose',true).getAvgTable

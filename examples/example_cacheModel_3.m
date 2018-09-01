@@ -16,8 +16,8 @@ initClass2 = ClosedClass(model, 'InitClass2', N(2), mainDelay, 0);
 hitClass2 = ClosedClass(model, 'HitClass2', 0, mainDelay, 0);
 missClass2 = ClosedClass(model, 'MissClass2', 0, mainDelay, 0);
 
-RM1 = Empirical([0.5,0.5,0]);
-RM2 = Empirical([0,0.5,0.5]);
+RM1 = DiscreteDistrib([0.5,0.5,0]);
+RM2 = DiscreteDistrib([0,0.5,0.5]);
 cacheNode.setReference(initClass1, RM1);
 cacheNode.setReference(initClass2, RM2);
 
@@ -55,7 +55,7 @@ AvgTable = SolverCTMC(model,'keep',true).getAvgTable
 %%
 mset=[m];
 X1 = AvgTable.Tput(1); X2 =  AvgTable.Tput(4);
-Emp = Empirical((X1/(X1+X2))*RM1.getPmf+(X2/(X1+X2))*RM2.getPmf)
+Emp = DiscreteDistrib((X1/(X1+X2))*RM1.getPmf+(X2/(X1+X2))*RM2.getPmf)
 for i=1:size(mset,1)
     clear lambda R
     m=mset(i,:);

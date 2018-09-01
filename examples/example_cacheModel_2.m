@@ -2,8 +2,8 @@
 model = CacheNetwork('model');
 
 alpha = 1.0;
-N=4;
-n=4;
+N=1;
+n=3;
 m=[2];
 mainDelay = DelayStation(model, 'MainDelay');
 cacheNode = CacheRouter(model, 'Cache', n, m, ReplacementPolicy.RAND);
