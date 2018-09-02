@@ -1,7 +1,7 @@
 clear;
 model = Network('model');
 
-node{1} = ClassSwitchNode(model,'CS',[0,1;1,0]);
+node{1} = ClassSwitch(model,'CS',[0,1;1,0]);
 node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
 node{3} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
 node{4} = QueueingStation(model, 'Delay',  SchedStrategy.INF);

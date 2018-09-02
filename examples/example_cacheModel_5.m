@@ -1,5 +1,5 @@
 clear;
-model = CacheNetwork('model');
+model = Network('model');
 scale = 30;
 n = 2*scale;
 m = 1*scale;
@@ -11,7 +11,7 @@ S31 = 0.10; S32 = 0.10;
 S = [S11,S12; S21,S22; S31,S32];
 
 mainDelay = DelayStation(model, 'MainDelay');
-cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RAND);
+cacheNode = Cache(model, 'Cache1', n, m, ReplacementPolicy.RAND);
 hitDelay = QueueingStation(model,'HitQ',SchedStrategy.PS);
 missDelay = QueueingStation(model,'MissQ',SchedStrategy.PS);
 

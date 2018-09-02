@@ -1,10 +1,10 @@
 clear;
-model = CacheNetwork('model');
+model = Network('model');
 n = 3;
 m = [1,1];
 N = [1,1]
 mainDelay = DelayStation(model, 'MainDelay');
-cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RAND);
+cacheNode = Cache(model, 'Cache1', n, m, ReplacementPolicy.RAND);
 hitDelay = DelayStation(model, 'HitDelay');
 missDelay = DelayStation(model, 'MissDelay');
 

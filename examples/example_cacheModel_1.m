@@ -1,5 +1,5 @@
 clear;
-model = CacheNetwork('model');
+model = Network('model');
 
 scale = 1;
 n = 10;
@@ -12,7 +12,7 @@ S22 = 5;
 S = [S11; S21; S22];
 
 mainDelay = DelayStation(model, 'MainDelay');
-cacheNode = CacheRouter(model, 'Cache1', n, m, ReplacementPolicy.RAND);
+cacheNode = Cache(model, 'Cache1', n, m, ReplacementPolicy.RAND);
 hitDelay = QueueingStation(model,'HitDelay',SchedStrategy.INF);
 
 jobClass = ClosedClass(model, 'InitClass1', N(1), mainDelay, 0);

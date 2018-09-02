@@ -24,8 +24,8 @@
 %    OpenClass           -	Open job class
 %    ClosedClass         -	Closed job class
 %    Chain - Group of classes formjng a chain
-%    ClassSwitch         -   Section for a ClassSwitch node.
-%    ClassSwitchNode     -	Node that alters the class of a transiting job.
+%    ClassSwitchSection  -   Section for a ClassSwitch node.
+%    ClassSwitch         -	Node that alters the class of a transiting job.
 % 
 %  Event and state specification
 %    Event				- 	Generic event
