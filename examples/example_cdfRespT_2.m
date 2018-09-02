@@ -35,7 +35,7 @@ P{3,1} = zeros(M);
 P{3,2} = zeros(M);
 P{3,3} = circul(M);
 
-model.linkNetwork(P);
+model.link(P);
 %%
 options = SolverFluid.defaultOptions;
 options.iter_max = 100;

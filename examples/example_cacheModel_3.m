@@ -48,7 +48,7 @@ P{hitClass2, initClass2}(3,1)=1;
 P{missClass2, missClass2}(2,4)=1;
 P{missClass2, initClass2}(4,1)=1;
 
-model.linkNetwork(P);
+model.link(P);
 
 AvgTable = SolverCTMC(model,'keep',true).getAvgTable
 %SolverSSA(model).getAvgTable
@@ -91,10 +91,10 @@ end
 %%
 OPENEX=1-pi0; OPENEX = OPENEX%/sum(EXACT)
 %%
-global keep_infgen;
-global keep_statespace;
-SS = keep_statespace;
-Q = keep_infgen;
+global InfGen;
+global StateSpace;
+SS = StateSpace;
+Q = InfGen;
 pi = ctmc_solve(Q);
 offset = 2*model.getNumberOfClasses+1;
 for j=1:n
@@ -103,8 +103,8 @@ end
 STEADY = STEADY%/sum(STEADY)
 %%
 qn=model.getStruct;
-global keep_eventfilt;
-D=keep_eventfilt;
+global EventFilt;
+D=EventFilt;
 D1=zeros(size(D{1})); for a=1:length(D) if qn.sync{a}.active{1}.node==2 D1=D1+D{a}; end, end
 MAPdep={Q-D1,D1};
 pie = map_pie(MAPdep);

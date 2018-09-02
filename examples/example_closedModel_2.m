@@ -23,7 +23,7 @@ P{1,2} = [0.6,0; 0.8,0];
 P{2,2} = [0,1; 0,0];
 P{2,1} = [0,0; 1,0];
 
-model.linkNetwork(P);
+model.link(P);
 %%
 % This part illustrates the execution of different solvers
 solver = {};

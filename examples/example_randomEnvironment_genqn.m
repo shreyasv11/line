@@ -15,5 +15,5 @@ K = 1;
 P = cell(K,K);
 P{1} = circul(length(node));
 
-qn.linkNetwork(P);
+qn.link(P);
 end

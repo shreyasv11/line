@@ -19,7 +19,7 @@ K = model.getNumberOfClasses();
 P = cell(K,K);
 P{1,1} = [0,1,0,0; 0,0,0,1; 1,0,0,0; 0,0,0,0];
 
-model.linkNetwork(P);
+model.link(P);
 %%
 options = Solver.defaultOptions;
 options.keep=true;

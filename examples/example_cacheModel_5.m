@@ -55,7 +55,7 @@ P{hitClass2, initClass2}(3,1)=1;
 P{missClass2, missClass2}(2,4)=1;
 P{missClass2, initClass2}(4,1)=1;
 
-model.linkNetwork(P);
+model.link(P);
 
 %AvgTable = SolverCTMC(model,'keep',true).getAvgTable
 AvgTable = SolverSSA(model,'samples',1e4,'verbose',1,'seed',1,'method','parallel').getAvgTable

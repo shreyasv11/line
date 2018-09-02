@@ -20,7 +20,7 @@ for N = nJobs
     K = model.getNumberOfClasses();
     
     P = circul(M);
-    model.linkNetwork(P);
+    model.link(P);
     %%
     options = SolverFluid.defaultOptions;
     options.iter_max = 100;

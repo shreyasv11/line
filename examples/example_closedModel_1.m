@@ -11,7 +11,7 @@ P{1} = [0.7,0.3;1.0,0];
 % This may be alternatively specified as:
 %P{1}(node{1},[node{1},node{2}]) = [0.7,0.3]; 
 %P{1}(node{2},[node{1},node{2}]) = [1.0,0]; 
-model.linkNetwork(P);
+model.link(P);
 
 solver = {};
 solver{end+1} = SolverCTMC(model,'keep',true);

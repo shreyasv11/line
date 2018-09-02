@@ -30,15 +30,15 @@ P{missClass.index, missClass.index}(2,4)=1;
 P{hitClass.index, jobClass.index}(3,1)=1; 
 P{missClass.index, jobClass.index}(4,1)=1;
 
-model.linkNetwork(P);
+model.link(P);
 AvgTable = SolverCTMC(model,'keep',true).getAvgTable
 AvgTable = SolverSSA(model,'samples',1e3).getAvgTable
 
-global keep_infgen;
-global keep_statespace;
-Q = keep_infgen;
+global InfGen;
+global StateSpace;
+Q = InfGen;
 pi = ctmc_solve(Q);
-SS = keep_statespace;
+SS = StateSpace;
 s300 = findrows(SS(:,1:7),[3,0,0, 0,0,0,1,3]);
 s200 = findrows(SS(:,1:7),[2,0,0, 0,0,0,1,3]);
 s100 = findrows(SS(:,1:7),[1,0,0, 0,0,0,1,3]);
@@ -56,8 +56,8 @@ sum(pi(s200))/sum(pi(s200b))
 sum(pi(s100))/sum(pi(s100b))
 
 qn=model.getStruct;
-global keep_eventfilt;
-D1=zeros(size(keep_eventfilt{1})); for a=1:length(keep_eventfilt) if qn.sync{a}.active{1}.node==2 D1=D1+keep_eventfilt{a}; end, end
+global EventFilt;
+D1=zeros(size(EventFilt{1})); for a=1:length(EventFilt) if qn.sync{a}.active{1}.node==2 D1=D1+EventFilt{a}; end, end
 MAPdep={Q-D1,D1};
 pie = map_pie(MAPdep);
 

@@ -14,7 +14,7 @@ K = model.getNumberOfClasses();
 P = cell(K,K);
 P{1} = circul(2);
 
-model.linkNetwork(P);
+model.link(P);
 [Qt,Ut,Tt] = model.getTranHandles();
 options = Solver.defaultOptions;
 options.verbose=0;

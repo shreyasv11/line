@@ -32,7 +32,7 @@ P{3,1} = zeros(M);
 P{3,2} = zeros(M);
 P{3,3} = circul(M);
 
-model.linkNetwork(P);
+model.link(P);
 
 % This part illustrates the execution of different solvers
 solver = {};

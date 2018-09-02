@@ -37,7 +37,7 @@ P{missClass, missClass}(cacheNode, hitDelay)=1;
 P{hitClass, jobClass}(hitDelay, mainDelay)=1;
 P{missClass, jobClass}(hitDelay, mainDelay)=1;
 
-model.linkNetwork(P);
+model.link(P);
 
 AvgTable = SolverCTMC(model,'keep',true).getAvgTable
 AvgTable = SolverSSA(model,'samples',1e4,'verbose',true).getAvgTable

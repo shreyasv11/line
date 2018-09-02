@@ -23,7 +23,7 @@ P{2,1} = zeros(2);
 P{2,2} = circul(2);
 
 % model
-model.linkNetwork(P);
+model.link(P);
 RDfluid = SolverFluid(model).getCdfRespT()
 jmtoptions = SolverJMT.defaultOptions; jmtoptions.samples = 1e5;
 RDsim = SolverJMT(model, jmtoptions).getTranCdfRespT();

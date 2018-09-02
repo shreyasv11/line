@@ -22,6 +22,6 @@ P{class1,class1}(queue,[queue,delay]) = [0.3,0.7];
 P{class1,class1}(delay,sink) = 1.0;
 P{class2,class3}(delay,queue) = 1.0; % closed class starts at delay
 P{class3,class2}(queue,delay) = 1.0;
-model.linkNetwork(P);
+model.link(P);
 
 SolverJMT(model).getAvgTable

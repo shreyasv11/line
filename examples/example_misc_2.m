@@ -23,7 +23,7 @@ end
 
 P = cell(K,1);
 for r=1:K P{r} = circul(M); end
-model.linkNetwork(P);
+model.link(P);
 
 fprintf(1,'This example shows how to update a model parameters and its solution.\n');
 

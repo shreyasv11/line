@@ -54,7 +54,7 @@ P{4,3} = [0,0,0; 0,0,0; 1,0,0];
 P{4,4} = [0,0,1; 0,0,0; 0,0,0];
 
 %%pause
-model.linkNetwork(P);
+model.link(P);
 
 M = model.getNumberOfStations();
 K = model.getNumberOfClasses();

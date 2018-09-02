@@ -21,7 +21,7 @@ P{1,2} = [0.6,0; 0.8,0];
 P{2,2} = [0,1; 0,0];
 P{2,1} = [0,0; 1,0];
 
-model.linkNetwork(P);
+model.link(P);
 [Qt,Ut,Tt] = model.getTranHandles();
 options = Solver.defaultOptions;
 options.verbose=1;

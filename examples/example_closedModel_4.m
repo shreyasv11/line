@@ -65,7 +65,7 @@ myP{4,1} = zeros(3);
 myP{3,2} = zeros(3);
 myP{4,2} = zeros(3);
 
-model.linkNetwork(myP);
+model.link(myP);
 %
 spaceRunning = State.fromMarginalAndRunning(model,3,[2,1,1,1],[2,1,0,0]);
 spaceStarted = State.fromMarginalAndStarted(model,3,[2,1,1,1],[2,1,0,0]);

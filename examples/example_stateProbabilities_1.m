@@ -30,7 +30,7 @@ P{1,2} = [0,0,0; 0,0,0; 1,0,0];
 P{2,1} = [0,0,0; 0,0,0; 1,0,0];
 P{2,2} = [0,1,0; 0,0,1; 0,0,0];
 
-model.linkNetwork(P);
+model.link(P);
 
 M = model.getNumberOfStations();
 K = model.getNumberOfClasses();

@@ -12,6 +12,6 @@ cwd = fileparts(mfilename('fullpath'));
 queue.setService(jobclass, Replayer([cwd,filesep,'example_openModel_4_trace.txt']));
 
 
-model.linkNetwork([0,1,0;,0,0,1;0,0,0]);
+model.link([0,1,0;,0,0,1;0,0,0]);
 
 AvgTable = SolverJMT(model).getAvgTable

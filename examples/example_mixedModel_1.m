@@ -28,7 +28,7 @@ P{1,2} = zeros(4);
 P{2,2} = [0,1,0,0; 0,0,0,1; 1,0,0,0; 0,0,0,0];
 P{2,1} = zeros(4);
 
-model.linkNetwork(P);
+model.link(P);
 %%
 options = Solver.defaultOptions;
 options.keep=true;

@@ -16,7 +16,7 @@ P{1,1} = [0 1 0 0;0 0 0 0;0 0 0 1;0 0 0 0];
 P{1,2} = [0 0 0 0;0 0 1 0;0 0 0 0;0 0 0 0];
 P{2,1} = [0 0 0 0;0 0 0 0;0 0 0 1;0 0 0 0];
 P{2,2} = [0 1 0 0;0 0 1 0;0 0 0 0;0 0 0 0];
-model.linkNetwork(P);
+model.link(P);
 RD = SolverFluid(model).getCdfRespT()
 
 %
@@ -37,7 +37,7 @@ cdfmodel = model.copy;
 cdfmodel.resetNetwork;
 logpath = [fileparts(mfilename('fullpath')),filesep,'example_cdfRespT_4_logs'];
 isNodeLogged = true(1,cdfmodel.getNumberOfNodes); % log only the delay node
-cdfmodel.linkNetworkAndLog(P, isNodeLogged, logpath);
+cdfmodel.linkAndLog(P, isNodeLogged, logpath);
 logData = SolverJMT.parseLogs(cdfmodel);
 
 %%

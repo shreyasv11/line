@@ -17,7 +17,7 @@ K = model.getNumberOfClasses();
 P = cell(K);
 P{1,1} = circul(2);
 
-model.linkNetwork(P);
+model.link(P);
 %%
 solver = SolverFluid(model);
 FC = solver.getCdfRespT();
