@@ -1,6 +1,6 @@
 clear;
 model = Network('model');
-scale = 30;
+scale = 10;
 n = 2*scale;
 m = 1*scale;
 h = length(m);
@@ -58,7 +58,7 @@ P{missClass2, initClass2}(4,1)=1;
 model.link(P);
 
 %AvgTable = SolverCTMC(model,'keep',true).getAvgTable
-AvgTable = SolverSSA(model,'samples',1e4,'verbose',1,'seed',1,'method','parallel').getAvgTable
+AvgTable = SolverSSA(model,'samples',3e4,'verbose',1,'seed',1,'method','serial').getAvgTable
 
 %%
 u = 2;

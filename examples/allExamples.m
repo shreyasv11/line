@@ -86,7 +86,7 @@ fprintf(1,'\n\nExample: <strong>example_layeredModel_1</strong>\n');
 fprintf(1,'\n\nExample: <strong>example_layeredModel_2</strong>\n');
     clear; example_layeredModel_2; fprintf(1,'Pausing...'); pause(3.0);
 catch
-    error('LQNS is not available on this computer. Skipping LQN tests.');
+    warning('LQNS is not available on this computer. Skipping LQN tests.');
 end
 %%
 fprintf(1,'\n<strong>RUNNING: example_misc_*</strong>');
