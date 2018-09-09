@@ -1,7 +1,7 @@
 model = Network('model');
 
 node{1} = DelayStation(model, 'Delay');
-node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS);
+node{2} = Queue(model, 'Queue1', SchedStrategy.FCFS);
 node{2}.setNumServers(2);
 
 

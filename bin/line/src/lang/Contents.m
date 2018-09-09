@@ -58,7 +58,7 @@
 %    DelayStation        -	Station representing a pure delay (no queueing) 
 %    ForkStation         -	Station that forks incoming jobs
 %    JoinStation         -	Station that joins incoming jobs.
-%    QueueingStation     -	An ordinary queueing station.
+%    Queue     -	An ordinary queueing station.
 % 
 %  Sections
 %    Section             -	Abstract class for node section.
@@ -70,7 +70,7 @@
 %    Queue               -	Queue input section.
 %    RandomSource        -	Source output section.
 %    Router              -	Abstract class for station's output section.
-%    Server              -	Service section for a QueueingStation.
+%    Server              -	Service section for a Queue.
 %    ServiceTunnel       -	Service section that do not serve the job.
 % 
 %  Layered networks

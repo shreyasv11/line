@@ -1,6 +1,6 @@
 model = Network('M/M/1');
 source = Source(model, 'mySource');
-queue = QueueingStation(model, 'myQueue', SchedStrategy.FCFS); 
+queue = Queue(model, 'myQueue', SchedStrategy.FCFS); 
 sink = Sink(model, 'mySink');
 oclass = OpenClass(model, 'myClass');
 source.setArrival(oclass, Exp(1));

@@ -2,7 +2,7 @@ clear;
 model = Network('model');
 
 source = Source(model,'Source');
-queue = QueueingStation(model, 'Queue', SchedStrategy.FCFS);
+queue = Queue(model, 'Queue', SchedStrategy.FCFS);
 sink = Sink(model,'Sink');
 
 jobclass = OpenClass(model, 'OpenClass', 0);

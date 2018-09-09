@@ -1,7 +1,7 @@
 model = Network('myModel');
 node{1} = Source(model, 'Source');
-node{2} = QueueingStation(model, 'Queue1', SchedStrategy.FCFS); node{2}.setNumServers(1);
-node{3} = QueueingStation(model, 'Queue2', SchedStrategy.FCFS); node{3}.setNumServers(1);
+node{2} = Queue(model, 'Queue1', SchedStrategy.FCFS); node{2}.setNumServers(1);
+node{3} = Queue(model, 'Queue2', SchedStrategy.FCFS); node{3}.setNumServers(1);
 node{4} = Sink(model, 'Sink');
 jobclass{1} = OpenClass(model, 'Class1', 0);
 node{1}.setArrival(jobclass{1}, Cox2.fitMoments(2.000000,1.000000));

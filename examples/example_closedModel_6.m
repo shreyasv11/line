@@ -2,9 +2,9 @@ clear;
 model = Network('model');
 
 node{1} = ClassSwitch(model,'CS',[0,1;1,0]);
-node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
-node{3} = QueueingStation(model, 'Queue2', SchedStrategy.PS);
-node{4} = QueueingStation(model, 'Delay',  SchedStrategy.INF);
+node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
+node{3} = Queue(model, 'Queue2', SchedStrategy.PS);
+node{4} = Queue(model, 'Delay',  SchedStrategy.INF);
 
 jobclass{1} = ClosedClass(model, 'Class1', 15, node{4}, 0);
 jobclass{2} = ClosedClass(model, 'Class2',  5, node{4}, 0);

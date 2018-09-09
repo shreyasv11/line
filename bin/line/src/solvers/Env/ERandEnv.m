@@ -195,7 +195,7 @@
 %              % Nodes
 %              featSupported.setTrue('ClassSwitch');
 %              featSupported.setTrue('DelayStation');
-%              featSupported.setTrue('QueueingStation');
+%              featSupported.setTrue('Queue');
 %              featSupported.setTrue('Sink');
 %              featSupported.setTrue('Source');
 %              
@@ -207,9 +207,9 @@
 %              
 %              % Sections
 %              featSupported.setTrue('StatelessClassSwitch'); % Section
-%              featSupported.setTrue('Delay'); % Section
+%              featSupported.setTrue('InfiniteServer'); % Section
 %              featSupported.setTrue('PSServer'); % Section
-%              featSupported.setTrue('Queue'); % Section
+%              featSupported.setTrue('Buffer'); % Section
 %              featSupported.setTrue('Router'); % Section
 %              featSupported.setTrue('Server'); % Section (Non-preemptive)
 %              featSupported.setTrue('JobSink'); % Section

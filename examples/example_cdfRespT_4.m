@@ -2,7 +2,7 @@ clear;
 model = Network('model');
 
 node{1} = DelayStation(model, 'Delay');
-node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
+node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 
 jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 node{1}.setService(jobclass{1}, Exp.fitMoments(1.0));

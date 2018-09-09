@@ -3,8 +3,8 @@ clear;
 model = Network('model');
 
 node{1} = DelayStation(model, 'Delay');
-node{2} = QueueingStation(model, 'Queue1', SchedStrategy.PS);
-node{3} = QueueingStation(model, 'Queue2', SchedStrategy.DPS);
+node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
+node{3} = Queue(model, 'Queue2', SchedStrategy.DPS);
 
 
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);

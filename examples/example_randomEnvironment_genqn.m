@@ -3,7 +3,7 @@ function qn = example_randomEnvironment_genqn(rate, N)
 qn = Network('qn1');
 
 node{1} = DelayStation(qn, 'Queue1');
-node{2} = QueueingStation(qn, 'Queue2', SchedStrategy.PS);
+node{2} = Queue(qn, 'Queue2', SchedStrategy.PS);
 
 
 jobclass{1} = ClosedClass(qn, 'Class1', N, node{1}, 0);
