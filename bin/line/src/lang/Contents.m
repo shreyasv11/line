@@ -49,7 +49,7 @@
 %  Nodes
 %    Node                -	Abstract class for node in the model.
 %    Logger          -	Node that logs job transit
-%    RouterNode          -	Job router
+%    LoadBalancer          -	Job router
 %    Sink            -	Open class job sink
 %    Source          -	Open class job source
 % 
