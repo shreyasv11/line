@@ -2,8 +2,8 @@ model = Network('model');
 
 source = Source(model, 'Source');
 lb = LoadBalancer(model, 'LB');
-queue1 = Queue(model, 'Queue1', SchedStrategy.FCFS);
-queue2 = Queue(model, 'Queue2', SchedStrategy.FCFS);
+queue1 = Queue(model, 'Queue1', SchedStrategy.PS);
+queue2 = Queue(model, 'Queue2', SchedStrategy.PS);
 sink  = Sink(model, 'Sink');
 
 oclass = OpenClass(model, 'Class1');
