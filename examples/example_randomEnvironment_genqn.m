@@ -2,7 +2,7 @@ function qn = example_randomEnvironment_genqn(rate, N)
 %% qn1
 qn = Network('qn1');
 
-node{1} = DelayStation(qn, 'Queue1');
+node{1} = Delay(qn, 'Queue1');
 node{2} = Queue(qn, 'Queue2', SchedStrategy.PS);
 
 

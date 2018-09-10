@@ -2,7 +2,7 @@ clear;
 model = Network('myModel');
 source = Source(model, 'Source');
 queue = Queue(model, 'Queue1', SchedStrategy.FCFS);
-delay = DelayStation(model, 'ThinkTime');
+delay = Delay(model, 'ThinkTime');
 sink = Sink(model, 'Sink');
 class1 = OpenClass(model, 'Class1');
 class2 = ClosedClass(model, 'Class2', 5, queue);

@@ -3,7 +3,7 @@
 clear;
 model = Network('model');
 
-node{1} = DelayStation(model, 'Delay');
+node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 node{3} = Queue(model, 'Queue2', SchedStrategy.PS);
 node{4} = Queue(model, 'Queue3', SchedStrategy.PS);

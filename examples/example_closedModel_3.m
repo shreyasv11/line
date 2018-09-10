@@ -1,6 +1,6 @@
 model = Network('model');
 
-node{1} = DelayStation(model, 'Delay');
+node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);

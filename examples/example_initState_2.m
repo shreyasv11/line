@@ -1,7 +1,7 @@
 clearvars -except handleFig;
 model = Network('model');
 
-node{1} = DelayStation(model, 'Delay');
+node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.FCFS);
 jobclass{1} = ClosedClass(model, 'Class1', 3, node{2}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 2, node{2}, 0);
