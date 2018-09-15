@@ -7,7 +7,7 @@ node{3} = Queue(model, 'Queue2', SchedStrategy.PS);
 
 jobclass{1} = ClosedClass(model, 'Class1', 10, node{1}, 0);
 
-node{1}.setService(jobclass{1}, HyperExp.fitMoments(1,25));
+node{1}.setService(jobclass{1}, HyperExp.fitMeanAndSCV(1,25));
 node{2}.setService(jobclass{1}, Exp(1));
 node{3}.setService(jobclass{1}, Exp(2));
 

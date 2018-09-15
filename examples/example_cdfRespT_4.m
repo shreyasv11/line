@@ -5,12 +5,12 @@ node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 
 jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
-node{1}.setService(jobclass{1}, Exp.fitMoments(1.0));
-node{2}.setService(jobclass{1}, Exp.fitMoments(2.0));
+node{1}.setService(jobclass{1}, Exp.fitMeanAndSCV(1.0));
+node{2}.setService(jobclass{1}, Exp.fitMeanAndSCV(2.0));
 
 jobclass{2} = ClosedClass(model, 'Class2', 3, node{1}, 0);
 node{1}.setService(jobclass{2}, Erlang.fitMeanAndOrder(4.0,2));
-node{2}.setService(jobclass{2}, HyperExp.fitMoments(5.0,30.0));
+node{2}.setService(jobclass{2}, HyperExp.fitMeanAndSCV(5.0,30.0));
 
 P = cell(2);
 %P{1,1} = circul(2)/2;

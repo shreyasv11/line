@@ -46,9 +46,9 @@ solver{end+1} = SolverAuto(model);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     AvgTable{s} = solver{s}.getAvgTable();
-    AvgByChainTable{s} = solver{s}.getAvgByChainTable();
-    AvgSysByChainTable{s} = solver{s}.getAvgSysByChainTable();
+    AvgChainTable{s} = solver{s}.getAvgChainTable();
+    AvgSysChainTable{s} = solver{s}.getAvgSysTable();
     AvgTable{s}
-    AvgByChainTable{s}
-    AvgSysByChainTable{s}
+    AvgChainTable{s}
+    AvgSysChainTable{s}
 end

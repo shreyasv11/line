@@ -4,8 +4,8 @@ node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.FCFS);
 jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 
-node{1}.setService(jobclass{1}, Exp.fitMoments(1.0)); % mean = 1
-node{2}.setService(jobclass{1}, Exp.fitMoments(1.5)); % mean = 1.5
+node{1}.setService(jobclass{1}, Exp.fitMeanAndSCV(1.0)); % mean = 1
+node{2}.setService(jobclass{1}, Exp.fitMeanAndSCV(1.5)); % mean = 1.5
 
 P{1} = [0.7,0.3;1.0,0];
 % This may be alternatively specified as:

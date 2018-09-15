@@ -1,20 +1,25 @@
-model = Network('re-entrant');
-queue = Queue(model, 'Queue', SchedStrategy.FCFS);
+model = Network('RRLB');
 
-K = 3; N = [1,0,0];
-for k=1:K
-    jobclass{k} = ClosedClass(model, ['Class',int2str(k)], N(k), queue);
-    queue.setService(jobclass{k}, Erlang.fitMeanAndOrder(k,2));
-end
+source = Source(model, 'Source');
+lb = Router(model, 'LB');
+queue1 = Queue(model, 'Queue1', SchedStrategy.PS);
+queue2 = Queue(model, 'Queue2', SchedStrategy.PS);
+sink  = Sink(model, 'Sink');
 
-P = cellzeros(3,3,1,1); % 3x3 cell array (3 classes) of 1x1 matrices (1 node)
-P{jobclass{1},jobclass{2}}(queue,queue) = 1.0;
-P{jobclass{2},jobclass{3}}(queue,queue) = 1.0;
-P{jobclass{3},jobclass{1}}(queue,queue) = 1.0;
-model.link(P);
+oclass = OpenClass(model, 'Class1');
+source.setArrival(oclass, Exp(1));
+queue1.setService(oclass, Exp(2));
+queue2.setService(oclass, Exp(2));
 
-SolverCTMC(model).getAvgSysByChainTable
+model.addLinks([source, lb; 
+                lb,     queue1; 
+                lb,     queue2; 
+                queue1, sink; 
+                queue2, sink]);
+            
+lb.setRouting(oclass, RoutingStrategy.RAND);
+SolverJMT(model).getAvgTable
 
-jobclass{1}.completes = false;
-jobclass{2}.completes = false;
-SolverCTMC(model).getAvgSysByChainTable
+lb.setRouting(oclass, RoutingStrategy.RR);
+model.reset();
+SolverJMT(model).getAvgTable

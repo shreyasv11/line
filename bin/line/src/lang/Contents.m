@@ -49,7 +49,7 @@
 %  Nodes
 %    Node                -	Abstract class for node in the model.
 %    Logger          -	Node that logs job transit
-%    LoadBalancer          -	Job router
+%    Router          -	Job router
 %    Sink            -	Open class job sink
 %    Source          -	Open class job source
 % 
@@ -69,7 +69,7 @@
 %    PSServer            -	Processor-sharing service section.
 %    Queue               -	Queue input section.
 %    RandomSource        -	Source output section.
-%    Router              -	Abstract class for station's output section.
+%    Dispatcher              -	Abstract class for station's output section.
 %    Server              -	Service section for a Queue.
 %    ServiceTunnel       -	Service section that do not serve the job.
 % 

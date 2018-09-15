@@ -10,7 +10,7 @@ node{2}.setNumServers(3);
 node{1}.setService(jobclass{1}, Exp(1));
 node{1}.setService(jobclass{2}, Exp(1));
 node{2}.setService(jobclass{1}, Exp(1.2));
-node{2}.setService(jobclass{2}, Erlang.fitMoments(1.0,0.5));
+node{2}.setService(jobclass{2}, Erlang.fitMeanAndSCV(1.0,0.5));
 
 M = model.getNumberOfStations();
 K = model.getNumberOfClasses();

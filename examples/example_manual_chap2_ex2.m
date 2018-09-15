@@ -1,17 +1,28 @@
-model = Network('FRP');
-% Block 1: nodes
-delay = Delay(model,'WorkingState');
-queue = Queue(model, 'RepairQueue', SchedStrategy.FCFS);
-% Block 2: classes
-cclass = ClosedClass(model, 'Machines', 2, delay);
-delay.setService(cclass, Exp(1.0));
-queue.setService(cclass, Exp(4.0));
-% Block 3: topology
-model.link(Network.serialRouting(delay,queue));
-% Block 4: solution
-SolverCTMC(model,'keep',true).getAvgTable
+clear;
+cwd = fileparts(mfilename('fullpath'));
 
-global InfGen;
-global StateSpace;
-StateSpace
-InfGen=full(InfGen)
+model = Network('M/G/1');
+source = Source(model,'Source');
+queue = Queue(model, 'Queue', SchedStrategy.FCFS);
+sink = Sink(model,'Sink');
+
+jobclass1 = OpenClass(model, 'Class1');
+jobclass2 = OpenClass(model, 'Class2');
+
+source.setArrival(jobclass1, Exp(0.5));
+source.setArrival(jobclass2, Exp(0.5));
+
+queue.setService(jobclass1, Erlang.fitMeanAndSCV(1,1/3));
+queue.setService(jobclass2, Replayer([cwd,filesep,'example_trace.txt']));
+
+P = {};
+P{1} = Network.serialRouting(source,queue,sink);
+P{2} = Network.serialRouting(source,queue,sink);
+model.link(P);
+
+AvgTable = SolverJMT(model).getAvgTable
+
+queue.setService(jobclass2, Replayer([cwd,filesep,'example_trace.txt']).fitCox());
+SolverCTMC(model,'cutoff',2,'verbose',true).getAvgTable
+SolverCTMC(model,'cutoff',4,'verbose',true).getAvgTable
+SolverMAM(model).getAvgTable

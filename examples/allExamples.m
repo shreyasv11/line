@@ -27,6 +27,9 @@ clear; example_closedModel_4;  space, spaceRunning, spaceStarted, fprintf(1,'Pau
 fprintf(1,'\n\nExample: <strong>example_closedModel_5</strong>\n');
 fprintf(1,'This example shows a 1-line solution of a cyclic queueing network.\n');
 clear; example_closedModel_5; fprintf(1,'Pausing...'); pause(3.0);
+fprintf(1,'\n\nExample: <strong>example_closedModel_6</strong>\n');
+fprintf(1,'This example shows a model with round-robin scheduling.\n');
+clear; example_closedModel_6; fprintf(1,'Pausing...'); pause(3.0);
 
 %%
 fprintf(1,'\n<strong>RUNNING: example_initState_*</strong>');
@@ -45,6 +48,8 @@ fprintf(1,'\n\nExample: <strong>example_openModel_2</strong>\n');
 clear; example_openModel_2; fprintf(1,'Pausing...'); pause(3.0);
 fprintf(1,'\n\nExample: <strong>example_openModel_3</strong>\n');
 clear; example_openModel_3; fprintf(1,'Pausing...'); pause(3.0);
+fprintf(1,'\n\nExample: <strong>example_openModel_4</strong>\n');
+clear; example_openModel_4; fprintf(1,'Pausing...'); pause(3.0);
 
 %%
 fprintf(1,'\n<strong>RUNNING: example_mixedModel_*</strong>');
@@ -57,6 +62,8 @@ fprintf(1,'\n\nExample: <strong>example_stateProbabilities_1</strong>\n');
 clear; example_stateProbabilities_1; fprintf(1,'Pausing...'); pause(3.0);
 fprintf(1,'\n\nExample: <strong>example_stateProbabilities_2</strong>\n');
 clear; example_stateProbabilities_2; fprintf(1,'Pausing...'); pause(3.0);
+fprintf(1,'\n\nExample: <strong>example_stateProbabilities_3</strong>\n');
+clear; example_stateProbabilities_3; fprintf(1,'Pausing...'); pause(3.0);
 
 %%
 fprintf(1,'\n<strong>RUNNING: example_cdfRespT_*</strong>');

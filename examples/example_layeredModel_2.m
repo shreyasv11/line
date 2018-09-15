@@ -13,7 +13,7 @@ E2 = Entry(model, 'E2').on(T2);
 T1.setThinkTime(Erlang.fitMeanAndOrder(10,2));
 
 A1 = Activity(model, 'A1', Exp(1.3)).on(T1).boundTo(E1).synchCall(E2,3);
-A2 = Activity(model, 'A2', Cox2.fitMoments(2.5,10)).on(T2).boundTo(E2).repliesTo(E2);
+A2 = Activity(model, 'A2', Cox2.fitMeanAndSCV(2.5,10)).on(T2).boundTo(E2).repliesTo(E2);
 
 % instantiate solvers
 options = SolverLQNS.defaultOptions;

@@ -8,7 +8,7 @@ jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
 
 servProc1 = Exp(1/0.1);
 node{1}.setService(jobclass{1}, servProc1);
-servProc2 = Erlang.fitMoments(1,1/3);
+servProc2 = Erlang.fitMeanAndSCV(1,1/3);
 node{2}.setService(jobclass{1}, servProc2);
 
 M = model.getNumberOfStations();

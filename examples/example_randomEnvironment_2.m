@@ -10,7 +10,7 @@ for e=1:E
         if envRates(e,h)==0
             env{e,h} = Exp(0);
         else
-            env{e,h} = Cox2.fitMoments(1/envRates(e,h),0.5);
+            env{e,h} = Cox2.fitMeanAndSCV(1/envRates(e,h),0.5);
         end
     end
 end

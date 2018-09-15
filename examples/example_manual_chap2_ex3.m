@@ -1,25 +1,18 @@
-model = Network('model');
+model = Network('MRP');
+% Block 1: nodes
+delay = Delay(model,'WorkingState');
+queue = Queue(model, 'RepairQueue', SchedStrategy.FCFS);
+queue.setNumberOfServers(2);
+% Block 2: classes
+cclass = ClosedClass(model, 'Machines', 3, delay);
+delay.setService(cclass, Exp(0.5));
+queue.setService(cclass, Exp(4.0));
+% Block 3: topology
+model.link(Network.serialRouting(delay,queue));
+% Block 4: solution
+SolverCTMC(model,'keep',true).getAvgTable
 
-source = Source(model, 'Source');
-lb = LoadBalancer(model, 'LB');
-queue1 = Queue(model, 'Queue1', SchedStrategy.PS);
-queue2 = Queue(model, 'Queue2', SchedStrategy.PS);
-sink  = Sink(model, 'Sink');
-
-oclass = OpenClass(model, 'Class1');
-source.setArrival(oclass, Exp(1));
-queue1.setService(oclass, Exp(2));
-queue2.setService(oclass, Exp(2));
-
-model.addLinks([source, lb; 
-                lb,     queue1; 
-                lb,     queue2; 
-                queue1, sink; 
-                queue2, sink]);
-            
-lb.setRouting(oclass, RoutingStrategy.RAND);
-SolverJMT(model).getAvgTable
-
-lb.setRouting(oclass, RoutingStrategy.RR);
-model.reset();
-SolverJMT(model).getAvgTable
+global InfGen;
+global StateSpace;
+StateSpace
+InfGen=full(InfGen)

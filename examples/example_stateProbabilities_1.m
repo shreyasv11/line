@@ -24,11 +24,8 @@ node{3}.setService(jobclass{2}, Exp(3));
 K = length(jobclass);
 P = cell(K,K);
 
-P{1,1} = [0,1,0; 0,0,1; 0,0,0];
-P{1,2} = [0,0,0; 0,0,0; 1,0,0];
-
-P{2,1} = [0,0,0; 0,0,0; 1,0,0];
-P{2,2} = [0,1,0; 0,0,1; 0,0,0];
+P{1} = [0,1,0; 0,0,1; 1,0,0];
+P{2} = [0,1,0; 0,0,1; 1,0,0];
 
 model.link(P);
 
@@ -63,17 +60,3 @@ solver = SolverNC(model,options);
 Pr = solver.getProbState();
 fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr(i));
 Pmarg_nc = Pr(M)
-
-%%
-n=[ N(1),N(2);
-    0,0;
-    0, 0];% rows set to -1 are ignored in the calculation of the marginal probabilities
-
- for i=1:M
-    node{i}.setState(n(i,:));
-end
-state = model.getState;
-
-solver = SolverCTMC(model,options);
-Pr = solver.getProbStateSys();
-Psys_ctmc = Pr

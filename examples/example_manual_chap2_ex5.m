@@ -1,36 +1,22 @@
-model = Network('model');
-% Block 1: nodes
-model = Network('model');
-% Block 1: nodes
-clientDelay = Delay(model, 'Client');
-cacheNode = Cache(model, 'Cache', 1000, 50, ReplacementPolicy.LRU);
-cacheDelay = Delay(model, 'CacheDelay');
-% Block 2: classes
-clientClass = ClosedClass(model, 'ClientClass', 1, clientDelay, 0);
-hitClass = ClosedClass(model, 'HitClass', 0, clientDelay, 0);
-missClass = ClosedClass(model, 'MissClass', 0, clientDelay, 0);
+model = Network('RL');
+queue = Queue(model, 'Queue', SchedStrategy.FCFS);
 
-clientDelay.setService(clientClass, Immediate());
-cacheDelay.setService(hitClass, Exp.fitMean(0.2));
-cacheDelay.setService(missClass, Exp.fitMean(1));
+K = 3; N = [1,0,0];
+for k=1:K
+    jobclass{k} = ClosedClass(model, ['Class',int2str(k)], N(k), queue);
+    queue.setService(jobclass{k}, Erlang.fitMeanAndOrder(k,2));
+end
 
-cacheNode.setRead(clientClass, Zipf(1.4,1000));
-cacheNode.setHitClass(clientClass, hitClass);
-cacheNode.setMissClass(clientClass, missClass);
+P = cellzeros(3,3,1,1); % 3x3 cell array (3 classes) of 1x1 matrices (1 node)
+P{jobclass{1},jobclass{2}}(queue,queue) = 1.0;
+P{jobclass{2},jobclass{3}}(queue,queue) = 1.0;
+P{jobclass{3},jobclass{1}}(queue,queue) = 1.0;
+model.link(P);
 
-% Block 3: topology
-P = cellzeros(3,3,4,4); % 3x3 cell, each with 4x4 zero matrices
-% routing from client to cache
-P{clientClass, clientClass}(clientDelay, cacheNode)=1;
-% routing out of the cache
-P{hitClass, hitClass}(cacheNode, cacheDelay)=1;
-P{missClass, missClass}(cacheNode, cacheDelay)=1;
-% return to the client
-P{hitClass, clientClass}(cacheDelay, clientDelay)=1;
-P{missClass, clientClass}(cacheDelay, clientDelay)=1;
-% routing from cacheNode
-model.linkNetwork(P);
+SolverCTMC(model).getAvgTable
 
-% Block 4: solution
-AvgTable = SolverSSA(model,'samples',1e4,'seed',1,'verbose',true).getAvgTable
-AvgTable = SolverSSA(model,'samples',1e5,'seed',1,'method','parallel').getAvgTable
+SolverCTMC(model).getAvgSysTable
+
+jobclass{1}.completes = false;
+jobclass{2}.completes = false;
+SolverCTMC(model).getAvgSysTable

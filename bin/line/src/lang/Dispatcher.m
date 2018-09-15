@@ -2,6 +2,6 @@
 %  All rights reserved.
 %
 %    Reference page in Doc Center
-%       doc LoadBalancer
+%       doc Dispatcher
 %
 %

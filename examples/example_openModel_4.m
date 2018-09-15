@@ -9,9 +9,8 @@ jobclass = OpenClass(model, 'OpenClass', 0);
 
 source.setArrival(jobclass, Exp(1));
 cwd = fileparts(mfilename('fullpath'));
-queue.setService(jobclass, Replayer([cwd,filesep,'example_openModel_4_trace.txt']));
+queue.setService(jobclass, Replayer([cwd,filesep,'example_trace.txt']));
 
-
-model.link([0,1,0;,0,0,1;0,0,0]);
+model.link(Network.serialRouting(source,queue,sink));
 
 AvgTable = SolverJMT(model).getAvgTable
