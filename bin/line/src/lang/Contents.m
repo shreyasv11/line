@@ -66,7 +66,7 @@
 %    Fork                -	Service section for a ForkNode.
 %    Join                -	Service section for a JoinNode.
 %    LogTunnel           -	Service section for a LogNode.
-%    PSServer            -	Processor-sharing service section.
+%    SharedServer            -	Processor-sharing service section.
 %    Queue               -	Queue input section.
 %    RandomSource        -	Source output section.
 %    Dispatcher              -	Abstract class for station's output section.

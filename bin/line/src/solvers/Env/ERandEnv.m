@@ -208,7 +208,7 @@
 %              % Sections
 %              featSupported.setTrue('StatelessClassSwitch'); % Section
 %              featSupported.setTrue('InfiniteServer'); % Section
-%              featSupported.setTrue('PSServer'); % Section
+%              featSupported.setTrue('SharedServer'); % Section
 %              featSupported.setTrue('Buffer'); % Section
 %              featSupported.setTrue('Dispatcher'); % Section
 %              featSupported.setTrue('Server'); % Section (Non-preemptive)
