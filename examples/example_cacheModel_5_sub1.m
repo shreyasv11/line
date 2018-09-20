@@ -21,5 +21,6 @@ for r=1:network.getNumberOfClasses
     P{r} = [0,pHit(r),1-pHit(r); 1,0,0; 1,0,0];
 end
 network.link(P);
+%AvgTableNet = SolverNC(network,'method','exact').getAvgTable;
 AvgTableNet = SolverMVA(network,'method','exact').getAvgTable;
 end

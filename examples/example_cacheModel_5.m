@@ -71,7 +71,7 @@ for r=1:length(rpcell)
                 %AvgTable = SolverCTMC(model,'keep',true).getAvgTable
                 AvgTable = SolverSSA(model,'samples',samples,'verbose',1,'seed',1,'method','parallel').getAvgTable
                 %save(sprintf('listbased-%s-%d-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),m(2),samples,N(1),N(2),alpha(1),alpha(2)));
-                save(sprintf('single-%s-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),samples,N(1),N(2),alpha(1),alpha(2)));
+                %save(sprintf('single-%s-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),samples,N(1),N(2),alpha(1),alpha(2)));
                 
                 %%
                 u = 2;
