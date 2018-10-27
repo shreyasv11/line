@@ -3,6 +3,7 @@ samples = 1e7;
 rpcell = {ReplacementPolicy.FIFO,ReplacementPolicy.RAND};
 ERR  =[];
 it = 0;
+c = 0.1;
 for r=1:length(rpcell)
     rp = rpcell{r};
     for n=[100,50,10]
@@ -68,112 +69,31 @@ for r=1:length(rpcell)
                 
                 model.link(P);
                 
-                %AvgTable = SolverCTMC(model,'keep',true).getAvgTable
+                
+                %%
+                u = 2;
+                kset=1:n;
+                R={};
+                r=c*ones(u,n,h);
+                for k=1:n
+                    for v=[initClass1.index, initClass2.index]
+                        R{v,k} = zeros(h);
+                        for l=2:h
+                            R{v,k}(l-1,l-1) = 1-r(v,k,l-1);
+                            R{v,k}(l-1,l) = r(v,k,l-1);
+                        end
+                        R{v,k}(h,h) = 1;
+                    end
+                end
                 AvgTable = SolverSSA(model,'samples',samples,'verbose',1,'seed',1,'method','parallel').getAvgTable
-                %save(sprintf('listbased-%s-%d-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),m(2),samples,N(1),N(2),alpha(1),alpha(2)));
-                %save(sprintf('single-%s-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),samples,N(1),N(2),alpha(1),alpha(2)));
                 
-                %%
-                u = 2;
-                kset=1:n;
-                R={};
-                r=ones(u,n,h);
-                for k=1:n
-                    for v=1:u
-                        R{v,k}=zeros(h);
-                        for l=2:(h+1)
-                            R{v,k}(l-1,l)=r(v,k,l-1);
-                            R{v,k}(l-1,l-1)=1-r(v,k,l-1);
-                            R{v,k}(h,h)=1;
-                        end
-                    end
+                if c == 0.1
+                    save(sprintf('single0.1-%s-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),samples,N(1),N(2),alpha(1),alpha(2)));
+                elseif c == 0.5
+                    save(sprintf('single0.5-%s-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),samples,N(1),N(2),alpha(1),alpha(2)));
+                else
+                    save(sprintf('single-%s-%d-%d-%d-%d-%d-%0.2f-%0.2f.mat',rp,n,m(1),samples,N(1),N(2),alpha(1),alpha(2)));
                 end
-                %%
-                T11 = AvgTable.Tput(3); T21 =  AvgTable.Tput(5);
-                T12 = AvgTable.Tput(4); T22 =  AvgTable.Tput(6);
-                T = [T11,T12; T21,T22];
-                X = ones(size(T));
-                Emp{1} = RM1;
-                Emp{2} = RM2;
-                X_1 = X*1e3;
-                goon=true;
-                while goon
-                    for v=1:u
-                        Xtot(v) = sum(X(:,v));
-                        for k=kset
-                            for j=1:(h+1)
-                                lambda(v,k,j)=Emp{v}.getPmf(k)*Xtot(v);
-                            end
-                        end
-                    end
-                    [gamma,u,n,h] = mucache_gamma(lambda,R);
-                    [~,MU] = mucache_miss_asy(gamma,m,lambda);
-                    %%
-                    pHit = 1-MU./Xtot';
-                    AvgTableNet = example_cacheModel_5_sub1(S,N,pHit);
-                    X(1,1) = AvgTableNet.Tput(3);
-                    X(1,2) = AvgTableNet.Tput(4);
-                    X(2,1) = AvgTableNet.Tput(5);
-                    X(2,2) = AvgTableNet.Tput(6);
-                    if norm(X-X_1)<1e-3
-                        goon=false;
-                    end
-                    X_1 = X;
-                end
-                X
-                T
-                ERR(end+1,:)=[n,m,mean(abs(1-X(:)./T(:))), max(abs(1-X(:)./T(:)))]
-                
-                %%
-                u = 2;
-                kset=1:n;
-                R={};
-                r=ones(u,n,h);
-                for k=1:n
-                    for v=1:u
-                        R{v,k}=zeros(h);
-                        for l=2:(h+1)
-                            R{v,k}(l-1,l)=r(v,k,l-1);
-                            R{v,k}(l-1,l-1)=1-r(v,k,l-1);
-                            R{v,k}(h,h)=1;
-                        end
-                    end
-                end
-                %%
-                T11 = AvgTable.Tput(3); T21 =  AvgTable.Tput(5);
-                T12 = AvgTable.Tput(4); T22 =  AvgTable.Tput(6);
-                T = [T11,T12; T21,T22];
-                X = ones(size(T));
-                Emp{1} = RM1;
-                Emp{2} = RM2;
-                X_1 = X*1e3;
-                goon=true;
-                while goon
-                    for v=1:u
-                        Xtot(v) = sum(X(:,v));
-                        for k=kset
-                            for j=1:(h+1)
-                                lambda(v,k,j)=Emp{v}.getPmf(k)*Xtot(v);
-                            end
-                        end
-                    end
-                    [gamma,u,n,h] = mucache_gamma(lambda,R);
-                    [~,MU] = mucache_miss_rayint(gamma,m,lambda);
-                    %%
-                    pHit = 1-MU./Xtot';
-                    AvgTableNet = example_cacheModel_5_sub1(S,N,pHit);
-                    X(1,1) = AvgTableNet.Tput(3);
-                    X(1,2) = AvgTableNet.Tput(4);
-                    X(2,1) = AvgTableNet.Tput(5);
-                    X(2,2) = AvgTableNet.Tput(6);
-                    if norm(X-X_1)<1e-3
-                        goon=false;
-                    end
-                    X_1 = X;
-                end
-                X
-                T
-                ERR(end+1,:)=[n,m,mean(abs(1-X(:)./T(:))), max(abs(1-X(:)./T(:)))]
             end
         end
     end
