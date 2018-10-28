@@ -28,7 +28,7 @@ model.link(P);
 % This part illustrates the execution of different solvers
 solver = {};
 solver{end+1} = SolverCTMC(model);
-solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true);
+%solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true);
 solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true,'samples',5e3);
 solver{end+1} = SolverFluid(model);
 solver{end+1} = SolverMVA(model);
