@@ -1,0 +1,24 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0,y=-5]{LINE Parser scripts} 
+\umlclass[x=0,y=0]{parseXML\_LQN}{}{} 
+\umlclass[x=0,y=-2]{readXML\_CQN}{}{} 
+\umlclass[x=0,y=-4]{readXML\_CQN\_addEntriesP}{}{} 
+\umlclass[x=6,y=0]{parseXML\_COX}{}{} 
+\umlclass[x=10,y=0]{parseXML\_RE}{}{} 
+\umlclass[x=14,y=0]{parseXML\_REPH}{}{} 
+\umlclass[x=9,y=-2]{extendCQN}{}{} 
+\umlclass[x=6,y=-4]{extendCQN\_COX}{}{} 
+\umlclass[x=10,y=-4]{extendCQN\_RE}{}{} 
+\umlclass[x=14,y=-4]{extendCQNCOX\_RE}{}{} 
+\umlclass[x=14,y=-2]{extendCQNCOX\_REPH}{}{} 
+\umldep{readXML\_CQN}{parseXML\_LQN}
+\umldep{readXML\_CQN}{readXML\_CQN\_addEntriesP}
+\umldep{extendCQN}{parseXML\_COX}
+\umldep{extendCQN}{parseXML\_RE}
+\umldep{extendCQN}{parseXML\_REPH}
+\umldep{extendCQN}{extendCQN\_COX}
+\umldep{extendCQN}{extendCQN\_RE}
+\umldep{extendCQN}{extendCQNCOX\_RE}
+\umldep{extendCQN}{extendCQNCOX\_REPH}
+\end{umlpackage} 
+\end{tikzpicture}

@@ -1,0 +1,16 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=-10,y=-5]{LINE Main Solver scripts} 
+\umlclass[x=0,y=0]{CQN\_analysis}{}{} 
+\umlclass[x=0,y=-5]{CQN\_Cox\_analysis}{}{} 
+\umlclass[x=5,y=-2.5]{CQN\_respTime}{}{} 
+\umlclass[x=9,y=0]{CQN\_Cox\_RE\_analysis}{}{} 
+\umlclass[x=8,y=-5]{CQN\_Cox\_REPH\_analysis}{}{} 
+\umlclass[x=11.5,y=-2.5]{CQN\_RE\_analysis}{}{} 
+\umlclass[x=-1,y=-2.5]{CQN\_analysis\_transient}{}{} 
+\umldep{CQN\_analysis}{CQN\_respTime}
+\umldep{CQN\_Cox\_analysis}{CQN\_respTime}
+\umldep{CQN\_Cox\_RE\_analysis}{CQN\_respTime}
+\umldep{CQN\_RE\_analysis}{CQN\_respTime}
+\umldep{CQN\_Cox\_REPH\_analysis}{CQN\_respTime}
+\end{umlpackage} 
+\end{tikzpicture}

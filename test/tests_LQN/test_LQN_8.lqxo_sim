@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<!-- lqsim -T1000000 -x -->
+<lqn-model name="C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_8" description="lqsim 6.0 solution for model from: C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_8.xml." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///C:/Program Files/LQN Solvers/lqn.xsd">
+   <solver-params comment="0" conv_val="1e-005" it_limit="50" underrelax_coeff="0.9" print_int="10">
+      <result-general valid="YES" conv-val="0" iterations="1" platform-info="" user-cpu-time=" 0:00:00.000" system-cpu-time=" 0:00:00.000" elapsed-time=" 0:01:35.000"/>
+   </solver-params>
+   <processor name="P1" scheduling="inf">
+      <result-processor utilization="28.5782"/>
+      <task name="T1" scheduling="ref" multiplicity="200" think-time="1000">
+         <!--  reference task T1  -->
+         <result-task throughput="0.142573" utilization="57.5567" phase1-utilization="57.5567" proc-utilization="28.5782"/>
+         <entry name="E1" type="NONE">
+            <result-entry utilization="57.5567" throughput="0.142573" squared-coeff-variation="2.04846" proc-utilization="28.5782" phase1-service-time="403.453" phase1-service-time-variance="333437" phase1-utilization="57.5567"/>
+         </entry>
+         <task-activities>
+            <activity name="AS1" bound-to-entry="E1" host-demand-mean="200">
+               <result-activity proc-waiting="0" service-time="403.453" utilization="57.5567" service-time-variance="333437" throughput="0.142573" proc-utilization="29.0179"/>
+               <synch-call dest="E2" calls-mean="1">
+                  <result-call waiting="2.61674" waiting-variance="287.289"/>
+               </synch-call>
+            </activity>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P2" scheduling="ps" quantum="0.001">
+      <result-processor utilization="0"/>
+      <task name="T2" scheduling="fcfs" multiplicity="50">
+         <result-task throughput="0.143285" utilization="28.6035" phase1-utilization="28.6035" proc-utilization="0"/>
+         <entry name="E2" type="NONE">
+            <result-entry utilization="28.6035" throughput="0.143285" squared-coeff-variation="2.92622" proc-utilization="0" phase1-service-time="199.526" phase1-service-time-variance="116495" phase1-utilization="28.6035"/>
+         </entry>
+         <task-activities>
+            <activity name="AS2" bound-to-entry="E2" host-demand-mean="0">
+               <result-activity proc-waiting="0" service-time="199.526" utilization="28.6035" service-time-variance="116495" throughput="0.143285" proc-utilization="0"/>
+               <synch-call dest="E3" calls-mean="1">
+                  <result-call waiting="72.6354" waiting-variance="4851.7"/>
+               </synch-call>
+            </activity>
+            <reply-entry name="E2">
+               <reply-activity name="AS2"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P3" scheduling="ps" quantum="0.001">
+      <result-processor utilization="0"/>
+      <task name="T3" scheduling="fcfs" multiplicity="20">
+         <result-task throughput="0.143008" utilization="18.2134" phase1-utilization="18.2134" proc-utilization="0"/>
+         <entry name="E3" type="NONE">
+            <result-entry utilization="18.2134" throughput="0.143008" squared-coeff-variation="1.0824" proc-utilization="0" phase1-service-time="127.339" phase1-service-time-variance="17551.2" phase1-proc-waiting="0.0172062" phase1-utilization="18.2134"/>
+         </entry>
+         <task-activities>
+            <activity name="AS3" bound-to-entry="E3" host-demand-mean="7">
+               <result-activity proc-waiting="120.354" service-time="127.339" utilization="18.2134" service-time-variance="17551.2" throughput="0.143008" proc-utilization="1.00106"/>
+            </activity>
+            <reply-entry name="E3">
+               <reply-activity name="AS3"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+</lqn-model>

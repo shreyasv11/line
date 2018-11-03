@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<!-- lqsim -T1000000 -x -->
+<lqn-model name="C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_7" description="lqsim 6.0 solution for model from: C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_7.xml." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///C:/Program Files/LQN Solvers/lqn.xsd">
+   <solver-params comment="0" conv_val="1e-005" it_limit="50" underrelax_coeff="0.9" print_int="10">
+      <result-general valid="YES" conv-val="0" iterations="1" platform-info="" user-cpu-time=" 0:00:00.000" system-cpu-time=" 0:00:00.000" elapsed-time=" 0:00:06.000"/>
+   </solver-params>
+   <processor name="P1" scheduling="inf">
+      <result-processor utilization="0"/>
+      <task name="T1" scheduling="ref" multiplicity="30" think-time="10">
+         <!--  reference task T1  -->
+         <result-task throughput="2.72674" utilization="2.73478" phase1-utilization="2.73478" proc-utilization="0"/>
+         <entry name="E1" type="NONE">
+            <result-entry utilization="2.73478" throughput="2.72674" squared-coeff-variation="2.99073" proc-utilization="0" phase1-service-time="1.00295" phase1-service-time-variance="3.00839" phase1-utilization="2.73478"/>
+         </entry>
+         <task-activities>
+            <activity name="AS1" bound-to-entry="E1" host-demand-mean="0">
+               <result-activity proc-waiting="0" service-time="1.00295" utilization="2.73478" service-time-variance="3.00839" throughput="2.72674" proc-utilization="0"/>
+               <synch-call dest="E2" calls-mean="1">
+                  <result-call waiting="0.00286414" waiting-variance="0.001147"/>
+               </synch-call>
+            </activity>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P2" scheduling="inf">
+      <result-processor utilization="2.72696"/>
+      <task name="T2" scheduling="fcfs" multiplicity="7">
+         <result-task throughput="2.72877" utilization="2.72696" phase1-utilization="2.72696" proc-utilization="2.72696"/>
+         <entry name="E2" type="NONE">
+            <result-entry utilization="2.72696" throughput="2.72877" squared-coeff-variation="0.999849" proc-utilization="2.72696" phase1-service-time="0.999337" phase1-service-time-variance="0.998524" phase1-utilization="2.72696"/>
+         </entry>
+         <task-activities>
+            <activity name="AS2" bound-to-entry="E2" host-demand-mean="1">
+               <result-activity proc-waiting="0" service-time="0.999337" utilization="2.72696" service-time-variance="0.998524" throughput="2.72877" proc-utilization="3.12093"/>
+            </activity>
+            <reply-entry name="E2">
+               <reply-activity name="AS2"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+</lqn-model>

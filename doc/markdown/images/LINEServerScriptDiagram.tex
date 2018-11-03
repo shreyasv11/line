@@ -1,0 +1,17 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0,y=0]{LINE Server scripts and classes} 
+\umlclass[x=0,y=0]{LINE}{}{} 
+\umlclass[x=4,y=0]{LINEserver}{}{} 
+\umlclass[x=8,y=0]{LINEprotocolXML}{}{} 
+\umlclass[x=0,y=-2]{getPropsConfFile}{}{} 
+\umlclass[x=4,y=-2]{parseProps}{}{} 
+\umlclass[x=8,y=-2]{LINE\_obj}{}{} 
+\umlclass[x=8,y=-4]{writeXMLresults}{}{} 
+\umldep{LINE}{LINEserver}
+\umldep{LINEserver}{getPropsConfFile}
+\umldep{LINEserver}{parseProps}
+\umldep{LINEserver}{LINEprotocolXML}
+\umldep{LINEprotocolXML}{LINE\_obj}
+\umldep{LINE\_obj}{writeXMLresults}
+\end{umlpackage} 
+\end{tikzpicture}

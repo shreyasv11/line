@@ -1,0 +1,683 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<meta name="description" content="Your description goes here" />
+	<meta name="keywords" content="your,keywords,goes,here" />
+	<meta name="author" content="Your Name" />
+	<link rel="stylesheet" type="text/css" href="css/1024px.css" title="1024px style" media="screen,projection" />
+	<link rel="stylesheet" href="css/font-awesome.min.css"/>
+	<title>Line: Performance and Reliability Analysis Engine</title>
+
+	<script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('.page').hide();
+			$('#nav li:first').addClass('active').show();
+			$('.page:first').show();
+			
+			$('#nav li').click(function(){
+				$('#nav li').removeClass('active');
+				$(this).addClass('active');
+				
+				$('.page').hide();
+				var activeTab = $(this).find('a').attr('href');
+				$(activeTab).fadeIn('slow');
+				return false;
+			});
+			
+			$('.switch').click(function(){
+				$('#nav li').removeClass('active');
+				$(this).addClass('active');
+				
+				$('.page').hide();
+				var activeTab = $(this).attr('href');
+				$(activeTab).fadeIn('slow');
+				return false;
+			});
+		});
+	</script>
+</head>
+
+<body>
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-W2HRLJ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W2HRLJ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-KR4HZ6"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KR4HZ6');</script>
+<!-- End Google Tag Manager -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52740375-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<div id="wrap">
+
+<div id="header">
+<p id="toplinks">Skip to: <a class="switch" href="#releases">Releases</a> | <a class="switch" href="#doc">Documentation</a> | <a class="switch" href="#download">Download</a> | <a class="switch" href="#pubs">Resources</a></p>
+<!--<h1><a href="index.html">Line<span class="fade">px</span></a></h1>-->
+<h1><a href="index.html">Line</a></h1>
+<p id="slogan">Performance and Reliability Analysis Engine</p>
+</div>
+
+<div id="content">
+	<div id="home" class="page">
+	<h2>What is Line?</h2>
+	<!--<img src="images/example.jpg" width="280" height="144" alt="Example frontpage image" class="left photo" />-->
+	<p>LINE is an analysis engine to estimate performance and reliability metrics in systems that can be modeled as queueing networks, see the <a href="http://wp.doc.ic.ac.uk/gcasale/wp-content/uploads/sites/9/2015/05/line4.mp4">introduction video</a>.</p>
+	<!-- 
+LINE offers multiple analysis techniques, including: fluid methods and approximate mean-value analysis
+It leverages the concept of mean-field theory, in which the interactions among a large population of entities are approximated by a single averaged effect.-->
+	<p>The main features of the LINE engine may be summarized as follows:
+	<ul>
+	<li>LINE can be integrated with <a href="http://www.palladio-simulator.com/tools/">Palladio Bench</a> for performance analysis of Palladio Component Models (PCM).</li>
+	<li>LINE can load Layered Queueing Network models in the <a href="http://www.sce.carleton.ca/rads/lqns/">LQNS</a> (XML) format and evaluate their performance.</li>
+	<li>LINE can load business process models in <a href="http://www.bpmn.org/">BPMN</a> format and evaluate their performance.
+	<!--<li>LINE can translate queueing network models into <a href="http://jmt.sf.net">JMT</a> models and parse the results obtained from JMT simulation.-->
+	<li>LINE can parse closed queueing network models in <a href="http://www.spe-ed.com/pmif/PMIF/Overview.html">PMIF</a> format.</li>
+	</ul>
+	</p>
+	<p>Compared to existing performance analyzers for queueing network models:
+	<ul>
+	<li>LINE can compute percentiles of response times, which are important for service-level agreement (SLA) assessment.</li>
+	<li>LINE can describe uncertainty about an operational environment using a modeling abstraction known as random environment. For example, it is possible to express failure rates of resources using phase-type distributions.</li>
+	<li>LINE is especially efficient for use in numerical optimization, thanks to parallel, batch and client-server execution modes.
+	</ul>
+	</p>
+
+	<h2>Download the Latest Release</h2>
+	<p>
+	LINE 1.0.0 can be downloaded from the <a class="switch" href="#download">Download</a> section. 
+	This version can be used with Palladio Bench and SPACE4Cloud. 
+	See the details in the <a class="switch" href="#releases">Releases</a> section.</p> 
+	<!--
+	<p>The source code of LINE 0.7.1 (Aug 2015) is available for download from the SVN repository at </p> 
+	<p class="box">
+	svn checkout 
+	svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v071-->
+	<!-- svn://svn.code.sf.net/p/line-solver/code/trunk line-solver-code-->
+	<!--</p>-->
+	<p>
+	Previous versions can be be downloaded <a class="switch" href="#whatsnew">here</a>.
+	</p>
+	
+	
+	<!--
+	<h2>Dev version</h2>
+	<p>For the most up-to-date (non-stable) version of LINE, source code and binaries, please check this page. </p>
+	-->
+
+	<h2>Installation Instructions and Documentation</h2>
+	<p>The main documentation of LINE, including installation instructions, can be found <a class="switch" href="#doc">here</a>.
+	You may also find useful to look at the <a class="switch" href="#pubs">Resources</a> section, where you can find papers that describe in detail the models underlying Line as well as papers extending or using Line for different applications. </p>
+
+	<h2>License</h2>
+	<p>LINE is copyrighted by Imperial College London, 2012-2017. The sources and binaries are distributed under the open-source <a href="http://opensource.org/licenses/BSD-3-Clause" target="_blank">BSD New</a> license.</p>
+	
+	<h2>How to cite Line</h2>
+	<p>If you use LINE, please cite the following article:
+	<p>J. F. Pérez and G. Casale, "LINE: Evaluating Software Applications in Unreliable Environments", IEEE Transactions on Reliability, 66(3), pp. 837 - 853, Sept 2017. [<a href="http://ieeexplore.ieee.org/document/7843645/">IEEE Xplore</a>]</p>
+	<!--<p>J. F. Pérez and G. Casale, "Assessing SLA compliance from Palladio component models", in Proceedings of the 2nd Workshop on Management of resources and services in Cloud and Sky computing (MICAS), IEEE Press, 2013. [<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6821177" target="_blank">IEEE Xplore</a>]-->
+	</p>
+
+	<h2>Acknowledgement</h2>
+	<p>The development of LINE has been partially funded by the European Commission grants FP7-318484 (<a href="http://www.modaclouds.eu">MODAClouds</a>), H2020-644869 (<a href="https://wp.doc.ic.ac.uk/dice-h2020/" target="_blank">DICE</a>),
+	and by the EPSRC grant EP/M009211/1 (<a href="http://wp.doc.ic.ac.uk/optimam/" target="_blank">OptiMAM</a>).
+	</p>
+
+	</div>
+	
+	<div id="download" class="page">
+		<h2>Download</h2>
+		<h3>Download the latest version: LINE 1.0.0 (June 2016) </h3>
+		<p>
+		This version can be used with <a href="http://www.palladio-simulator.com/tools/"> Palladio Bench</a> and <a href="http://www.modaclouds.eu/software/space4cloud/"> SPACE4Cloud</a>. </p>
+		
+		<h3>Getting Started</h3>
+		<p>	Download the binaries and/or source code: 
+		</p>
+		<ul class="icons">
+		 <li class="icon fa-windows fa-lg"> Binaries and source code for 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_win.zip/download" target="_blank">Windows</a>
+		</li>
+		 <li class="icon fa-linux fa-lg"> Binaries and source code for 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_linux.zip/download" target="blank">Linux</a>
+		 </li>
+		 <li class="icon fa-cloud-download fa-lg"> 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_src.zip/download" target="blank">Source code</a>
+		 </li>
+		</ul>
+		
+		 <p>
+		 The download includes the LINE binaries, example files ready to test, and a 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v100/test/LINEClient_example.zip">test client</a> to communicate with the LINE server. The binaries, for both Windows 64 bits and Linux 64 bits, require MATLAB MCR version 2013a, which can be downloaded <a href="http://www.mathworks.co.uk/products/compiler/mcr/">here</a>. 
+		 You can run a simple test using the configuration and test files provided with the binary distribution. 
+		 </p>
+		 
+		 <p>Documentation and <em>installation instructions</em> can be found <a class="switch" href="#doc">here</a>. </p>
+		 
+		 <p>Alternatively, download it from the SVN repository at</p>
+		 <p class="box">
+		 svn checkout 
+		 svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v100
+		 </p>
+		 
+		 
+		<p>
+		<h3>What's new?</h3> 
+		<ul>
+		  <li> 
+		  Line now offers support for both <b>synchronous and asynchronous</b> calls. 
+		  This is achieved by extending the transformation from LQN models to incorporate asynchronous calls, 
+		  and by extending the analysis to differentiate how these two types of calls account for remote execution time.
+		  </li>
+		  <li>
+		  This version includes beta versions of <b>solvers for two extended types of execution</b>: 
+		  simultaneous resource possession (SRP) and synchronous calls with blocking (SCB). 
+		  These can be used at the script level. 
+		  </li>
+		  <li>
+			This version has undergone a naming revision, simplifying names of scripts. 
+		  </li>
+		</ul>
+		</p>
+		
+		</hr>
+		<h3> <a  class="switch" href="#releases"> Download previous versions</a>. </h3> 
+		
+
+		
+	
+	</div>
+	
+	<div id="whatsnew" class="page">
+		<h2>What's new?</h2>
+		<h3>1.0.0 (June 2016) </h3>
+		<p>
+		This version can be used with <a href="http://www.palladio-simulator.com/tools/"> Palladio Bench</a> and <a href="http://www.modaclouds.eu/software/space4cloud/"> SPACE4Cloud</a>. </p>
+		Binaries: 
+		<ul>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_win.zip/download" target="blank"> Windows 64 bits</a>. Requires <a href="https://www.mathworks.com/products/compiler/mcr.html">MATLAB MCR</a> version 2013a.</li>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_linux.zip/download" target="blank"> Linux 64 bits</a>.  Requires <a href="https://www.mathworks.com/products/compiler/mcr.html">MATLAB MCR</a> version 2013a.</li>
+		</ul>
+		Source code: 
+		<p class="box">
+		svn checkout 
+		svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v100
+		</p>
+		New features:
+		<ul>
+		  <li> 
+		  Line now offers support for both <b>synchronous and asynchronous</b> calls. 
+		  This is achieved by extending the transformation from LQN models to incorporate asynchronous calls, 
+		  and by extending the analysis to differentiate how these two types of calls account for remote execution time.
+		  </li>
+		  <li>
+		  This version includes beta versions of <b>solvers for two extended types of execution</b>: 
+		  simultaneous resource possession (SRP) and synchronous calls with blocking (SCP). 
+		  These can be used at the script level. 
+		  </li>
+		  <li>
+			This version has undergone a naming revision, simplifying names of scripts. 
+		  </li>
+		</ul>
+		</p>
+		
+		 <!--
+		<p>
+		<h3>Getting Started</h3>
+		<p>	Download the binaries and/or source code: 
+		</p>
+		<ul class="icons">
+		 <li class="icon fa-windows fa-lg"> Binaries and source code for 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_win.zip/download" target="_blank">Windows</a>
+		</li>
+		 <li class="icon fa-linux fa-lg"> Binaries and source code for 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_linux.zip/download" target="blank">Linux</a>
+		 </li>
+		 <li class="icon fa-cloud-download fa-lg"> 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_src.zip/download" target="blank">Source code</a>
+		 </li>
+		</ul>
+		
+		 <p>
+		 The download includes the LINE binaries, example files ready to test, and a 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v100/test/LINEClient_example.zip">test client</a> to communicate with the LINE server. The binaries, for both Windows 64 bits and Linux 64 bits, require MATLAB MCR version 2013a, which can be downloaded <a href="http://www.mathworks.co.uk/products/compiler/mcr/">here</a>. 
+		 You can run a simple test using the configuration and test files provided with the binary distribution. 
+		 </p>
+		 
+		 <p>Documentation and <em>installation instructions</em> can be found <a class="switch" href="#doc">here</a>. </p>
+		 
+		 <p>Alternatively, download it from the SVN repository at</p>
+		 <p class="box">
+		 svn checkout 
+		 svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v100
+		 </p>
+		 
+		<ul>
+		 <li>Download the binaries for Windows 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_win.zip/download" target="blank"> here</a>, 
+		 and for Linux 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_linux.zip/download" target="blank"> here</a>. 
+		 The download includes the LINE binaries, example files ready to test, and a 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v100/test/LINEClient_example.zip">test client</a> to communicate with the LINE server. 
+		 </li> 
+		 <li> You can run a simple test using the configuration and test files provided with the binary distribution. 
+		 </li> 
+		 <li>The binaries, for both Windows 64 bits and Linux 64 bits, require MATLAB MCR version 2013a, which can be downloaded <a href="http://www.mathworks.co.uk/products/compiler/mcr/"> here</a>.
+		 </li>
+		 <li>Documentation and <em>installation instructions</em> can be found <a class="switch" href="#doc"> here</a>. </li>
+		 <li>The source code can be downloaded from 
+		 <a href="https://sourceforge.net/projects/line-solver/files/LINE_v100_src.zip/download" target="blank"> here</a>. 
+		 Alternatively, download it from the SVN repository at  
+		 <p class="box">
+		 svn checkout 
+		 svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v100
+		 </p>
+		 </li>
+		 </ul>-->
+		</p>
+		
+		
+		</hr>
+		<h2>Previous Releases</h2>
+		<h3>0.7.1 (August 2015) </h3>
+		Binaries: 
+		<ul>
+		  <!--<li> <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v071/bin/win/LINE_v071_win.zip"> Windows 64 bits</a>. -->
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v071_win.zip/download" target="blank"> Windows 64 bits</a>. 
+		  Requires MATLAB MCR version 2012b.</li>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v071_linux.zip/download" target="blank"> Linux 64 bits</a>. 
+		  <!--<li> <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v071/bin/linux/LINE_071_linux.zip"> Linux 64 bits</a>. -->
+		  Requires MATLAB MCR version 2013a.</li>
+		</ul>
+		Source code: 
+		<p class="box">
+		svn checkout 
+		svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v071
+		</p>
+		New features:  
+		<ul>
+		  <li> LINE now provides support for the computation of transient metrics. This includes both mean-value metrics and response-time distributions. </li>
+		  <li> LINE is compatible with the latest release of the Palladio Bench tool. The LINE binaries now accept LQN models in .xml and .lqxo file formats. </li>
+		</ul>
+		
+		<h3>0.7.0 (July 2015) </h3>
+		Binaries: 
+		<ul>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v07_windows.zip/download" target="blank"> Windows 64 bits</a>. Requires MATLAB MCR version 2012b.</li>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v07_linux.zip/download" target="blank"> Linux 64 bits</a>.  Requires MATLAB MCR version 2013a.</li>
+		</ul>
+		Source code: 
+		<p class="box">
+		svn checkout 
+		svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v07
+		</p>
+		New features:  
+		<ul>
+		  <li> LINE now provides initial support for the performance evaluation of <b>BPMN collaboration diagrams</b>. LINE reads the BPMN model in the standard <b>BPMN XML format</b>, augmented with timing information, and analyzes it by means of a model-to-model transformation to LQN models.  Examples of how to use this feature are provided in the scripts <i>example_BPMN_X.m</i> included in the examples folder. </li>
+		  <li> LINE now supports the performance evaluation of closed queueing networks described as <b>PMIF models</b>. LINE reads the PMIF model in the standard <b>PMIF XML format</b>, which it analyzes by means of a model-to-model transformation to LQN models. Examples of how to use this feature are provided in the scripts <i>example_PMIF_X.m</i> included in the examples folder. </li>
+		  <li> LINE now offers the <b>QD-AMVA solver</b>, which has been developed to analyze queueing networks with <b>queue-dependent processing times</b>. This solver can be selected by setting a <b>new configuration variable</b>, called <b>solver</b>, to the value QDAMVA. The default solver is the existing fluid solver. </li>
+		  <li>  The source code in LINE has been re-structured, facilitating its extensibility, particularly to consider different input models and solvers. 
+		</ul>
+		<!--
+		<h3>Getting Started</h3>
+		<ul>
+		 <li>Download the binaries for Windows 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v07/bin/win/LINE_v07_win.zip"> here</a>, 
+		 and for Linux 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v07/bin/linux/LINE_07_linux.zip"> here</a>. 
+		 The download includes the LINE binaries, example files ready to test, and a <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v07/test/LINEClient_example.zip">test client</a> to communicate with the LINE server. </li> 
+		 <li> You can run a simple test using the configuration and test files provided with the binary distribution. </li> 
+		 <li>The binaries require MATLAB MCR, which can be downloaded 
+		 <a href="http://www.mathworks.co.uk/products/compiler/mcr/"> here</a>.
+			<ul> 
+			<li> For Windows 64 bits, use MATLAB MCR version 2012b. </li>
+			<li> For Linux 64 bits use MATLAB MCR version 2013a. </li>
+			</ul>
+		 <li>Documentation and <em>installation instructions</em> can be found <a class="switch" href="#doc"> here</a>. </li>
+		 <li>Download the source code from the repository <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v07/src/"> here</a>. </li>
+		 </ul> -->
+		
+		
+		<h3>0.6.0 (Dec 2014)</h3>
+		<!--<h4>What's new?</h4>-->
+		Binaries: 
+		<ul>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_v06_windows.zip/download" target="blank"> Windows 64 bits</a>. Requires MATLAB MCR version 2012b.</li>
+		  <li> <a href="https://sourceforge.net/projects/line-solver/files/LINE_06_linux.zip/download" target="blank"> Linux 64 bits</a>.  Requires MATLAB MCR version 2013a.</li>
+		</ul>
+		Source code: 
+		<p class="box">
+		svn checkout 
+		svn://svn.code.sf.net/p/line-solver/code/trunk/releases/v06
+		</p>
+		New features:  
+		<ul>
+		  <li> The reliability model in LINE, called Random Environment, now has support for general (Coxian) holding times in each environmental stage. This generalizes the exponential holding times in previous versions.</li>
+		  <li> For the intermediate software layers, LINE now computes the expected throughput. This is in addition to response times means and percentiles, already included.</li>
+		  <li> LINE has been re-structured, offering a more compartmental architecture, separating model parsing from model solving, and performance metrics computation. This facilitates the extension of the tool to consider different abstractions.</li>
+		</ul>
+		<!--
+		<h4>Getting Started</h4>
+		<ul>
+		 <li>Download the binaries for Windows 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/bin/win/LINE.zip"> here</a>, 
+		 <!--for Mac 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/bin/mac/LINE.zip"> here</a>, --> 
+		 <!--and for Linux 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/bin/linux/LINE.zip"> here</a>. 
+		 The download includes the Line binaries, example files ready to test, and a <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/test/client/LINEClient_example_06.zip">test client</a> to communicate with the Line server. </li>
+		 <li> You can run a simple test using the configuration and test files for 
+		 <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/test/win/"> Windows </a> or
+		 <!-- <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/test/mac/"> Mac </a>, or --> 
+		 <!--<a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/test/linux/"> Linux </a>.
+		 </li>
+		 <li>The binaries require MATLAB MCR, which can be downloaded 
+		 <a href="http://www.mathworks.co.uk/products/compiler/mcr/"> here</a>.
+			<ul> 
+			<li> For Windows 64 bits, use MATLAB MCR version 2012b. </li>
+			<li> For Linux 64 bits use MATLAB MCR version 2013a. </li>
+			<!-- <li> For Mac use MATLAB MCR version 2014a. </li> -->
+		<!--	</ul>
+		 <li>Documentation and <em>installation instructions</em> can be found <a class="switch" href="#doc"> here</a>. </li>
+		 <li>Download the source code from the repository <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v06/src/"> here</a>. </li>
+		</ul> -->
+		
+		
+		<h3>0.5.2 (Jul 2014)</h3>
+		<!--<h4>What's new?</h4>-->
+		New features:
+		<ul>
+			<li>LINE now accepts models with <b>Coxian processing times</b>. The specification of the Coxian distributions is done by means of an XML file containing LQN extensions, which also includes Random Environments. Notice that these distribution are specified at the level of LQN activities. </li>
+			<li>The computation of the response time percentiles has been fixed to compute long tails.</li> 
+			<li>The parser is now decomposed in 2 phases that were previously mixed up: first, the parsing of the LQN model, from an LQN XML file; second, the parsing of the LQN Extensions, from a different XML file.</li> 
+			<li>The analysis of the SEFF mean response times is now performed in a separate script.</li>    
+			<li>Line now accepts the <b>parallel property</b> in the configuration file. It has 3 possible values: SEQ for sequential execution (default); JOB for parallel execution using Matlab parallel engine for batch job execution; PARFOR for parallel execution using the parfor mechanism in Matlab.</li>
+			<li>Line now parses and solves models with <b>multiple PCM usage models</b>, which in the LQN model are translated into multiple references tasks. Performance measures are computed for the different usage model/user types.</li> 
+			<li>Line now accepts a <b>verbose property</b> that can be set to 1 for verbose screen output. The default is 0 which provides limited screen output.</li> 
+			<li>The analysis of services (denoted SEFF in Palladio) has been extended to consider general probabilistic interactions among them, as when one SEFF calls several other SEFFs to provide its service.</li>  
+		</ul>
+		<!--
+		<h4>Getting Started</h4>
+		<ul>
+			<li> Download the binaries <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v052/bin/LINE_r0.5.2_distrib.zip">here</a>. The download includes the Line binaries, example files ready to test, and a _test client_ to communicate with the Line server.</li> 
+			<li> The binaries run on Windows 64 bits, and use MATLAB MCR version 2012b, which can be downloaded <a href="http://www.mathworks.co.uk/products/compiler/mcr/">here</a>.</li> 
+			<li> Documentation and <em>installation instructions</em> can be found <a class="switch" href="#doc"> here</a>.</li> 
+			<li> Download the source code from the repository <a href="http://svn.code.sf.net/p/line-solver/code/trunk/releases/v052/src/">here</a>.</li> 
+		</ul>-->
+
+		<h3>0.5.1 (Jun 2014)</h3>
+		<!--<h4>What's new?</h4>-->
+		New features:
+		<ul>
+			<li>The main new feature in this version is the ability to <b>compute the percentiles of the overall response time</b>. The requested percentiles are specified in the configuration file, and the results are included in the results file.</li>  
+			<li>LINE now accepts a sequence of connections from the clients, and only terminates after receiving the command QUIT. To close a connection the client must submit the command CLOSE. Once the connection is closed, LINE replies with the message LINE CLOSED.</li>
+			<li>In relation to the previous feature, a new configuration option has been added. The property <b>connectionTimeout</b> sets the timeout before LINE closes the current connection. The time (in seconds) is counted after the last command was received and all the outstanding models have been solved.</li> 
+			<li>The LQN XML parser has been extended to consider more general usage models. The parser now supports LQN models with general probabilistic activity graphs. It also considers the speed factor to determine the mean service demands.</li>  
+		</ul>
+
+		<h3>0.5.0 (Jun 2014)</h3>
+		<!--<h4>What's new?</h4>-->
+		New features:
+		<ul>
+			<li>This release works as a server that receives instructions to solve models, requiring a single startup to solve as many models as needed.</li> 
+			<li>This release exploits the parallel execution of jobs on multi-core computers, thus offering significant time savings when solving many models.</li>
+		</ul>
+		<!--If you want to run single models from the command line, we recommend using release 0.4. -->
+
+		<h3>0.4.1 (Dec 2013)</h3>
+		<!--<h4>What's new?</h4>-->
+		New features:
+		<ul>
+			<li>This release is designed to run batch jobs.</li>
+		</ul>
+
+		<h3>0.4.0 (Oct 2013)</h3>
+		<p>This is the first release. </p>
+		
+	
+	</div>
+	
+	<div id="doc" class="page">
+		<h2>Latest release</h2> 
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v100/LINE_doc_100.pdf" target="_blank">LINE 1.0.0 documentation</a></p>
+
+		<h2>Previous releases</h2>
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v071/LINE_doc_071.pdf" target="_blank">LINE 0.7.1 documentation</a></p>
+		
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v070/LINE_doc_07.pdf" target="_blank">LINE 0.7 documentation</a></p>
+
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v060/LINE_doc_2014_12.pdf" target="_blank">LINE 0.6 documentation</a></p>
+
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v052/LINE_doc_2015_03.pdf" target="_blank">LINE 0.5.2 documentation</a> </p>
+
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v050/LINE_doc_v05_2014_06.pdf" target="_blank">LINE 0.5 and 0.5.1 documentation</a> </p>
+		
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v041/LINE_doc_v041_2013_12.pdf" target="_blank">LINE 0.4.1 documentation</a></p>
+
+		<p>
+		<a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/v040/LINE_doc_v04_2013_10.pdf" target="_blank">LINE 0.4 documentation</a></p>
+	</div>
+	
+	<div id="pubs" class="page">
+	<h2>Resources</h2>
+	<p>
+	This page lists useful resources for developers and users of LINE. 
+	</p>
+	
+	<h3>Papers</h3>
+	<p>
+	The details of the models implemented and solved by Line can be found in the following publications:</p>
+		<p>
+		J. F. Pérez and G. Casale, 
+		<a href="http://ieeexplore.ieee.org/document/7843645/">LINE: Evaluating Software Applications in Unreliable Environments</a>, IEEE Transactions on Reliability, 2017.</p>
+		<p>
+		J. F. Pérez and G. Casale, <a href="http://svn.code.sf.net/p/line-solver/code/trunk/doc/preprints/PerezCasale_MICAS13_preprint.pdf" target="_blank">"Assessing SLA compliance from Palladio component models</a>, in Proceedings of the 2nd Workshop on Management of resources and services in Cloud and Sky computing (MICAS), IEEE Press, 2013. [<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6821177" target="_blank">IEEE Xplore</a>]
+		</p>
+	<p>
+	The following papers extend or use LINE for different applications.</p>
+	<p>
+		
+	<ul>
+		<li> This paper proposes a transformation from queueing Petri nets to LQNs and 
+		compares LINE to other LQN solvers:</br>
+		C. Müller, P. Rygielski, S. Spinner and S. Kounev. </br>
+		<a href="https://se2.informatik.uni-wuerzburg.de/pa/publications/download/paper/1075.pdf" target="_blank"> 
+		Enabling Fluid Analysis for Queueing Petri Nets via Model Transformation</a>. </br>
+		Intl. Workshop on Practical Applications of Stochastic Modelling (PASM), 2016. 
+		</li> 
+		
+		<li> This paper uses LINE for application refactoring:</br>
+		D. J. Dubois and G. Casale. </br>
+		<a href="https://spiral.imperial.ac.uk/handle/10044/1/32496" target="_blank"> 
+		OptiSpot: minimizing application deployment cost using spot cloud resources</a>. </br>
+		 IEEE CLOUD, 2016. </br>
+		</li>
+		
+		
+		<li> This paper uses LINE to model replicated databases in the cloud:</br>
+		R. Osman, J. F. Perez and G. Casale. </br>
+		<a href="https://spiral.imperial.ac.uk/handle/10044/1/33189" target="_blank"> 
+		Quantifying the Impact of Replication on the Quality-of-Service in Cloud Databases</a>. </br>
+		IEEE Intl. Conference on Software Quality, Reliability, and Security (QRS), 2016. </br>
+		</li>
+		
+		<li> This paper uses LINE to model spot instance provisioning:</br>
+		D. J. Dubois and G. Casale. </br>
+		<a href="http://link.springer.com/article/10.1007/s10586-016-0568-7" target="_blank"> 
+		OptiSpot: minimizing application deployment cost using spot cloud resources</a>. </br>
+		Cluster Computing, 2016. </br>
+		</li>
+		
+		
+	</ul>
+			
+	<h3>Presentations</h3>
+	<ul>
+		<li> This presentation provides an overview of LINE and its application to cloud applications:</br>
+		G. Casale. </br>
+		<a href="data/presentations/16_leeds.pdf" target="_blank"> 
+		Quality-driven development of multi-cloud applications</a>, July 2016. 
+		</li> 
+	</ul>	
+	
+		
+	</div>
+
+	<!--
+	<div id="dev" class="page">
+	<h2>Latest development version</h2>
+	<p>In this page, you can access the latest features of LINE under development, which have not yet been released in the <a href="#releases">Releases</a> section.  
+	</p>
+	-->
+	
+	<!--
+	<p>The features added to the version under development, not included in the latest (0.6) release, are:</p>
+	<ul>
+		<li>New simpleCQN script, for easy specification and evaluation of closed queueing network models.</i>
+		<li>New support for PMIF models, including parsing from the PMIF XML specification.</li>
+		<li>New structure to facilitate extensions</li>
+		<li>Bug fix in the computation of the mean response times in the mainSolver scripts.</li>
+		<li>Bug fix for networks with non-reference delay stations.</li>
+		<li>Bug fix in the treatment of the S vector (number of servers) as a column vector. This is fixed in both the parser and the solver scripts.</li> 
+		<li>Bug fix to return empty resSEFF and resSEFF_CDF objects when the SEFF is not specified in a solver.</li>  
+	</ul>
+	</div>
+	-->
+	
+	<div id="webcasts" class="page">
+	<h2>Webcasts</h2>
+	<h3>Using LINE for Software Quality Analysis (Palladio and Space4Clouds)</h3>
+	<!--
+	<iframe width="420" height="315" autoplay=0
+	src="http://wp.doc.ic.ac.uk/gcasale/wp-content/uploads/sites/9/2015/05/LINE4.mp4">
+	</iframe>-->
+	<video width="690" height="480" controls="controls" poster="images/poster_video1.png">
+		<source src="http://wp.doc.ic.ac.uk/gcasale/wp-content/uploads/sites/9/2015/05/LINE4.mp4" type="video/mp4">
+	</video>
+	
+	
+	</div>
+</div>
+
+
+
+
+<div id="sidebar">
+<!--
+<h2>Welcome!</h2>
+<p>This template comes in two different layout variations. <a href="index-alt.html">Switch to layout #2</a>!</p>
+
+
+<h2>Navigate:</h2> -->
+<h2></h2> 
+<div id="nav">
+<ul>
+<li><a href="#home">Home</a></li>
+<li><a href="#download">Downloads</a></li>
+<li><a href="#whatsnew">What's new?</a></li>
+<!--<li><a href="#dev">Dev version</a></li>-->
+<li><a href="#doc">Documentation</a></li>
+<li><a href="#webcasts">Webcasts</a></li>
+<li><a href="#pubs">Resources</a></li>
+<!-- <li><a href="#header">Back to top</a></li> -->
+</ul>
+</div>
+
+<h2>Support</h2>
+<ul>
+<li><a href="https://sourceforge.net/p/line-solver/discussion/" target="_blank">Discussion forum</a></li>
+<ul>
+<li><a href="https://sourceforge.net/p/line-solver/discussion/help/" target="_blank">Help forum</a></li>
+</ul>
+<li><a href="https://sourceforge.net/p/line-solver/tickets/" target="_blank">Report a bug</a></li>
+<li><a href="https://sourceforge.net/p/line-solver/tickets/" target="_blank">Request a feature</a></li>
+<li><a href="https://sourceforge.net/projects/line-solver/" target="_blank">SourceForge site</a></li>
+<!--<li><a> Mailing lists </a></li>
+<ul>
+<li><a href="https://mailman.ic.ac.uk/mailman/listinfo/LINE-announce" target="_blank">Announcements</a></li>
+<li><a href="https://mailman.ic.ac.uk/mailman/listinfo/LINE-help" target="_blank">Help</a></li>
+</ul>-->
+</ul>
+
+
+
+<h2>News:</h2>
+<p><strong>July 2016</strong><br />
+We have released <a class="switch" href="#whatsnew">LINE 1.0.0</a>. 
+Here are the <a class="switch" href="#whatsnew"> new features</a>.</p>
+<p><strong>Aug 2015</strong><br />
+<a class="switch" href="#whatsnew">LINE 0.7.1</a> is released, compatible with the latest version of Palladio Bench and Space4Clouds.</p>
+<p><strong>July 2015</strong><br />
+We have released <a class="switch" href="#whatsnew">LINE 0.7</a>. Here are the <a class="switch" href="#whatsnew"> new features</a>.</p>
+<p><strong>Dec 2014</strong><br />
+We have released <a class="switch" href="#whatsnew">LINE 0.6</a>. Check out the new features.</p>
+<p>
+	 <img src="images/imperial.jpg" height="50" alt="Imperial" class="right photo" style="border:none;" align="middle"/><br />
+	 <img src="images/epsrc.png" height="50" alt="EPSRC" class="right photo" style="border:none;" align="middle"/><br />
+	 <img src="images/modaclouds.png" height="50" alt="MODAClouds" class="right photo" style="border:none;" align="middle"/><br />
+	 <img src="images/dice.png" height="40" alt="DICE" class="right photo" style="border:none;" align="middle"/><br />
+<!--
+<h2>Sample links:</h2>
+<ul>
+<li><a href="http://andreasviklund.com/templates/commercial/">Commercial templates</a></li>
+<li><a href="http://jokkmokk.biz/">Made in Jokkmokk</a></li>
+<li><a href="http://www.xnavigation.net/" title="xNavigation gratis download - La risorsa italiana sul software">xNavigation software</a></li>
+</ul>
+-->
+</div>
+
+<div id="footer">
+<p><a href="#">Contact us</a> | <a href="#">Privacy policy</a> | <a href="#">Sitemap</a> | <a href="#">RSS</a> | <a href="#header">Back to top</a><br />
+&copy; 2015 <a href="#">Imperial College London</a> | Design by <a href="http://andreasviklund.com/">Andreas Viklund</a></p>
+</div>
+
+</div>
+
+<!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+var sc_project=11021045; 
+var sc_invisible=1; 
+var sc_security="63445923"; 
+var scJsHost = (("https:" == document.location.protocol) ?
+"https://secure." : "http://www.");
+document.write("<sc"+"ript type='text/javascript' src='" +
+scJsHost+
+"statcounter.com/counter/counter.js'></"+"script>");
+</script>
+<noscript><div class="statcounter"><a title="hits counter"
+href="http://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="//c.statcounter.com/11021045/0/63445923/1/" alt="hits
+counter"></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
+
+</body>
+</html>

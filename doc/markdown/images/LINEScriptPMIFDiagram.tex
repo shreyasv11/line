@@ -1,0 +1,23 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0,y=0]{PMIF scripts and classes} 
+\umlclass[x=6.5,y=0]{solvePMIF}{}{} 
+\umlclass[x=2.5,y=0]{parseXML\_PMIF}{}{} 
+\umlclass[x=10.5,y=0]{PMIF2CQN}{}{} 
+\umlclass[x=6.5,y=-2]{QNM}{}{} 
+\umlclass[x=0,y=-4]{server}{}{} 
+\umlclass[x=0,y=-2]{workUnitServer}{}{} 
+\umlclass[x=14,y=-2]{closedWorkload}{}{} 
+\umlclass[x=4,y=-4]{workUnitServiceRequest}{}{} 
+\umlclass[x=9,y=-4]{demandServiceRequest}{}{} 
+\umlclass[x=14,y=-4]{timeServiceRequest}{}{} 
+\umldep{solvePMIF}{parseXML\_PMIF}
+\umldep{solvePMIF}{PMIF2CQN}
+\umldep{solvePMIF}{QNM}
+\umldep{QNM}{server}
+\umldep{QNM}{workUnitServer}
+\umldep{QNM}{workUnitServiceRequest}
+\umldep{QNM}{timeServiceRequest}
+\umldep{QNM}{demandServiceRequest}
+\umldep{QNM}{closedWorkload}
+\end{umlpackage} 
+\end{tikzpicture}

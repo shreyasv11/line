@@ -1,0 +1,21 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0,y=0]{LQN classes} 
+\umlclass[x=0,y=0]{processor}{}{} 
+\umlclass[x=4,y=0]{task}{}{} 
+\umlclass[x=8,y=0]{entry}{}{} 
+\umlclass[x=8,y=-3]{activity}{}{} 
+\umlclass[x=4,y=-3]{precedence}{}{} 
+\umlclass[x=0,y=-3]{lqn}{}{} 
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.8]{lqn}{processor}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.8]{processor}{task}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{task}{entry}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.7]{task}{activity}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{entry}{activity}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{precedence}{activity}
+\end{umlpackage} 
+\begin{umlpackage}[x=11,y=0]{EXT classes} 
+\umlclass[x=0,y=0]{COX}{}{} 
+\umlclass[x=0,y=-2]{RE}{}{} 
+\umlclass[x=2,y=-1]{REPH}{}{} 
+\end{umlpackage} 
+\end{tikzpicture}

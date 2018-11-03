@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<!-- lqsim -T1000000 -x -->
+<lqn-model name="C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_1" description="lqsim 6.0 solution for model from: C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_1.xml." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///C:/Program Files/LQN Solvers/lqn.xsd">
+   <solver-params comment="0" conv_val="1e-005" it_limit="50" underrelax_coeff="0.9" print_int="10">
+      <result-general valid="YES" conv-val="0" iterations="1" platform-info="" user-cpu-time=" 0:00:00.000" system-cpu-time=" 0:00:00.000" elapsed-time=" 0:00:30.000"/>
+   </solver-params>
+   <processor name="P1" scheduling="ps" quantum="0.001">
+      <result-processor utilization="0"/>
+      <task name="T1" scheduling="ref" multiplicity="50" think-time="100">
+         <!--  reference task T1  -->
+         <result-task throughput="0.474585" utilization="2.66317" phase1-utilization="2.66317" proc-utilization="0"/>
+         <entry name="E1" type="NONE">
+            <result-entry utilization="2.66317" throughput="0.474585" squared-coeff-variation="1.63242" proc-utilization="0" phase1-service-time="5.61157" phase1-service-time-variance="51.4043" phase1-proc-waiting="0.00231512" phase1-utilization="2.66317"/>
+         </entry>
+         <task-activities>
+            <activity name="AS1" bound-to-entry="E1" host-demand-mean="0.1">
+               <result-activity proc-waiting="0.25086" service-time="0.350759" utilization="0.166465" service-time-variance="0.254997" throughput="0.474585" proc-utilization="0.0474585"/>
+            </activity>
+            <activity name="AS2" host-demand-mean="1.5">
+               <result-activity proc-waiting="3.75832" service-time="5.26081" utilization="2.4967" service-time-variance="49.7022" throughput="0.474585" proc-utilization="0.711878"/>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS1"/>
+               </pre>
+               <post>
+                  <activity name="AS2"/>
+               </post>
+            </precedence>
+         </task-activities>
+      </task>
+   </processor>
+</lqn-model>

@@ -1,2 +1,0 @@
-%  K = population vector
-%

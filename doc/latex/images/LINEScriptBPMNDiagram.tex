@@ -1,0 +1,13 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0,y=0]{BPMN scripts} 
+\umlclass[x=0,y=0]{solveBPMN}{}{} 
+\umlclass[x=0,y=-2]{parseXML\_BPMN}{}{} 
+\umlclass[x=6,y=0]{parseXML\_BPMNextensions}{}{} 
+\umlclass[x=4,y=-2]{BPMN2LQN}{}{} 
+\umlclass[x=8,y=-2]{BPMNtime2sec}{}{} 
+\umldep{solveBPMN}{parseXML\_BPMN}
+\umldep{solveBPMN}{parseXML\_BPMNextensions}
+\umldep{solveBPMN}{BPMN2LQN}
+\umldep{BPMN2LQN}{BPMNtime2sec}
+\end{umlpackage} 
+\end{tikzpicture}

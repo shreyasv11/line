@@ -1,0 +1,12 @@
+[**Network models**](https://github.com/line-solver/line/wiki/Network-models#network-models)
+- [Network object definition](https://github.com/line-solver/line/wiki/Network-models#network-object-definition)
+  - [Creating a network and its nodes](https://github.com/line-solver/line/wiki/Network-models#creating-a-network-and-its-nodes)
+  - [Job classes](https://github.com/line-solver/line/wiki/Network-models#job-classes)
+  - [Routing strategies](https://github.com/line-solver/line/wiki/Network-models#routing-strategies)
+  - [Class switching](https://github.com/line-solver/line/wiki/Network-models#class-switching)
+  - [Finite buffers](https://github.com/line-solver/line/wiki/Network-models#finite-buffers)
+  - [Service and inter-arrival time processes](https://github.com/line-solver/line/wiki/Network-models#service-and-inter-arrival-time-processes)
+  - [Debugging and visualization](https://github.com/line-solver/line/wiki/Network-models#debugging-and-visualization)
+- [Model import and export](https://github.com/line-solver/line/wiki/Network-models#model-import-and-export)
+  - [Creating a <span class="smallcaps">Line</span> model using JMT](https://github.com/line-solver/line/wiki/Network-models#creating-a-line-model-using-jmt)
+

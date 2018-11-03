@@ -1,0 +1,210 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<!-- lqsim -T1000000 -x -->
+<lqn-model name="C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_13" description="lqsim 6.0 solution for model from: C:\Users\csg\Dropbox\code\line-dev.git\src\solvers\ensemble\Layered\..\..\..\..\test\tests_LQN\test_LQN_13.xml." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///C:/Program Files/LQN Solvers/lqn.xsd">
+   <solver-params comment="0" conv_val="1e-005" it_limit="50" underrelax_coeff="0.9" print_int="10">
+      <result-general valid="YES" conv-val="0" iterations="1" platform-info="" user-cpu-time=" 0:00:00.000" system-cpu-time=" 0:00:00.000" elapsed-time=" 0:00:02.000"/>
+   </solver-params>
+   <processor name="P1" scheduling="inf">
+      <result-processor utilization="0.015086"/>
+      <task name="T1" scheduling="ref" multiplicity="20" think-time="100">
+         <!--  reference task T1  -->
+         <result-task throughput="0.075067" utilization="12.5225" phase1-utilization="12.5225" proc-utilization="0.015086"/>
+         <entry name="E1" type="NONE">
+            <result-entry utilization="12.5225" throughput="0.075067" squared-coeff-variation="1.44034" proc-utilization="0.015086" phase1-service-time="166.803" phase1-service-time-variance="40074.9" phase1-utilization="12.5225"/>
+         </entry>
+         <task-activities>
+            <activity name="AS1" bound-to-entry="E1" host-demand-mean="0">
+               <result-activity proc-waiting="0" service-time="5.0423" utilization="0.378734" service-time-variance="764.693" throughput="0.075076" proc-utilization="0"/>
+               <synch-call dest="E21" calls-mean="0.1">
+                  <result-call waiting="0" waiting-variance="0"/>
+               </synch-call>
+            </activity>
+            <activity name="AS2" host-demand-mean="0.1">
+               <result-activity proc-waiting="0" service-time="63.46" utilization="4.76464" service-time-variance="14505" throughput="0.075072" proc-utilization="1.0068"/>
+               <synch-call dest="E22" calls-mean="1">
+                  <result-call waiting="0" waiting-variance="0"/>
+               </synch-call>
+            </activity>
+            <activity name="AS3" host-demand-mean="0.1">
+               <result-activity proc-waiting="0" service-time="98.2963" utilization="7.37916" service-time-variance="24102.7" throughput="0.075067" proc-utilization="1.00339"/>
+               <synch-call dest="E21" calls-mean="2">
+                  <result-call waiting="0" waiting-variance="0"/>
+               </synch-call>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS1"/>
+               </pre>
+               <post>
+                  <activity name="AS2"/>
+               </post>
+            </precedence>
+            <precedence>
+               <pre>
+                  <activity name="AS2"/>
+               </pre>
+               <post>
+                  <activity name="AS3"/>
+               </post>
+            </precedence>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P2" scheduling="inf">
+      <result-processor utilization="0.998551"/>
+      <task name="T2" scheduling="inf">
+         <result-task throughput="0.233254" utilization="12.5074" phase1-utilization="12.5074" proc-utilization="0.998551"/>
+         <entry name="E21" type="NONE">
+            <result-entry utilization="7.75036" throughput="0.157834" squared-coeff-variation="1.91169" proc-utilization="0.471634" phase1-service-time="49.1032" phase1-service-time-variance="4609.32" phase1-utilization="7.75036"/>
+         </entry>
+         <entry name="E22" type="NONE">
+            <result-entry utilization="4.75708" throughput="0.07542" squared-coeff-variation="1.5571" proc-utilization="0.526917" phase1-service-time="63.0705" phase1-service-time-variance="6194" phase1-utilization="4.75708"/>
+         </entry>
+         <task-activities>
+            <activity name="AS21" bound-to-entry="E21" host-demand-mean="1">
+               <result-activity proc-waiting="0" service-time="4.00563" utilization="0.632253" service-time-variance="30.0899" throughput="0.15784" proc-utilization="1.23578"/>
+               <synch-call dest="E31" calls-mean="1">
+                  <result-call waiting="0" waiting-variance="0"/>
+               </synch-call>
+            </activity>
+            <activity name="AS22" bound-to-entry="E22" host-demand-mean="3">
+               <result-activity proc-waiting="0" service-time="9.97285" utilization="0.752185" service-time-variance="171.753" throughput="0.075423" proc-utilization="1.25176"/>
+               <synch-call dest="E32" calls-mean="1">
+                  <result-call waiting="0" waiting-variance="0"/>
+               </synch-call>
+            </activity>
+            <activity name="AS23" host-demand-mean="2">
+               <result-activity proc-waiting="0" service-time="45.0975" utilization="7.11811" service-time-variance="4581.4" throughput="0.157834" proc-utilization="1.15384"/>
+               <synch-call dest="E41" calls-mean="1">
+                  <result-call waiting="40.4759" waiting-variance="339.207"/>
+               </synch-call>
+            </activity>
+            <activity name="AS24" host-demand-mean="4">
+               <result-activity proc-waiting="0" service-time="53.0977" utilization="4.0049" service-time-variance="6015.93" throughput="0.07542" proc-utilization="1.17134"/>
+               <synch-call dest="E42" calls-mean="1">
+                  <result-call waiting="42.0473" waiting-variance="341.914"/>
+               </synch-call>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS21"/>
+               </pre>
+               <post>
+                  <activity name="AS23"/>
+               </post>
+            </precedence>
+            <precedence>
+               <pre>
+                  <activity name="AS22"/>
+               </pre>
+               <post>
+                  <activity name="AS24"/>
+               </post>
+            </precedence>
+            <reply-entry name="E21">
+               <reply-activity name="AS23"/>
+            </reply-entry>
+            <reply-entry name="E22">
+               <reply-activity name="AS24"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P3" scheduling="inf">
+      <result-processor utilization="1.00111"/>
+      <task name="T3" scheduling="inf">
+         <result-task throughput="0.233218" utilization="1.00111" phase1-utilization="1.00111" proc-utilization="1.00111"/>
+         <entry name="E31" type="NONE">
+            <result-entry utilization="0.474679" throughput="0.157839" squared-coeff-variation="0.551233" proc-utilization="0.474679" phase1-service-time="3.00733" phase1-service-time-variance="4.98538" phase1-utilization="0.474679"/>
+         </entry>
+         <entry name="E32" type="NONE">
+            <result-entry utilization="0.526434" throughput="0.075379" squared-coeff-variation="0.507076" proc-utilization="0.526434" phase1-service-time="6.98379" phase1-service-time-variance="24.7318" phase1-utilization="0.526434"/>
+         </entry>
+         <task-activities>
+            <activity name="AS31" bound-to-entry="E31" host-demand-mean="1">
+               <result-activity proc-waiting="0" service-time="1.00044" utilization="0.15791" service-time-variance="0.994482" throughput="0.15784" proc-utilization="1.18534"/>
+            </activity>
+            <activity name="AS32" bound-to-entry="E32" host-demand-mean="3">
+               <result-activity proc-waiting="0" service-time="3.00062" utilization="0.226186" service-time-variance="9.05301" throughput="0.075379" proc-utilization="1.20155"/>
+            </activity>
+            <activity name="AS33" host-demand-mean="2">
+               <result-activity proc-waiting="0" service-time="2.00689" utilization="0.316768" service-time-variance="4.00328" throughput="0.157839" proc-utilization="1.11099"/>
+            </activity>
+            <activity name="AS34" host-demand-mean="4">
+               <result-activity proc-waiting="0" service-time="3.98318" utilization="0.300248" service-time-variance="15.6797" throughput="0.075379" proc-utilization="1.11984"/>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS31"/>
+               </pre>
+               <post>
+                  <activity name="AS33"/>
+               </post>
+            </precedence>
+            <precedence>
+               <pre>
+                  <activity name="AS32"/>
+               </pre>
+               <post>
+                  <activity name="AS34"/>
+               </post>
+            </precedence>
+            <reply-entry name="E32">
+               <reply-activity name="AS34"/>
+            </reply-entry>
+            <reply-entry name="E31">
+               <reply-activity name="AS33"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+   <processor name="P4" scheduling="inf">
+      <result-processor utilization="0.998925"/>
+      <task name="T4" scheduling="fcfs">
+         <result-task throughput="0.231991" utilization="0.998925" phase1-utilization="0.998925" proc-utilization="0.998925"/>
+         <entry name="E41" type="NONE">
+            <result-entry utilization="0.46896" throughput="0.156512" squared-coeff-variation="0.554872" proc-utilization="0.46896" phase1-service-time="2.99628" phase1-service-time-variance="4.98148" phase1-utilization="0.46896"/>
+         </entry>
+         <entry name="E42" type="NONE">
+            <result-entry utilization="0.529965" throughput="0.075479" squared-coeff-variation="0.511857" proc-utilization="0.529965" phase1-service-time="7.02135" phase1-service-time-variance="25.2342" phase1-utilization="0.529965"/>
+         </entry>
+         <task-activities>
+            <activity name="AS41" bound-to-entry="E41" host-demand-mean="1">
+               <result-activity proc-waiting="0" service-time="0.997671" utilization="0.156149" service-time-variance="1.00739" throughput="0.156513" proc-utilization="0.999975"/>
+            </activity>
+            <activity name="AS42" bound-to-entry="E42" host-demand-mean="3">
+               <result-activity proc-waiting="0" service-time="3.02271" utilization="0.228151" service-time-variance="9.2115" throughput="0.075479" proc-utilization="0.999995"/>
+            </activity>
+            <activity name="AS43" host-demand-mean="2">
+               <result-activity proc-waiting="0" service-time="1.99863" utilization="0.312811" service-time-variance="3.97303" throughput="0.156512" proc-utilization="0.999975"/>
+            </activity>
+            <activity name="AS44" host-demand-mean="4">
+               <result-activity proc-waiting="0" service-time="3.99864" utilization="0.301814" service-time-variance="15.9685" throughput="0.075479" proc-utilization="0.999993"/>
+            </activity>
+            <precedence>
+               <pre>
+                  <activity name="AS41"/>
+               </pre>
+               <post>
+                  <activity name="AS43"/>
+               </post>
+            </precedence>
+            <precedence>
+               <pre>
+                  <activity name="AS42"/>
+               </pre>
+               <post>
+                  <activity name="AS44"/>
+               </post>
+            </precedence>
+            <reply-entry name="E41">
+               <reply-activity name="AS43"/>
+            </reply-entry>
+            <reply-entry name="E42">
+               <reply-activity name="AS44"/>
+            </reply-entry>
+         </task-activities>
+      </task>
+   </processor>
+</lqn-model>

@@ -1,0 +1,23 @@
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0,y=0]{LQN classes} 
+\umlclass[x=0,y=0]{processor}{}{} 
+\umlclass[x=4,y=0]{task}{}{} 
+\umlclass[x=8,y=0]{entry}{}{} 
+\umlclass[x=6,y=-3]{activity}{}{} 
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{processor}{task}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{task}{entry}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{task}{activity}
+\umluniaggreg[mult1=1,mult2=1..*,pos2=0.9]{entry}{activity}
+\end{umlpackage} 
+\begin{umlpackage}[x=0.8,y=-6]{PM classes} 
+\umlclass[x=0,y=0]{CQN}{}{} 
+\umlclass[x=0,y=-2]{CQNCox}{}{} 
+\umlclass[x=4,y=0]{CQNRE}{}{} 
+\umlclass[x=4,y=-2]{CQNRECox}{}{} 
+\umlclass[x=7,y=0]{COX}{}{} 
+\umlclass[x=7,y=-2]{RE}{}{} 
+\end{umlpackage} 
+\begin{umlpackage}[x=4.5,y=-11]{Solver classes} 
+\umlclass[x=0,y=0]{LINE\_obj\_SEFF}{}{} 
+\end{umlpackage} 
+\end{tikzpicture}

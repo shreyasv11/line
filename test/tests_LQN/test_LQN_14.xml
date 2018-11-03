@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<lqn-model description="test_LQN_12" name="test_LQN_12" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="lqn.xsd">
+    <processor name="P1" scheduling="inf" >
+        <task name="T11" scheduling="ref"  think-time="100" multiplicity="4">  <!-- reference task T1 -->
+            <entry name="E11" type="Graph" />
+            <task-activities>
+                <activity name="AS11" host-demand-mean="0.01"  bound-to-entry="E11">
+                    <synch-call calls-mean="1" dest="E21" />
+                </activity>
+            </task-activities>
+        </task>
+        <task name="T12" scheduling="ref"  think-time="50" multiplicity="6">  <!-- reference task T1 -->
+            <entry name="E12" type="Graph" />
+            <task-activities>
+                <activity name="AS12" host-demand-mean="0.01"  bound-to-entry="E12">
+                    <synch-call calls-mean="1" dest="E22" />
+                </activity>
+            </task-activities>
+        </task>
+        <task name="T13" scheduling="ref"  think-time="100" multiplicity="8">  <!-- reference task T1 -->
+            <entry name="E13" type="Graph" />
+            <task-activities>
+                <activity name="AS13" host-demand-mean="0.01"  bound-to-entry="E13">
+                    <synch-call calls-mean="1" dest="E23" />
+                </activity>
+            </task-activities>
+        </task>
+        <task name="T14" scheduling="ref"  think-time="20" multiplicity="4">  <!-- reference task T1 -->
+            <entry name="E14" type="Graph" />
+            <task-activities>
+                <activity name="AS14" host-demand-mean="0.01"  bound-to-entry="E14">
+                    <synch-call calls-mean="2" dest="E24" />
+                </activity>
+            </task-activities>
+        </task>
+    </processor>
+    <processor name="P2" scheduling="inf">
+        <task name="T2" scheduling="fcfs" multiplicity="2"> 
+            <entry name="E21" type="Graph" />
+            <entry name="E22" type="Graph" />
+            <entry name="E23" type="Graph" />
+            <entry name="E24" type="Graph" />
+            <task-activities>
+                <activity name="AS21" host-demand-mean="1.0"  bound-to-entry="E21"/>
+                <activity name="AS22" host-demand-mean="0.1"  bound-to-entry="E22"/>
+                <activity name="AS23" host-demand-mean="2.0"  bound-to-entry="E23"/>
+                <activity name="AS24" host-demand-mean="7.0"  bound-to-entry="E24"/>
+                <reply-entry name="E21">
+                    <reply-activity name="AS21"/>
+                </reply-entry>
+                <reply-entry name="E22">
+                    <reply-activity name="AS22"/>
+                </reply-entry>
+                <reply-entry name="E23">
+                    <reply-activity name="AS23"/>
+                </reply-entry>
+                <reply-entry name="E24">
+                    <reply-activity name="AS24"/>
+                </reply-entry>
+            </task-activities>
+        </task>
+    </processor>    
+</lqn-model>
