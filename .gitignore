@@ -23,6 +23,12 @@
 /lib/m3a/.svn/format
 /lib/m3a/.svn/wc.db
 /lib/m3a/.svn/wc.db-journal
+/lib/thirdparty/butools/Mathematica
+/lib/thirdparty/butools/Python
+/lib/thirdparty/butools/doc
+/lib/thirdparty/butools/test
+/lib/thirdparty/butools/demo
+/lib/thirdparty/butools/webpage
 /doc/src/LINE-WinEdit.prj.bak
 /scratch/M_M_1-FCFS-Arv.mat
 /scratch/M_M_1-FCFS-Dep.mat

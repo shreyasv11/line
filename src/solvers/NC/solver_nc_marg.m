@@ -101,10 +101,10 @@ for ist=1:qn.nstations
     else
         set_ist = setdiff(1:qn.nstations,ist);
         nivec_chain = nivec * qn.chains';
-        F_i = pfqn_gmvald(Lchain(ist,:), nivec_chain, mu_chain(ist,:));
-        G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:));
-        g0_i = pfqn_gmvald(ST(ist,:).*alpha(ist,:),nivec, mu_chain(ist,:));
-        G0_i = pfqn_gmvald(STchain(ist,:),nivec_chain, mu_chain(ist,:));        
+        F_i = pfqn_gmvald(Lchain(ist,:), nivec_chain, mu_chain(ist,:), options);
+        G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);
+        g0_i = pfqn_gmvald(ST(ist,:).*alpha(ist,:),nivec, mu_chain(ist,:), options);
+        G0_i = pfqn_gmvald(STchain(ist,:),nivec_chain, mu_chain(ist,:), options);        
         Pr(ist) = F_i * G_minus_i / G * (g0_i / G0_i);
     end
 end

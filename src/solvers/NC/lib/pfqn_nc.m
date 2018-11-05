@@ -6,7 +6,8 @@ nnzClasses = find(N);
 L = L(:,nnzClasses);
 N = N(:,nnzClasses);
 Z = Z(:,nnzClasses);
-Lsum = sum(L,2); L = L(Lsum>options.tol,:); % remove stations with no demand
+Lsum = sum(L,2); 
+L = L((L./Lsum)>options.tol,:); % remove stations with no demand
 LZsum = sum(L,1) + sum(Z,1);
 if any(N(LZsum == 0)>0) % if there is a class with jobs but L and Z all zero
     error('The specified model is impossible: no station has positive demands in one of the non-empty classes.');

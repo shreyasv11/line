@@ -19,9 +19,11 @@ end
 self.seed = options.seed;
 self.maxSamples = options.samples;
 saveJsimg(self);
-cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed)];
+cmd = ['java --illegal-access=permit -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed)];
 %            if options.verbose
 fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
 %            end
-system(cmd);
+rt = java.lang.Runtime.getRuntime();
+rt.exec(cmd);
+%system(cmd);
 end

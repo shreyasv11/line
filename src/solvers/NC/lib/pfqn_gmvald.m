@@ -1,4 +1,4 @@
-function [G,lG]=pfqn_gmvald(L,N,mu)
+function [G,lG]=pfqn_gmvald(L,N,mu,options)
 % G=pfqn_gmvald(L,N,mu)
 % mu: MxN matrix of load-dependent rates
 [M,R]=size(L);
@@ -7,6 +7,9 @@ if isempty(L)
 end
 if nargin==2
     mu=ones(M,sum(N));
+end
+if nargin<4
+    options = SolverNC.defaultOptions;
 end
 isLoadDep = false;
 isInfServer = [];
@@ -25,7 +28,15 @@ end
 
 if ~isLoadDep
     % if load-independent model then use faster pfqn_gmva solver
-    G = pfqn_nc(L(find(~isInfServer),:),N,L(find(isInfServer),:));
+    Lli = L(find(~isInfServer),:);
+    if isempty(Lli)
+        Lli = 0*N;
+    end
+    Zli = L(find(isInfServer),:);
+    if isempty(Zli)
+        Zli = 0*N;
+    end
+    G = pfqn_nc(Lli,N,Zli, options);
 end
 
 G=0;

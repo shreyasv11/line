@@ -10,7 +10,7 @@ Supported models include *extended queueing networks*, both open and closed, *la
 
 ### Getting started
 
-To get started, clone the repository in the chosen installation folder.
+To get started, expand the archive (or clone the repository) in the chosen installation folder.
 
 Start MATLAB and change the active directory to the installation folder. Then add all LINE folders to the path
 ```
