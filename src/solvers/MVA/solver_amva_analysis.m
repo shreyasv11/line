@@ -3,13 +3,8 @@ function [Q,U,R,T,C,X,runtime] = solver_amva_analysis(qn, options)
 % All rights reserved.
 
 M = qn.nstations;    %number of stations
-K = qn.nclasses;    %number of classes
-mu = qn.mu;
-phi = qn.phi;
-rt = qn.rt;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
-chains = qn.chains;
 C = qn.nchains;
 SCV = qn.scv;
 
@@ -66,7 +61,7 @@ Lchain(~isfinite(Lchain))=0;
 Tstart = tic;
 
 
-[Qchain,Uchain,Rchain,Tchain, Cchain, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+[~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
 
 for c=1:qn.nchains
     inchain = find(qn.chains(c,:));
@@ -93,9 +88,9 @@ for c=1:qn.nchains
     end
 end
 runtime = toc(Tstart);
-Q=abs(Q); R=abs(R); X=abs(X); U=abs(U);
 
-X(~isfinite(X))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0;
+Q=abs(Q); R=abs(R); X=abs(X); U=abs(U); T=abs(T); C=abs(C); 
+T(~isfinite(T))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0; X(~isfinite(X))=0; C(~isfinite(C))=0;
 if options.verbose > 0
     fprintf(1,'MVA analysis completed in %f sec\n',runtime);
 end

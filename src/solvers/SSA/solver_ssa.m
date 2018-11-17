@@ -6,6 +6,7 @@ function [pi,SSq,arvRates,depRates]=solver_ssa(qn,options)
 %% generate local state spaces
 nstations = qn.nstations;
 nstateful = qn.nstateful;
+init_nserver = qn.nservers; % restore Inf at delay nodes
 R = qn.nclasses;
 N = qn.njobs';
 sync = qn.sync;
@@ -104,7 +105,7 @@ for act=1:A
 end
 newStateCell = cell(1,A);
 isSimulation = true; % allow state vector to grow, e.g. for FCFS buffers
-while samples_collected < options.samples    
+while samples_collected < options.samples
     %samples_collected
     ctr = 1;
     enabled_action = {}; % row is action label, col1=rate, col2=new state
@@ -114,7 +115,7 @@ while samples_collected < options.samples
         update_cond_a = true; %((node_a{act} == last_node_a || node_a{act} == last_node_p));
         newStateCell{act} = stateCell;
         if update_cond_a || isempty(outprob_a{act})
-            isf = qn.nodeToStateful(node_a{act});            
+            isf = qn.nodeToStateful(node_a{act});
             [newStateCell{act}{qn.nodeToStateful(node_a{act})}, rate_a{act}, outprob_a{act}] =  State.afterEvent(qn, node_a{act}, stateCell{isf}, event_a{act}, class_a{act}, isSimulation);
         end
         
@@ -139,7 +140,7 @@ while samples_collected < options.samples
                             [newStateCell{act}{qn.nodeToStateful(node_p{act})}, ~, outprob_p{act}] =  State.afterEvent(qn, node_p{act}, newStateCell{act}{qn.nodeToStateful(node_p{act})}, event_p{act}, class_p{act}, isSimulation);
                         end
                     end
-                       if ~isempty(newStateCell{act}{qn.nodeToStateful(node_p{act})})
+                    if ~isempty(newStateCell{act}{qn.nodeToStateful(node_p{act})})
                         if qn.isstatedep(node_a{act},3)
                             prob_sync_p{act} = sync{act}.passive{1}.prob(stateCell, newStateCell{act}); %state-dependent
                         else
@@ -184,7 +185,7 @@ while samples_collected < options.samples
     last_node_p = node_p{enabled_action{firing_ctr}};
     state = cell2mat(stateCell');
     output(1:(1+length(state)),samples_collected) = [-(log(rand)/tot_rate), state]';
-
+    
     for ind=1:qn.nnodes
         if qn.isstation(ind)
             isf = qn.nodeToStateful(ind);
@@ -222,7 +223,7 @@ depRates = zeros(size(u,1),qn.nstateful,R);
 
 pi = zeros(1,size(u,1));
 for s=1:size(u,1)
-    pi(s) = sum(output(uj==s,1));    
+    pi(s) = sum(output(uj==s,1));
 end
 SSq = SSq(:,ui)';
 
@@ -246,4 +247,5 @@ pi = pi/sum(pi);
 if options.verbose
     fprintf(1,'\n');
 end
+qn.nservers = init_nserver; % restore Inf at delay nodes
 end

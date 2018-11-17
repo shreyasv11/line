@@ -43,7 +43,7 @@ classdef Solver < handle
         function checkOptions(self, disabledChecks)
             if strcmp(self.options.method,'exact')
                 if ~self.model.hasProductFormSolution
-                    warning('The model does not have a product-form solution, hence it may not be solved exactly.');
+                    error('The model does not have a product-form solution, hence exact solution is not possible.');
                 end
             end
         end

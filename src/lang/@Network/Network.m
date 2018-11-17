@@ -836,7 +836,7 @@ classdef Network < matlab.mixin.Copyable
             if i > 0
                 bool = range([self.getStruct.rates(i,:)])>0;
             else
-                bool = true;
+                bool = false;
             end
         end
         

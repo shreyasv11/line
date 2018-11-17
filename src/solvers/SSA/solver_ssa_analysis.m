@@ -10,7 +10,6 @@ phi = qn.phi;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 sched = qn.sched;
-rates = qn.rates;
 Tstart = tic;
 
 PH=cell(M,K);
