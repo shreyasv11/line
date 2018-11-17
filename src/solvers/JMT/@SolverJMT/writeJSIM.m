@@ -1,4 +1,4 @@
-function saveJsimg(self)
+function fname = writeJSIM(self)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 [simElem, simNode] = saveXMLHeader(self, self.model.getLogPath);
@@ -106,6 +106,6 @@ end
 %             docElem.setAttribute('name', self.model.getName);
 %             docElem.setAttribute('xsi:noNamespaceSchemaLocation', 'Archive.xsd');
 %             docElem.appendChild(simNode);
-
-xmlwrite(getJsimgtempPath(self), simNode);
+fname = getJSIMTempPath(self);
+xmlwrite(fname, simNode);
 end

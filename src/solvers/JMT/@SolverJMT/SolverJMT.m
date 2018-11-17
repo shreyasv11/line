@@ -89,19 +89,33 @@ classdef SolverJMT < NetworkSolver
         jwatView(self, options)
         jsimgView(self, options)
         
-        saveJsimg(self)
-        
-        [result, parsed] = getResults(self)
+        [outputFileName] = writeJMVA(self, outputFileName)
+        [outputFileName] = writeJSIM(self, outputFileName)
+
+        function [result, parsed] = getResults(self)
+            options = self.getOptions;            
+            switch options.method
+                case {'mva','jmva'}
+                    [result, parsed] = self.getResultsJMVA;
+                case {'sim','jsim','jsimg','jsimw','default'}
+                    [result, parsed] = self.getResultsJSIM;
+            end
+        end
+
+        [result, parsed] = getResultsJSIM(self)
+        [result, parsed] = getResultsJMVA(self)
     end
     
     %Private methods.
     methods (Access = 'private')
-        function out = getJsimgtempPath(self)
-            out = [self.filePath,'jsimg',filesep, getFileNameWithExtension(self)];
+        function out = getJSIMTempPath(self)
+            fname = [self.getFileName(), ['.', 'jsimg']];
+            out = [self.filePath,'jsimg',filesep, fname];
         end
         
-        function out = getFileNameWithExtension(self)
-            out = [self.getFileName(), ['.', self.fileFormat]];
+        function out = getJMVATempPath(self)
+            fname = [self.getFileName(), ['.', 'jmva']];
+            out = [self.filePath,'jmva',filesep, fname];
         end
     end
     

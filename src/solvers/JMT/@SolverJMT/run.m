@@ -54,11 +54,22 @@ if ~self.model.hasInitState
 end
 
 self.maxSamples = options.samples;
-saveJsimg(self);
-cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
-if options.verbose
-    fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
-    fprintf(1,'JMT Command: %s\n',cmd);
+
+switch options.method
+    case {'mva','jmva'}
+        fname = self.writeJMVA([self.getFilePath(),'jmva',filesep, self.getFileName(),'.jmva']);
+        cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed), ' --illegal-access=permit'];
+        if options.verbose
+            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jmva']);
+            fprintf(1,'JMT Command: %s\n',cmd);
+        end
+    case {'sim','jsim','jsimg','jsimw','default'}
+        self.writeJSIM;
+        cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
+        if options.verbose
+            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
+            fprintf(1,'JMT Command: %s\n',cmd);
+        end
 end
 system(cmd);
 Tsim=toc(T0);
@@ -68,7 +79,13 @@ if options.verbose
 end
 
 if ~options.keep
-    delete([self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
+    switch options.method
+        case {'mva','jmva'}
+            delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
+        case {'sim','jsim','jsimg','jsimw','default'}
+            delete([self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
+    end
 end
+
 self.getResults;
 end

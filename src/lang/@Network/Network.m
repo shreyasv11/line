@@ -153,6 +153,10 @@ classdef Network < matlab.mixin.Copyable
             bool = any(isinf(self.getNumberOfJobs()));
         end
         
+        function bool = hasClassSwitch(self)
+            bool = any(cellfun(@(c) isa(c,'ClassSwitch'), self.nodes));
+        end
+        
         function bool = hasClosedClasses(self)
             bool = any(isfinite(self.getNumberOfJobs()));
         end

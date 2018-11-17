@@ -36,7 +36,14 @@ classdef Task < matlab.mixin.Copyable
             obj.multiplicity = multiplicity;
             obj.scheduling = scheduling;
             switch scheduling
+                case SchedStrategy.INF
+                    if isfinite(multiplicity)
+                        obj.multiplicity = Inf;
+                    end
                 case SchedStrategy.REF
+                    if isfinite(multiplicity)
+                        obj.multiplicity = Inf;
+                    end
                     if isnumeric(thinkTime)
                         obj.thinkTimeMean = Exp(1/thinkTime);
                         obj.thinkTimeMean = thinkTime;
@@ -53,8 +60,7 @@ classdef Task < matlab.mixin.Copyable
                     if thinkTime > 0
                         warning('Cannot specify a think time for a non-reference task, setting it to zero.');
                     end
-            end
-                    
+            end                    
             model.objects.tasks{end+1} = obj;
         end
         

@@ -3,7 +3,7 @@ clear;
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
-node{2} = Queue(model, 'Queue1', SchedStrategy.FCFS);
+node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 node{3} = Source(model,'Source');
 node{4} = Sink(model,'Sink');
 
