@@ -44,7 +44,7 @@ classdef SolverAuto < NetworkSolver
             % first try with chosen solver, if the method is not available
             % or fails keep going with the other candidates
             proposedSolvers = {self.chooseSolver(), self.candidates};
-            for s=1:length(proposedSolvers)
+            for s=1:length(proposedSolvers)                
                 try
                     [QN,UN,RN,TN] = proposedSolvers{s}.getAvg(Q,U,R,T);
                     return
@@ -109,7 +109,7 @@ classdef SolverAuto < NetworkSolver
                 end
             else
                 solver = self.candidates{1}; % take fastest
-            end
+            end            
         end
     end
 end

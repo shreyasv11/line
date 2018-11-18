@@ -2,7 +2,7 @@ model = Network('model');
 
 node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
-node{2}.setNumServers(2);
+%node{2}.setNumServers(2);
 
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 2, node{1}, 0);
@@ -27,7 +27,7 @@ model.link(P);
 % This part illustrates the execution of different solvers
 solver = {};
 solver{end+1} = SolverCTMC(model);
-%solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true);
+solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true,'samples',5e3);
 solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true,'samples',5e3);
 solver{end+1} = SolverFluid(model);
 solver{end+1} = SolverMVA(model);

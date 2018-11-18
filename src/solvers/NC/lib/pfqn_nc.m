@@ -64,7 +64,8 @@ if M==1 % single node
     end
     
     % cycle solution methods
-    methods = {'panacea','rmint','imci'};
+    % 'panacea' excluded because if one of the Zs is zero produces bad results
+    methods = {'rmint','imci'}; 
     if options.samples < 1e5
         if options.verbose == 2
             warning('options.samples value is too low for SolverNC. Setting to 1e5.');
