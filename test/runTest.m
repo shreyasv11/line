@@ -31,8 +31,8 @@ optionsnc = options; optionsnc.samples = 1e6;
 
 solver = {};
 % This part illustrates the savedecution of different solvers
-%solver{1} = SolverCTMC(model,options);
-solver{2} = SolverJMT(model,optionsjmt);
+solver{1} = SolverCTMC(model,options);
+%solver{2} = SolverJMT(model,optionsjmt);
 solver{3} = SolverFluid(model,options);
 solver{4} = SolverMVA(model,options);
 solver{5} = SolverNC(model,optionsnc);
