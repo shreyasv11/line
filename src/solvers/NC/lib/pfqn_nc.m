@@ -6,7 +6,7 @@ nnzClasses = find(N);
 L = L(:,nnzClasses);
 N = N(:,nnzClasses);
 Z = Z(:,nnzClasses);
-Lsum = sum(L,2); 
+Lsum = sum(L,2);
 Lmax = max(L,[],2);
 L = L((Lmax./Lsum)>options.tol,:); % remove stations with no demand
 LZsum = sum(L,1) + sum(Z,1);
@@ -45,6 +45,7 @@ Lnnzd = L(:,nonzeroDemandClasses);
 Nnnzd = N(nonzeroDemandClasses);
 Znnzd = Z(:,nonzeroDemandClasses);
 
+
 % first try rather efficient methods
 if M==1 % single node
     if (K==1 && N<30) || strcmp(options.method,'exact')
@@ -54,7 +55,8 @@ if M==1 % single node
         return
     end
     
-    if sum(N) > 100
+    Nstar = (sum(Lnnzd)+sum(Znnzd,1))/max(Lnnzd);
+    if strcmpi(options.method,'default') && sum(Nnnzd) > 5 * sum(Nstar)
         options.method = 'le';
         logI = sub_method(Lnnzd, Nnnzd, Znnzd, options);
         if isfinite(logI)
@@ -65,7 +67,7 @@ if M==1 % single node
     
     % cycle solution methods
     % 'panacea' excluded because if one of the Zs is zero produces bad results
-    methods = {'rmint','imci'}; 
+    methods = {'rmint','imci'};
     if options.samples < 1e5
         if options.verbose == 2
             warning('options.samples value is too low for SolverNC. Setting to 1e5.');
@@ -82,6 +84,10 @@ if M==1 % single node
     end
     return
 else % not a repairmen problem
+    Nstar = (sum(Lnnzd)+sum(Znnzd,1))/max(Lnnzd);
+    if strcmpi(options.method,'default') && sum(Nnnzd) > 5 * sum(Nstar)
+        options.method = 'le';
+    end    
     lGn = sub_method(Lnnzd, Nnnzd, Znnzd, options);
 end
 end

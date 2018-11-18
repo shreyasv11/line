@@ -103,26 +103,34 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             if isinf(S(i)) % infinite server
                 % do nothing
             else
-                Zcorr(i,:) = (1-(Xchain*Lchain(i,:)'/S(i))^S(i)) * Lchain(i,:) * (S(i)-1)/S(i);
+                Zcorr(i,:) = max([0,(1-(Xchain*Lchain(i,:)'/S(i))^S(i))]) * Lchain(i,:) * (S(i)-1)/S(i);
             end
         end
         lG = pfqn_nc(Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1), options); % update lG
     end
     
     for r=1:C
-        Xchain(r) = exp(pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options) - lG);
+        lGr(r) = pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options);
+        Xchain(r) = exp(lGr(r) - lG);
         for i=1:M
             if Lchain(i,r)>0
                 if isinf(S(i)) % infinite server
                     Qchain(i,r) = Lchain(i,r) * Xchain(r);
                 else
-                    Qchain(i,r) = Zcorr(i,r) * Xchain(r) + Lcorr(i,r) * exp(pfqn_nc([Lcorr(setdiff(1:size(Lcorr,1),i),:),zeros(size(Lcorr,1)-1,1); Lcorr(i,:),1], [oner(Nchain,r),1], [sum(Z,1)+sum(Zcorr,1),0], options) - lG);
+                    lGar(i,r) = pfqn_nc([Lcorr(setdiff(1:size(Lcorr,1),i),:),zeros(size(Lcorr,1)-1,1); Lcorr(i,:),1], [oner(Nchain,r),1], [sum(Z,1)+sum(Zcorr,1),0], options);
+                    Qchain(i,r) = Zcorr(i,r) * Xchain(r) + Lcorr(i,r) * exp(lGar(i,r) - lG);
                 end
             end
         end
     end
     if isnan(Xchain)
-        error('Normalizing constant computation produced floating-point range exception. Model is too large.');
+%        Z
+%        Zcorr
+%        Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1)
+%        lG
+%        lGr
+%        lGar
+        error('Normalizing constant computations produced a floating-point range exception. Model is likely too large.');
     end
     
     Z = sum(Z(1:M,:),1);

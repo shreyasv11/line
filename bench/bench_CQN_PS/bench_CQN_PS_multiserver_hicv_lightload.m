@@ -28,7 +28,7 @@ for it=iters
     
     options = Solver.defaultOptions;
     options.seed = 23000;
-    options.verbose = 0; 
+    options.verbose = 0; optionsnc = options; optionsnc.samples = 1e6;
     jmtoptions = options;
     jmtoptions.samples = 1e6;
     %    options.keep = 1
@@ -45,7 +45,7 @@ for it=iters
     runtime = {};
     solver{1} = SolverFluid(model,options);
     solver{2} = SolverMVA(model,options);
-    solver{3} = SolverNC(model,options);
+    solver{3} = SolverNC(model,optionsnc);
     for s=1:length(solver)
         [QN{it,s},UN{it,s},RN{it,s},TN{it,s}] = solver{s}.getAvg();
         ERRQ(it,s) = maxerronsum(QN{it,s},QNsim{it});
