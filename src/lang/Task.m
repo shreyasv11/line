@@ -7,7 +7,7 @@ classdef Task < matlab.mixin.Copyable
         thinkTime;          %double
         thinkTimeMean;          %double
         thinkTimeSCV;          %double
-		entries = [];
+        entries = [];
         activities = Activity.empty();     %task-activities
         initActID = 0;       %integer that indicates which is the initial activity
         precedences = [];
@@ -22,7 +22,7 @@ classdef Task < matlab.mixin.Copyable
         function obj = Task(model, name, multiplicity, scheduling, thinkTime)
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
-            end            
+            end
             if ~exist('multiplicity','var')
                 multiplicity = 1;
             end
@@ -36,13 +36,9 @@ classdef Task < matlab.mixin.Copyable
             obj.multiplicity = multiplicity;
             obj.scheduling = scheduling;
             switch scheduling
-                case SchedStrategy.INF
-                    if isfinite(multiplicity)
-                        obj.multiplicity = Inf;
-                    end
                 case SchedStrategy.REF
-                    if isfinite(multiplicity)
-                        obj.multiplicity = Inf;
+                    if ~isfinite(multiplicity)
+                        obj.multiplicity = 1;
                     end
                     if isnumeric(thinkTime)
                         obj.thinkTimeMean = Exp(1/thinkTime);
@@ -54,22 +50,26 @@ classdef Task < matlab.mixin.Copyable
                         obj.thinkTimeSCV = thinkTime.getSCV();
                     end
                 otherwise
+                    if strcmp(SchedStrategy.INF,scheduling) && isfinite(multiplicity)
+                        obj.multiplicity = 1;
+                    end
+                    
                     obj.thinkTime = Exp(Inf);
                     obj.thinkTimeMean = 0.0;
                     obj.thinkTimeSCV = 0.0;
                     if thinkTime > 0
                         warning('Cannot specify a think time for a non-reference task, setting it to zero.');
                     end
-            end                    
+            end
             model.objects.tasks{end+1} = obj;
         end
         
         function obj = on(obj, parent)
             parent.addTask(obj);
         end
-		
-		function obj = setAsReferenceTask(obj)
-			self.scheduling = SchedStrategy.REF;
+        
+        function obj = setAsReferenceTask(obj)
+            self.scheduling = SchedStrategy.REF;
         end
         
         function obj = setThinkTime(obj, thinkTime)
@@ -94,9 +94,9 @@ classdef Task < matlab.mixin.Copyable
         %addActivity
         function obj = addActivity(obj, newAct)
             if(nargin > 1)
-                newAct.setParent(obj.name); 
+                newAct.setParent(obj.name);
                 obj.activities = [obj.activities; newAct];
-            end                        
+            end
         end
         
         %setActivity
@@ -124,7 +124,7 @@ classdef Task < matlab.mixin.Copyable
                     obj.actNames = obj.actNames(idxToKeep);
                 end
             end
-        end        
+        end
         
         %setInitActivity
         function obj = setInitActivity(obj, initActID)
@@ -138,7 +138,7 @@ classdef Task < matlab.mixin.Copyable
             if iscell(newPrec)
                 for m=1:length(newPrec)
                     obj.precedences = [obj.precedences; newPrec{m}];
-                end                
+                end
             else
                 obj.precedences = [obj.precedences; newPrec];
             end
@@ -163,6 +163,6 @@ classdef Task < matlab.mixin.Copyable
                 end
             end
             
-        end     
+        end
     end
 end
