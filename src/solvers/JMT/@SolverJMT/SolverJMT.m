@@ -95,10 +95,10 @@ classdef SolverJMT < NetworkSolver
         function [result, parsed] = getResults(self)
             options = self.getOptions;            
             switch options.method
-                case {'mva','jmva'}
-                    [result, parsed] = self.getResultsJMVA;
-                case {'sim','jsim','jsimg','jsimw','default'}
+                case {'jsim','default'}
                     [result, parsed] = self.getResultsJSIM;
+                otherwise
+                    [result, parsed] = self.getResultsJMVA;
             end
         end
 

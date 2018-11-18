@@ -148,9 +148,9 @@ switch self.options.method
         algTypeElement.setAttribute('name','Bard-Schweitzer');
     case {'jmva.aql'}
         algTypeElement.setAttribute('name','AQL');
-    case {'jmva.linearizer'}
+    case {'jmva.lin'}
         algTypeElement.setAttribute('name','Linearizer');
-    case {'jmva.dmlinearizer'}
+    case {'jmva.dmlin'}
         algTypeElement.setAttribute('name','De Souza-Muntz Linearizer');
     otherwise
         algTypeElement.setAttribute('name','MVA');

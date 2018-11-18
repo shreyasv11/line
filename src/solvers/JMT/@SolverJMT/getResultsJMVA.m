@@ -6,7 +6,6 @@ try
     fileName = strcat(self.getFilePath(),'jmva',filesep,self.getFileName(),'.jmva-result.jmva');
     if exist(fileName,'file')
         Pref.Str2Num = 'always';
-        fileName
         parsed = xml_read(fileName,Pref);
     else
         error('JMT did not output a result file, the analysis has likely failed.');

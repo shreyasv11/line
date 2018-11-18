@@ -56,7 +56,7 @@ end
 self.maxSamples = options.samples;
 
 switch options.method
-    case {'sim','jsim','jsimg','jsimw','default'}
+        case {'jsim','default'}
         self.writeJSIM;
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
         if options.verbose
@@ -80,7 +80,7 @@ end
 
 if ~options.keep
     switch options.method
-        case {'sim','jsim','jsimg','jsimw','default'}
+        case {'jsim','default'}
             delete([self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
         otherwise % covers all JMVA submethods
             delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);

@@ -46,7 +46,7 @@ for c=1:qn.nchains
         if isOpenChain && i == qn.refstat(inchain(1)) % if this is a source ST = 1 / arrival rates
             STchain(i,c) = 1 / sumfinite(qn.rates(i,inchain)); % ignore degenerate classes with zero arrival rates
         else
-            STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';            
+            STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
         end
         SCVchain(i,c) = SCV(i,inchain) * alpha(i,inchain)';
     end
@@ -60,8 +60,12 @@ STchain(~isfinite(STchain))=0;
 Lchain(~isfinite(Lchain))=0;
 Tstart = tic;
 
-
-[~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+switch options.method
+    case 'exact'
+        [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+    otherwise
+        [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+end
 
 for c=1:qn.nchains
     inchain = find(qn.chains(c,:));
@@ -79,7 +83,7 @@ for c=1:qn.nchains
                 R(i,k) = Q(i,k) / T(i,k);
                 %R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');
             else
-                T(i,k) = 0;                
+                T(i,k) = 0;
                 R(i,k)=0;
                 Q(i,k)=0;
             end
@@ -89,7 +93,7 @@ for c=1:qn.nchains
 end
 runtime = toc(Tstart);
 
-Q=abs(Q); R=abs(R); X=abs(X); U=abs(U); T=abs(T); C=abs(C); 
+Q=abs(Q); R=abs(R); X=abs(X); U=abs(U); T=abs(T); C=abs(C);
 T(~isfinite(T))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0; X(~isfinite(X))=0; C(~isfinite(C))=0;
 if options.verbose > 0
     fprintf(1,'MVA analysis completed in %f sec\n',runtime);

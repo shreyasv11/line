@@ -23,6 +23,15 @@ classdef SolverMVA < NetworkSolver
             
             [qn] = self.model.getStruct();
             
+            if strcmp(options.method,'exact') && ~self.model.hasProductFormSolution
+                error('The exact method requires the model to have a product-form solution. Quitting.');
+            end            
+            
+            if strcmp(options.method,'exact') && self.model.hasMultiServer
+                options.method = 'default';
+                warning('The exact method does not support yet multi-server station. Switching to default method.');
+            end            
+            
             [Q,U,R,T,C,X] = solver_amva_analysis(qn, options);            
             runtime = toc(T0);
             
