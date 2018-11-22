@@ -1,4 +1,4 @@
-function [Gn,lGn]=pfqn_panacea(L,K,Z)
+function [Gn,lGn]=pfqn_pnc(L,K,Z)
 % K = population vector
 [q,p]=size(L);
 if nargin==2 || isempty(Z)

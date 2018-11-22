@@ -1,4 +1,4 @@
-function logG = pfqn_rmint(L,N,Z)
+function logG = pfqn_pnc2(L,N,Z)
 nonzeroClasses = find(N);
 % repairmen integration
 order = 15;

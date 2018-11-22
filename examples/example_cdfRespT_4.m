@@ -13,10 +13,6 @@ node{1}.setService(jobclass{2}, Erlang.fitMeanAndOrder(4.0,2));
 node{2}.setService(jobclass{2}, HyperExp.fitMeanAndSCV(5.0,30.0));
 
 P = cell(2);
-%P{1,1} = circul(2)/2;
-%P{1,2} = circul(2)/2;
-%P{2,1} = circul(2)/8;
-%P{2,2} = circul(2)*7/8;
 P{1,1} = circul(2);
 P{1,2} = zeros(2);
 P{2,1} = zeros(2);

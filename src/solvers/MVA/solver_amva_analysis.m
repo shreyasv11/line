@@ -61,10 +61,12 @@ Lchain(~isfinite(Lchain))=0;
 Tstart = tic;
 
 switch options.method
-    case 'exact'
+    case {'exact','mva'}
         [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
-    otherwise
+    case {'default','amva'}
         [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+    otherwise
+        error('Unsupported SolverMVA method.');
 end
 
 for c=1:qn.nchains

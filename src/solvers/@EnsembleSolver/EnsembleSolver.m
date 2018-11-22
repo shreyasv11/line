@@ -89,7 +89,7 @@ classdef EnsembleSolver < Solver
                         end
                         self.post(it);
                     end
-                case {'parallel'}
+                case {'para'}
 %                     while ~self.converged(it) & it < options.iter_max
 %                         it = it + 1;
 %                         self.pre(it);

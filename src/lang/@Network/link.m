@@ -2,8 +2,10 @@ function self = link(self, P)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 
+isReset = false;
 if ~isempty(self.links)
-    warning('Network topology already instantiated. Calling resetNetwork automatically.');
+    %    warning('Network topology already instantiated. Calling resetNetwork automatically.');
+    isReset = true;
     self.resetNetwork;
 end
 R = self.getNumberOfClasses;
@@ -41,7 +43,7 @@ if numel(P) == R
     % 1 matrix per class
     for r=1:R
         for i=find(issink)'
-           P{r}((i-1)*R+1:i*R,:)=0;
+            P{r}((i-1)*R+1:i*R,:)=0;
         end
     end
     Pmat = P;
@@ -56,13 +58,13 @@ end
 
 for r=1:R
     for s=1:R
-            if isempty(P{r,s})
-                P{r,s} = zeros(M);
-            else
-                for i=find(issink)'
-                    P{r,s}(i,:)=0;
-                end
+        if isempty(P{r,s})
+            P{r,s} = zeros(M);
+        else
+            for i=find(issink)'
+                P{r,s}(i,:)=0;
             end
+        end
     end
 end
 
@@ -154,4 +156,12 @@ for i=1:Mplus
     end
 end
 
+if isReset
+    nodetypes = self.getNodeTypes();
+    wantVisits = true;
+    if any(nodetypes == NodeType.Cache)
+        wantVisits = false;
+    end
+    self.refreshChains(self.qn.rates, wantVisits);
+end
 end

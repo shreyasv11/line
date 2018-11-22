@@ -109,6 +109,8 @@ classdef NetworkSolver < Solver
         [UN]                = getAvgUtilChain(self,U);
         [RN]                = getAvgRespTChain(self,R);
         [TN]                = getAvgTputChain(self,T);
+        [RN]                = getAvgSysRespT(self,R);
+        [TN]                = getAvgSysTput(self,T);
         [CT,XT]             = getAvgSysTable(self,R,T);
         [QNt,UNt,TNt] = getTranAvg(self,Qt,Ut,Tt);
 

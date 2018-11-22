@@ -29,7 +29,7 @@ for i=1:M
 end
 
 switch options.method
-    case 'serial-hashed'
+    case 'serial.hash'
         [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qn, options);   
         XN = NaN*zeros(1,K);
         UN = NaN*zeros(M,K);
@@ -123,14 +123,14 @@ switch options.method
         XN(isnan(XN))=0;
         TN(isnan(TN))=0;
  
-    case 'parallel'
+    case 'para'
         laboptions = options;
         spmd
             laboptions.samples = ceil(laboptions.samples / numlabs);
             laboptions.verbose = false;
-            if strcmp(options.method, 'parallel')
+            if strcmp(options.method, 'para')
                 [pi,SSq,arvRates,depRates] = solver_ssa(qn, laboptions);
-            elseif strcmp(options.method, 'parallel-hashed')
+            elseif strcmp(options.method, 'para.hash')
                 [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qn, laboptions);
             end
             

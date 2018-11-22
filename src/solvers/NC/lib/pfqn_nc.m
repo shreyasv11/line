@@ -66,8 +66,8 @@ if M==1 % single node
     end
     
     % cycle solution methods
-    % 'panacea' excluded because if one of the Zs is zero produces bad results
-    methods = {'rmint','imci'};
+    % 'pnc' excluded because if one of the Zs is zero produces bad results
+    methods = {'pnc2','imci'};
     if options.samples < 1e5
         if options.verbose == 2
             warning('options.samples value is too low for SolverNC. Setting to 1e5.');
@@ -94,13 +94,13 @@ end
 
 function lG = sub_method(L,N,Z,options)
 switch options.method
-    case 'rmint'
+    case 'pnc2'
         if size(L,1)>1
-            error('The "rmint" method requires a model with a delay and a queueing station.');
+            error('The "pnc2" method requires a model with a delay and a queueing station.');
         end
-        lG = pfqn_rmint(L,N,sum(Z,1));
-    case 'panacea'
-        [~,lG] = pfqn_panacea(L,N,sum(Z,1));
+        lG = pfqn_pnc2(L,N,sum(Z,1));
+    case 'pnc'
+        [~,lG] = pfqn_pnc(L,N,sum(Z,1));
     case 'le'
         [~,lG] = pfqn_le(L,N,sum(Z,1));
     case 'ls'
