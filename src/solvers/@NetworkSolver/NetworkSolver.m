@@ -158,6 +158,10 @@ classdef NetworkSolver < Solver
         end
         
         % default warnings for advanced features to be over-ridden in subclasses
+        function [lNormConst] = getProbNormConst(self)            
+            error('getProbNormConst is not supported by this solver.');
+        end
+        
         function Pnir = getProbState(self)
             error('getProbState is not supported by this solver.');
         end

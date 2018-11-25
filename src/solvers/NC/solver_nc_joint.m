@@ -1,4 +1,4 @@
-function [Pr,runtime] = solver_nc_joint(qn, options)
+function [Pr,G,runtime] = solver_nc_joint(qn, options)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 
@@ -106,6 +106,7 @@ end
 
 runtime = toc(Tstart);
 
+lG = log(G);
 if options.verbose > 0
     fprintf(1,'Normalizing constant (NC) analysis completed in %f sec\n',runtime);
 end

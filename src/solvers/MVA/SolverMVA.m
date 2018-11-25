@@ -29,7 +29,7 @@ classdef SolverMVA < NetworkSolver
             
             if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer
                 options.method = 'default';
-                warning('The exact method does not support yet multi-server station. Switching to default method.');
+                warning('The exact method does not support yet multi-server stations. Switching to default method.');
             end            
             
             [Q,U,R,T,C,X] = solver_amva_analysis(qn, options);            

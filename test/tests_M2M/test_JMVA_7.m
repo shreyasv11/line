@@ -1,6 +1,5 @@
 clear;
 model = Network('model');
-
 node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 node{3} = Source(model,'Source');
@@ -11,10 +10,8 @@ jobclass{2} = OpenClass(model, 'Class2', 0);
 
 node{1}.setService(jobclass{1}, Erlang(3,2));
 node{1}.setService(jobclass{2}, HyperExp(0.5,3.0,10.0));
-
 node{2}.setService(jobclass{1}, HyperExp(0.1,1.0,10.0));
 node{2}.setService(jobclass{2}, Exp(1));
-
 node{3}.setArrival(jobclass{2}, Exp(0.1));
 
 M = model.getNumberOfStations();
@@ -28,22 +25,22 @@ P{2,1} = zeros(4);
 
 model.link(P);
 %%
-options = Solver.defaultOptions;
-options.keep=true;
-options.verbose=1;
-options.cutoff = 3;
-%options.samples=2e4;
+solver = {};
+%solver{end+1} = SolverJMT(model,'method','jsim','seed',23001,'samples',1e6);
+solver{end+1} = SolverMVA(model,'method','default');
+%solver{end+1} = SolverNC(model,'method','exact');
+solver{end+1} = SolverJMT(model,'method','jmva','verbose',true,'keep',true);
+solver{end+1} = SolverJMT(model,'method','jmva.comom','verbose',true,'keep',true);
+solver{end+1} = SolverJMT(model,'method','jmva.recal','verbose',true);
+solver{end+1} = SolverJMT(model,'method','jmva.ls','samples',1e4,'verbose',true,'keep',true);
 
-disp('This example shows the execution of the solver on a 2-class 2-node mixed model.')
-% This part illustrates the execution of different solvers
-solver={};
-solver{end+1} = SolverCTMC(model,options); % CTMC is infinite on this model
-solver{end+1} = SolverJMT(model,options);
-solver{end+1} = SolverSSA(model,options);
-%solver{end+1} = SolverFluid(model,options);
-solver{end+1} = SolverMVA(model,options);
-%solver{end+1} = SolverNC(model,options);
+AvgTable = {};
+logNC = [];
 for s=1:length(solver)
-    fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    AvgTable = solver{s}.getAvgTable()
+    try
+        fprintf(1,'SOLVER: %s METHOD: %s\n',solver{s}.getName(),solver{s}.getOptions.method);
+        solver{s}.getAvgTable
+    catch me
+        me
+    end
 end

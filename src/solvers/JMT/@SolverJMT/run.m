@@ -67,12 +67,12 @@ switch options.method
         fname = self.writeJMVA([self.getFilePath(),'jmva',filesep, self.getFileName(),'.jmva']);
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed), ' --illegal-access=permit'];
         if options.verbose
-            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jmva']);
+            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
             fprintf(1,'JMT Command: %s\n',cmd);
         end
 end
-system(cmd);
-Tsim=toc(T0);
+[~, result] = system(cmd);
+Tsim = toc(T0);
 
 if options.verbose
     fprintf(1,sprintf('JMT analysis completed in %.6f sec \n',Tsim));

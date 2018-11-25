@@ -6,7 +6,7 @@ function [pi,SSq,arvRates,depRates]=solver_ssa(qn,options)
 %% generate local state spaces
 nstations = qn.nstations;
 nstateful = qn.nstateful;
-init_nserver = qn.nservers; % restore Inf at delay nodes
+%init_nserver = qn.nservers; % restore Inf at delay nodes
 R = qn.nclasses;
 N = qn.njobs';
 sync = qn.sync;
@@ -247,5 +247,5 @@ pi = pi/sum(pi);
 if options.verbose
     fprintf(1,'\n');
 end
-qn.nservers = init_nserver; % restore Inf at delay nodes
+%qn.nservers = init_nserver; % restore Inf at delay nodes
 end

@@ -19,6 +19,52 @@ if ~exist('outFileName','var')
 end
 
 qn = self.model.getStruct();
+
+algTypeElement = mvaDoc.createElement('algType');
+switch self.options.method
+    case {'jmva.recal'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','RECAL');
+    case {'jmva.comom'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','CoMoM');
+    case {'jmva.chow'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','Chow');
+    case {'jmva.bs','jmva.amva'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','Bard-Schweitzer');
+    case {'jmva.aql'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','AQL');
+    case {'jmva.lin'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','Linearizer');
+    case {'jmva.dmlin'}
+        if max(qn.nservers(isfinite(qn.nservers))) > 1
+            error(sprintf('%s does not support multi-server stations.',self.options.method));
+        end
+        algTypeElement.setAttribute('name','De Souza-Muntz Linearizer');
+    case {'jmva.ls'}
+        algTypeElement.setAttribute('name','Logistic Sampling');
+    otherwise
+        algTypeElement.setAttribute('name','MVA');
+end
+algTypeElement.setAttribute('tolerance','1.0E-7');
+algTypeElement.setAttribute('maxSamples',num2str(self.options.samples));
+
 %%%%%%%%%%
 M = qn.nstations;    %number of stations
 NK = qn.njobs';  % initial population per class
@@ -91,30 +137,50 @@ for c=1:qn.nchains
         classElement.setAttribute('name',sprintf('Chain%02d',c));
     else
         classElement = mvaDoc.createElement('openclass');
-        classElement.setAttribute('population',num2str(sum(qn.rates(sourceid,qn.chains(c,:)))));
+        classElement.setAttribute('rate',num2str(sum(qn.rates(sourceid,qn.chains(c,:)))));
         classElement.setAttribute('name',sprintf('Chain%02d',c));
     end
     classesElement.appendChild(classElement);
 end
 
+isLoadDep = false(1,qn.nstations);
 for i=1:qn.nstations
     switch self.getStruct.nodetype(self.getStruct.stationToNode(i))
         case NodeType.Delay
             statElement = mvaDoc.createElement('delaystation');
             statElement.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
         case NodeType.Queue
-            statElement = mvaDoc.createElement('listation');
-            statElement.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
-            statElement.setAttribute('servers',num2str(qn.nservers(i)));
+            if qn.nservers(i) == 1
+                isLoadDep(i) = false;
+                statElement = mvaDoc.createElement('listation');
+                statElement.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
+                statElement.setAttribute('servers',num2str(1));
+            else
+                isLoadDep(i) = true;
+                statElement = mvaDoc.createElement('ldstation');
+                statElement.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
+                statElement.setAttribute('servers',num2str(1));
+            end
         otherwise
             continue
     end
     srvTimesElement = mvaDoc.createElement('servicetimes');
     for c=1:qn.nchains
-        statSrvTimeElement = mvaDoc.createElement('servicetime');
-        statSrvTimeElement.setAttribute('customerclass',sprintf('Chain%02d',c));        
-        statSrvTimeElement.appendChild(mvaDoc.createTextNode(num2str(STchain(i,c))));
-        srvTimesElement.appendChild(statSrvTimeElement);
+        if isLoadDep(i)
+            statSrvTimeElement = mvaDoc.createElement('servicetimes');
+            statSrvTimeElement.setAttribute('customerclass',sprintf('Chain%02d',c));        
+            ldSrvString = num2str(STchain(i,c));
+            for n=2:sum(NK)
+                ldSrvString = sprintf('%s;%s',ldSrvString,num2str(STchain(i,c)/min( n, qn.nservers(i) )));
+            end
+            statSrvTimeElement.appendChild(mvaDoc.createTextNode(ldSrvString));
+            srvTimesElement.appendChild(statSrvTimeElement);
+        else
+            statSrvTimeElement = mvaDoc.createElement('servicetime');
+            statSrvTimeElement.setAttribute('customerclass',sprintf('Chain%02d',c));        
+            statSrvTimeElement.appendChild(mvaDoc.createTextNode(num2str(STchain(i,c))));
+            srvTimesElement.appendChild(statSrvTimeElement);
+        end
     end
     statElement.appendChild(srvTimesElement);
     visitsElement = mvaDoc.createElement('visits');
@@ -136,27 +202,6 @@ for c=1:qn.nchains
     refStationsElement.appendChild(classRefElement);
 end
 
-algTypeElement = mvaDoc.createElement('algType');
-switch self.options.method
-    case {'jmva.recal'}
-        algTypeElement.setAttribute('name','RECAL');
-    case {'jmva.comom'}
-        algTypeElement.setAttribute('name','CoMoM');
-    case {'jmva.chow'}
-        algTypeElement.setAttribute('name','Chow');
-    case {'jmva.bs','jmva.amva'}
-        algTypeElement.setAttribute('name','Bard-Schweitzer');
-    case {'jmva.aql'}
-        algTypeElement.setAttribute('name','AQL');
-    case {'jmva.lin'}
-        algTypeElement.setAttribute('name','Linearizer');
-    case {'jmva.dmlin'}
-        algTypeElement.setAttribute('name','De Souza-Muntz Linearizer');
-    otherwise
-        algTypeElement.setAttribute('name','MVA');
-end
-algTypeElement.setAttribute('tolerance','1.0E-7');
-algTypeElement.setAttribute('maxSamples','10000');
 compareAlgsElement = mvaDoc.createElement('compareAlgs');
 compareAlgsElement.setAttribute('value','false');
 algParamsElement.appendChild(algTypeElement);

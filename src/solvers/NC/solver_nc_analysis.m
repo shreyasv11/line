@@ -1,4 +1,4 @@
-function [Q,U,R,T,C,X,runtime] = solver_nc_analysis(qn, options)
+function [Q,U,R,T,C,X,lG,runtime] = solver_nc_analysis(qn, options)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 
@@ -81,7 +81,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             Zcorr(i,:) = 0;
         else
             if strcmpi(options.method,'exact') && S(i)>1
-                warning('%s does not support exact multiserver yet.', mfilename);
+                warning('%s does not support exact multiserver yet. Switching to default method.', mfilename); 
             end
             Lcorr(i,:) = Lchain(i,:) / S(i);
             Z(i,:) = 0;

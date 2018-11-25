@@ -12,8 +12,8 @@ nstateful = qn.nstateful;
 nclasses = qn.nclasses;
 sync = qn.sync;
 csmask = qn.csmask;
-init_nserver = qn.nservers;
-[SS,SSh,qn] = State.spaceGenerator(qn, options.cutoff);
+[SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);
+qn.space = qnc.space;
 if options.verbose 
     fprintf(1,'State space size: %d states.\n',size(SS,1));
 end
@@ -180,7 +180,6 @@ if options.verbose == 2
     end
 end
 Q = ctmc_makeinfgen(Q);
-qn.nservers = init_nserver; % restore Inf at delay nodes
 
 %SolverCTMC.printInfGen(Q,SS)
 %% now remove immediate transitions

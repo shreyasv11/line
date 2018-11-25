@@ -21,18 +21,20 @@ classdef SolverNC < NetworkSolver
             rng(options.seed,'twister');
                         
             [qn] = self.model.getStruct();
-            [Q,U,R,T,C,X] = solver_nc_analysis(qn, options);
+            [Q,U,R,T,C,X,lG] = solver_nc_analysis(qn, options);
             
             runtime=toc(T0);
             self.setAvgResults(Q,U,R,T,C,X,runtime);
+            self.result.Prob.logNormConst = lG;
         end
         
         function Pnir = getProbState(self)
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
-            Pnir = solver_nc_marg(qn, self.options);
+            [Pnir,lG] = solver_nc_marg(qn, self.options);
             self.result.('solver') = self.getName();
+            self.result.Prob.logNormConst = lG;
             self.result.Prob.nir = Pnir;
             runtime = toc(T0);
             self.result.runtime = runtime;
@@ -42,12 +44,18 @@ classdef SolverNC < NetworkSolver
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
-            Pnir = solver_nc_joint(qn, self.options);
+            [Pnir,lG] = solver_nc_joint(qn, self.options);
             self.result.('solver') = self.getName();
+            self.result.Prob.logNormConst = lG;
             self.result.Prob.nir = Pnir;
             runtime = toc(T0);
             self.result.runtime = runtime;
         end
+        
+        function [lNormConst] = getProbNormConst(self)            
+            self.run();
+            lNormConst = self.result.Prob.logNormConst;
+        end        
     end
     
     methods (Static)

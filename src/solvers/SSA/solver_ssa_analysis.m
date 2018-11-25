@@ -28,9 +28,11 @@ for i=1:M
     end
 end
 
+qnc = qn.copy;
 switch options.method
     case 'serial.hash'
-        [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qn, options);   
+        [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, options);   
+        qn.space = qnc.space;
         XN = NaN*zeros(1,K);
         UN = NaN*zeros(M,K);
         QN = NaN*zeros(M,K);
@@ -77,7 +79,8 @@ switch options.method
         TN(isnan(TN))=0;
  
     case {'default','serial'}
-        [pi,SSq,arvRates,depRates] = solver_ssa(qn, options);       
+        [pi,SSq,arvRates,depRates] = solver_ssa(qnc, options);       
+        qn.space = qnc.space;
         XN = NaN*zeros(1,K);
         UN = NaN*zeros(M,K);
         QN = NaN*zeros(M,K);
@@ -129,9 +132,11 @@ switch options.method
             laboptions.samples = ceil(laboptions.samples / numlabs);
             laboptions.verbose = false;
             if strcmp(options.method, 'para')
-                [pi,SSq,arvRates,depRates] = solver_ssa(qn, laboptions);
+                [pi,SSq,arvRates,depRates] = solver_ssa(qnc, laboptions);
+                qn.space = qnc.space;
             elseif strcmp(options.method, 'para.hash')
-                [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qn, laboptions);
+                [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, laboptions);
+                qn.space = qnc.space;
             end
             
             XN = NaN*zeros(1,K);

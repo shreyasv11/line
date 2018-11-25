@@ -203,7 +203,7 @@ classdef SolverJMT < NetworkSolver
             end
             runtime = java.lang.Runtime.getRuntime();
             cmd = ['java -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];
-            system(cmd)
+            system(cmd);
             %runtime.exec(cmd);
         end
         
@@ -224,6 +224,17 @@ classdef SolverJMT < NetworkSolver
     end
     
     methods
+        function lNormConst = getProbNormConst(self) 
+            switch self.options.method
+                case {'jmva','jmva.recal','jmva.comom','jmva.ls'}
+                    self.run();
+                    lNormConst = self.result.Prob.logNormConst;
+                otherwise
+                    lNormConst = NaN; %#ok<NASGU>
+                    error('Selected solver method does not compute normalizing constants. Choose either jmva.recal, jmva.comom, or jmva.ls.');
+            end
+        end        
+        
         function Pr = getProbStateSys(self)
             state = self.getTranStateSys;
             qn = self.model.getStruct;

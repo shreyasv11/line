@@ -3,7 +3,7 @@ function self = link(self, P)
 % All rights reserved.
 
 isReset = false;
-if ~isempty(self.links)
+if ~isempty(self.qn)
     %    warning('Network topology already instantiated. Calling resetNetwork automatically.');
     isReset = true;
     self.resetNetwork;

@@ -16,6 +16,13 @@ end
 self.result.('solver') = self.getName();
 self.result.('model') = parsed.ATTRIBUTE;
 self.result.('metric') = {};
+self.result.('Prob') = struct();
+switch class(parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue)
+    case 'double'
+        self.result.Prob.logNormConst = parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue;
+    otherwise
+        self.result.Prob.logNormConst = NaN;
+end
 
 qn = self.model.getStruct;
 %%%
@@ -194,7 +201,7 @@ for i=1:length(statres)
                         if isinf(qn.nservers(i))
                             s.meanValue = ST(i,k) * (s.meanValue / STchain(i,c)) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
                         else
-                            s.meanValue = ST(i,k) * (s.meanValue / STchain(i,c)) / Vchain(qn.refstat(k),c) * alpha(i,k) / qn.nservers(i);
+                            s.meanValue = ST(i,k) * (s.meanValue / STchain(i,c)) / Vchain(qn.refstat(k),c) * alpha(i,k);% / qn.nservers(i);
                         end
                         s.('measureType') = classres(c).measure(m).ATTRIBUTE.measureType;
                     case 'Throughput'
