@@ -2,7 +2,7 @@
 
 Current version: 2.0.0-ALPHA (BSD-3 License)
 
-Website: https://line-solver.sf.net
+Website: http://line-solver.sourceforge.net/
 
 Latest stable release: https://sourceforge.net/projects/line-solver/files/latest/download
 
