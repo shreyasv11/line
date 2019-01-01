@@ -162,6 +162,7 @@ if isReset
     if any(nodetypes == NodeType.Cache)
         wantVisits = false;
     end
-    self.refreshChains(self.qn.rates, wantVisits);
+    self.refreshStruct; % without this exception with linkAndLog
+    %self.refreshChains(self.qn.rates, wantVisits);
 end
 end

@@ -106,6 +106,5 @@ for r=1:R
         newP{r,s} = newP{r,s}([1:Mnodes,Mnodes+idx,2*Mnodes+idx],[1:Mnodes,Mnodes+idx,2*Mnodes+idx]);
     end
 end
-
 self.link(newP);
 end

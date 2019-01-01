@@ -69,10 +69,9 @@ classdef Queue < Station
         
         function setService(self, class, distribution, weight)
             if ~exist('weight','var')
-                weight=1.0;
+                        weight=1.0;
             end
             
-            self.setStrategyParam(class, weight);
             self.serviceProcess{class.index} = distribution;
             self.server.serviceProcess{1, class.index}{2} = ServiceStrategy.LI;
             if distribution.isImmediate()
@@ -83,6 +82,7 @@ classdef Queue < Station
             if length(self.classCap) < class.index
                 self.classCap(class.index) = Inf;
             end
+            self.setStrategyParam(class, weight);
         end
         
         function sections = getSections(self)

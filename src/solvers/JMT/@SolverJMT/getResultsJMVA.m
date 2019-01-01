@@ -10,7 +10,7 @@ try
     else
         error('JMT did not output a result file, the analysis has likely failed.');
     end
-catch me
+catch me    
     error('Unknown error upon parsing JMT result file. ');
 end
 self.result.('solver') = self.getName();

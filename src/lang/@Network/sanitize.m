@@ -47,6 +47,28 @@ if isempty(self.qn)
                         self.nodes{i}.server.serviceProcess{k} = {[],ServiceStrategy.LI,Disabled()};
                     end
                 end
+                switch self.nodes{i}.schedStrategy
+                    case SchedStrategy.SEPT
+                        svcTime = zeros(1,K);
+                        for k=1:K
+                            svcTime(k) = self.nodes{i}.serviceProcess{k}.getMean;
+                        end
+                        [svcTimeSorted] = sort(unique(svcTime));
+                        self.nodes{i}.schedStrategyPar = zeros(1,K);
+                        for k=1:K
+                            self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                        end                        
+                    case SchedStrategy.LEPT
+                        svcTime = zeros(1,K);
+                        for k=1:K
+                            svcTime(k) = self.nodes{i}.serviceProcess{k}.getMean;
+                        end
+                        [svcTimeSorted] = sort(unique(svcTime),'descend');
+                        self.nodes{i}.schedStrategyPar = zeros(1,K);
+                        for k=1:K
+                            self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                        end                        
+                end
             case 'Delay'
                 for k=1:K
                     if k > length(self.nodes{i}.server.serviceProcess) || isempty(self.nodes{i}.server.serviceProcess{k})
@@ -55,6 +77,14 @@ if isempty(self.qn)
                         self.nodes{i}.schedStrategyPar(k) = 0;
                         self.nodes{i}.server.serviceProcess{k} = {[],ServiceStrategy.LI,Disabled()};
                     end
+                end
+                switch self.nodes{i}.schedStrategy
+                    case SchedStrategy.SEPT
+                        svcTime = zeros(1,K);
+                        for k=1:K
+                            svcTime(k) = self.nodes{i}.serviceProcess{k}.getMean;
+                        end
+                        [~,self.nodes{i}.schedStrategyPar] = sort(svcTime);
                 end
                 %                    case 'Sink'
                 %                    type(i) = NodeType.Sink;
@@ -66,8 +96,7 @@ if isempty(self.qn)
                 end
         end
     end
-    
-    
+        
     for i=1:M
         for r=1:K
             if isempty(self.getIndexSourceStation) || i ~= self.getIndexSourceStation
@@ -79,12 +108,10 @@ if isempty(self.qn)
                     otherwise
                         if isempty(self.stations{i}.server.serviceProcess{r})
                             self.stations{i}.server.serviceProcess{r} = {[],ServiceStrategy.LI,Disabled()};
-                        end                    
+                        end
                 end
             end
         end
-    end
-    
+    end    
 end
-
 end

@@ -30,10 +30,10 @@ end
 M = self.model.getNumberOfStations();
 K = self.model.getNumberOfClasses();
 if ~isempty(Qt)
-    QNclass_t=cell(M,K);
-    UNclass_t=cell(M,K);
-    RNclass_t=cell(M,K);
-    TNclass_t=cell(M,K);
+    QNclass_t = cell(M,K);
+    UNclass_t = cell(M,K);
+    %RNclass_t = cell(M,K);
+    TNclass_t = cell(M,K);
     for k=1:K
         for i=1:M
             QNclass_t{i,k} = Qt{i,k}.get(self.result,self.model);

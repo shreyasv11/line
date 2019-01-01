@@ -14,7 +14,7 @@ isf = qn.nodeToStateful(ind);
 
 inspace = qn.space{isf}(inhash,:);
 isSimulation = false;
-[outspace, outrate, outprob] =  State.afterEvent(qn, ind, inspace, event, class,isSimulation);
+[outspace, outrate, outprob] =  State.afterEvent(qn, ind, inspace, event, class, isSimulation);
 if isempty(outspace)
     outhash = -1;
     outrate = 0;

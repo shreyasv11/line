@@ -64,12 +64,14 @@ if qn.isstation(ind)
                 case {SchedStrategy.ID_INF, SchedStrategy.ID_PS, SchedStrategy.ID_DPS, SchedStrategy.ID_GPS}
                     % job enters service immediately
                     space_srv(:,Ks(class)+1) = space_srv(:,Ks(class)+1) + 1;
+
                 case {SchedStrategy.ID_RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
                     if ni<S(ist)
                         space_srv(:,Ks(class)+1) = space_srv(:,Ks(class)+1) + 1;
                     else
                         space_buf(:,class) = space_buf(:,class) + 1;
                     end
+                    
                 case {SchedStrategy.ID_FCFS, SchedStrategy.ID_HOL, SchedStrategy.ID_LCFS}
                     % find states with all servers busy - this
                     % needs not to be moved
@@ -260,12 +262,18 @@ if qn.isstation(ind)
                                     % in SEPT, the scheduling parameter is the priority order of the class means
                                     % en_wbuf: states where the buffer is non-empty
                                     % sept_class: class to pick in service
-                                    [en_wbuf, first_row_nnz] = max(space_buf(:,qn.schedparam(ist,:))~=0 , [], 2);
+                                    [en_wbuf, first_row_nnz] = max(space_buf(:,qn.schedparam(ist,:))~=0, [], 2);
                                     sept_class = qn.schedparam(ist,first_row_nnz);
                                     space_buf(en_wbuf,sept_class) = space_buf(en_wbuf,sept_class) - 1; % remove from buffer
                                     space_srv(en_wbuf,Ks(sept_class)+1) = space_srv(en_wbuf,Ks(sept_class)+1) + 1; % bring job in service
-                                    outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
-                                    outrate = [outrate; rate(en,:)];
+                                    if isSimulation
+                                        % break the tie
+                                        outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+                                        outrate = [outrate; rate(en,:)];
+                                    else
+                                        outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+                                        outrate = [outrate; rate(en,:)];
+                                    end
                                 otherwise
                                     error('Scheduling strategy %s is not supported.', qn.sched{ist});
                             end
