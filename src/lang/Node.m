@@ -1,4 +1,4 @@
-classdef Node < matlab.mixin.Copyable
+classdef Node < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     
@@ -69,7 +69,7 @@ classdef Node < matlab.mixin.Copyable
         % Override copyElement method:
         function clone = copyElement(self)
             % Make a shallow copy of all properties
-            clone = copyElement@matlab.mixin.Copyable(self);
+            clone = copyElement@Copyable(self);
             % Make a deep copy of each object
             clone.input = self.input.copy;
             clone.server = self.server.copy;

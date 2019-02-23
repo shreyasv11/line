@@ -33,7 +33,7 @@ for i=1:M
         end
     end
 end
-if ~isempty(self.qn) && isprop(self.qn,'mu')
+if ~isempty(self.qn) %&& isprop(self.qn,'mu')
     self.qn.setCoxService(mu, phi, phases);
 end
 end

@@ -55,7 +55,7 @@
 %             end
 %             
 %             if isfield(options,'seed')
-%                 rng(options.seed,'twister');
+%                 rand('seed',options.seed);
 %             end
 %             
 %             if ~isfield(options,'timespan')

@@ -1,7 +1,7 @@
-function [simNode, section] = savePreemptiveStrategy(self, simNode, section, currentNode)
+function [simDoc, section] = savePreemptiveStrategy(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-visitsNode = simNode.createElement('parameter');
+visitsNode = simDoc.createElement('parameter');
 visitsNode.setAttribute('array', 'true');
 visitsNode.setAttribute('classPath', 'jmt.engine.NetStrategies.PSStrategy');
 visitsNode.setAttribute('name', 'PSStrategy');
@@ -10,11 +10,11 @@ numOfClasses = length(self.model.classes);
 for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
     
-    refClassNode = simNode.createElement('refClass');
-    refClassNode.appendChild(simNode.createTextNode(currentClass.name));
+    refClassNode = simDoc.createElement('refClass');
+    refClassNode.appendChild(simDoc.createTextNode(currentClass.name));
     visitsNode.appendChild(refClassNode);
     
-    subParameterNode = simNode.createElement('subParameter');
+    subParameterNode = simDoc.createElement('subParameter');
     switch currentNode.schedStrategy
         case SchedStrategy.PS
             subParameterNode.setAttribute('classPath', 'jmt.engine.NetStrategies.PSStrategies.EPSStrategy');

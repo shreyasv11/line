@@ -52,15 +52,15 @@ while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
             [t_iter, ymean_t_iter] = solveode(y0);
         end
     catch me
-        switch me.identifier
-            case 'MATLAB:odearguments:SizeIC' % if the cached initial point fails
+%        switch me.identifier
+%            case 'MATLAB:odearguments:SizeIC' % if the cached initial point fails
                 fprintf(1,'Supplied initial point failed, Fluid solver switching to default initialization.\n');
                 opt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ydefault));
                 [t_iter, ymean_t_iter] = solveode(ydefault);
-            otherwise
-                me
-                error('Unspecified ODE solver exception. Quitting.');
-        end
+ %           otherwise
+ %               me
+ %               error('Unspecified ODE solver exception. Quitting.');
+%        end
     end
     ymean_t(end+1:end+size(ymean_t_iter,1),:) = ymean_t_iter;
     t(end+1:end+size(t_iter,1),:) = t_iter;

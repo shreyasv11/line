@@ -1,12 +1,12 @@
-function [simNode, section] = saveNumberOfServers(self, simNode, section, currentNode)
+function [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-sizeNode = simNode.createElement('parameter');
+sizeNode = simDoc.createElement('parameter');
 sizeNode.setAttribute('classPath', 'java.lang.Integer');
 sizeNode.setAttribute('name', 'maxJobs');
 
-valueNode = simNode.createElement('value');
-valueNode.appendChild(simNode.createTextNode(int2str(currentNode.numberOfServers)));
+valueNode = simDoc.createElement('value');
+valueNode.appendChild(simDoc.createTextNode(int2str(currentNode.numberOfServers)));
 
 sizeNode.appendChild(valueNode);
 section.appendChild(sizeNode);

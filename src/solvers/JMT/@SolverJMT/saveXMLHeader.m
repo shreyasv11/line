@@ -1,8 +1,23 @@
-function [simElem,simNode] = saveXMLHeader(self, logPath)
+function [simElem,simDoc] = saveXMLHeader(self, logPath)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-simNode = com.mathworks.xml.XMLUtils.createDocument('sim');
-simElem = simNode.getDocumentElement;
+if isoctave
+	try
+    simDoc = javaObject('org.apache.xerces.dom.DocumentImpl');
+    simElem = simDoc.createElement('sim');
+    simDoc.appendChild(simElem);
+	catch
+javaaddpath(which('xercesImpl-2.11.0.jar'));
+javaaddpath(which('xml-apis-2.11.0.jar'));
+pkg load io;
+    simDoc = javaObject('org.apache.xerces.dom.DocumentImpl');
+    simElem = simDoc.createElement('sim');
+    simDoc.appendChild(simElem);
+end
+else
+    simDoc = com.mathworks.xml.XMLUtils.createDocument('sim');
+    simElem = simDoc.getDocumentElement;
+end
 simElem.setAttribute('xmlns:xsi', self.xmlnsXsi);
 simElem.setAttribute('disableStatisticStop', 'true');
 simElem.setAttribute('logDecimalSeparator', '.');

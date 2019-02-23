@@ -1,11 +1,11 @@
 classdef EnsembleSolver < Solver
-% Copyright (c) 2012-2018, Imperial College London
-% All rights reserved.
+    % Copyright (c) 2012-2018, Imperial College London
+    % All rights reserved.
     
     properties
-        ensemble;        
+        ensemble;
         solvers;
-		results;
+        results;
     end
     
     methods (Hidden)
@@ -21,22 +21,37 @@ classdef EnsembleSolver < Solver
         end
     end
     
-    methods(Abstract)
-        bool = supports(self, model); % true if model is supported by the solver
-        [QN,UN,RT,TT] = getAvg(self);
-    
-        init(self); % operations before starting to iterate        
-        pre(self, it); % operations before an iteration
-        [results, runtime] = analyze(self, e); % operations within an iteration
-        post(self, it); % operations after an iteration        
-        finish(self); % operations after interations are completed
-        bool = converged(self, it); % convergence test at iteration it
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function bool = supports(self, model) % true if model is supported by the solver
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function [QN,UN,RT,TT] = getAvg(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end        
+        function init(self) % operations before starting to iterate
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function pre(self, it) % operations before an iteration
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function [results, runtime] = analyze(self, e) % operations within an iteration
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function post(self, it) % operations after an iteration
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function finish(self) % operations after interations are completed
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function bool = converged(self, it) % convergence test at iteration it
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
     
     methods % default implementations
         function submodels = list(self, it) % submodels to be considered at iteration it
             submodels = 1:self.getNumberOfModels;
-        end      
+        end
         
         function it = getIteration(self)
             it = size(results,1);
@@ -90,24 +105,24 @@ classdef EnsembleSolver < Solver
                         self.post(it);
                     end
                 case {'para'}
-%                     while ~self.converged(it) & it < options.iter_max
-%                         it = it + 1;
-%                         self.pre(it);
-%                         sruntime(it,1:E) = 0;
-%                         parfor e = self.list(it)
-%                             [results{it,e}, solverTime] = self.run(it,e);
-%                             sruntime(it,1+e) = sruntime(it,1+e) + solverTime;
-%                         end
-%                         for e=1:E % cannot be put within parfor
-%                             self.results{it,e} = results{it,e};
-%                         end
-%                         self.post(it);
-%                     end
+                    %                     while ~self.converged(it) & it < options.iter_max
+                    %                         it = it + 1;
+                    %                         self.pre(it);
+                    %                         sruntime(it,1:E) = 0;
+                    %                         parfor e = self.list(it)
+                    %                             [results{it,e}, solverTime] = self.run(it,e);
+                    %                             sruntime(it,1+e) = sruntime(it,1+e) + solverTime;
+                    %                         end
+                    %                         for e=1:E % cannot be put within parfor
+                    %                             self.results{it,e} = results{it,e};
+                    %                         end
+                    %                         self.post(it);
+                    %                     end
             end
             self.finish();
             runtime = toc(T0);
         end
-                
+        
     end
     
     methods (Static)

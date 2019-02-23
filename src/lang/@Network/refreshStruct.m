@@ -11,12 +11,12 @@ refstat = self.getReferenceStations();
 routing = self.getRoutingStrategies();
 self.qn = NetworkStruct(nodetypes, nodenames, classnames, servers, jobs(:), refstat, routing);
 self.refreshService();
-self.refreshScheduling(self.qn.rates);
+refreshScheduling(self,self.qn.rates);
 wantVisits = true;
 if any(nodetypes == NodeType.Cache)
     wantVisits = false;
 end
-self.refreshChains(self.qn.rates, wantVisits);
+refreshChains(self, self.qn.rates, wantVisits);
 self.refreshCapacity();
 self.refreshPriorities();
 self.refreshLocalVars();

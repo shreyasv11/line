@@ -16,6 +16,13 @@ if isempty(jmtPath)
                 outfilename = websave([jmtSolverFolder,'/JMT.jar'],'http://jmt.sourceforge.net/latest/JMT.jar');
             end
             fprintf(1,'Download completed. JMT jar now located at: %s\n',outfilename);
+        elseif isoctave
+            if ispc
+                outfilename = urlwrite('http://jmt.sourceforge.net/latest/JMT.jar', [jmtSolverFolder,'\JMT.jar']);
+            else
+                outfilename = urlwrite('http://jmt.sourceforge.net/latest/JMT.jar', [jmtSolverFolder,'/JMT.jar']);
+            end
+            fprintf(1,'Download completed. JMT jar now located at: %s\n',outfilename);        
         else
             error('The MATLAB version is too old and JMT cannot be downloaded automatically. Please download http://jmt.sourceforge.net/latest/JMT.jar and put it under "bin\solvers\JMT\".\n');
         end

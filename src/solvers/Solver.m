@@ -22,9 +22,13 @@ classdef Solver < handle
         end
     end
     
-    methods (Abstract)
-        bool = supports(self,model); % true if model is supported by the solver
-        runtime = run(self); % generic method to run the solver
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function bool = supports(self,model) % true if model is supported by the solver
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function runtime = run(self) % generic method to run the solver
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
     
     methods
@@ -85,32 +89,52 @@ classdef Solver < handle
         function bool = isJavaAvailable()
             bool = true;
             if ispc % windows
-                [~,ret] = dos('java');
-                if contains(ret,'not recognized')
+                [~,ret] = dos('java -version');
+                if strfind(ret,'not recognized') %#ok<STRIFCND>
                     bool = false;
                 end
             else %linux
-                [~,ret] = unix('java');
-                if contains(ret,'command not found')
+                [~,ret] = unix('java -version');
+                if strfind(ret,'command not found') %#ok<STRIFCND>
                     bool = false;
                 end
             end
         end
         
         function fun = accurateStiffOdeSolver(self)
+			    if isoctave
+				    %fun = @ode15s;
+            fun = @lsode;
+			    else
             fun = @ode15s;
+			    end
         end
         
         function fun = accurateOdeSolver(self)
+			    if isoctave
+				    %fun = @ode15s;
+            fun = @lsode;
+			    else
             fun = @ode45;
+			    end
         end
         
         function fun = fastStiffOdeSolver(self)
-            fun = @ode23s;
+			    if isoctave
+				    %fun = @ode15s;
+            fun = @lsode;
+			    else
+				    fun = @ode23s;
+			    end
         end
         
         function fun = fastOdeSolver(self)
-            fun = @ode23;
+			    if isoctave
+				    %fun = @ode15s;
+            fun = @lsode;
+			    else
+				    fun = @ode23s;
+			    end
         end
         
         %         function solver = suggestAnalytical(model)
@@ -155,7 +179,11 @@ classdef Solver < handle
             odesfun.fastStiffOdeSolver = Solver.fastStiffOdeSolver;
             odesfun.accurateStiffOdeSolver = Solver.accurateStiffOdeSolver;
             options.odesolvers = odesfun;
+            if isoctave
+            options.samples = 5e3;
+            else
             options.samples = 1e4;
+            end
             %options.seed = 23000;
             options.seed = randi([1,1e6]);
             options.stiff = true;

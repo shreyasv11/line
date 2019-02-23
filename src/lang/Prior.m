@@ -1,4 +1,4 @@
-classdef Prior < matlab.mixin.Copyable
+classdef Prior < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     
@@ -7,8 +7,10 @@ classdef Prior < matlab.mixin.Copyable
         distribution;
     end
     
-    methods(Abstract)
-        bool = isDisabled(self);
+    methods%(Abstract)
+        function bool = isDisabled(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end    
     
     methods (Hidden)

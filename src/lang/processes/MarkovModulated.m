@@ -16,9 +16,13 @@ classdef MarkovModulated < PointProcess
         end
     end
     
-    methods (Abstract)
-        phases = getNumberOfPhases(self);
-        MAP = getRenewalProcess(self);
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function phases = getNumberOfPhases(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function MAP = getRenewalProcess(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
     
     methods (Static)

@@ -27,7 +27,7 @@ classdef SolverSSA < NetworkSolver
                 return
             end            
             
-            rng(options.seed,'twister');
+            rand('seed',options.seed);
             
             qn = self.model.getStruct();
             

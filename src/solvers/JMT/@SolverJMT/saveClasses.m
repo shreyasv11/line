@@ -1,11 +1,11 @@
-function [simElem, simNode] = saveClasses(self, simElem, simNode)
+function [simElem, simDoc] = saveClasses(self, simElem, simDoc)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 
 numOfClasses = length(self.model.classes);
 for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
-    userClass = simNode.createElement('userClass');
+    userClass = simDoc.createElement('userClass');
     userClass.setAttribute('name', currentClass.name);
     userClass.setAttribute('type', currentClass.type);
     userClass.setAttribute('priority', int2str(currentClass.priority));

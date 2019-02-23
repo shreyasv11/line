@@ -16,11 +16,11 @@ for c=1:length(ChainName)
     ChainClasses{c} = ChainObj{c}.classnames;
 end
 if isempty(QNc)
-    AvgChain = table();
-    QTc = table();
-    UTc = table();
-    RTc = table();
-    TTc = table();
+    AvgChain = Table();
+    QTc = Table();
+    UTc = Table();
+    RTc = Table();
+    TTc = Table();
 else
     Qval = zeros(M,K); Uval = zeros(M,K);
     Rval = zeros(M,K); Tval = zeros(M,K);
@@ -39,13 +39,13 @@ else
         end
     end
     QLen = Qval(:); % we need to save first in a variable named like the column
-    QTc = table(Station,Chain,Classes,QLen);
+    QTc = Table(Station,Chain,Classes,QLen);
     Util = Uval(:); % we need to save first in a variable named like the column
-    UTc = table(Station,Chain,Classes,Util);
+    UTc = Table(Station,Chain,Classes,Util);
     RespT = Rval(:); % we need to save first in a variable named like the column
-    RTc = table(Station,Chain,Classes,RespT);
+    RTc = Table(Station,Chain,Classes,RespT);
     Tput = Tval(:); % we need to save first in a variable named like the column
-    TTc = table(Station,Chain,Classes,Tput);
-    AvgChain = table(Station,Chain,Classes,QLen,Util,RespT,Tput);
+    TTc = Table(Station,Chain,Classes,Tput);
+    AvgChain = Table(Station,Chain,Classes,QLen,Util,RespT,Tput);
 end
 end

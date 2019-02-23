@@ -1,11 +1,11 @@
-function [simElem, simNode] = savePerfIndexes(self, simElem, simNode)
+function [simElem, simDoc] = savePerfIndexes(self, simElem, simDoc)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 numOfPerformanceIndices = length(self.model.perfIndex.Avg);
 for j=1:(numOfPerformanceIndices)
     currentPerformanceIndex = self.model.perfIndex.Avg{j,1};
     if currentPerformanceIndex.disabled == 0
-        performanceNode = simNode.createElement('measure');
+        performanceNode = simDoc.createElement('measure');
         performanceNode.setAttribute('alpha', num2str(1 - currentPerformanceIndex.simConfInt,2));
         performanceNode.setAttribute('name', strcat('Performance_', int2str(j)));
         performanceNode.setAttribute('nodeType', 'station');

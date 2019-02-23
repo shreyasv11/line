@@ -36,7 +36,7 @@ for ind=1:self.getNumberOfNodes
             varsparam{ind}.outlinks = find(sum(reshape(self.qn.rtnodes(ind,:)>0,self.qn.nnodes,self.qn.nclasses),2)');
     end
 end
-if ~isempty(self.qn) && isprop(self.qn,'nvars')
+if ~isempty(self.qn) %&& isprop(self.qn,'nvars')
     self.qn.setLocalVars(nvars, varsparam);
 end
 end

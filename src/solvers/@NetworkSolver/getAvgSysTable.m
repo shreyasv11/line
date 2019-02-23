@@ -14,7 +14,7 @@ Chain = cellfun(@(c) c.name,ChainObj,'UniformOutput',false)';
 for c=1:length(Chain)
     Classes{c,1} = ChainObj{c}.classnames;
 end
-CT = table(Chain, Classes, SysRespT);
-XT = table(Chain, Classes, SysTput);
-AvgSysChainTable = table(Chain,Classes, SysRespT, SysTput);
+CT = Table(Chain, Classes, SysRespT);
+XT = Table(Chain, Classes, SysTput);
+AvgSysChainTable = Table(Chain,Classes, SysRespT, SysTput);
 end

@@ -18,7 +18,7 @@ properties
         % Override copyElement method:
         function clone = copyElement(self)
             % Make a shallow copy of all properties
-            clone = copyElement@matlab.mixin.Copyable(self);
+            clone = copyElement@Copyable(self);
             % Make a deep copy of each object
             for i = 1 : length(self.sourceClasses)
                 clone.sourceClasses{1,i}{3} = self.sourceClasses{1,i}{3}.copy;

@@ -1,7 +1,7 @@
-function [simNode, section] = saveJoinStrategy(self, simNode, section, currentNode)
+function [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-strategyNode = simNode.createElement('parameter');
+strategyNode = simDoc.createElement('parameter');
 strategyNode.setAttribute('array', 'true');
 strategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.JoinStrategy');
 strategyNode.setAttribute('name', 'JoinStrategy');
@@ -11,52 +11,52 @@ for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
     switch currentNode.input.joinStrategy{currentClass.index}
         case JoinStrategy.Standard
-            refClassNode2 = simNode.createElement('refClass');
-            refClassNode2.appendChild(simNode.createTextNode(currentClass.name));
+            refClassNode2 = simDoc.createElement('refClass');
+            refClassNode2.appendChild(simDoc.createTextNode(currentClass.name));
             strategyNode.appendChild(refClassNode2);
             
-            joinStrategyNode = simNode.createElement('subParameter');
+            joinStrategyNode = simDoc.createElement('subParameter');
             joinStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.JoinStrategies.NormalJoin');
             joinStrategyNode.setAttribute('name', 'Standard Join');
-            reqNode = simNode.createElement('subParameter');
+            reqNode = simDoc.createElement('subParameter');
             reqNode.setAttribute('classPath', 'java.lang.Integer');
             reqNode.setAttribute('name', 'numRequired');
-            valueNode = simNode.createElement('value');
-            valueNode.appendChild(simNode.createTextNode(int2str(currentNode.input.joinRequired{currentClass.index})));
+            valueNode = simDoc.createElement('value');
+            valueNode.appendChild(simDoc.createTextNode(int2str(currentNode.input.joinRequired{currentClass.index})));
             reqNode.appendChild(valueNode);
             joinStrategyNode.appendChild(reqNode);
             strategyNode.appendChild(joinStrategyNode);
             section.appendChild(strategyNode);
         case JoinStrategy.Quorum
-            refClassNode2 = simNode.createElement('refClass');
-            refClassNode2.appendChild(simNode.createTextNode(currentClass.name));
+            refClassNode2 = simDoc.createElement('refClass');
+            refClassNode2.appendChild(simDoc.createTextNode(currentClass.name));
             strategyNode.appendChild(refClassNode2);
             
-            joinStrategyNode = simNode.createElement('subParameter');
+            joinStrategyNode = simDoc.createElement('subParameter');
             joinStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.JoinStrategies.PartialJoin');
             joinStrategyNode.setAttribute('name', 'Quorum');
-            reqNode = simNode.createElement('subParameter');
+            reqNode = simDoc.createElement('subParameter');
             reqNode.setAttribute('classPath', 'java.lang.Integer');
             reqNode.setAttribute('name', 'numRequired');
-            valueNode = simNode.createElement('value');
-            valueNode.appendChild(simNode.createTextNode(int2str(currentNode.input.joinRequired{currentClass.index})));
+            valueNode = simDoc.createElement('value');
+            valueNode.appendChild(simDoc.createTextNode(int2str(currentNode.input.joinRequired{currentClass.index})));
             reqNode.appendChild(valueNode);
             joinStrategyNode.appendChild(reqNode);
             strategyNode.appendChild(joinStrategyNode);
             section.appendChild(strategyNode);
         case JoinStrategy.Guard
-            refClassNode2 = simNode.createElement('refClass');
-            refClassNode2.appendChild(simNode.createTextNode(currentClass.name));
+            refClassNode2 = simDoc.createElement('refClass');
+            refClassNode2.appendChild(simDoc.createTextNode(currentClass.name));
             strategyNode.appendChild(refClassNode2);
             
-            joinStrategyNode = simNode.createElement('subParameter');
+            joinStrategyNode = simDoc.createElement('subParameter');
             joinStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.JoinStrategies.PartialJoin');
             joinStrategyNode.setAttribute('name', 'Quorum');
-            reqNode = simNode.createElement('subParameter');
+            reqNode = simDoc.createElement('subParameter');
             reqNode.setAttribute('classPath', 'java.lang.Integer');
             reqNode.setAttribute('name', 'numRequired');
-            valueNode = simNode.createElement('value');
-            valueNode.appendChild(simNode.createTextNode(int2str(currentNode.input.joinRequired{currentClass.index})));
+            valueNode = simDoc.createElement('value');
+            valueNode.appendChild(simDoc.createTextNode(int2str(currentNode.input.joinRequired{currentClass.index})));
             reqNode.appendChild(valueNode);
             joinStrategyNode.appendChild(reqNode);
             strategyNode.appendChild(joinStrategyNode);

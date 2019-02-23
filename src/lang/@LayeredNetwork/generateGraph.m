@@ -120,7 +120,7 @@ for p=1:length(self.processors)
     end
 end
 
-myTable = table();%'RowNames',name(:));
+myTable = Table();%'RowNames',name(:));
 myTable.Name = name(:);
 self.nodeNames = name(:);
 myTable.Type = type(:);

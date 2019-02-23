@@ -12,6 +12,9 @@ nstateful = qn.nstateful;
 nclasses = qn.nclasses;
 sync = qn.sync;
 csmask = qn.csmask;
+if isoctave
+  warning off;
+end
 [SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);
 qn.space = qnc.space;
 if options.verbose 

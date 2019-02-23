@@ -47,7 +47,7 @@ classdef StatefulNode < Node
         
         function self = setStateSpace(self, space)
             self.space = space;
-            %            mState.hash = memoize(@(x) self.State.hash(x));
+            %            mState.getHash = memoize(@(x) self.State.getHash(x));
         end
         
         function self = resetStateSpace(self)

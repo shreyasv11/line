@@ -1,4 +1,4 @@
-classdef JobClass < matlab.mixin.Copyable
+classdef JobClass < Copyable
     % Copyright (c) 2012-2018, Imperial College London
     % All rights reserved.
     

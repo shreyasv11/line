@@ -1,4 +1,4 @@
-classdef Task < matlab.mixin.Copyable
+classdef Task < Copyable
     
     properties
         name;               %string

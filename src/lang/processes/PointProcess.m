@@ -1,4 +1,4 @@
-classdef PointProcess < matlab.mixin.Copyable
+classdef PointProcess < Copyable
     % Copyright (c) 2018, Imperial College London
     % All rights reserved.
     
@@ -9,15 +9,27 @@ classdef PointProcess < matlab.mixin.Copyable
         javaParClass
     end
     
-    methods(Abstract)
-%        X = sample(self); % inter-arrival time
-        ex = getMean(self); % inter-arrival time
-        SCV = getSCV(self); % inter-arrival time
-%        ID = getID(self); % asymptotic index of dispersion
-%        lambda = getRate(self);
-%        vart = getVarT(self,t);
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function X = sample(self); % inter-arrival time
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function ex = getMean(self); % inter-arrival time
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function SCV = getSCV(self); % inter-arrival time
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function ID = getID(self); % asymptotic index of dispersion
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function lambda = getRate(self);
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function vart = getVarT(self,t);
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
-        
+    
     methods (Hidden)
         %Constructor
         function self = PointProcess(name, numParam)

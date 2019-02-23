@@ -1,15 +1,15 @@
-function [simNode, section] = saveBufferCapacity(self, simNode, section, currentNode)
+function [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 
-sizeNode = simNode.createElement('parameter');
+sizeNode = simDoc.createElement('parameter');
 sizeNode.setAttribute('classPath', 'java.lang.Integer');
 sizeNode.setAttribute('name', 'size');
-valueNode = simNode.createElement('value');
+valueNode = simDoc.createElement('value');
 if isinf(currentNode.cap)
-    valueNode.appendChild(simNode.createTextNode(int2str(-1)));
+    valueNode.appendChild(simDoc.createTextNode(int2str(-1)));
 else
-    valueNode.appendChild(simNode.createTextNode(int2str(currentNode.cap)));
+    valueNode.appendChild(simDoc.createTextNode(int2str(currentNode.cap)));
 end
 
 sizeNode.appendChild(valueNode);

@@ -1,4 +1,4 @@
-function hashid = hash(qn, ind, inspace)
+function hashid = getHash(qn, ind, inspace)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 

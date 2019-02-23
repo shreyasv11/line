@@ -15,13 +15,15 @@ model.link(P);
 
 solver = {};
 solver{end+1} = SolverCTMC(model,'keep',true);
-solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true);
-solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true);
+solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true,'keep',true);
+%solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true,'method','jmva','keep',true);
+solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true,'samples',1000);
 solver{end+1} = SolverFluid(model);
 solver{end+1} = SolverMVA(model);
 solver{end+1} = SolverNC(model,'method','exact');
 solver{end+1} = SolverAuto(model);
 
+AvgTable = cell(1,length(solver));
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());    
     AvgTable{s} = solver{s}.getAvgTable();

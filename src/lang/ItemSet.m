@@ -1,4 +1,4 @@
-classdef ItemSet < matlab.mixin.Copyable
+classdef ItemSet < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     

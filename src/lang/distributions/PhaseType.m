@@ -16,9 +16,13 @@ classdef PhaseType < Distrib
         end
     end
     
-    methods (Abstract)
-        phases = getNumberOfPhases(self);
-        PH = getRenewalProcess(self);
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function phases = getNumberOfPhases()
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function PH = getRenewalProcess(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
     
     methods (Static)

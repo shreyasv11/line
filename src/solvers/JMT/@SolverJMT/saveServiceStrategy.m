@@ -1,7 +1,7 @@
-function [simNode, section] = saveServiceStrategy(self, simNode, section, currentNode)
+function [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-strategyNode = simNode.createElement('parameter');
+strategyNode = simDoc.createElement('parameter');
 strategyNode.setAttribute('array', 'true');
 strategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ServiceStrategy');
 strategyNode.setAttribute('name', 'ServiceStrategy');
@@ -9,8 +9,8 @@ strategyNode.setAttribute('name', 'ServiceStrategy');
 numOfClasses = length(self.model.classes);
 for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
-    refClassNode2 = simNode.createElement('refClass');
-    refClassNode2.appendChild(simNode.createTextNode(currentClass.name));
+    refClassNode2 = simDoc.createElement('refClass');
+    refClassNode2.appendChild(simDoc.createTextNode(currentClass.name));
     strategyNode.appendChild(refClassNode2);
     
     if isempty(currentNode.server.serviceProcess{i})
@@ -18,7 +18,7 @@ for i=1:(numOfClasses)
     end
     distributionObj = currentNode.server.serviceProcess{i}{3};
     
-    serviceTimeStrategyNode = simNode.createElement('subParameter');
+    serviceTimeStrategyNode = simDoc.createElement('subParameter');
     
     if distributionObj.isDisabled()
         serviceTimeStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ServiceStrategies.DisabledServiceTimeStrategy');
@@ -30,7 +30,7 @@ for i=1:(numOfClasses)
         serviceTimeStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ServiceStrategies.ServiceTimeStrategy');
         serviceTimeStrategyNode.setAttribute('name', 'ServiceTimeStrategy');
         
-        distributionNode = simNode.createElement('subParameter');
+        distributionNode = simDoc.createElement('subParameter');
         distributionNode.setAttribute('classPath', distributionObj.javaClass);
         switch distributionObj.name
             case 'Replayer'
@@ -40,22 +40,22 @@ for i=1:(numOfClasses)
         end
         serviceTimeStrategyNode.appendChild(distributionNode);
         
-        distrParNode = simNode.createElement('subParameter');
+        distrParNode = simDoc.createElement('subParameter');
         distrParNode.setAttribute('classPath', distributionObj.javaParClass);
         distrParNode.setAttribute('name', 'distrPar');
         
         for k=1:distributionObj.getNumParams()
-            subParNode = simNode.createElement('subParameter');
+            subParNode = simDoc.createElement('subParameter');
             subParNode.setAttribute('classPath', distributionObj.getParam(k).paramClass);
             subParNode.setAttribute('name', distributionObj.getParam(k).paramName);
-            subParValue = simNode.createElement('value');
+            subParValue = simDoc.createElement('value');
             switch distributionObj.getParam(k).paramClass
                 case 'java.lang.Double'
-                    subParValue.appendChild(simNode.createTextNode(sprintf('%.12f',distributionObj.getParam(k).paramValue)));
+                    subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',distributionObj.getParam(k).paramValue)));
                 case 'java.lang.Long'
-                    subParValue.appendChild(simNode.createTextNode(sprintf('%d',distributionObj.getParam(k).paramValue)));
+                    subParValue.appendChild(simDoc.createTextNode(sprintf('%d',distributionObj.getParam(k).paramValue)));
                 case 'java.lang.String'
-                    subParValue.appendChild(simNode.createTextNode(distributionObj.getParam(k).paramValue));
+                    subParValue.appendChild(simDoc.createTextNode(distributionObj.getParam(k).paramValue));
             end
             subParNode.appendChild(subParValue);
             distrParNode.appendChild(subParNode);

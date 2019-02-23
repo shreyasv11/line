@@ -23,7 +23,8 @@ classdef SolverCTMC < NetworkSolver
                 warning('%s: timespan is a single point, spacing by options.tol (%e).\n',mfilename, options.tol);
                 options.timespan(2) = options.timespan(1) + options.tol;
             end
-            rng(options.seed,'twister');
+            
+            rand('seed',options.seed); 
             
             if ~options.force && ~self.supports(self.model)
                 if options.verbose
@@ -190,12 +191,12 @@ classdef SolverCTMC < NetworkSolver
             end
         end
         
-        function printEventFilt(sync,D,SS,events)
+        function printEventFilt(sync,D,SS,myevents)
             if ~exist('events','var')
-                events = 1:length(sync);
+                myevents = 1:length(sync);
             end
             SS=full(SS);
-            for e=events
+            for e=myevents
                 D{e}=full(D{e});
                 for s=1:size(SS,1)
                     for sp=1:size(SS,1)

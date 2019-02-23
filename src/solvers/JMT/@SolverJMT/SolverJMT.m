@@ -40,25 +40,25 @@ classdef SolverJMT < NetworkSolver
             self.fileName = fileName;
         end
         
-        [simNode, section] = saveArrivalStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveBufferCapacity(self, simNode, section, currentNode)
-        [simNode, section] = saveClassSwitchStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveDropStrategy(self, simNode, section)
-        [simNode, section] = saveForkStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveGetStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveJoinStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveLogTunnel(self, simNode, section, currentNode)
-        [simNode, section] = saveNumberOfServers(self, simNode, section, currentNode)
-        [simNode, section] = savePreemptiveStrategy(self, simNode, section, currentNode)
-        [simNode, section] = savePreemptiveWeights(self, simNode, section, currentNode)
-        [simNode, section] = savePutStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveRoutingStrategy(self, simNode, section, currentNode)
-        [simNode, section] = saveServerVisits(self, simNode, section)
-        [simNode, section] = saveServiceStrategy(self, simNode, section, currentNode)
-        [simElem, simNode] = saveClasses(self, simElem, simNode)
-        [simElem, simNode] = saveLinks(self, simElem, simNode)
-        [simElem, simNode] = savePerfIndexes(self, simElem, simNode)
-        [simElem, simNode] = saveXMLHeader(self, logPath)
+        [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode)
+        [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveDropStrategy(self, simDoc, section)
+        [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveGetStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveLogTunnel(self, simDoc, section, currentNode)
+        [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode)
+        [simDoc, section] = savePreemptiveStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = savePreemptiveWeights(self, simDoc, section, currentNode)
+        [simDoc, section] = savePutStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode)
+        [simDoc, section] = saveServerVisits(self, simDoc, section)
+        [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode)
+        [simElem, simDoc] = saveClasses(self, simElem, simDoc)
+        [simElem, simDoc] = saveLinks(self, simElem, simDoc)
+        [simElem, simDoc] = savePerfIndexes(self, simElem, simDoc)
+        [simElem, simDoc] = saveXMLHeader(self, logPath)
         
         function supported = getSupported(self,supported)
             if ~exist('supported','var')
@@ -321,6 +321,44 @@ classdef SolverJMT < NetworkSolver
                 end
             end
         end
+
+        function RD = getCdfRespT(self, R)
+            if ~exist('R','var')
+                R = self.model.getAvgRespTHandles();
+            end
+            RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
+            cdfmodel = self.model.copy;
+            cdfmodel.resetNetwork;
+            QN = SolverJMT(self.model, self.getOptions).getAvgQLen(); % steady-state qlen
+            cdfmodel.initFromMarginal(QN);
+            isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
+            for i= 1:cdfmodel.getNumberOfStations
+                for r=1:cdfmodel.getNumberOfClasses
+                    if ~R{i,r}.disabled
+                        ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
+                        isNodeClassLogged(ni,r) = true;
+                    end
+                end
+            end
+            Plinked = self.model.getLinkedRoutingMatrix();
+            isNodeLogged = max(isNodeClassLogged,[],2);
+            logpath = tempdir;
+            cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
+            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
+            logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Perf.RespT);
+            % from here convert from nodes in logData to stations
+            for i= 1:cdfmodel.getNumberOfStations
+                ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
+                for r=1:cdfmodel.getNumberOfClasses
+                    if isNodeClassLogged(ni,r)
+                        if ~isempty(logData{ni,r})
+                            [F,X] = ecdf(logData{ni,r}.RespT);
+                            RD{i,r} = [F,X];
+                        end
+                    end
+                end
+            end
+        end        
         
         function RD = getTranCdfRespT(self, R)
             if ~exist('R','var')

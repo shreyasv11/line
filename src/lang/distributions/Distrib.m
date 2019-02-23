@@ -1,4 +1,4 @@
-classdef Distrib < matlab.mixin.Copyable
+classdef Distrib < Copyable
     % Copyright (c) 2018, Imperial College London
     % All rights reserved.
     
@@ -17,11 +17,19 @@ classdef Distrib < matlab.mixin.Copyable
         InfItems = 1e10;
     end
     
-    methods(Abstract)
-        X = sample(self);
-        ex = getMean(self);
-        SCV = getSCV(self);
-        Ft = evalCDF(self,t);
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function X = sample(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function ex = getMean(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function SCV = getSCV(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function Ft = evalCDF(self,t)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
     
     methods (Hidden)

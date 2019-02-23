@@ -113,25 +113,25 @@ for j=1:size(chainStationPos,1)
         if qn.nodetype(ind) == NodeType.Source
             isf = qn.nodeToStateful(ind);
             state_i = State.fromMarginal(qn,ind,[]);
-            netstates{j,isf} = State.hash(qn,ind,state_i);
+            netstates{j,isf} = State.getHash(qn,ind,state_i);
         elseif qn.isstation(ind)
             isf = qn.nodeToStateful(ind);
             stateMarg_i = chainStationPos(j,(isf-sum(qn.nodetype(1:ind-1) == NodeType.Source)):nstatefulp:end);
             if any(stateMarg_i > capacityc(ind,:))
-                netstates{j,isf} = State.hash(qn,ind,[]);
+                netstates{j,isf} = State.getHash(qn,ind,[]);
             else
                 state_i = State.fromMarginal(qn,ind,stateMarg_i);
-                netstates{j,isf} = State.hash(qn,ind,state_i);
+                netstates{j,isf} = State.getHash(qn,ind,state_i);
             end
         elseif qn.isstateful(ind)
             isf = qn.nodeToStateful(ind);
             stateMarg_i = chainStationPos(j,(isf-sum(qn.nodetype(1:ind-1) == NodeType.Source)):nstatefulp:end);
             state_i = qn.space{isf};
             if any(stateMarg_i > capacityc(ind,:))
-                netstates{j,isf} = State.hash(qn,ind,[]);
+                netstates{j,isf} = State.getHash(qn,ind,[]);
             else
                 state_i = state_i(findrows(state_i(:,1:length(stateMarg_i)),stateMarg_i),:);
-                netstates{j,isf} = State.hash(qn,ind,state_i);
+                netstates{j,isf} = State.getHash(qn,ind,state_i);
             end
         end
     end

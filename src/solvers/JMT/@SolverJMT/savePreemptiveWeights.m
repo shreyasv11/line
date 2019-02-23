@@ -1,7 +1,7 @@
-function [simNode, section] = savePreemptiveWeights(self, simNode, section, currentNode)
+function [simDoc, section] = savePreemptiveWeights(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-visitsNode = simNode.createElement('parameter');
+visitsNode = simDoc.createElement('parameter');
 visitsNode.setAttribute('array', 'true');
 visitsNode.setAttribute('classPath', 'java.lang.Double');
 visitsNode.setAttribute('name', 'serviceWeights');
@@ -10,19 +10,19 @@ numOfClasses = length(self.model.classes);
 for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
     
-    refClassNode = simNode.createElement('refClass');
-    refClassNode.appendChild(simNode.createTextNode(currentClass.name));
+    refClassNode = simDoc.createElement('refClass');
+    refClassNode.appendChild(simDoc.createTextNode(currentClass.name));
     visitsNode.appendChild(refClassNode);
     
-    subParameterNode = simNode.createElement('subParameter');
+    subParameterNode = simDoc.createElement('subParameter');
     subParameterNode.setAttribute('classPath', 'java.lang.Double');
     subParameterNode.setAttribute('name', 'serviceWeight');
     
-    valueNode2 = simNode.createElement('value');
+    valueNode2 = simDoc.createElement('value');
     if isempty(currentNode.schedStrategyPar) % PS case
-        valueNode2.appendChild(simNode.createTextNode(int2str(1)));
+        valueNode2.appendChild(simDoc.createTextNode(int2str(1)));
     else
-        valueNode2.appendChild(simNode.createTextNode(num2str(currentNode.schedStrategyPar(i))));
+        valueNode2.appendChild(simDoc.createTextNode(num2str(currentNode.schedStrategyPar(i))));
     end
     
     subParameterNode.appendChild(valueNode2);

@@ -2,7 +2,7 @@ function [result, parsed] = getResultsJSIM(self)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 
-try
+%try
     fileName = strcat(self.getFilePath(),'jsimg',filesep,self.getFileName(),'.jsimg-result.jsim');
     if exist(fileName,'file')
 		Pref.Str2Num = 'always';
@@ -10,9 +10,10 @@ try
     else
         error('JMT did not output a result file, the simulation has likely failed.');
     end
-catch me
-    error('Unknown error upon parsing JMT result file. ');
-end
+%catch me
+%me.p
+%    error('Unknown error upon parsing JMT result file. ');
+%end
 self.result.('solver') = self.getName();
 self.result.('model') = parsed.ATTRIBUTE;
 self.result.('metric') = {parsed.measure.ATTRIBUTE};

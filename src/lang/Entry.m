@@ -1,4 +1,4 @@
-classdef Entry < matlab.mixin.Copyable
+classdef Entry < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.    
     

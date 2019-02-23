@@ -18,7 +18,7 @@ K = model.getNumberOfClasses();
 
 P = cell(K,K);
 P{1,1} = [0.3,0.1; 0.2,0];
-P{1,2} = [0.6,0; 0.8,0];
+P{1,2} = [0.6,0.0; 0.8,0];
 P{2,2} = [0,1; 0,0];
 P{2,1} = [0,0; 1,0];
 
@@ -30,7 +30,7 @@ solver{end+1} = SolverCTMC(model);
 solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true,'samples',5e3);
 solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true,'samples',5e3);
 solver{end+1} = SolverFluid(model);
-solver{end+1} = SolverMVA(model);
+solver{end+1} = SolverMVA(model,'method','exact');
 solver{end+1} = SolverNC(model);
 solver{end+1} = SolverAuto(model);
 for s=1:length(solver)

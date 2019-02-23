@@ -1,6 +1,6 @@
 classdef CacheClassSwitch < StatefulClassSwitch
-    % Copyright (c) 2012-2018, Imperial College London
-    % All rights reserved.
+% Copyright (c) 2012-2018, Imperial College London
+% All rights reserved.
     
     properties
         items;

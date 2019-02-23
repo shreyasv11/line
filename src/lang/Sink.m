@@ -30,7 +30,7 @@ classdef Sink < Node
         % Override copyElement method:
         function clone = copyElement(self)
             % Make a shallow copy of all properties
-            clone = copyElement@matlab.mixin.Copyable(self);
+            clone = copyElement@Copyable(self);
             % Make a deep copy of each object
             clone.input = self.input;
             clone.server = self.server.copy;

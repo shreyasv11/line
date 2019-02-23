@@ -5,9 +5,10 @@ function K = stat(A)
  
 % Last modification: 7th March 1997
 
-
+if ~isoctave
 S = size(A,1);
 e = ones(S,1);
 B = [A - eye(S),e];
 y = [zeros(1,S),1];
 K = y / B;
+end

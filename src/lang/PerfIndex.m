@@ -1,4 +1,4 @@
-classdef PerfIndex < matlab.mixin.Copyable
+classdef PerfIndex < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     

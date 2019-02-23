@@ -42,7 +42,7 @@ for ind=1:qn.nnodes
         end
     end
 end
-if ~isempty(self.qn) && isprop(self.qn,'nvars')
+if ~isempty(self.qn) %&& isprop(self.qn,'nvars')
     self.qn.setSync(sync);
 end
 end

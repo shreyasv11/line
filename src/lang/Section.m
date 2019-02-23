@@ -1,4 +1,4 @@
-classdef Section < matlab.mixin.Copyable
+classdef Section < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     

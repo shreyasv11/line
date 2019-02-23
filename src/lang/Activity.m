@@ -1,4 +1,4 @@
-classdef Activity < matlab.mixin.Copyable
+classdef Activity < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     

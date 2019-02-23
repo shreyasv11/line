@@ -1,4 +1,4 @@
-function [simNode, section] = saveLogTunnel(self, simNode, section, currentNode)
+function [simDoc, section] = saveLogTunnel(self, simDoc, section, currentNode)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 loggerNodesCP = {'java.lang.String','java.lang.String'};
@@ -23,11 +23,11 @@ loggerNodesValues = {currentNode.fileName, currentNode.filePath, ...
     currentNode.wantTimeAnyClass,int2str(numOfClasses)};
 
 for j=1:length(loggerNodesValues)
-    loggerNode = simNode.createElement('parameter');
+    loggerNode = simDoc.createElement('parameter');
     loggerNode.setAttribute('classPath', loggerNodesCP{j});
     loggerNode.setAttribute('name', loggerNodesNames{j});
-    valueNode = simNode.createElement('value');
-    valueNode.appendChild(simNode.createTextNode(loggerNodesValues{j}));
+    valueNode = simDoc.createElement('value');
+    valueNode.appendChild(simDoc.createTextNode(loggerNodesValues{j}));
     loggerNode.appendChild(valueNode);
     section.appendChild(loggerNode);
 end

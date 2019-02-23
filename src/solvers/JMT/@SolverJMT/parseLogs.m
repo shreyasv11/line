@@ -14,7 +14,7 @@ for i=1:numOfResources
         logFileDep = [model.getLogPath,sprintf('%s-Dep.csv',model.getNodeNames{i})];
         %% load arrival process
         if exist(logFileArv,'file') && exist(logFileDep,'file')
-            %            logArv=readtable(logFileArv,'Delimiter',';','HeaderLines',1); % raw data
+            %            logArv=readTable(logFileArv,'Delimiter',';','HeaderLines',1); % raw data
             
             %%
             % unclear if this part works fine if user has another local

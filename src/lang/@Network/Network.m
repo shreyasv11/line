@@ -1,4 +1,4 @@
-classdef Network < matlab.mixin.Copyable
+classdef Network < Copyable
     % Copyright (c) 2012-2018, Imperial College London
     % All rights reserved.
     
@@ -598,7 +598,7 @@ classdef Network < matlab.mixin.Copyable
         end
         
         function [H,G] = getGraph(self)
-            G = digraph(); TG = table();
+            G = digraph(); TG = Table();
             M = self.getNumberOfNodes;
             K = self.getNumberOfClasses;
             qn = self.getStruct;
@@ -622,7 +622,7 @@ classdef Network < matlab.mixin.Copyable
                     end
                 end
             end
-            H = digraph(); TH = table();
+            H = digraph(); TH = Table();
             I = self.getNumberOfStations;
             name = {}; sched = {}; type = {}; jobs = zeros(I,1);
             for i=1:I
@@ -697,7 +697,12 @@ classdef Network < matlab.mixin.Copyable
         %        function self = isValid(self)
         %% todo
         %        end
+        
         function self = update(self)
+            self.refreshStruct();
+        end
+        
+        function self = refresh(self)
             self.refreshStruct();
         end
         
@@ -721,7 +726,7 @@ classdef Network < matlab.mixin.Copyable
         % Override copyElement method:
         function clone = copyElement(self)
             % Make a shallow copy of all properties
-            clone = copyElement@matlab.mixin.Copyable(self);
+            clone = copyElement@Copyable(self);
             % Make a deep copy of each handle
             for i=1:length(self.classes)
                 clone.classes{i} = self.classes{i}.copy;

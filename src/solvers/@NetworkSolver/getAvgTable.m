@@ -12,11 +12,11 @@ if nargin == 1
 end
 [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
 if isempty(QN)
-    AvgTable = table();
-    QT = table();
-    UT = table();
-    RT = table();
-    TT = table();
+    AvgTable = Table();
+    QT = Table();
+    UT = Table();
+    RT = Table();
+    TT = Table();
 elseif ~keepDisabled
     Qval = []; Uval = [];
     Rval = []; Tval = [];
@@ -35,14 +35,14 @@ elseif ~keepDisabled
         end
     end
     QLen = Qval(:); % we need to save first in a variable named like the column
-    QT = table(Station,Class,QLen);
+    QT = Table(Station,Class,QLen);
     Util = Uval(:); % we need to save first in a variable named like the column
-    UT = table(Station,Class,Util);
+    UT = Table(Station,Class,Util);
     RespT = Rval(:); % we need to save first in a variable named like the column
-    RT = table(Station,Class,RespT);
+    RT = Table(Station,Class,RespT);
     Tput = Tval(:); % we need to save first in a variable named like the column
-    TT = table(Station,Class,Tput);
-    AvgTable = table(Station,Class,QLen,Util,RespT,Tput);
+    TT = Table(Station,Class,Tput);
+    AvgTable = Table(Station,Class,QLen,Util,RespT,Tput);
 else
     Qval = zeros(M,K); Uval = zeros(M,K);
     Rval = zeros(M,K); Tval = zeros(M,K);
@@ -59,13 +59,13 @@ else
         end
     end
     QLen = Qval(:); % we need to save first in a variable named like the column
-    QT = table(Station,Class,QLen);
+    QT = Table(Station,Class,QLen);
     Util = Uval(:); % we need to save first in a variable named like the column
-    UT = table(Station,Class,Util);
+    UT = Table(Station,Class,Util);
     RespT = Rval(:); % we need to save first in a variable named like the column
-    RT = table(Station,Class,RespT);
+    RT = Table(Station,Class,RespT);
     Tput = Tval(:); % we need to save first in a variable named like the column
-    TT = table(Station,Class,Tput);
-    AvgTable = table(Station,Class,QLen,Util,RespT,Tput);
+    TT = Table(Station,Class,Tput);
+    AvgTable = Table(Station,Class,QLen,Util,RespT,Tput);
 end
 end

@@ -1,4 +1,4 @@
-classdef Event < matlab.mixin.Copyable
+classdef Event < Copyable
     % Copyright (c) 2012-2018, Imperial College London
     % All rights reserved.
     

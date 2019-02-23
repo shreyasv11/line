@@ -80,7 +80,7 @@ if wantVisits
         visits{c} = visits{c} / sum(visits{c}(refstat(inchain(1)),inchain));
     end
 end
-if ~isempty(self.qn) && isprop(self.qn,'chains')
+if ~isempty(self.qn) %&& isprop(self.qn,'chains')
     self.qn.setChains(chains, visits, rt);
 end
 end

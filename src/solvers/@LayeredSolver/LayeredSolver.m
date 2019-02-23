@@ -1,6 +1,6 @@
 classdef LayeredSolver < Solver
-% Copyright (c) 2012-2018, Imperial College London
-% All rights reserved.
+    % Copyright (c) 2012-2018, Imperial College London
+    % All rights reserved.
     
     properties
     end
@@ -15,9 +15,13 @@ classdef LayeredSolver < Solver
         end
     end
     
-    methods(Abstract)
-        %bool = supports(self, model); % true if model is supported by the solver
-        [QN,UN,RN,TN] = getAvg(self);
+    methods %(Abstract) % implemented with errors for Octave compatibility
+        function bool = supports(self, model) % true if model is supported by the solver
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        function [QN,UN,RN,TN] = getAvg(self)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
     end
     
     methods
@@ -35,24 +39,24 @@ classdef LayeredSolver < Solver
             end
             if wantLQNSnaming
                 utilization = QN;
-                QT = table(Node,utilization);
+                QT = Table(Node,utilization);
                 procUtilization = UN;
-                UT = table(Node,procUtilization);
+                UT = Table(Node,procUtilization);
                 phase1ServiceTime = RN;
-                RT = table(Node,phase1ServiceTime);
+                RT = Table(Node,phase1ServiceTime);
                 throughput = TN;
-                TT = table(Node,throughput);
-                AvgTable = table(Node, NodeType, utilization, procUtilization, phase1ServiceTime, throughput);
+                TT = Table(Node,throughput);
+                AvgTable = Table(Node, NodeType, utilization, procUtilization, phase1ServiceTime, throughput);
             else
                 QLen = QN;
-                QT = table(Node,QLen);
+                QT = Table(Node,QLen);
                 Util = UN;
-                UT = table(Node,Util);
+                UT = Table(Node,Util);
                 RespT = RN;
-                RT = table(Node,RespT);
+                RT = Table(Node,RespT);
                 Tput = TN;
-                TT = table(Node,Tput);
-                AvgTable = table(Node, NodeType, QLen, Util, RespT, Tput);
+                TT = Table(Node,Tput);
+                AvgTable = Table(Node, NodeType, QLen, Util, RespT, Tput);
             end
         end
     end

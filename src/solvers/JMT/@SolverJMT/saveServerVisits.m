@@ -1,7 +1,7 @@
-function [simNode, section] = saveServerVisits(self, simNode, section)
+function [simDoc, section] = saveServerVisits(self, simDoc, section)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
-visitsNode = simNode.createElement('parameter');
+visitsNode = simDoc.createElement('parameter');
 visitsNode.setAttribute('array', 'true');
 visitsNode.setAttribute('classPath', 'java.lang.Integer');
 visitsNode.setAttribute('name', 'numberOfVisits');
@@ -10,16 +10,16 @@ numOfClasses = length(self.model.classes);
 for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
     
-    refClassNode = simNode.createElement('refClass');
-    refClassNode.appendChild(simNode.createTextNode(currentClass.name));
+    refClassNode = simDoc.createElement('refClass');
+    refClassNode.appendChild(simDoc.createTextNode(currentClass.name));
     visitsNode.appendChild(refClassNode);
     
-    subParameterNode = simNode.createElement('subParameter');
+    subParameterNode = simDoc.createElement('subParameter');
     subParameterNode.setAttribute('classPath', 'java.lang.Integer');
     subParameterNode.setAttribute('name', 'numberOfVisits');
     
-    valueNode2 = simNode.createElement('value');
-    valueNode2.appendChild(simNode.createTextNode(int2str(1)));
+    valueNode2 = simDoc.createElement('value');
+    valueNode2.appendChild(simDoc.createTextNode(int2str(1)));
     
     subParameterNode.appendChild(valueNode2);
     visitsNode.appendChild(subParameterNode);

@@ -29,7 +29,7 @@ classdef SharedServer < Section
         % Override copyElement method:
         function clone = copyElement(self)
             % Make a shallow copy of all properties
-            clone = copyElement@matlab.mixin.Copyable(self);
+            clone = copyElement@Copyable(self);
             % Make a deep copy of each object
             for i=1:length(self.serviceProcess)
 			if ishandle(self.serviceProcess{i}{3})

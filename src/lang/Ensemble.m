@@ -1,4 +1,4 @@
-classdef Ensemble < matlab.mixin.Copyable
+classdef Ensemble < Copyable
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
     
@@ -24,7 +24,7 @@ classdef Ensemble < matlab.mixin.Copyable
         % Override copyElement method:
         function clone = copyElement(self)
             % Make a shallow copy of all properties
-            clone = copyElement@matlab.mixin.Copyable(self);
+            clone = copyElement@Copyable(self);
             % Make a deep copy of each ensemble object
             for e=1:length(self.ensemble)
                 clone.ensemble{e} = copy(self.ensemble{e});

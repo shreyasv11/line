@@ -20,6 +20,6 @@ if isempty(outspace)
     outrate = 0;
     return
 else
-    outhash = State.hash(qn, ind, outspace);
+    outhash = State.getHash(qn, ind, outspace);
 end
 end

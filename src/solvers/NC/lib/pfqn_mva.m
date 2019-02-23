@@ -1,5 +1,8 @@
 function [XN,QN,UN,CN,lGN] = pfqn_mva(L,N,Z,mi)
 % [XN,QN,UN,CN] = pfqn_mva(L,N,Z,mi)
+if isoctave
+  warning off;
+end
 XN=[];QN=[];UN=[];CN=[];
 % DEFAULTS
 INFSERV=1;
