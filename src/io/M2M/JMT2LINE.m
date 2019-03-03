@@ -27,7 +27,7 @@ xsection = {xDoc.node.section};
 strategy = cell(1,length(node_name));
 xsection_par = {};
 xsection_i = {};
-xsection_class = {};
+xsection_javaClass = {};
 sink_idx = -1;
 source_idx = -1;
 
@@ -51,8 +51,8 @@ source_idx = -1;
 for i=1:length(node_name)
     xsection_i{i} = {xsection{i}};
     xsection_i{i} = xsection_i{i}{1}; %   input, service, and output sections of node i
-    xsection_class{i} = {xsection_i{i}.ATTRIBUTE};
-    switch xsection_class{i}{1}.className % input section
+    xsection_javaClass{i} = {xsection_i{i}.ATTRIBUTE};
+    switch xsection_javaClass{i}{1}.className % input section
         case 'JobSink'
             node{i} = Sink(model, node_name{i});
             sink_idx = i;
@@ -61,88 +61,98 @@ for i=1:length(node_name)
             source_idx = i;
             xrouting{i} = {xsection_i{i}(3).parameter.subParameter.ATTRIBUTE};
         case 'Queue'
-            xsection_par{i} = {xsection{i}.parameter};
-            xsection_i_par{i} = xsection_i{i}.parameter;
-            xsection_i_subpar{i} = {xsection_i_par{i}.subParameter};
-            
-            xsvc{i} = {xsection_i{i}(2).parameter.subParameter};
-            xrouting{i} = {xsection_i{i}(3).parameter.subParameter.ATTRIBUTE};
-            
-            %    xget_strategy{i} = {xsection_i_par{i}.ATTRIBUTE};
-            %     switch xget_strategy{i}{3}.name
-            %         case 'LCFSstrategy'
-            %             strategy{i} = SchedStrategy.LCFS;
-            %         case 'FCFSstrategy'
-            %             strategy{i} = SchedStrategy.FCFS;
-            %     end
-            
-            xput_strategy{i} = xsection_i_par{i};
-            xput_strategy{i}= {xput_strategy{i}(4).subParameter.ATTRIBUTE};
-            switch xput_strategy{i}{1}.name
-                case 'TailStrategy'
-                    strategy{i} = SchedStrategy.FCFS;
-                case 'TailStrategyPriority'
-                    strategy{i} = SchedStrategy.HOL;
-                case 'HeadStrategy'
-                    strategy{i} = SchedStrategy.LCFS;
-                case 'RandStrategy'
-                    strategy{i} = SchedStrategy.RAND;
-                case 'SJFStrategy'
-                    strategy{i} = SchedStrategy.SJF;
-                case 'SEPTStrategy'
-                    strategy{i} = SchedStrategy.SEPT;
-                case 'LJFStrategy'
-                    strategy{i} = SchedStrategy.LJF;
-                case 'LEPTStrategy'
-                    strategy{i} = SchedStrategy.LEPT;
-            end
-            % LCFS: jmt.engine.NetStrategies.QueuePutStrategies.HeadStrategy"
-            % RAND: jmt.engine.NetStrategies.QueuePutStrategies.RandStrategy"
-            % FCFS: jmt.engine.NetStrategies.QueuePutStrategies.TailStrategy"
-            
-            xsection_i_type{i} = {xsection{i}.ATTRIBUTE};
-            switch xsection_i_type{i}{2}.className
-                case 'Delay'
-                    node{i} = DelayStation(model, node_name{i});
-                    xcapacity = {xsection_i_par{i}.value};
-                    node{i}.setCapacity(xcapacity{1}); % buffer size
-                case 'Server'
-                    node{i} = Queue(model, node_name{i}, strategy{i});
-                    xcapacity = {xsection_i_par{i}.value};
-                    node{i}.setCapacity(xcapacity{1}); % buffer size
-                    xsection_par_val{i} = {xsection_par{end}{2}.value};
-                    node{i}.setNumServers(xsection_par_val{i}{1});
-                    switch strategy{i}
-                        case SchedStrategy.SEPT
-                        schedparams{i} = NaN;
+            switch xsection_javaClass{i}{2}.className
+                case 'ServiceTunnel'
+                    node{i} = Router(model, node_name{i});
+                    xrouting{i} = {xsection_i{i}(3).parameter.subParameter.ATTRIBUTE};
+                otherwise                    
+                    xsection_par{i} = {xsection{i}.parameter};
+                    xsection_i_par{i} = xsection_i{i}.parameter;
+                    xsection_i_value{i} = {xsection_i_par{i}.value};
+                    %if xsection_i_value{i}{1}==-1
+                    %    node{i} = Router(model, node_name{i});
+                    %else
+                    xsection_i_subpar{i} = {xsection_i_par{i}.subParameter};
+                    
+                    xsvc{i} = {xsection_i{i}(2).parameter.subParameter};
+                    xrouting{i} = {xsection_i{i}(3).parameter.subParameter.ATTRIBUTE};
+                    
+                    %    xget_strategy{i} = {xsection_i_par{i}.ATTRIBUTE};
+                    %     switch xget_strategy{i}{3}.name
+                    %         case 'LCFSstrategy'
+                    %             strategy{i} = SchedStrategy.LCFS;
+                    %         case 'FCFSstrategy'
+                    %             strategy{i} = SchedStrategy.FCFS;
+                    %     end
+                    
+                    xput_strategy{i} = xsection_i_par{i};
+                    xput_strategy{i}= {xput_strategy{i}(4).subParameter.ATTRIBUTE};
+                    switch xput_strategy{i}{1}.name
+                        case 'TailStrategy'
+                            strategy{i} = SchedStrategy.FCFS;
+                        case 'TailStrategyPriority'
+                            strategy{i} = SchedStrategy.HOL;
+                        case 'HeadStrategy'
+                            strategy{i} = SchedStrategy.LCFS;
+                        case 'RandStrategy'
+                            strategy{i} = SchedStrategy.RAND;
+                        case 'SJFStrategy'
+                            strategy{i} = SchedStrategy.SJF;
+                        case 'SEPTStrategy'
+                            strategy{i} = SchedStrategy.SEPT;
+                        case 'LJFStrategy'
+                            strategy{i} = SchedStrategy.LJF;
+                        case 'LEPTStrategy'
+                            strategy{i} = SchedStrategy.LEPT;
                     end
-                case 'PSServer' % requires JMT >= 1.0.2
-                    strategy_i_sub={xsection_par{i}{2}.subParameter};
-                    strategy_i_sub4=strategy_i_sub{4}; strategy_i_sub4={strategy_i_sub4.ATTRIBUTE};
-                    strategy_i_sub5=strategy_i_sub{5};                    
-                    schedparams{i} = cell2mat({strategy_i_sub5.value});
-                    r=1; % we assume the strategies are identical across classes
-                    switch strategy_i_sub4{r}.name
-                        case 'EPSStrategy'
-                            strategy{i} = SchedStrategy.PS;
-                        case 'DPSStrategy'
-                            strategy{i} = SchedStrategy.DPS;
-                        case 'GPSStrategy'
-                            strategy{i} = SchedStrategy.GPS;
+                    % LCFS: jmt.engine.NetStrategies.QueuePutStrategies.HeadStrategy"
+                    % RAND: jmt.engine.NetStrategies.QueuePutStrategies.RandStrategy"
+                    % FCFS: jmt.engine.NetStrategies.QueuePutStrategies.TailStrategy"
+                    
+                    xsection_i_type{i} = {xsection{i}.ATTRIBUTE};
+                    switch xsection_i_type{i}{2}.className
+                        case 'Delay'
+                            node{i} = DelayStation(model, node_name{i});
+                            xcapacity = {xsection_i_par{i}.value};
+                            node{i}.setCapacity(xcapacity{1}); % buffer size
+                        case 'Server'
+                            node{i} = Queue(model, node_name{i}, strategy{i});
+                            xcapacity = {xsection_i_par{i}.value};
+                            node{i}.setCapacity(xcapacity{1}); % buffer size
+                            xsection_par_val{i} = {xsection_par{end}{2}.value};
+                            node{i}.setNumServers(xsection_par_val{i}{1});
+                            switch strategy{i}
+                                case SchedStrategy.SEPT
+                                    schedparams{i} = NaN;
+                            end
+                        case 'PSServer' % requires JMT >= 1.0.2
+                            strategy_i_sub={xsection_par{i}{2}.subParameter};
+                            strategy_i_sub4=strategy_i_sub{4}; strategy_i_sub4={strategy_i_sub4.ATTRIBUTE};
+                            strategy_i_sub5=strategy_i_sub{5};
+                            schedparams{i} = cell2mat({strategy_i_sub5.value});
+                            r=1; % we assume the strategies are identical across classes
+                            switch strategy_i_sub4{r}.name
+                                case 'EPSStrategy'
+                                    strategy{i} = SchedStrategy.PS;
+                                case 'DPSStrategy'
+                                    strategy{i} = SchedStrategy.DPS;
+                                case 'GPSStrategy'
+                                    strategy{i} = SchedStrategy.GPS;
+                            end
+                            node{i} = Queue(model, node_name{i}, strategy{i});
+                            xcapacity = {xsection_i_par{i}.value};
+                            node{i}.setCapacity(xcapacity{1}); % buffer size
+                            xsection_par_val{i} = {xsection_par{end}{2}.value};
+                            node{i}.setNumServers(xsection_par_val{i}{1});
+                        case 'ClassSwitch'
+                            strategy_i_sub={xsection_par{i}{2}.subParameter};
+                            strategy_i_sub1=strategy_i_sub{1}; strategy_i_sub1={strategy_i_sub1.subParameter};
+                            csMatrix = zeros(length(strategy_i_sub1));
+                            for r=1:length(strategy_i_sub1)
+                                csMatrix(r,:) = cell2mat({strategy_i_sub1{r}.value});
+                            end
+                            node{i} = ClassSwitch(model, node_name{i}, csMatrix);
                     end
-                    node{i} = Queue(model, node_name{i}, strategy{i});
-                    xcapacity = {xsection_i_par{i}.value};
-                    node{i}.setCapacity(xcapacity{1}); % buffer size
-                    xsection_par_val{i} = {xsection_par{end}{2}.value};
-                    node{i}.setNumServers(xsection_par_val{i}{1});
-                case 'ClassSwitch'
-                    strategy_i_sub={xsection_par{i}{2}.subParameter};
-                    strategy_i_sub1=strategy_i_sub{1}; strategy_i_sub1={strategy_i_sub1.subParameter};
-                    csMatrix = zeros(length(strategy_i_sub1));
-                    for r=1:length(strategy_i_sub1)
-                        csMatrix(r,:) = cell2mat({strategy_i_sub1{r}.value});
-                    end
-                    node{i} = ClassSwitch(model, node_name{i}, csMatrix);
             end
     end
 end
@@ -203,7 +213,7 @@ for i=1:length(node_name)
     elseif isa(node{i},'Queue') || isa(node{i},'DelayStation')
         if isempty(schedparams{i})
             switch strategy{i}
-                case {SchedStrategy.SEPT,SchedStrategy.LEPT} 
+                case {SchedStrategy.SEPT,SchedStrategy.LEPT}
                     schedparams{i} = NaN*ones(1,length(classes));
                 otherwise
                     schedparams{i} = ones(1,length(classes));
@@ -234,7 +244,7 @@ for i=1:length(node_name)
                 case 'Coxian'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Cox2(par(1).value,par(2).value,par(3).value), para_ir);
-                otherwise                    
+                otherwise
                     xsvc_statdistrib{i}{r}{1}.name
                     node{i}.setService(jobclass{r}, Exp(1), para_ir); %TODO
             end
@@ -245,7 +255,7 @@ end
 % create links
 C = zeros(length(node_name)); % connection matrix
 links = {xDoc.connection.ATTRIBUTE};
-for l=1:length(links)    
+for l=1:length(links)
     source = findstring(orig_node_name,links{l}.source);
     target = findstring(orig_node_name,links{l}.target);
     %    model.addLink(station{source},station{target});

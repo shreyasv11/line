@@ -1,7 +1,8 @@
 clear QN UN RN TN QNc UNc RNc TNc CN XN
 w = warning;
 warning off
-overwrite = false; % set to true to regenerate unit tests
+overwrite = true; % set to true to regenerate unit tests
+
 run(testName);
 model.initDefault;
 nclasses = model.getNumberOfClasses;

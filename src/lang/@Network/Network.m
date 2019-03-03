@@ -212,7 +212,7 @@ classdef Network < Copyable
                     case {'Queue','QueueingStation'}
                         nodeTypes(i) = NodeType.Queue;
                     case 'Router'
-                        nodeTypes(i) = NodeType.Dispatcher;
+                        nodeTypes(i) = NodeType.Router;
                     case {'Delay','DelayStation'}
                         nodeTypes(i) = NodeType.Delay;
                     case 'Sink'

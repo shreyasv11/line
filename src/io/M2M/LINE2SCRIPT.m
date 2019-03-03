@@ -3,7 +3,7 @@ function model = LINE2SCRIPT(model, filename)
 % All rights reserved.
 qn = model.getStruct;
 if exist('filename','var')
-    fid = fopen(filename,'w+');
+    fid = fopen(filename,'w'); % discard
     QN2SCRIPT(qn, model.getName(), fid);
     fclose(fid);
 else

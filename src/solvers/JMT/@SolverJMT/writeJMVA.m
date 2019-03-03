@@ -11,12 +11,12 @@ if self.model.hasClassSwitch
 end
 
 if isoctave
-mvaDoc = javaObject('org.apache.xerces.dom.DocumentImpl');
-mvaElem = mvaDoc.createElement('sim');
-mvaDoc.appendChild(mvaElem);
+    mvaDoc = javaObject('org.apache.xerces.dom.DocumentImpl');
+    mvaElem = mvaDoc.createElement('sim');
+    mvaDoc.appendChild(mvaElem);
 else
-mvaDoc = com.mathworks.xml.XMLUtils.createDocument('model');
-mvaElem = mvaDoc.getDocumentElement;
+    mvaDoc = com.mathworks.xml.XMLUtils.createDocument('model');
+    mvaElem = mvaDoc.getDocumentElement;
 end
 
 mvaElem.setAttribute('xmlns:xsi', self.xmlnsXsi);
@@ -114,7 +114,7 @@ for c=1:qn.nchains
         if isOpenChain && i == qn.refstat(inchain(1)) % if this is a source ST = 1 / arrival rates
             STchain(i,c) = 1 / sumfinite(qn.rates(i,inchain)); % ignore degenerate classes with zero arrival rates
         else
-            STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';            
+            STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
         end
         SCVchain(i,c) = SCV(i,inchain) * alpha(i,inchain)';
     end
@@ -175,7 +175,7 @@ for i=1:qn.nstations
     for c=1:qn.nchains
         if isLoadDep(i)
             statSrvTimeElem = mvaDoc.createElem('servicetimes');
-            statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));        
+            statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));
             ldSrvString = num2str(STchain(i,c));
             for n=2:sum(NK)
                 ldSrvString = sprintf('%s;%s',ldSrvString,num2str(STchain(i,c)/min( n, qn.nservers(i) )));
@@ -184,7 +184,7 @@ for i=1:qn.nstations
             srvTimesElem.appendChild(statSrvTimeElem);
         else
             statSrvTimeElem = mvaDoc.createElem('servicetime');
-            statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));        
+            statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));
             statSrvTimeElem.appendChild(mvaDoc.createTextNode(num2str(STchain(i,c))));
             srvTimesElem.appendChild(statSrvTimeElem);
         end

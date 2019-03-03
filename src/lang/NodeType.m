@@ -3,7 +3,8 @@ classdef (Sealed) NodeType
 % All rights reserved.
 
 properties (Constant)
-    Dispatcher = 6;
+    Dispatcher = 6; 
+    Router = 6;
     Cache = 5;
     Logger = 4;
     ClassSwitch = 3;
