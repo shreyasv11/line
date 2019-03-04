@@ -10,6 +10,7 @@ end
 %% initialization
 fprintf(fid,'model = Network(''%s'');\n',modelName);
 rt = qn.rt;
+rtnodes = qn.rtnodes;
 hasSink = 0;
 extID = 0;
 mu=qn.mu;
@@ -28,13 +29,13 @@ for i=1:qn.nstations
     end
 end
 
-
+fprintf(fid,'\n');
 %% write nodes (except ClassSwitch nodes)
 for i= 1:qn.nnodes
     switch qn.nodetype(i)
         case NodeType.Source
             extID = i;
-            fprintf(fid,'node{%d} = Source(model, ''Source'');\n',i);
+            fprintf(fid,'node{%d} = Source(model, ''%s'');\n',i,qn.nodenames{i});
             hasSink = 1;
         case NodeType.Delay
             fprintf(fid,'node{%d} = DelayStation(model, ''%s'');\n',i,qn.nodenames{i});
@@ -44,10 +45,10 @@ for i= 1:qn.nnodes
         case NodeType.Router
             fprintf(fid,'node{%d} = Router(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Sink
-            fprintf(fid,'node{%d} = Sink(model, ''%s'');\n',i,'Sink');
+            fprintf(fid,'node{%d} = Sink(model, ''%s'');\n',i,qn.nodenames{i});
     end
 end
-
+fprintf(fid,'\n');
 %% write classes
 for k = 1:qn.nclasses
     if qn.njobs(k)>0
@@ -74,7 +75,7 @@ for k = 1:qn.nclasses
         end
     end
 end
-
+fprintf(fid,'\n');
 %% write class-switch nodes 
 % must be instantiated after classes
 for i= 1:qn.nnodes
@@ -85,7 +86,7 @@ for i= 1:qn.nnodes
             for c = 1:qn.nclasses
                 for m=1:qn.nnodes
                     % routing matrix for each class
-                    csMatrix(k,c) = csMatrix(k,c) + qn.rtnodes((i-1)*qn.nclasses+k,(m-1)*qn.nclasses+c);
+                    csMatrix(k,c) = csMatrix(k,c) + rtnodes((i-1)*qn.nclasses+k,(m-1)*qn.nclasses+c);
                 end
             end
         end
@@ -99,7 +100,7 @@ for i= 1:qn.nnodes
         fprintf(fid,'node{%d} = ClassSwitch(model, ''%s'', csMatrix%d);\n',i,qn.nodenames{i},i);
     end
 end
-
+fprintf(fid,'\n');
 %% arrival and service processes
 for k=1:qn.nclasses    
     for i=1:qn.nstations
@@ -152,17 +153,18 @@ if hasSink
     end
 end
 
-fprintf(fid,'P = cellzeros(%d,%d,%d,%d); %% routing matrix \n',qn.nclasses,qn.nclasses,qn.nnodes,qn.nnodes);
+fprintf(fid,'\n');
+fprintf(fid,'P = cellzeros(length(jobclass),length(jobclass),length(node),length(node)); %% routing matrix \n',qn.nclasses,qn.nclasses,qn.nnodes,qn.nnodes);
 for k = 1:qn.nclasses
     for c = 1:qn.nclasses       
         for i=1:qn.nnodes
             for m=1:qn.nnodes
                 % routing matrix for each class
-                myP{k,c}(i,m) = qn.rtnodes((i-1)*qn.nclasses+k,(m-1)*qn.nclasses+c);
-                if myP{k,c}(i,m) > 0
+                myP{k,c}(i,m) = rtnodes((i-1)*qn.nclasses+k,(m-1)*qn.nclasses+c);
+                if myP{k,c}(i,m) > 0 && qn.nodetype(i) ~= NodeType.Sink
                     % do not change %d into %f to avoid round-off errors in
                     % the total probability
-                    fprintf(fid,'P{%d,%d}(%d,%d) = %d; %% (%s,%s) -> (%s,%s)\n',k,c,i,m,myP{k,c}(i,m),qn.nodenames{i},qn.classnames{k},qn.nodenames{m},qn.classnames{c});
+                    fprintf(fid,'P{jobclass{%d},jobclass{%d}}(node{%d},node{%d}) = %d; %% (%s,%s) -> (%s,%s)\n',k,c,i,m,myP{k,c}(i,m),qn.nodenames{i},qn.classnames{k},qn.nodenames{m},qn.classnames{c});
                 end
             end
         end

@@ -98,6 +98,26 @@ classdef NetworkSolver < Solver
                 end
             end            
         end
+
+        function AN = getAvgSinkTput(self)
+            M = self.model.getNumberOfStations;
+            K = self.model.getNumberOfClasses;
+            T = self.model.getAvgTputHandles();
+            [~,~,~,TN] = self.getAvg([],[],[],T);
+			qn = self.model.getStruct;
+            if ~isempty(T)
+                AN = zeros(M,K);
+                for k=1:K
+                    for i=1:M
+                        for j=1:M
+                            for r=1:K
+                                AN(i,k) = AN(i,k) + TN(j,r)*qn.rt((j-1)*K+r, (i-1)*K+k);
+                            end
+                        end
+                    end
+                end
+            end            
+        end        
         
         % also accepts a cell array with the handlers in it
         [QN,UN,RN,TN]       = getAvg(self,Q,U,R,T);
