@@ -1,6 +1,7 @@
 function nvars = refreshLocalVars(self)
 nvars = zeros(self.getNumberOfNodes, 1);
 varsparam = cell(self.getNumberOfNodes, 1);
+rtnodes = self.qn.rtnodes; 
 for ind=1:self.getNumberOfNodes
     switch class(self.nodes{ind})
         case 'Cache'
@@ -33,7 +34,7 @@ for ind=1:self.getNumberOfNodes
             if isempty(varsparam) % reinstantiate if not a cache
                 varsparam{ind} = struct();
             end
-            varsparam{ind}.outlinks = find(sum(reshape(self.qn.rtnodes(ind,:)>0,self.qn.nnodes,self.qn.nclasses),2)');
+            varsparam{ind}.outlinks = find(sum(reshape(rtnodes(ind,:)>0,self.qn.nnodes,self.qn.nclasses),2)');
     end
 end
 if ~isempty(self.qn) %&& isprop(self.qn,'nvars')

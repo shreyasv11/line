@@ -86,7 +86,7 @@ for i=1:length(node_name)
                     %     end
                     
                     xput_strategy{i} = xsection_i_par{i};
-                    xput_strategy{i}= {xput_strategy{i}(4).subParameter.ATTRIBUTE};
+                     xput_strategy{i}= {xput_strategy{i}(4).subParameter.ATTRIBUTE};
                     switch xput_strategy{i}{1}.name
                         case 'TailStrategy'
                             strategy{i} = SchedStrategy.FCFS;
@@ -204,6 +204,15 @@ for i=1:length(node_name)
                     case 'Deterministic'
                         par={xarv_sec{i}{r}.subParameter}; par=par{2};
                         node{i}.setArrival(jobclass{r}, Det(par.value));
+                    case 'Pareto'
+                        par={xarv_sec{i}{r}.subParameter}; par=par{2};
+                        node{i}.setArrival(jobclass{r}, Pareto(par(1).value, par(2).value));
+                    case 'Gamma'
+                        par={xarv_sec{i}{r}.subParameter}; par=par{2};
+                        node{i}.setArrival(jobclass{r}, Gamma(par(1).value, par(2).value));
+                    case 'Uniform'
+                        par={xarv_sec{i}{r}.subParameter}; par=par{2};
+                        node{i}.setArrival(jobclass{r}, Uniform(par(1).value, par(2).value));
                     otherwise
                         xarv_statdistrib{i}{r}{1}.name
                         node{i}.setArrival(jobclass{r}, Exp(1)); %TODO
@@ -232,6 +241,9 @@ for i=1:length(node_name)
             xsvc_statdistrib{i}{r}={xsvc_sec{i}{r}.ATTRIBUTE};
             para_ir = schedparams{i}(r);
             switch xsvc_statdistrib{i}{r}{1}.name
+                case 'Replayer'
+                    par={xsvc_sec{i}{r}.subParameter}; par=par{2};
+                    node{i}.setService(jobclass{r}, Replayer(par.value), para_ir);                    
                 case 'Exponential'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Exp(par.value), para_ir);
@@ -244,6 +256,18 @@ for i=1:length(node_name)
                 case 'Coxian'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Cox2(par(1).value,par(2).value,par(3).value), para_ir);
+                case 'Deterministic'
+                    par={xsvc_sec{i}{r}.subParameter}; par=par{2};
+                    node{i}.setService(jobclass{r}, Det(par.value));
+                case 'Pareto'
+                    par={xsvc_sec{i}{r}.subParameter}; par=par{2};
+                    node{i}.setService(jobclass{r}, Pareto(par(1).value, par(2).value));
+                case 'Gamma'
+                    par={xsvc_sec{i}{r}.subParameter}; par=par{2};
+                    node{i}.setService(jobclass{r}, Gamma(par(1).value, par(2).value));
+                case 'Uniform'
+                    par={xsvc_sec{i}{r}.subParameter}; par=par{2};
+                    node{i}.setService(jobclass{r}, Uniform(par(1).value, par(2).value));
                 otherwise
                     xsvc_statdistrib{i}{r}{1}.name
                     node{i}.setService(jobclass{r}, Exp(1), para_ir); %TODO

@@ -6,9 +6,9 @@ classdef Cox2 < PhaseType
         %Constructor
         function self = Cox2(mu1, mu2, phi1)
             self = self@PhaseType('Coxian',3);
-            setParam(self, 1, 'mu1', mu1, 'java.lang.Double');
-            setParam(self, 2, 'mu2', mu2, 'java.lang.Double');
-            setParam(self, 3, 'phi1', phi1, 'java.lang.Double'); % completion probability in phase 1
+            setParam(self, 1, 'lambda0', mu1, 'java.lang.Double');
+            setParam(self, 2, 'lambda1', mu2, 'java.lang.Double');
+            setParam(self, 3, 'phi0', phi1, 'java.lang.Double'); % completion probability in phase 1
             self.javaClass = 'jmt.engine.random.CoxianDistr';
             self.javaParClass = 'jmt.engine.random.CoxianPar';
         end

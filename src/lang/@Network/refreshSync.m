@@ -3,6 +3,8 @@ qn = self.qn;
 local = self.getNumberOfNodes+1;
 nclasses = qn.nclasses;
 sync = {};
+emptystate = cellzeros(qn.nnodes,1,0,0);
+rtmask = self.qn.rtfun(emptystate, emptystate);
 for ind=1:qn.nnodes
     for r=1:qn.nclasses
         if qn.isstation(ind) && qn.phases(qn.nodeToStation(ind),r)> 1
@@ -19,8 +21,6 @@ for ind=1:qn.nnodes
                 end
             end
             isf = qn.nodeToStateful(ind);
-            emptystate = cellzeros(qn.nnodes,1,0,0);
-            rtmask = self.qn.rtfun(emptystate, emptystate);
             for jnd=1:qn.nnodes
                 if qn.isstateful(jnd)
                     jsf = qn.nodeToStateful(jnd);
