@@ -1,6 +1,6 @@
 ## LINE: Performance and Reliability Analysis Engine
 
-Current version: 2.0.0-ALPHA (BSD-3 License)
+Current version: 2.0.0-BETA (BSD-3 License)
 
 Website: http://line-solver.sourceforge.net/
 
