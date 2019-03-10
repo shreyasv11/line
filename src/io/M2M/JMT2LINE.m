@@ -65,7 +65,7 @@ for i=1:length(node_name)
                 case 'ServiceTunnel'
                     node{i} = Router(model, node_name{i});
                     xrouting{i} = {xsection_i{i}(3).parameter.subParameter.ATTRIBUTE};
-                otherwise                    
+                otherwise
                     xsection_par{i} = {xsection{i}.parameter};
                     xsection_i_par{i} = xsection_i{i}.parameter;
                     xsection_i_value{i} = {xsection_i_par{i}.value};
@@ -86,7 +86,7 @@ for i=1:length(node_name)
                     %     end
                     
                     xput_strategy{i} = xsection_i_par{i};
-                     xput_strategy{i}= {xput_strategy{i}(4).subParameter.ATTRIBUTE};
+                    xput_strategy{i}= {xput_strategy{i}(4).subParameter.ATTRIBUTE};
                     switch xput_strategy{i}{1}.name
                         case 'TailStrategy'
                             strategy{i} = SchedStrategy.FCFS;
@@ -243,7 +243,7 @@ for i=1:length(node_name)
             switch xsvc_statdistrib{i}{r}{1}.name
                 case 'Replayer'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
-                    node{i}.setService(jobclass{r}, Replayer(par.value), para_ir);                    
+                    node{i}.setService(jobclass{r}, Replayer(par.value), para_ir);
                 case 'Exponential'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Exp(par.value), para_ir);
@@ -289,19 +289,29 @@ end
 % assign routing probabilities
 P = zeros(length(node_name)*length(classes));
 for from=1:length(node_name)
+    for target=1:length(node_name)
+        if C(from,target)
+            model.addLink(node{from},node{target});
+        end
+    end
+end
+
+for from=1:length(node_name)
     if ~isa(node{from},'Sink')
         for r=1:length(classes)
-            node{from}.output.outputStrategy{r}{2} = RoutingStrategy.toType(xrouting{from}{r}.name);
             switch xrouting{from}{r}.name
                 case 'Random'
-                    targets = find(C(from,:));
-                    if isa(jobclass{r},'Class')
-                        targets = setdiff(targets, [sink_idx, source_idx]);
-                    end
-                    for target = targets(:)'
-                        P((from-1)*length(classes)+r, (target-1)*length(classes)+r) = 1 / length(targets);
-                    end
+                    node{from}.setRouting(jobclass{r},RoutingStrategy.RAND);
+%                     targets = find(C(from,:));
+%                     if isa(jobclass{r},'Class')
+%                         targets = setdiff(targets, [sink_idx, source_idx]);
+%                     end
+%                     for target = targets(:)'
+% %                        node{from}.setProbRouting(jobclass{r}, node{target}, 1 / length(targets));
+%                        P((from-1)*length(classes)+r, (target-1)*length(classes)+r) = 1 / length(targets);
+%                     end
                 case 'Probabilities'
+                    node{from}.setRouting(jobclass{r},RoutingStrategy.PROB);
                     xroutprobarray = {xsection_i{from}(3).parameter.subParameter.subParameter};
                     xroutprob = {xroutprobarray{r}.subParameter}; xroutprob = xroutprob{1};
                     xroutprobdest = {xroutprob.subParameter};
@@ -309,14 +319,18 @@ for from=1:length(node_name)
                         xprob={xroutprobdest{j}.value};
                         target = findstring(node_name,xprob{1});
                         prob = xprob{2};
-                        P((from-1)*length(classes)+r, (target-1)*length(classes)+r) = prob;
+                        node{from}.setProbRouting(jobclass{r}, node{target}, prob);
+%                        P((from-1)*length(classes)+r, (target-1)*length(classes)+r) = prob;
                     end
+                case 'Round Robin'
+                    node{from}.setRouting(jobclass{r},RoutingStrategy.RR);
+                case 'Join the Shortest Queue (JSQ)'
+                    node{from}.setRouting(jobclass{r},RoutingStrategy.JSQ);
             end
         end
     end
 end
-
-model.link(P);
+%model.link(P);
 Ttot=toc(T0);
 %fprintf(1,['JMT2LINE parsing time: ',num2str(Ttot),' s\n']);
 

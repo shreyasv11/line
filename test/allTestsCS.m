@@ -38,6 +38,10 @@ runTest;
 clear
 testName = 'test_CQN_Cox_CS_10';
 runTest;
+%% test_CQN_Cox_CS_13
+clear
+testName = 'test_CQN_Cox_CS_13';
+runTest;
 %% test_OQN_Cox_CS_1
 clear
 testName = 'test_OQN_Cox_CS_1';

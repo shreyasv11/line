@@ -25,14 +25,10 @@ station{2}.setNumServers(2);
 options = struct();
 options.verbose = 0;
 solver = SolverFluid(model,options);
-;
 [QN,UN,RN,XN] = solver.getAvg()
-XN(:)
-pause
 
 options = struct();
 solver = SolverMVA(model,options);
-;
 [QNa,UNa,RNa,XNa] = solver.getAvg()
 XNa(:)
 

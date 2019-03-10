@@ -130,7 +130,7 @@ switch options.method
             error('parallel SSA is available only under MATLAB.');
         end
         laboptions = options;
-        [XN,UN,QN,RN,TN,CN] = solver_ssa_analysis_spmd(laboptions, numlabs, qn, qnc, PH);
+        [XN,UN,QN,RN,TN,CN] = solver_ssa_analysis_spmd(laboptions, qn, qnc, PH);
 end
 
 runtime = toc(Tstart);

@@ -1,4 +1,4 @@
-clear
+%clear
 simFileName = [mfilename('fullpath'),'.mat']; try load(simFileName); needSim = 0; catch needSim = 1; end
 iters = 8;%1:10;
 for it = iters
