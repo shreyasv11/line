@@ -65,7 +65,7 @@ classdef Network < Copyable
     methods (Access = protected)
         [rates, scv] = refreshRates(self);
         [mu, phi, phases] = refreshCoxService(self);
-        [rt, rtnodes, csmask] = refreshRoutingMatrix(self, rates);
+        [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates);
         sync = refreshSync(self);
         sanitize(self);
     end

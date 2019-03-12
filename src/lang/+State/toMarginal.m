@@ -20,8 +20,8 @@ ist = qn.nodeToStation(ind);
 %isf = qn.nodeToStateful(ind);
 
 if nargin < 5
-    K = max(qn.phases(ist,:),ones(size(qn.phases(ist,:)))); % disabled classes still occupy 1 state element
-    Ks = [0,cumsum(K)];
+    K = qn.phasessz(ist,:);
+    Ks = qn.phaseshift(ist,:);
 end
 
 isExponential = false;

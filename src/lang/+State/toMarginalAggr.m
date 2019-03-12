@@ -16,8 +16,8 @@ if ~qn.isstation(ind) && qn.isstateful(ind) % if stateful node
 end
 
 if nargin < 5
-    K = max(qn.phases(ist,:),ones(size(qn.phases(ist,:)))); % disabled classes still occupy 1 state element
-    Ks = [0,cumsum(K)];
+    K = qn.phasessz(ist,:);
+    Ks = qn.phaseshift(ist,:);
 end
 
 if nargin < 8

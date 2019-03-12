@@ -232,8 +232,8 @@ for ind=1:qn.nnodes
         isf = qn.nodeToStateful(ind);
         if qn.isstation(ind)
             ist = qn.nodeToStation(ind);
-            K = max(qn.phases(ist,:),ones(size(qn.phases(ist,:)))); % disabled classes still occupy 1 state element
-            Ks = [0,cumsum(K)];
+            K = qn.phasessz(ist,:);
+            Ks = qn.phaseshift(ist,:);
         end
         for s=1:size(u,1)
             for r=1:R

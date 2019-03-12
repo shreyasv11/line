@@ -1,4 +1,4 @@
-function [rt, rtfun, csmask] = refreshRoutingMatrix(self, rates)
+function [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates)
 % Copyright (c) 2012-2018, Imperial College London
 % All rights reserved.
 

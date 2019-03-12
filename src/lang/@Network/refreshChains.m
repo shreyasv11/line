@@ -14,10 +14,11 @@ if nargin == 1
     end
 end
 
+I = self.getNumberOfNodes();
 M = self.getNumberOfStations();
 K = self.getNumberOfClasses();
 refstat = self.getReferenceStations();
-[rt,~,csmask] = self.refreshRoutingMatrix(rates);
+[rt,~,csmask, rtnodes] = self.refreshRoutingMatrix(rates);
 % getChains
 [C,inChain] = weaklyconncomp(csmask+csmask');
 %[C,inChain] = weaklyconncomp(rt+rt')
@@ -53,6 +54,8 @@ visits = cell(size(chains,1),1); % visits{c}(i,j) is the number of visits that a
 if wantVisits
     for c=1:size(chains,1)
         inchain = find(chains(c,:));
+        
+        %% stations
         cols = [];
         for i=1:M
             for k=inchain(:)'
@@ -60,8 +63,7 @@ if wantVisits
             end
         end
         Pchain = rt(cols,cols); % routing probability of the chain
-        visited = sum(Pchain,2) > 0;
-        
+        visited = sum(Pchain,2) > 0;        
         %                Pchain(visited,visited)
         %                if ~dtmc_isfeasible(Pchain(visited,visited))
         %                    error(sprintf('The routing matrix in chain %d is not stochastic. Chain %d classes: %s',c, c, int2str(inchain)));
@@ -78,9 +80,38 @@ if wantVisits
             end
         end
         visits{c} = visits{c} / sum(visits{c}(refstat(inchain(1)),inchain));
+        visits{c} = abs(visits{c});
+        
+        %% nodes
+        nodes_cols = [];
+        for i=1:I
+            for k=inchain(:)'
+                nodes_cols(end+1) = (i-1)*K+k;
+            end
+        end
+        nodes_Pchain = rtnodes(nodes_cols,nodes_cols); % routing probability of the chain
+        nodes_visited = sum(nodes_Pchain,2) > 0;
+        
+        %                Pchain(visited,visited)
+        %                if ~dtmc_isfeasible(Pchain(visited,visited))
+        %                    error(sprintf('The routing matrix in chain %d is not stochastic. Chain %d classes: %s',c, c, int2str(inchain)));
+        %                end
+        nodes_alpha_visited = dtmc_solve(nodes_Pchain(nodes_visited,nodes_visited));
+        nodes_alpha = zeros(1,I); nodes_alpha(nodes_visited) = nodes_alpha_visited;
+        if max(nodes_alpha)>=1-1e-10
+            error('One chain has an absorbing state.');
+        end
+        nodevisits{c} = zeros(I,K);
+        for i=1:I
+            for k=1:length(inchain)
+                nodevisits{c}(i,inchain(k)) = nodes_alpha((i-1)*length(inchain)+k);
+            end
+        end
+        nodevisits{c} = nodevisits{c} / sum(nodevisits{c}(refstat(inchain(1)),inchain));
+        nodevisits{c} = abs(nodevisits{c});
     end
 end
 if ~isempty(self.qn) %&& isprop(self.qn,'chains')
-    self.qn.setChains(chains, visits, rt);
+    self.qn.setChains(chains, visits, rt ,nodevisits);
 end
 end

@@ -19,7 +19,11 @@ classdef SolverMVA < NetworkSolver
                 return
             end
             
-            rand('seed',options.seed);
+%            if isoctave
+                rand('seed',options.seed);
+%            else
+%                rng(options.seed,'v4');
+%            end
             
             [qn] = self.model.getStruct();
             

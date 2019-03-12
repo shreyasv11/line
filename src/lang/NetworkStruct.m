@@ -27,8 +27,11 @@ classdef NetworkStruct <handle
         nstateful;  % number of stations (int)
         nvars; % number of local variables
         nodenames;   % name of each node
-        nodetype; % server type in each node
+        nodevisits;  % visits placed by classes at the nodes
+        nodetype; % server type in each node        
         phases; % number of phases in each service or arrival process
+        phasessz; % shift for number of phases
+        phaseshift; % shift for number of phases
         phi;         % probability of service completion in each service phase,
         % for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
@@ -128,11 +131,12 @@ classdef NetworkStruct <handle
             end            
         end
         
-        function setChains(self, chains, visits, rt)
+        function setChains(self, chains, visits, rt, nodes_visits)
             self.chains = logical(chains);
             self.visits = visits;
             self.rt = rt;
             self.nchains = size(chains,1);
+            self.nodevisits = nodes_visits;
         end
         
         function setSched(self, sched, schedparam)
@@ -153,6 +157,8 @@ classdef NetworkStruct <handle
             self.mu = mu;
             self.phi = phi;
             self.phases = phases;
+            self.phasessz = max(self.phases,ones(size(self.phases)));
+            self.phaseshift = [zeros(size(phases,1),1),cumsum(self.phasessz,2)];
         end
         
         function setCapacity(self, cap, classcap)
@@ -250,6 +256,8 @@ classdef NetworkStruct <handle
         newObj.nodenames = obj.nodenames;   % name of each node
         newObj.nodetype = obj.nodetype; % server type in each node
         newObj.phases = obj.phases; % number of phases in each service or arrival process
+        newObj.phasessz = obj.phasessz; % number of phases in each service or arrival process
+        newObj.phaseshift = obj.phaseshift; % number of phases in each service or arrival process
         newObj.phi = obj.phi;         % probability of service completion in each service phase,
         newObj.rates = obj.rates;       % service rate for each job class in each station
         newObj.refstat = obj.refstat;    % index of the reference node for each request class (Kx1 int)

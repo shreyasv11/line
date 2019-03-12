@@ -17,12 +17,11 @@ isf = qn.nodeToStateful(ind);
 hasOnlyExp = false; % true if all service processes are exponential
 if qn.isstation(ind)
     ist = qn.nodeToStation(ind);
-    K = qn.phases(ist,:); % slower
-    K(K==0)=1;
+    K = qn.phasessz(ist,:);
+    Ks = qn.phaseshift(ist,:);
     if max(K)==1
         hasOnlyExp = true;
     end
-    Ks = [0,cumsum(K)];
     mu = qn.mu;
     phi = qn.phi;
     capacity = qn.cap;
@@ -61,7 +60,7 @@ if qn.isstation(ind)
                         outrate = -1*zeros(size(outspace,1)); % passive action, rate is unspecified
                         return
                     end
-                case {SchedStrategy.ID_INF, SchedStrategy.ID_PS, SchedStrategy.ID_DPS, SchedStrategy.ID_GPS}
+                case {SchedStrategy.ID_PS, SchedStrategy.ID_INF, SchedStrategy.ID_DPS, SchedStrategy.ID_GPS}
                     % job enters service immediately
                     space_srv(:,Ks(class)+1) = space_srv(:,Ks(class)+1) + 1;
 
