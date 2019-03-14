@@ -1,5 +1,5 @@
 function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 global InfGen;
 global EventFilt;

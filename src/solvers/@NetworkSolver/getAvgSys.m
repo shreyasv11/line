@@ -1,5 +1,5 @@
 function [CNchain,XNchain] = getAvgSys(self,R,T)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 qn = self.model.getStruct();

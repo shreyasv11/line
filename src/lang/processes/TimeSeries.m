@@ -1,4 +1,6 @@
 classdef TimeSeries < PointProcess
+    % Copyright (c) 2018-Present, Imperial College London
+    % All rights reserved.
     
     methods
         function self = TimeSeries(className, numPar)

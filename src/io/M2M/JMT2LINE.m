@@ -1,5 +1,5 @@
 function model = JMT2LINE(filename,modelName)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 T0=tic;
 % import model
@@ -41,7 +41,7 @@ source_idx = -1;
 %         case {'Buffer'}
 %             xsection_i_type{i} = {xsection{i}.ATTRIBUTE};
 %             switch xsection_i_type{i}{2}.className
-%                 case {'StatelessClassSwitch'}
+%                 case {'StatelessClassSwitcher'}
 %                     isStation(i) = 0;
 %             end
 %     end
@@ -167,7 +167,7 @@ for r=1:length(classes)
         case 'open'
             % sink and source have been created before
             jobclass{r} =  OpenClass(model, classes{r}.name, classes{r}.priority);
-            if strcmpi(classes{r}.referenceSource,'StatelessClassSwitch')
+            if strcmpi(classes{r}.referenceSource,'StatelessClassSwitcher')
                 sourceIdx = cellisa(node,'Source');
                 node{sourceIdx}.setArrival(jobclass{r},Disabled());
             end
@@ -230,7 +230,7 @@ for i=1:length(node_name)
         end
         for r=1:length(classes)
             switch xsection_i_type{i}{2}.className
-                case 'StatelessClassSwitch'
+                case 'StatelessClassSwitcher'
                     % do nothing
                     continue
                 case 'Delay'

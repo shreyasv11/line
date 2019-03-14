@@ -1,5 +1,5 @@
-classdef CacheClassSwitch < StatefulClassSwitch
-% Copyright (c) 2012-2018, Imperial College London
+classdef CacheClassSwitch < StatefulClassSwitcher
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
@@ -16,7 +16,7 @@ classdef CacheClassSwitch < StatefulClassSwitch
             if ~exist('levels','var')
                 levels = 1;
             end
-            self = self@StatefulClassSwitch(classes, 'Cache');
+            self = self@StatefulClassSwitcher(classes, 'Cache');
             self.classes = classes;
             self.items = items;
             self.cap = capacity;

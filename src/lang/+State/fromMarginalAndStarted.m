@@ -1,5 +1,5 @@
 function space = fromMarginalAndStarted(qn, ind, n, s, options)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if ~exist('options','var')
@@ -94,8 +94,8 @@ switch qn.nodetype(ind)
                 sizeEstimator = multinomialln(n);
                 sizeEstimator = round(sizeEstimator/log(10));
                 if sizeEstimator > 2
-                    if ~isfield(options,'force') || options.force == 0
-                        error(sprintf('State space size is very large: 1e%d states. Stopping execution. Set options.force=1 to bypass this control.\n',sizeEstimator));
+                    if ~isfield(options,'force') || options.force == false
+                        error(sprintf('State space size is very large: 1e%d states. Stopping execution. Set options.force=true to bypass this control.\n',sizeEstimator));
                     end
                 end
                 if sum(n) == 0

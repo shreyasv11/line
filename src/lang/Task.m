@@ -1,7 +1,6 @@
-classdef Task < Copyable
+classdef Task < LayeredElement
     
     properties
-        name;               %string
         multiplicity;       %int
         scheduling;         %string
         thinkTime;          %double
@@ -23,6 +22,7 @@ classdef Task < Copyable
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
+            obj@LayeredElement(name);
             if ~exist('multiplicity','var')
                 multiplicity = 1;
             end
@@ -32,7 +32,6 @@ classdef Task < Copyable
             if ~exist('thinkTime','var')
                 thinkTime = NaN;
             end
-            obj.name = name;
             obj.multiplicity = multiplicity;
             obj.scheduling = scheduling;
             switch scheduling

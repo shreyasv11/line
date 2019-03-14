@@ -1,5 +1,5 @@
 function [pi,SSq,arvRates,depRates]=solver_ssa_hashed(qn,options)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % by default the jobs are all initialized in the first valid state

@@ -1,5 +1,5 @@
 function [QN,ymean,QNt,UNt,ymean_t,t,iters,runtime] = solver_fluid(qn, options)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 M = qn.nstations;    %number of stations

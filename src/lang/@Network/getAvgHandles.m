@@ -4,7 +4,7 @@
 % R(i,r): mean response time of class r at node i (summed across visits)
 % T(i,r): mean throughput of class r at node i
 function [Q,U,R,T] = getAvgHandles(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 Q = self.getAvgQLenHandles;
 U = self.getAvgUtilHandles;

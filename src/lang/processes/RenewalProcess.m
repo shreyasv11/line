@@ -1,5 +1,5 @@
 classdef RenewalProcess < PointProcess
-    % Copyright (c) 2018, Imperial College London
+    % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     
     properties
@@ -34,7 +34,7 @@ classdef RenewalProcess < PointProcess
         end
         
         function vart = getVarT(self,t)
-            
+        % todo
         end
         
         function mean = getMean(self)

@@ -1,5 +1,5 @@
 classdef SolverCTMC < NetworkSolver
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     methods
@@ -26,7 +26,7 @@ classdef SolverCTMC < NetworkSolver
             
             rand('seed',options.seed); 
             
-            if ~options.force && ~self.supports(self.model)
+            if ~self.supports(self.model)
                 if options.verbose
                     warning('This model is not supported by the %s solver. Quitting.',mfilename);
                 end
@@ -49,8 +49,8 @@ classdef SolverCTMC < NetworkSolver
                 sizeEstimator = sizeEstimator + gammaln(1+NK(k)+M-1) - gammaln(1+M-1) - gammaln(1+NK(k)); % worst-case estimate of the state space
             end
             if sizeEstimator > 6
-                if ~isfield(options,'force') || options.force == 0
-                    fprintf(1,'CTMC size may be too large to solve. Stopping SolverCTMC. Set options.force=1 to bypass this control.\n');
+                if ~isfield(options,'force') || options.force == false
+                    fprintf(1,'CTMC size may be too large to solve. Stopping SolverCTMC. Set options.force=true to bypass this control.\n');
                     runtime=toc(T0);
                     return
                 end
@@ -155,7 +155,7 @@ classdef SolverCTMC < NetworkSolver
             featSupported.setTrue({'Sink','Source',...
                 'ClassSwitch','DelayStation','Queue',...
                 'Cox2','Erlang','Exponential','HyperExp',...
-                'StatelessClassSwitch','InfiniteServer','SharedServer','Buffer','Dispatcher',...
+                'StatelessClassSwitcher','InfiniteServer','SharedServer','Buffer','Dispatcher',...
                 'Server','JobSink','RandomSource','ServiceTunnel',...
                 'SchedStrategy_INF','SchedStrategy_PS',...
                 'SchedStrategy_DPS','SchedStrategy_GPS',...

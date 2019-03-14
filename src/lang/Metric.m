@@ -1,6 +1,31 @@
-classdef PerfIndex < Copyable
-% Copyright (c) 2012-2018, Imperial College London
-% All rights reserved.
+classdef Metric < Copyable
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
+    
+    properties (Constant)
+        ResidT = 'Residence Time'; % Response Time * Visits
+        RespT = 'Response Time'; % Response Time for one Visit
+        DropRate = 'Drop Rate';
+        QLen = 'Number of Customers';
+        QueueT = 'Queue Time';
+        FCRWeight = 'FCR Total Weight';
+        FCRMemOcc = 'FCR Memory Occupation';
+        FJQLen = 'Fork Join Response Time';
+        FJRespT = 'Fork Join Response Time';
+        RespTSink = 'Response Time per Sink';
+        SysDropR = 'System Drop Rate';
+        SysQLen = 'System Number of Customers';
+        SysPower = 'System Power';
+        SysRespT = 'System Response Time';
+        SysTput = 'System Throughput';
+        Tput = 'Throughput';
+        TputSink = 'Throughput per Sink';
+        Util = 'Utilization';
+        TranQLen = 'Tran Number of Customers';
+        TranUtil = 'Tran Utilization';
+        TranTput = 'Tran Throughput';
+    end
+    
     
     properties
         type;
@@ -14,7 +39,7 @@ classdef PerfIndex < Copyable
     
     methods (Hidden)
         %Constructor
-        function self = PerfIndex(type, class, station)
+        function self = Metric(type, class, station)
             self.type = type;
             self.class = class;
             if exist('station','var')
@@ -24,9 +49,9 @@ classdef PerfIndex < Copyable
                 self.station.name = '';
             end
             switch self.type
-              	case {Perf.TranQLen, Perf.TranUtil, Perf.TranTput}
+                case {Metric.TranQLen, Metric.TranUtil, Metric.TranTput}
                     self.simConfInt = NaN;
-                    self.simMaxRelErr = NaN;                        
+                    self.simMaxRelErr = NaN;
                 otherwise % currently used only by JMT
                     self.simConfInt = 0.99;
                     self.simMaxRelErr = 0.03;
@@ -34,7 +59,7 @@ classdef PerfIndex < Copyable
             self.disabled = 0;
             self.transient = false;
             switch type
-                case {Perf.TranQLen, Perf.TranTput, Perf.TranUtil}
+                case {Metric.TranQLen, Metric.TranTput, Metric.TranUtil}
                     self.transient = true;
             end
         end
@@ -91,34 +116,34 @@ classdef PerfIndex < Copyable
                     end
                 otherwise % assume a LINE solver
                     if ~exist('model','var')
-                        error('Wrong syntax, use PerfIndex.get(results,model).\n');
+                        error('Wrong syntax, use Metric.get(results,model).\n');
                     end
                     classnames = model.getClassNames();
                     stationnames = model.getStationNames();
                     i = findstring(stationnames,self.station.name);
                     r = findstring(classnames,self.class.name);
                     switch self.type
-                        case Perf.Util
+                        case Metric.Util
                             value = results.Avg.U(i,r);
-                        case Perf.SysRespT
+                        case Metric.SysRespT
                             value = results.Avg.C(i,r);
-                        case Perf.SysTput
+                        case Metric.SysTput
                             value = results.Avg.X(i,r);
-                        case Perf.RespT
+                        case Metric.RespT
                             value = results.Avg.R(i,r);
-                        case Perf.Tput
+                        case Metric.Tput
                             value = results.Avg.T(i,r);
-                        case Perf.QLen
+                        case Metric.QLen
                             value = results.Avg.Q(i,r);
-                        case Perf.TranTput
+                        case Metric.TranTput
                             %results.TranAvg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);
                             %results.TranAvg.T{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.TranAvg.T{i,r};
-                        case Perf.TranUtil
+                        case Metric.TranUtil
                             %results.TranAvg.U{i,r}.Name = sprintf('Utilization (station %d, class %d)',i,r);
                             %results.TranAvg.U{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.TranAvg.U{i,r};
-                        case Perf.TranQLen
+                        case Metric.TranQLen
                             %results.TranAvg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
                             %results.TranAvg.Q{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.TranAvg.Q{i,r};

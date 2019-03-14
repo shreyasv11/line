@@ -13,7 +13,7 @@
 % Model representations
 %   Network               -	Stochastic network specification.
 %   LayeredNetwork - Layered network specification
-%   PerfIndex           -	Performance index to be analyzed by a solver.
+%   Metric           -	Performance index to be analyzed by a solver.
 %   QN - Queueing network data structure
 %   QNCox - QN with coxian service or interarrival times
 %   QN - QNCox with class switching
@@ -24,7 +24,7 @@
 %   OpenClass           -	Open job class
 %   ClosedClass         -	Closed job class
 %   Chain - Group of classes formjng a chain
-%   ClassSwitchSection  -   Section for a ClassSwitch node.
+%   ClassSwitcher  -   Section for a ClassSwitch node.
 %   ClassSwitch         -	Node that alters the class of a transiting job.
 %
 % Event and state specification

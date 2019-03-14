@@ -1,5 +1,5 @@
-classdef ClassSwitchSection < Section
-% Copyright (c) 2012-2018, Imperial College London
+classdef ClassSwitcher < Section
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
@@ -9,7 +9,7 @@ classdef ClassSwitchSection < Section
     
     methods
         %Constructor
-        function self = ClassSwitchSection(classes, name)
+        function self = ClassSwitcher(classes, name)
             self = self@Section(name);            
             self.classes = classes;
         end

@@ -1,5 +1,5 @@
 function [rt,rtNodes,rtNodesByClass,rtNodesByStation,linksMatrix] = getRoutingMatrix(self, arvRates)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if ~exist('arvRates','var')
@@ -68,7 +68,7 @@ end
 % the class of the job in the service section.
 
 for i=1:self.getNumberOfNodes % source
-    if isa(self.nodes{i}.server,'StatelessClassSwitch')
+    if isa(self.nodes{i}.server,'StatelessClassSwitcher')
         Pi = rtNodes(((i-1)*K+1):i*K,:);
         for r=1:K
             for s=1:K
@@ -86,7 +86,7 @@ for i=1:self.getNumberOfNodes % source
                 end
             end
         end
-    elseif isa(self.nodes{i}.server,'StatefulClassSwitch')
+    elseif isa(self.nodes{i}.server,'StatefulClassSwitcher')
         Pi = rtNodes(((i-1)*K+1):i*K,:);
         for r=1:K
             for s=1:K

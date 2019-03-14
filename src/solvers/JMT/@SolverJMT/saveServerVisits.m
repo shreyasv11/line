@@ -1,5 +1,5 @@
 function [simDoc, section] = saveServerVisits(self, simDoc, section)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 visitsNode = simDoc.createElement('parameter');
 visitsNode.setAttribute('array', 'true');

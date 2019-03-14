@@ -1,5 +1,5 @@
 function [Q] = getAvgQLenHandles(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % The method returns the handles to the performance indices but
@@ -11,8 +11,8 @@ if isempty(self.handles) || ~isfield(self.handles,'Q')
     Q = cell(M,K); % queue-length
     for i=1:M
         for r=1:K
-            Q{i,r} = PerfIndex(Perf.QLen, self.classes{r}, self.stations{i});
-            self.addPerfIndex(Q{i,r});
+            Q{i,r} = Metric(Metric.QLen, self.classes{r}, self.stations{i});
+            self.addMetric(Q{i,r});
             if isa(self.stations{i},'Source')
                 Q{i,r}.disable();
             end

@@ -1,5 +1,5 @@
 % classdef ERandEnv < ESolver
-% % Copyright (c) 2012-2018, Imperial College London
+% % Copyright (c) 2012-2019, Imperial College London
 % % All rights reserved.
 % 
 %     
@@ -206,7 +206,7 @@
 %             featSupported.setTrue('HyperExp');
 %             
 %             % Sections
-%             featSupported.setTrue('StatelessClassSwitch'); % Section
+%             featSupported.setTrue('StatelessClassSwitcher'); % Section
 %             featSupported.setTrue('InfiniteServer'); % Section
 %             featSupported.setTrue('SharedServer'); % Section
 %             featSupported.setTrue('Buffer'); % Section

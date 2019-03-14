@@ -1,5 +1,5 @@
 function Tsim = run(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 T0=tic;
@@ -17,7 +17,7 @@ if ~isfield(options,'keep')
     options.keep = false;
 end
 
-if ~options.force && ~self.supports(self.model)
+if ~self.supports(self.model)
     if options.verbose
         warning('This model is not supported by the %s solver. Quitting.',mfilename);
     end

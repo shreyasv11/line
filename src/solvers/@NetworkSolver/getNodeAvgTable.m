@@ -1,5 +1,5 @@
 function [AvgTable,QT,UT,RT,TT] = getNodeAvgTable(self,Q,U,R,T,keepDisabled)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('keepDisabled','var')
     keepDisabled = false;

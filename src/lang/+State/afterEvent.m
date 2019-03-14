@@ -1,5 +1,5 @@
 function [outspace, outrate, outprob] =  afterEvent(qn, ind, inspace, event, class, isSimulation)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 %if ~exist('isSimulation','var')
 %    isSimulation = false;
@@ -7,6 +7,8 @@ function [outspace, outrate, outprob] =  afterEvent(qn, ind, inspace, event, cla
 M = qn.nstations;
 R = qn.nclasses;
 S = qn.nservers;
+phasessz = qn.phasessz;
+phaseshift = qn.phaseshift;
 outspace = [];
 outrate = [];
 outprob = 1;
@@ -17,8 +19,8 @@ isf = qn.nodeToStateful(ind);
 hasOnlyExp = false; % true if all service processes are exponential
 if qn.isstation(ind)
     ist = qn.nodeToStation(ind);
-    K = qn.phasessz(ist,:);
-    Ks = qn.phaseshift(ist,:);
+    K = phasessz(ist,:);
+    Ks = phaseshift(ist,:);
     if max(K)==1
         hasOnlyExp = true;
     end

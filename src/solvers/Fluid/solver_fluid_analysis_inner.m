@@ -1,5 +1,5 @@
 function [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ymean_t, t,iters,runtime] = solver_fluid_analysis_inner(qn, options)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 chains = qn.chains;
 

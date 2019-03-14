@@ -1,5 +1,5 @@
 classdef OpenClass < JobClass
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     methods
@@ -28,11 +28,11 @@ classdef OpenClass < JobClass
             
             % set default scheduling for this class at all nodes
             for i=1:length(model.nodes)
-                if ~isempty(model.nodes{i}) && ~isa(model.nodes{i},'Source') && ~isa(model.nodes{i},'Sink') && ~isa(model.nodes{i},'JoinStation') 
-                    %&& ~isa(model.nodes{i},'ForkStation')
+                if ~isempty(model.nodes{i}) && ~isa(model.nodes{i},'Source') && ~isa(model.nodes{i},'Sink') && ~isa(model.nodes{i},'Join') 
+                    %&& ~isa(model.nodes{i},'Fork')
                     model.nodes{i}.setScheduling(self, SchedStrategy.FCFS);
                 end
-                if isa(model.nodes{i},'JoinStation')
+                if isa(model.nodes{i},'Join')
                     model.nodes{i}.setStrategy(self,JoinStrategy.Standard);
                     model.nodes{i}.setRequired(self,-1);
                 end

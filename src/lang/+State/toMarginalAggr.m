@@ -1,5 +1,5 @@
 function [ni, nir] = toMarginalAggr(qn, ind, state_i, K, Ks, space_buf, space_srv, space_var) %#ok<INUSD>
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if ~isa(qn,'NetworkStruct') % the input can be a Network object too

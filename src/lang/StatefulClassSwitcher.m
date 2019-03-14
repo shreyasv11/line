@@ -1,12 +1,12 @@
-classdef StatefulClassSwitch < ClassSwitchSection
-    % Copyright (c) 2012-2018, Imperial College London
+classdef StatefulClassSwitcher < ClassSwitcher
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods
         %Constructor
-        function self = StatefulClassSwitch(classes, name)
-            self = self@ClassSwitchSection(classes, name);
-            self.csFun = @(r, s, state, statep) StatefulClassSwitch.classHolderFun(r, s, state, statep); % do nothing by default
+        function self = StatefulClassSwitcher(classes, name)
+            self = self@ClassSwitcher(classes, name);
+            self.csFun = @(r, s, state, statep) StatefulClassSwitcher.classHolderFun(r, s, state, statep); % do nothing by default
         end        
     end
     

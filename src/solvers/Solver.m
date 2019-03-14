@@ -1,5 +1,5 @@
 classdef Solver < handle
-    % Copyright (c) 2012-2018, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     
@@ -154,7 +154,7 @@ classdef Solver < handle
         %         end
         
         function optList = listValidOptions()
-            optList = {'cutoff','force','init_sol','iter_max','iter_tol','tol', ...
+            optList = {'cache','cutoff','force','init_sol','iter_max','iter_tol','tol', ...
                 'keep','method','odesolvers','samples','seed','stiff', ...
                 'timespan','verbose'};
         end
@@ -165,6 +165,7 @@ classdef Solver < handle
         
         function options = defaultOptions()
             options = struct();
+            options.cache = true;
             options.cutoff = Inf;
             options.force = false;
             options.init_sol = [];

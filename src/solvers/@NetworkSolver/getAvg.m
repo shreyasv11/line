@@ -1,5 +1,5 @@
 function [QNclass,UNclass,RNclass,TNclass] = getAvg(self,Q,U,R,T)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if nargin == 1 % no parameter
@@ -15,7 +15,7 @@ elseif nargin == 2
     T=handlers{4};
 end
 
-if ~self.hasAvgResults || self.options.force
+if ~self.hasAvgResults || ~self.options.cache
     self.run();
     if isempty(self.result)
         QNclass=[];

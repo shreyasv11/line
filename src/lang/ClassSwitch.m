@@ -1,5 +1,5 @@
 classdef ClassSwitch < Node
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
@@ -19,7 +19,7 @@ classdef ClassSwitch < Node
             self.cap = Inf;
             self.schedPolicy = SchedPolicy.NP;
             self.schedStrategy = SchedStrategy.FCFS;
-            self.server = StatelessClassSwitch(classes, csMatrix);
+            self.server = StatelessClassSwitcher(classes, csMatrix);
 			self.setModel(model);
 			self.model.addNode(self);
         end

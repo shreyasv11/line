@@ -1,5 +1,5 @@
 function [outhash, outrate, outprob] =  afterEventHashed(qn, ind, inhash, event, class)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if inhash == 0

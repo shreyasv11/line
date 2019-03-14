@@ -1,5 +1,5 @@
 function logData = parseLogs(model,isNodeLogged, metric)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 numOfResources = length(model.stations);
@@ -69,7 +69,7 @@ for i=1:numOfResources
             end
             
             switch metric
-                case Perf.QLen
+                case Metric.QLen
                     [nodeState{i}] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload);
                     
                     %% save in default data structure
@@ -78,7 +78,7 @@ for i=1:numOfResources
                         logData{i,r}.t = nodeState{i}(:,1);
                         logData{i,r}.QLen = nodeState{i}(:,1+r);
                     end
-                case Perf.RespT
+                case Metric.RespT
                     [classResT, jobRespT, jobResTArvTS] = SolverJMT.parseTranRespT(logFileArvMat, logFileDepMat);
                     
                     for r=1:numOfClasses

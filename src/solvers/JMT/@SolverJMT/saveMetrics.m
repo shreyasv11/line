@@ -1,5 +1,5 @@
-function [simElem, simDoc] = savePerfIndexes(self, simElem, simDoc)
-% Copyright (c) 2012-2018, Imperial College London
+function [simElem, simDoc] = saveMetrics(self, simElem, simDoc)
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 numOfPerformanceIndices = length(self.model.perfIndex.Avg);
 for j=1:(numOfPerformanceIndices)

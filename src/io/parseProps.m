@@ -1,5 +1,5 @@
 function [portNumber, iter_max, maxJobSize, verbose, parallel, timeoutConn, RT, RTrange, solver ] = parseProps(props)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % port number

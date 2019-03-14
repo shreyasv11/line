@@ -1,5 +1,5 @@
 classdef SolverFluid < NetworkSolver
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
     methods
@@ -70,7 +70,7 @@ classdef SolverFluid < NetworkSolver
                 options.timespan(1) = 0;
             end
             
-            if ~options.force && ~self.supports(self.model)
+            if ~self.supports(self.model)
                 if options.verbose
                     warning('This model is not supported by the %s solver. Quitting.',mfilename);
                 end
@@ -180,7 +180,7 @@ classdef SolverFluid < NetworkSolver
             featSupported.setTrue({
                 'ClassSwitch','DelayStation','Queue',...
                 'Cox2','Erlang','Exponential','HyperExp',...
-                'StatelessClassSwitch','InfiniteServer','SharedServer','Buffer','Dispatcher',...
+                'StatelessClassSwitcher','InfiniteServer','SharedServer','Buffer','Dispatcher',...
                 'Server','RandomSource','ServiceTunnel',...
                 'SchedStrategy_INF','SchedStrategy_PS',...
                 'SchedStrategy_DPS','SchedStrategy_FCFS',...

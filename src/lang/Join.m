@@ -1,53 +1,46 @@
-classdef Join < Section
-% Copyright (c) 2012-2018, Imperial College London
+classdef Join < Station
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
+
+% The number of jobs inside JoinStation is interpreted as the number of
+% jobs waiting to be joined with the sibling tasks.
+
     properties
         joinStrategy;
-        joinRequired;
-        joinJobClasses;
     end
     
-    methods
+    methods 
         %Constructor
-        function self = Join(customerClasses)
-            self = self@Section('Join');
-            self.joinJobClasses = {};
-            initJoinJobClasses(self, customerClasses);
+        function self = Join(model, name)
+            self = self@Station(name);
+            self.numberOfServers = 0;
+            if(model ~= 0)
+                classes = model.classes;
+                self.input = Join(classes);
+                self.output = Dispatcher(classes);
+                self.server = ServiceTunnel();
+                addNode(model, self);
+            end
+%             if ~exist('joinstrategy','var')
+%                 joinstrategy = JoinStrategy.Standard;
+%             end
+%             setStrategy(joinstrategy);
         end
     end
-    
-    methods (Access = 'public')
         
-        function setRequired(self, customerClass, nJobs)
-            self.joinRequired{customerClass.index} = nJobs;
+    methods
+        function self = setStrategy(self, class, strategy)
+            self.input.setStrategy(class,strategy);
         end
         
-        function setStrategy(self, customerClass, joinStrat)
-            self.joinJobClasses{customerClass.index} = customerClass;            
-            self.joinStrategy{customerClass.index} = joinStrat;
+        function self = setRequired(self, class, njobs)
+            self.input.setRequired(class,njobs);
         end
         
-        function initJoinJobClasses(self, customerClasses)
-            for i = 1 : length(customerClasses),
-                self.joinJobClasses{i} = customerClasses{i};
-                self.joinRequired{i} = -1;
-                self.joinStrategy{i} = JoinStrategy.Standard;
-            end
+        function self = setProbRouting(self, class, destination, probability)
+            setRouting(self, class, 'Probabilities', destination, probability);
         end
-    end
-
-    methods(Access = protected)
-        % Override copyElement method:
-        function clone = copyElement(self)
-            % Make a shallow copy of all properties
-            clone = copyElement@Copyable(self);
-            % Make a deep copy of each object
-            for i=1:length(self.joinJobClasses)
-                clone.joinJobClasses{i} = self.joinJobClasses{i}.copy;
-            end
-        end        
+        
     end
     
 end
-

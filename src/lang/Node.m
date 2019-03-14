@@ -1,10 +1,9 @@
-classdef Node < Copyable
-% Copyright (c) 2012-2018, Imperial College London
+classdef Node < NetworkElement
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
         model;
-        name;
         input;
         server;
         output;
@@ -13,7 +12,7 @@ classdef Node < Copyable
     methods(Hidden)
         %Constructor
         function self = Node(name)
-            self.name = name;
+            self@NetworkElement(name);
         end
         
         function self = setModel(self, model)
@@ -53,7 +52,7 @@ classdef Node < Copyable
         end
 
         function bool = hasClassSwitch(self)
-            bool = isa(self.server,'ClassSwitchSection');
+            bool = isa(self.server,'ClassSwitcher');
         end
         
         function bool = isStateful(self)

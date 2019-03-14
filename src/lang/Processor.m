@@ -1,9 +1,8 @@
-classdef Processor < Copyable
-% Copyright (c) 2012-2018, Imperial College London
+classdef Processor  < LayeredElement
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 properties
-    name;               %string
     ID;                 %int
     multiplicity;       %int
     scheduling;         %char: ps, fcfs, inf, ref
@@ -20,6 +19,7 @@ methods
         if ~exist('name','var')
             error('Constructor requires to specify at least a name.');
         end
+        obj@LayeredElement(name);
         
         if ~exist('multiplicity','var')
             multiplicity = 1;
@@ -34,7 +34,6 @@ methods
             speedFactor = 1;
         end
         
-        obj.name = name;
         obj.multiplicity = multiplicity;
         obj.scheduling = scheduling;
         obj.quantum = quantum;

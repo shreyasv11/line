@@ -1,5 +1,5 @@
 function [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if nargin == 1
@@ -49,7 +49,7 @@ for ind=1:M % source
                 if r==s
                     csmask(r,s) = true;
                 else
-                    if isa(self.nodes{ind}.server,'ClassSwitchSection')
+                    if isa(self.nodes{ind}.server,'ClassSwitcher')
                         if self.nodes{ind}.server.csFun(r,s,[],[])>0
                             csmask(r,s) = true;
                         end

@@ -1,8 +1,8 @@
 function SS = spaceClosedMulti(M, N)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
-% Copyright (c) 2012-2018, Imperial College London 
+% Copyright (c) 2012-2019, Imperial College London 
 % All rights reserved.
 
 R = length(N);

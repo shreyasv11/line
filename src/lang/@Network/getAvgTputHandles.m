@@ -1,6 +1,6 @@
 % T(i,r): mean throughput of class r at node i
 function [T] = getAvgTputHandles(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % The method returns the handles to the performance indices but
@@ -12,8 +12,8 @@ if isempty(self.handles) || ~isfield(self.handles,'T')
     T = cell(1,K); % throughputs
     for i=1:M
         for r=1:K
-            T{i,r} = PerfIndex(Perf.Tput, self.classes{r}, self.stations{i});
-            self.addPerfIndex(T{i,r});
+            T{i,r} = Metric(Metric.Tput, self.classes{r}, self.stations{i});
+            self.addMetric(T{i,r});
             if ~strcmpi(class(self.stations{i}.server),'ServiceTunnel')
                 if isempty(self.stations{i}.server.serviceProcess{r}) || strcmpi(class(self.stations{i}.server.serviceProcess{r}{end}),'Disabled')
                     T{i,r}.disable();

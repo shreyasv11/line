@@ -1,9 +1,8 @@
-classdef Activity < Copyable
-% Copyright (c) 2012-2018, Imperial College London
+classdef Activity < LayeredElement
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
-        name;                       %string
         phase = 1;                  %int
         hostDemand = [];
         hostDemandMean = 0;         %double
@@ -25,7 +24,7 @@ classdef Activity < Copyable
             if ~exist('name','var')
                 error('Constructor requires to specify at least: name, hostDemandMean.');
             end
-            obj.name = name;
+            obj@LayeredElement(name);
             obj.parentName = '';
             if isnumeric(hostDemand)
                 obj.hostDemand = Exp(1/hostDemand);

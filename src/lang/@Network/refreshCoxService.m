@@ -1,5 +1,5 @@
 function [mu, phi, phases] = refreshCoxService(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 M = self.getNumberOfStations();
@@ -12,7 +12,7 @@ for i=1:M
         [mu_i,phi_i] = self.stations{i}.getCoxSourceRates();
     else
         switch class(self.stations{i})
-            case 'ForkStation'
+            case 'Fork'
                 mu_i = cell(1,K);
                 phi_i = cell(1,K);
                 for r=1:K

@@ -1,9 +1,8 @@
-classdef Entry < Copyable
-% Copyright (c) 2012-2018, Imperial College London
+classdef Entry < LayeredElement
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.    
     
     properties
-        name;
         type;
         parent;
         activities = [];
@@ -18,7 +17,7 @@ classdef Entry < Copyable
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
-            obj.name = name;
+            obj@LayeredElement(name);
             if ~exist('type','var')
                 type = 'Graph';
             end

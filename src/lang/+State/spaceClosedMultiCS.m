@@ -1,5 +1,5 @@
 function SS = spaceClosedMultiCS(M, N, chains)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % State space for closed multiclass CQN with class-switching

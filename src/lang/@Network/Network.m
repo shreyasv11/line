@@ -1,9 +1,8 @@
-classdef Network < Copyable
-    % Copyright (c) 2012-2018, Imperial College London
+classdef Network < Model
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     properties (GetAccess = 'private', SetAccess='private')
-        modelName;
         usedFeatures; % structure of booleans listing the used classes
         % it must be accessed via getUsedLangFeatures that updates
         % the Distribution classes dynamically
@@ -86,6 +85,7 @@ classdef Network < Copyable
     methods
         %Constructor
         function self = Network(modelName)
+            self = self@Model(modelName);
             self.nodes = {};
             self.stations = {};
             self.classes = {};
@@ -93,7 +93,6 @@ classdef Network < Copyable
             self.perfIndex.('Avg') = {};
             self.perfIndex.('Tran') = {};
             self.links = {};
-            self.setName(modelName);
             self.initUsedFeatures();
             self.qn = [];
             self.linkedP = {};
@@ -290,10 +289,6 @@ classdef Network < Copyable
             C = qn.nchains;
         end
         
-        function out = getName(self)
-            out = self.modelName;
-        end
-        
         function Dchain = getDemandsChain(self)
             qn = self.getStruct;
             M = qn.nstations;    %number of stations
@@ -363,12 +358,7 @@ classdef Network < Copyable
             end
             Dchain(~isfinite(Dchain))=0;
         end
-        
-        % Set attributes
-        function self = setName(self, modelName)
-            self.modelName = modelName;
-        end
-        
+               
         % setUsedFeatures : records that a certain language feature has been used
         function self = setUsedFeatures(self,className)
             self.usedFeatures.setTrue(className);
@@ -380,9 +370,9 @@ classdef Network < Copyable
         addLink(self, nodeA, nodeB);
         addLinks(self, nodeList);
         
-        addPerfIndex(self, performanceIndex);
-        self = disablePerfIndex(self, Y);
-        self = enablePerfIndex(self, Y);
+        addMetric(self, performanceIndex);
+        self = disableMetric(self, Y);
+        self = enableMetric(self, Y);
         
         node = getSource(self);
         node = getSink(self);
@@ -711,8 +701,8 @@ classdef Network < Copyable
     % Private methods
     methods (Access = 'private')
         
-        function out = getmodelNameExtension(self)
-            out = [getmodelName(self), ['.', self.fileFormat]];
+        function out = getModelNameExtension(self)
+            out = [getModelName(self), ['.', self.fileFormat]];
         end
         
         function self = initUsedFeatures(self)
@@ -749,7 +739,7 @@ classdef Network < Copyable
                 end
             end
             
-            % PerfIndex objects do not contain object handles
+            % Metric objects do not contain object handles
             for i=1:length(self.perfIndex.Avg)
                 clone.perfIndex.Avg{i} = self.perfIndex.Avg{i}.copy;
             end
@@ -869,8 +859,8 @@ classdef Network < Copyable
             bool = true;
             % language features
             featUsed = self.getUsedLangFeatures().list;
-            if featUsed.ForkStation, bool = false; end
-            if featUsed.JoinStation, bool = false; end
+            if featUsed.Fork, bool = false; end
+            if featUsed.Join, bool = false; end
             if featUsed.MMPP2, bool = false; end
             if featUsed.Normal, bool = false; end
             if featUsed.Pareto, bool = false; end

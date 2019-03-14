@@ -12,7 +12,7 @@ function [p,Q]=ctmc_solve(Q,options)
 %  - ctmc_solve([-0.5,0.5;0.2,-0.2])
 
 if length(Q) > 6000 && ~options.force
-    warning('the order of Q is greater than 6000, i.e., %d elements. Press key to continue.',length(Q));
+    fprintf(1,'the order of Q is greater than 6000, i.e., %d elements. Press key to continue.',length(Q));
     pause;
 end
 
@@ -32,5 +32,23 @@ Qnnz = Q(nnzcol, nnzcol);
 bnnz = b(nnzcol);
 Qnnz(:,end) = 1;
 bnnz(end) = 1;
-p(nnzcol)=Qnnz'\ bnnz;
+
+if exist('options','var')
+    switch options.method
+        case 'gpu'
+            try
+                Qnnz = gpuArray(Qnnz);
+                bnnz = gpuArray(bnnz);
+                pGPU = Qnnz'\ bnnz;
+                p(nnzcol) = gather(pGPU); % transfer from GPU to local env
+            catch
+                warning('ctmc_solve: GPU execution failed');
+                p(nnzcol) = Qnnz'\ bnnz;
+            end
+        otherwise
+            p(nnzcol)=Qnnz'\ bnnz;
+    end
+else
+    p(nnzcol)=Qnnz'\ bnnz;    
+end
 end

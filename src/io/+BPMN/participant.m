@@ -1,5 +1,5 @@
 classdef participant < BPMN.baseElement
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 properties

@@ -1,5 +1,5 @@
 function [ymean, ymean_t, t, iter] = solver_fluid_iteration(qn, N, Lambda, Pi, P, S, ymean, ydefault, slowrate, Tstart, max_time, options)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 iter_max = options.iter_max;

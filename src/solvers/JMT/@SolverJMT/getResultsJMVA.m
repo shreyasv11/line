@@ -1,5 +1,5 @@
 function [result, parsed] = getResultsJMVA(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 try
@@ -92,7 +92,7 @@ for k=1:qn.nclasses
                 s.('lowerLimit') = qn.rates(i,k);
                 s.('maxSamples') = Inf;
                 s.('meanValue') = qn.rates(i,k);
-                s.('measureType') = Perf.Tput;
+                s.('measureType') = Metric.Tput;
                 s.('nodeType') = 'station';
                 s.('precision') = Inf;
                 s.('station') = qn.nodenames{self.getStruct.stationToNode(i)};
@@ -108,7 +108,7 @@ for k=1:qn.nclasses
                 s.('lowerLimit') = 0;
                 s.('maxSamples') = Inf;
                 s.('meanValue') = 0;
-                s.('measureType') = Perf.QLen;
+                s.('measureType') = Metric.QLen;
                 s.('nodeType') = 'station';
                 s.('precision') = Inf;
                 s.('station') = qn.nodenames{self.getStruct.stationToNode(i)};
@@ -124,7 +124,7 @@ for k=1:qn.nclasses
                 s.('lowerLimit') = 0;
                 s.('maxSamples') = Inf;
                 s.('meanValue') = 0;
-                s.('measureType') = Perf.RespT;
+                s.('measureType') = Metric.RespT;
                 s.('nodeType') = 'station';
                 s.('precision') = Inf;
                 s.('station') = qn.nodenames{self.getStruct.stationToNode(i)};
@@ -140,7 +140,7 @@ for k=1:qn.nclasses
                 s.('lowerLimit') = 0;
                 s.('maxSamples') = Inf;
                 s.('meanValue') = 0;
-                s.('measureType') = Perf.Util;
+                s.('measureType') = Metric.Util;
                 s.('nodeType') = 'station';
                 s.('precision') = Inf;
                 s.('station') = qn.nodenames{self.getStruct.stationToNode(i)};

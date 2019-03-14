@@ -1,9 +1,8 @@
-classdef JobClass < Copyable
-    % Copyright (c) 2012-2018, Imperial College London
+classdef JobClass < NetworkElement
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     properties
-        name;
         priority;
         reference; % reference station
         index;
@@ -14,7 +13,7 @@ classdef JobClass < Copyable
     methods (Hidden)
         %Constructor
         function self = JobClass(type, name)
-            self.name = name;
+            self@NetworkElement(name);
             self.priority = 0;
             self.reference = Node('');
             self.index = 1;

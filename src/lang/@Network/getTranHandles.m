@@ -4,7 +4,7 @@
 % R{i,r}: timeseries of mean response time of class r at node i (summed across visits)
 % T{i,r}: timeseries of mean throughput of class r at node i
 function [Qt,Ut,Tt] = getTranHandles(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % The method returns the handles to the performance indices but
@@ -18,14 +18,14 @@ Qt = cell(M,K); % queue-length
 Ut = cell(M,1); % utilizations
 for i=1:M
     for r=1:K
-        Tt{i,r} = PerfIndex(Perf.TranTput, self.classes{r}, self.stations{i});
-        self.addPerfIndex(Tt{i,r});
-        Qt{i,r} = PerfIndex(Perf.TranQLen, self.classes{r}, self.stations{i});
-        self.addPerfIndex(Qt{i,r});
-%        Rt{i,r} = PerfIndex(Perf.TranRespT, self.classes{r}, self.stations{i});
-%        self.addPerfIndex(Rt{i,r});
-        Ut{i,r} = PerfIndex(Perf.TranUtil, self.classes{r}, self.stations{i});
-        self.addPerfIndex(Ut{i,r});
+        Tt{i,r} = Metric(Metric.TranTput, self.classes{r}, self.stations{i});
+        self.addMetric(Tt{i,r});
+        Qt{i,r} = Metric(Metric.TranQLen, self.classes{r}, self.stations{i});
+        self.addMetric(Qt{i,r});
+%        Rt{i,r} = Metric(Metric.TranRespT, self.classes{r}, self.stations{i});
+%        self.addMetric(Rt{i,r});
+        Ut{i,r} = Metric(Metric.TranUtil, self.classes{r}, self.stations{i});
+        self.addMetric(Ut{i,r});
         if isa(self.stations{i},'Source')
             Qt{i,r}.disable();
 %            Rt{i,r}.disable();
@@ -36,7 +36,7 @@ for i=1:M
 %            Rt{i,r}.disable();
             Ut{i,r}.disable();
         end
-        if isa(self.stations{i},'JoinStation') || isa(self.stations{i},'ForkStation')
+        if isa(self.stations{i},'Join') || isa(self.stations{i},'Fork')
             Ut{i,r}.disable();
         end
         if ~strcmpi(class(self.stations{i}.server),'ServiceTunnel')

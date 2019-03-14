@@ -1,6 +1,6 @@
 % this macro will need refactoring to decouple the observation from the Model class
 function [loggerBefore,loggerAfter] = linkAndLog(self, P, isNodeLogged, logPath)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if ~isempty(self.links)

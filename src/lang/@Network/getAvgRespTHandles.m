@@ -1,6 +1,6 @@
 % R(i,r): mean response time of class r at node i (summed across visits)
 function R = getAvgRespTHandles(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % The method returns the handles to the performance indices but
@@ -12,8 +12,8 @@ if isempty(self.handles) || ~isfield(self.handles,'R')
     R = cell(M,K); % response times
     for i=1:M
         for r=1:K
-            R{i,r} = PerfIndex(Perf.RespT, self.classes{r}, self.stations{i});
-            self.addPerfIndex(R{i,r});
+            R{i,r} = Metric(Metric.RespT, self.classes{r}, self.stations{i});
+            self.addMetric(R{i,r});
             if isa(self.stations{i},'Source')
                 R{i,r}.disable();
             end

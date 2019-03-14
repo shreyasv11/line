@@ -1,44 +1,35 @@
-classdef Fork < Section
-% Copyright (c) 2012-2018, Imperial College London
+classdef Fork < Station
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
+
+% ForkStation is regarded as a station because, while jobs would not
+% station inside the fork node, the user may be interested to the number of 
+% currently forked jobs. The number of jobs in the ForkStation is 
+% interpreted as the job count in the Fork-Join subnetwork.
+
     properties
-        routerStrategy;
-        tasksPerLink;
+        schedStrategy;
     end
     
     methods
         %Constructor
-        function self = Fork(customerClasses)
-            self = self@Section('Fork');
-            self.outputStrategy= {};
-            self.tasksPerLink=1.0;
-            initDispatcherJobClasses(self, customerClasses);
+        function self = Fork(model, name)
+            self = self@Station(name);
+            self.numberOfServers = 0;
+            if(model ~= 0)
+                classes = model.classes;
+                self.input = Buffer(classes);
+                self.cap = Inf;
+                self.schedStrategy = SchedStrategy.FORK;
+                self.server = ServiceTunnel();
+                self.output = Fork(classes);
+                addNode(model, self);
+            end
+        end
+           
+        function setTasksPerLink(self, nTasks)
+            self.output.tasksPerLink = nTasks;
         end
     end
     
-    methods (Access = 'private')
-        function initDispatcherJobClasses(self, customerClasses)
-           for i = 1 : length(customerClasses)
-              self.outputStrategy{i} = {customerClasses{i}.name, RoutingStrategy.RAND};  
-           end
-        end
-    end
-	
-       methods(Access = protected)
-        % Override copyElement method:
-        function clone = copyElement(self)
-            % Make a shallow copy of all properties
-            clone = copyElement@Copyable(self);
-            % Make a deep copy of each object
-            for i = 1 : length(self.outputStrategy)
-                if ishandle(clone.outputStrategy{i}{1})
-                    % this is a problem if one modifies the classes in the
-                    % model because the one below is not an handle so it
-                    % will not be modified                    
-                    clone.outputStrategy{i}{1} = self.outputStrategy{i}{1}.copy;
-                end
-            end
-        end
-    end
 end

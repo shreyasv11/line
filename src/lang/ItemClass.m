@@ -1,5 +1,5 @@
-classdef ItemClass < Copyable
-    % Copyright (c) 2018, Imperial College London
+classdef ItemClass < NetworkElement
+    % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     
     properties

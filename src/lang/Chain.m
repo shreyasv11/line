@@ -1,9 +1,8 @@
-classdef Chain < Copyable
-% Copyright (c) 2012-2018, Imperial College London
+classdef Chain < NetworkElement
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
-        name;
         classes;
         classnames;
         visits;
@@ -15,7 +14,7 @@ classdef Chain < Copyable
     methods
         %Constructor
         function self = Chain(name)
-            self.name = name;
+            self@NetworkElement(name);
         end
         
         function self = setName(self, name)

@@ -1,5 +1,5 @@
 classdef SolverEnv < EnsembleSolver
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
     
@@ -28,7 +28,7 @@ classdef SolverEnv < EnsembleSolver
             end
             
             for e=1:length(self.ensemble)
-                if ~options.force && ~self.solvers{e}.supports(self.ensemble{e})
+                if ~self.solvers{e}.supports(self.ensemble{e})
                     error('Model in the environment stage %d is not supported by the %s solver. Quitting.',e,self.getName);
                 end
             end
@@ -268,7 +268,7 @@ classdef SolverEnv < EnsembleSolver
             featSupported.setTrue('HyperExp');
             
             % Sections
-            featSupported.setTrue('StatelessClassSwitch'); % Section
+            featSupported.setTrue('StatelessClassSwitcher'); % Section
             featSupported.setTrue('InfiniteServer'); % Section
             featSupported.setTrue('SharedServer'); % Section
             featSupported.setTrue('Buffer'); % Section

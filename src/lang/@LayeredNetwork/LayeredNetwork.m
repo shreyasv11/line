@@ -1,9 +1,8 @@
-classdef LayeredNetwork < Ensemble
-% Copyright (c) 2012-2018, Imperial College London
+classdef LayeredNetwork < Model & Ensemble
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
-        name;               % string
         objects = struct();    % cell arrays of objects
         processors = cell(0,4);      % list of processors                
         lqnGraph; % digraph representation of all dependencies
@@ -37,9 +36,10 @@ classdef LayeredNetwork < Ensemble
         % constructor
         function self = LayeredNetwork(name, filename)
             self@Ensemble({})
-            if exist('name','var')
-                self.name = name;
+            if ~exist('name','var')
+                [~,name]=fileparts(tempname);
             end
+            self = self@Model(name);
             self.lqnGraph = [];
             self.taskGraph = [];
             self.ensemble = {};
@@ -101,10 +101,6 @@ classdef LayeredNetwork < Ensemble
         proc = getNodeProcessor(self,node)
         task = getNodeTask(self,nodeNameOrIdx)
         type = getNodeType(self,nodeNameOrIdx)
-        
-        function name = getName(self)
-            name = self.name;
-        end
         
         writeSRVN(self,filename);
         writeXML(self,filename);

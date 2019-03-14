@@ -1,5 +1,5 @@
 function [Q,U,R,T,C,X] = solver_mva(ST,V,N,S,options,sched,refstat)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 [M,K]=size(ST);
 

@@ -1,5 +1,5 @@
 function [pi,kmax]=ctmc_uniformization(pi0,Q,t,tol,maxiter)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('tol','var')
     tol = 1e-12;

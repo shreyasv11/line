@@ -1,5 +1,5 @@
 function bool = isValid(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 bool = true;
 lqnGraph = self.getGraph();

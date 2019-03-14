@@ -1,5 +1,5 @@
 function fname = writeJSIM(self)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 [simElem, simDoc] = saveXMLHeader(self, self.model.getLogPath);
 [simElem, simDoc] = saveClasses(self, simElem, simDoc);
@@ -43,14 +43,14 @@ for i=1:(numOfStations)
                 case 'Dispatcher'
                     section.setAttribute('className', 'Router'); %overwrite with JMT class name
                     [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode);
-                case 'StatelessClassSwitch'
+                case 'StatelessClassSwitcher'
                     section.setAttribute('className', 'ClassSwitch'); %overwrite with JMT class name
                     [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode);
                 case 'RandomSource'
                     [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode);
-                case 'Join'
+                case 'Joiner'
                     [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode);
-                case 'Fork'
+                case 'Forker'
                     [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode);
             end
             node.appendChild(section);
@@ -59,7 +59,7 @@ for i=1:(numOfStations)
     simElem.appendChild(node);
 end
 
-[simElem, simDoc] = savePerfIndexes(self, simElem, simDoc);
+[simElem, simDoc] = saveMetrics(self, simElem, simDoc);
 [simElem, simDoc] = saveLinks(self, simElem, simDoc);
 
 hasReferenceNodes = 0;

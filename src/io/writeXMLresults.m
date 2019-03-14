@@ -1,5 +1,5 @@
 function writeXMLresults(filenameLQN, filenameRE, qn, util, XN, RT, RN, resEntries, RT_CDF,resEntries_CDF, verbose)
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 
