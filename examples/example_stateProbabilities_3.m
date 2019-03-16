@@ -77,7 +77,7 @@ end
 state = model.getState;
 
 solver = SolverCTMC(model,options);
-Pr_ctmc = solver.getProbStateSys()
+Pr_ctmc = solver.getProbSysState()
 
 solver = SolverNC(model,options);
-Pr_nc = solver.getProbStateSys()
+Pr_nc = solver.getProbSysState()

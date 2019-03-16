@@ -43,20 +43,21 @@ options.verbose=1;
 
 n=[ -1,-1;
     -1,-1;
-     0, 0];% rows set to -1 are ignored in the calculation of the marginal probabilities
+    0, 0];% rows set to -1 are ignored in the calculation of the marginal probabilities
 
- for i=1:M
+for i=1:M
     node{i}.setState(n(i,:));
 end
 state = model.getState;
 
 %%
+i=M;
 solver = SolverCTMC(model,options);
-Pr = solver.getProbState();
-fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr(i));
-Pmarg_ctmc = Pr(M)
+Pr = solver.getProbState(i);
+fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
+Pmarg_ctmc = Pr
 
 solver = SolverNC(model,options);
-Pr = solver.getProbState();
-fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr(i));
-Pmarg_nc = Pr(M)
+Pr = solver.getProbState(i);
+fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
+Pmarg_nc = Pr

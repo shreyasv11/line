@@ -77,15 +77,15 @@ end
 state = model.getState;
 
 solver = SolverCTMC(model,options);
-Pr = solver.getProbState();
 for i=M
-    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr(i));
+    Pr = solver.getProbState(i);
+    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 end
-Pr_ctmc = Pr(M)
+Pr_ctmc = Pr
 
 solver = SolverNC(model,options);
-Pr = solver.getProbState();
 for i=M
-    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr(i));
+    Pr = solver.getProbState(i);
+    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 end
-Pr_nc = Pr(M)
+Pr_nc = Pr

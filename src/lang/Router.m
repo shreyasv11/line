@@ -11,7 +11,7 @@ classdef Router < Node
     
     methods
         %Constructor
-        % This is a node and note a Station because jobs cannot station
+        % This is a node and not a Station because jobs cannot station
         % inside it
         function self = Router(model, name)
             self = self@Node(name);
