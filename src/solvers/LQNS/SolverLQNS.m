@@ -1,10 +1,10 @@
-classdef SolverLQNS < LayeredSolver
+classdef SolverLQNS < LayeredNetworkSolver
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     methods
         function self = SolverLQNS(model, varargin)
-            self = self@LayeredSolver(model, mfilename);
+            self = self@LayeredNetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~SolverLQNS.isAvailable()
                 error('SolverLQNS requires the lqns and lqsim commands to be available on the system path. Quitting.');

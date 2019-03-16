@@ -1,4 +1,4 @@
-classdef RandomSource < Section   
+classdef RandomSource < InputSection   
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -9,8 +9,10 @@ properties
         methods
         %Constructor
         function self = RandomSource(classes)
-            self = self@Section('RandomSource');
-            self.sourceClasses{1,1} = {[],ServiceStrategy.LI,Disabled()};
+            self = self@InputSection('RandomSource');
+            for i = 1 : length(classes)
+                self.sourceClasses{1,i} = {[],ServiceStrategy.LI,Disabled()};
+            end
         end
     end
     

@@ -4,7 +4,7 @@
 % Solver - Generic solver abstract class
 % EnsembleSolver - Ensemble model solver abstract class
 % NetworkSolver - Network model solver abstract class
-% LayeredSolver - LayeredNetwork solver abstract class
+% LayeredNetworkSolver - LayeredNetwork solver abstract class
 %
 % Network solvers:
 % AUTO -	Automatic choice of solver.

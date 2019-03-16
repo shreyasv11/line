@@ -1,16 +1,11 @@
-classdef DelayStation < Queue
+classdef DelayStation < Delay
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
-    properties
-        %       isThink;
-    end
     
     methods
         %Constructor
         function self = DelayStation(model, name)
-            self = self@Queue(model, name, SchedStrategy.INF);
-            self.numberOfServers = Inf;
+            self = self@Delay(model, name);
         end
     end
     

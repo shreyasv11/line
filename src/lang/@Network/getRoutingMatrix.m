@@ -94,7 +94,7 @@ for i=1:self.getNumberOfNodes % source
             end
         end
         rtNodes(((i-1)*K+1):i*K,:) = 0;
-        if isa(self.nodes{i}.server,'CacheClassSwitch')
+        if isa(self.nodes{i}.server,'CacheClassSwitcher')
             for r=1:K
                 if (isempty(find(r == self.nodes{i}.server.hitClass)) && isempty(find(r == self.nodes{i}.server.missClass)))
                     Pcs(r,:) = Pcs(r,:)/sum(Pcs(r,:));

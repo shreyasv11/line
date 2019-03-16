@@ -1,4 +1,4 @@
-classdef SolverLN < LayeredSolver & EnsembleSolver
+classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
@@ -7,7 +7,7 @@ classdef SolverLN < LayeredSolver & EnsembleSolver
     
     methods
         function self = SolverLN(model,solverFactory,varargin)
-            self = self@LayeredSolver(model, mfilename);
+            self = self@LayeredNetworkSolver(model, mfilename);
             self@EnsembleSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             self.model.initDefault;

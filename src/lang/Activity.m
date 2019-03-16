@@ -1,4 +1,4 @@
-classdef Activity < LayeredElement
+classdef Activity < LayeredNetworkElement
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
@@ -24,7 +24,7 @@ classdef Activity < LayeredElement
             if ~exist('name','var')
                 error('Constructor requires to specify at least: name, hostDemandMean.');
             end
-            obj@LayeredElement(name);
+            obj@LayeredNetworkElement(name);
             obj.parentName = '';
             if isnumeric(hostDemand)
                 obj.hostDemand = Exp(1/hostDemand);

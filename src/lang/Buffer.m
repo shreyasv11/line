@@ -1,17 +1,15 @@
-classdef Buffer < Section
+classdef Buffer < InputSection
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
         size;
-        schedPolicy;
-        inputJobClasses;
     end
     
     methods
         %Constructor
         function self = Buffer(classes)
-            self = self@Section('Buffer');
+            self = self@InputSection('Buffer');
             self.size = -1;
             self.schedPolicy = SchedPolicy.NP;
             self.inputJobClasses = {};

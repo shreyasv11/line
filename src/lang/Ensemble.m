@@ -1,4 +1,4 @@
-classdef Ensemble < Copyable
+classdef Ensemble < Model
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
@@ -8,6 +8,7 @@ classdef Ensemble < Copyable
     
     methods
         function self = Ensemble(models)
+            self@Model('Ensemble');
             self.ensemble = reshape(models,1,numel(models)); % flatten 
         end
         

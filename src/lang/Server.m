@@ -1,16 +1,11 @@
-classdef Server < Section
+classdef Server < ServiceSection
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
-    properties
-        numberOfServers;
-        serviceProcess;
-    end
-    
+        
     methods
         %Constructor
         function self = Server(classes)
-            self = self@Section('Server');
+            self = self@ServiceSection('Server');
             self.numberOfServers = 1;
             self.serviceProcess = {};
             initServers(self, classes); 

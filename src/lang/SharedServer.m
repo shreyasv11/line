@@ -1,16 +1,11 @@
-classdef SharedServer < Section
+classdef SharedServer < ServiceSection
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
-    properties
-        numberOfServers;
-        serviceProcess;
-    end
     
     methods
         %Constructor
         function self = SharedServer(customerClasses)
-            self = self@Section('SharedServer');
+            self = self@ServiceSection('SharedServer');
             self.numberOfServers = 1;
             self.serviceProcess = {};
             initServers(self, customerClasses); %[JobClass(), ServiceStrategy.ID_LI, Distribution('exp')];

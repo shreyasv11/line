@@ -1,4 +1,4 @@
-classdef Processor  < LayeredElement
+classdef Processor  < LayeredNetworkElement
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -19,7 +19,7 @@ methods
         if ~exist('name','var')
             error('Constructor requires to specify at least a name.');
         end
-        obj@LayeredElement(name);
+        obj@LayeredNetworkElement(name);
         
         if ~exist('multiplicity','var')
             multiplicity = 1;

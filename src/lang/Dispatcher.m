@@ -1,15 +1,11 @@
-classdef Dispatcher < Section
+classdef Dispatcher < OutputSection
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
-    
-    properties
-        outputStrategy;
-    end
         
     methods
         %Constructor
         function self = Dispatcher(customerClasses)
-            self = self@Section('Dispatcher');
+            self = self@OutputSection('Dispatcher');
             self.outputStrategy = {};
             initDispatcherJobClasses(self, customerClasses);
      end

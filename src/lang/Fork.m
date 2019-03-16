@@ -1,11 +1,6 @@
-classdef Fork < Station
+classdef Fork < Node
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-
-% ForkStation is regarded as a station because, while jobs would not
-% station inside the fork node, the user may be interested to the number of 
-% currently forked jobs. The number of jobs in the ForkStation is 
-% interpreted as the job count in the Fork-Join subnetwork.
 
     properties
         schedStrategy;
@@ -14,12 +9,10 @@ classdef Fork < Station
     methods
         %Constructor
         function self = Fork(model, name)
-            self = self@Station(name);
-            self.numberOfServers = 0;
+            self = self@Node(name);
             if(model ~= 0)
                 classes = model.classes;
                 self.input = Buffer(classes);
-                self.cap = Inf;
                 self.schedStrategy = SchedStrategy.FORK;
                 self.server = ServiceTunnel();
                 self.output = Fork(classes);

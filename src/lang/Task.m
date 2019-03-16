@@ -1,4 +1,4 @@
-classdef Task < LayeredElement
+classdef Task < LayeredNetworkElement
     
     properties
         multiplicity;       %int
@@ -22,7 +22,7 @@ classdef Task < LayeredElement
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
-            obj@LayeredElement(name);
+            obj@LayeredNetworkElement(name);
             if ~exist('multiplicity','var')
                 multiplicity = 1;
             end

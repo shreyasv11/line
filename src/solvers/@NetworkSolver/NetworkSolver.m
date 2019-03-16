@@ -227,11 +227,11 @@ classdef NetworkSolver < Solver
     error('getProbNormConst is not supported by this solver.');
     end
     
-    function Pnir = getProbState(self)
+    function Pnir = getProbState(self, ist)
     error('getProbState is not supported by this solver.');
     end
     
-    function Pnjoint = getProbStateSys(self)
+    function Pnjoint = getProbSysState(self)
     error('getStateSysProb is not supported by this solver.');
     end
     

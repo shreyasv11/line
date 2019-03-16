@@ -118,7 +118,10 @@ classdef SolverCTMC < NetworkSolver
             end
         end
             
-        function Pnir = getProbState(self)
+        function Pnir = getProbState(self, ist)
+            if ~exist('ist','var')
+                error('getProbState requires to indicate the station of interest.');
+            end
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
             end
@@ -127,21 +130,24 @@ classdef SolverCTMC < NetworkSolver
             qn.state = self.model.getState;
             Pnir = solver_ctmc_marg(qn, self.options);
             self.result.('solver') = self.getName();
-            self.result.Prob.nir = Pnir;
+            self.result.Prob.marginal = Pnir;
             runtime = toc(T0);
             self.result.runtime = runtime;
+            Pnir = Pnir(ist);
         end
         
-        function Pnir = getProbStateSys(self)
+        function Pn = getProbSysState(self)
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
             end
             T0 = tic;
             qn = self.model.getStruct;
             if self.model.isStateValid 
-                Pnir = solver_ctmc_joint(qn, self.options);
+                Pn = solver_ctmc_joint(qn, self.options);
                 self.result.('solver') = self.getName();
-                self.result.Prob.nir = Pnir;
+                self.result.Prob.joint = Pn;
+            else
+                error('The model state is invalid.');
             end
             runtime = toc(T0);
             self.result.runtime = runtime;

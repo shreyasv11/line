@@ -1,19 +1,17 @@
-classdef CacheServer < Section
+classdef CacheServer < ServiceSection
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     properties
         classes;
-        numberOfServers;
         numberOfLevels;
-        serviceProcess;
         levelCapacities;
     end
     
     methods
         %Constructor
         function self = CacheServer(classes, levels, levelCapacities)
-            self = self@Section('CacheServer');
+            self = self@ServiceSection('CacheServer');
             self.classes = classes;
             self.numberOfServers = 1;
             self.numberOfLevels = levels;

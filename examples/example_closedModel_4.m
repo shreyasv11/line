@@ -4,12 +4,13 @@ node{1} = Delay(model, 'Delay');
 %node{1} = Queue(model, 'Queue0', SchedStrategy.PS);
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 node{3} = Queue(model, 'Queue2', SchedStrategy.FCFS);
+node{2}.setNumServers(3);
 node{3}.setNumServers(3);
 
 % Default: scheduling is set as FCFS everywhere, routing as Random
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);
-jobclass{2} = ClosedClass(model, 'Class2', 1, node{1}, 0);
-jobclass{3} = ClosedClass(model, 'Class3', 1, node{1}, 0);
+jobclass{2} = ClosedClass(model, 'Class2', 2, node{1}, 0);
+jobclass{3} = ClosedClass(model, 'Class3', 2, node{1}, 0);
 jobclass{4} = ClosedClass(model, 'Class4', 1, node{1}, 0);
 
 node{1}.setService(jobclass{1}, Exp(1));

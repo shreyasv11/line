@@ -3,7 +3,6 @@ classdef Forker < Section
 % All rights reserved.
     
     properties
-        routerStrategy;
         tasksPerLink;
     end
     
@@ -11,7 +10,6 @@ classdef Forker < Section
         %Constructor
         function self = Forker(customerClasses)
             self = self@Section('Forker');
-            self.outputStrategy= {};
             self.tasksPerLink=1.0;
             initDispatcherJobClasses(self, customerClasses);
         end

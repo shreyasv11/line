@@ -28,26 +28,30 @@ classdef SolverNC < NetworkSolver
             self.result.Prob.logNormConst = lG;
         end
         
-        function Pnir = getProbState(self)
+        function Pnir = getProbState(self, ist)
+            if ~exist('ist','var')
+                error('getProbState requires to indicate the station of interest.');
+            end
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
             [Pnir,lG] = solver_nc_marg(qn, self.options);
             self.result.('solver') = self.getName();
             self.result.Prob.logNormConst = lG;
-            self.result.Prob.nir = Pnir;
+            self.result.Prob.marginal = Pnir;
             runtime = toc(T0);
             self.result.runtime = runtime;
+            Pnir = Pnir(ist);
         end
         
-        function Pnir = getProbStateSys(self)
+        function Pn = getProbSysState(self)
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
-            [Pnir,lG] = solver_nc_joint(qn, self.options);
+            [Pn,lG] = solver_nc_joint(qn, self.options);
             self.result.('solver') = self.getName();
             self.result.Prob.logNormConst = lG;
-            self.result.Prob.nir = Pnir;
+            self.result.Prob.joint = Pn;
             runtime = toc(T0);
             self.result.runtime = runtime;
         end

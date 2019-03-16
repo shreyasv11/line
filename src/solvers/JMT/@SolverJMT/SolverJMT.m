@@ -235,7 +235,7 @@ classdef SolverJMT < NetworkSolver
             end
         end        
         
-        function Pr = getProbStateSys(self)
+        function Pr = getProbSysState(self)
             state = self.getTranStateSys;
             qn = self.model.getStruct;
             iat = diff(state.t);

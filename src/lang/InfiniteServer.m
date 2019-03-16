@@ -1,16 +1,11 @@
-classdef InfiniteServer < Section
+classdef InfiniteServer < ServiceSection
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
-    properties
-        numberOfServers;
-        serviceProcess;
-    end
     
     methods
         %Constructor
         function self = InfiniteServer(customerClasses)
-            self = self@Section('InfiniteServer');
+            self = self@ServiceSection('InfiniteServer');
             self.numberOfServers = Inf;
             self.serviceProcess = {};
             initServers(self, customerClasses); 
