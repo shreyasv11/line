@@ -49,8 +49,10 @@ for i=1:(numOfStations)
                 case 'RandomSource'
                     [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode);
                 case 'Joiner'
+                    section.setAttribute('className', 'Join'); %overwrite with JMT class name
                     [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode);
                 case 'Forker'
+                    section.setAttribute('className', 'Fork'); %overwrite with JMT class name
                     [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode);
             end
             node.appendChild(section);

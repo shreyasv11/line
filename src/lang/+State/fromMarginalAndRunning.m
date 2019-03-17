@@ -138,7 +138,7 @@ switch qn.nodetype(ind)
                 % random variables for the service times
                 error('The scheduling policy does not admit a discrete state space.\n');
         end
-    case NodeType.CacheStation
+    case NodeType.Cache
         switch qn.sched{ist}
             case SchedStrategy.INF
                 % in this policies we only track the jobs in the servers

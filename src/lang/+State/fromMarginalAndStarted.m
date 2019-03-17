@@ -47,7 +47,7 @@ switch qn.nodetype(ind)
                         if isnan(qn.mu{ist,r})
                             init(1) = 0; % class is not processed at this source
                         else
-						% init the job generation 
+                            % init the job generation
                             init(1) = 1;
                         end
                     end
@@ -145,7 +145,7 @@ switch qn.nodetype(ind)
                             % kstate = State.decorate(kstate,State.spaceClosedSingle(K(r),si(k,r)));
                             init = State.spaceClosedSingle(K(r),0);
                             init(1) = si(k,r);
-                            kstate = State.decorate(kstate,init);								
+                            kstate = State.decorate(kstate,init);
                         end
                         state = [state; repmat(mi_buf(b,:),size(kstate,1),1), kstate];
                     end
@@ -166,7 +166,7 @@ switch qn.nodetype(ind)
                 % called to initial models with SJF and LJF
                 warning('The scheduling policy does not admit a discrete state space.\n');
         end
-    case NodeType.CacheStation
+    case NodeType.Cache
         switch qn.sched{ist}
             case SchedStrategy.INF
                 % in this policies we only track the jobs in the servers
@@ -176,6 +176,8 @@ switch qn.nodetype(ind)
                 end
                 space = State.decorate(space,state);
         end
+    case NodeType.Join
+        space = 0;
 end
 space = unique(space,'rows'); % do not comment, required to sort empty state as first
 space = space(end:-1:1,:); % this ensures that states where jobs start in phase 1 are first, which is used eg in SSA

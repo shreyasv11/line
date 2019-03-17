@@ -1,11 +1,11 @@
-classdef Uniform < Distrib
+classdef Uniform < ContinuousDistrib
     % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     
     methods
         %Constructor
         function self = Uniform(minVal, maxVal)
-            self = self@Distrib('Uniform',2,[minVal,maxVal]);
+            self = self@ContinuousDistrib('Uniform',2,[minVal,maxVal]);
             setParam(self, 1, 'min', minVal, 'java.lang.Double');
             setParam(self, 2, 'max', maxVal, 'java.lang.Double');
             self.javaClass = 'jmt.engine.random.Uniform';

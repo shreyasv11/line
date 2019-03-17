@@ -1,11 +1,11 @@
-classdef PhaseType < Distrib
+classdef PhaseType < ContinuousDistrib
     % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     
     methods (Hidden)
         %Constructor
         function self = PhaseType(name, numParam)
-            self@Distrib(name, numParam, [0,Inf]);
+            self@ContinuousDistrib(name, numParam, [0,Inf]);
         end
     end
     

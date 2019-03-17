@@ -16,13 +16,22 @@ elseif nargin == 2
 end
 
 if ~self.hasAvgResults || ~self.options.cache
-    self.run();
-    if isempty(self.result)
-        QNclass=[];
-        UNclass=[];
-        RNclass=[];
-        TNclass=[];
-        return
+    try
+        self.run();
+    catch ME
+        switch ME.identifier
+            case {'Line:FeatureNotSupportedBySolver', 'Line:ModelTooLargeToSolve', 'Line:UnspecifiedOption'}
+                if self.options.verbose
+                    fprintf(1,'%s\n',ME.message);
+                end
+                QNclass=[];
+                UNclass=[];
+                RNclass=[];
+                TNclass=[];
+                return
+            otherwise
+                rethrow(ME)
+        end
     end
 end % else return cached value
 

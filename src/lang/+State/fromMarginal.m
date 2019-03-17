@@ -147,7 +147,7 @@ switch qn.nodetype(ind)
             case RoutingStrategy.ID_RR
                 space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
         end
-    case NodeType.CacheStation
+    case NodeType.Cache
         switch qn.sched{ist}
             case SchedStrategy.INF
                 % in this policies we only track the jobs in the servers

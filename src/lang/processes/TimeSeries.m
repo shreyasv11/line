@@ -2,11 +2,13 @@ classdef TimeSeries < PointProcess
     % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     
-    methods
+    methods (Hidden)
         function self = TimeSeries(className, numPar)
             self = self@PointProcess(className,numPar);
         end
-        
+    end
+    
+    methods
         function transform(self, filterType, filterParam)
             if isempty(self.data)
                 self.load();

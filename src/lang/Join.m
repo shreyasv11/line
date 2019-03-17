@@ -12,13 +12,14 @@ classdef Join < Station
     methods 
         %Constructor
         function self = Join(model, name)
-            self = self@Station(name);
-            self.numberOfServers = 0;
+            self@Station(name);
             if(model ~= 0)
                 classes = model.classes;
-                self.input = Join(classes);
+                self.input = Joiner(classes);
                 self.output = Dispatcher(classes);
                 self.server = ServiceTunnel();
+                self.numberOfServers = Inf;
+                self.setModel(model);
                 addNode(model, self);
             end
 %             if ~exist('joinstrategy','var')

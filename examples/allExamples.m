@@ -57,6 +57,12 @@ fprintf(1,'\n\nExample: <strong>example_mixedModel_1</strong>\n');
 clear; example_mixedModel_1; fprintf(1,'Pausing...'); pause(3.0);
 
 %%
+fprintf(1,'\n<strong>RUNNING: example_forkJoin_*</strong>');
+fprintf(1,'\n\nExample: <strong>example_forkJoin_1</strong>\n');
+fprintf(1,'This example shows the simulation of a fork-join open queueing network.\n');
+clear; example_forkJoin_1; fprintf(1,'Pausing...'); pause(3.0);
+
+%%
 fprintf(1,'\n<strong>RUNNING: example_stateProbabilities</strong>');
 fprintf(1,'\n\nExample: <strong>example_stateProbabilities_1</strong>\n');
 clear; example_stateProbabilities_1; fprintf(1,'Pausing...'); pause(3.0);

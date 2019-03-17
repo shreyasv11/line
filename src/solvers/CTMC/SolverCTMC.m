@@ -27,17 +27,17 @@ classdef SolverCTMC < NetworkSolver
             rand('seed',options.seed); 
             
             if ~self.supports(self.model)
-                if options.verbose
-                    warning('This model is not supported by the %s solver. Quitting.',mfilename);
-                end
-                runtime = toc(T0);
-                return
+%                if options.verbose
+                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver. Quitting.',mfilename);
+%                end
+%                runtime = toc(T0);
+%                return
             end
             
             qn = self.getStruct();
             if any(isinf(qn.njobs))
                 if isinf(options.cutoff)
-                    error('The model has open chains, it is mandatory to specify a finite cutoff value, e.g., SolverCTMC(model,''cutoff'',1).');
+                    error('Line:UnspecifiedOption','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., SolverCTMC(model,''cutoff'',1).');
                 end
             end
             
@@ -50,7 +50,7 @@ classdef SolverCTMC < NetworkSolver
             end
             if sizeEstimator > 6
                 if ~isfield(options,'force') || options.force == false
-                    fprintf(1,'CTMC size may be too large to solve. Stopping SolverCTMC. Set options.force=true to bypass this control.\n');
+                    error('Line:ModelTooLargeToSolve','CTMC size may be too large to solve. Stopping SolverCTMC. Set options.force=true to bypass this control.\n');
                     runtime=toc(T0);
                     return
                 end
@@ -158,7 +158,7 @@ classdef SolverCTMC < NetworkSolver
     methods (Static)
         function featSupported = getFeatureSet()
             featSupported = SolverFeatureSet;
-            featSupported.setTrue({'Sink','Source',...
+            featSupported.setTrue({'Source','Sink',...
                 'ClassSwitch','DelayStation','Queue',...
                 'Cox2','Erlang','Exponential','HyperExp',...
                 'StatelessClassSwitcher','InfiniteServer','SharedServer','Buffer','Dispatcher',...

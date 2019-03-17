@@ -40,7 +40,7 @@ for i=1:(numOfClasses)
     strategyNode.appendChild(refClassNode);
     
     concStratNode = simDoc.createElement('subParameter');
-    concStratNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ForkStrategies.PROBFork');
+    concStratNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ForkStrategies.ProbabilitiesFork');
     concStratNode.setAttribute('name', 'Branch Probabilities');
     concStratNode2 = simDoc.createElement('subParameter');
     concStratNode2.setAttribute('array', 'true');
@@ -60,7 +60,8 @@ for i=1:(numOfClasses)
         if length(currentNode.output.outputStrategy{i}{end}) == 1
             concStratNode4StationValueNode.appendChild(simDoc.createTextNode('Random'));
         else
-            concStratNode4StationValueNode.appendChild(simDoc.createTextNode(sprintf('%s',RoutingStrategy.toText(currentNode.output.outputStrategy{i}{end}{k}{2}))));
+%            concStratNode4StationValueNode.appendChild(simDoc.createTextNode(sprintf('%s',RoutingStrategy.toText(currentNode.output.outputStrategy{i}{end}{k}{2}))));
+            concStratNode4StationValueNode.appendChild(simDoc.createTextNode(sprintf('%s',RoutingStrategy.toText(currentNode.output.outputStrategy{i}{2}))));
         end
         concStratNode4Station.appendChild(concStratNode4StationValueNode);
         concStratNode3.appendChild(concStratNode4Station);

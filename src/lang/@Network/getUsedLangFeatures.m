@@ -26,6 +26,12 @@ for i=1:self.getNumberOfNodes()
                 case 'ClassSwitch'
                     self.setUsedFeatures('StatelessClassSwitcher');
                     self.setUsedFeatures('ClassSwitch');
+                case 'Fork'
+                    self.setUsedFeatures('Fork');
+                    self.setUsedFeatures('Forker');
+                case 'Join'
+                    self.setUsedFeatures('Join');
+                    self.setUsedFeatures('Joiner');
             end
         end
     end

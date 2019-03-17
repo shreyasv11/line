@@ -19,6 +19,13 @@ for i=1:M
                     mu_i{r} = NaN;
                     phi_i{r} = NaN;
                 end
+            case 'Join'
+                mu_i = cell(1,K);
+                phi_i = cell(1,K);
+                for r=1:K
+                    mu_i{r} = NaN;
+                    phi_i{r} = NaN;
+                end
             otherwise
                 [mu_i,phi_i] = self.stations{i}.getCoxServiceRates();
         end

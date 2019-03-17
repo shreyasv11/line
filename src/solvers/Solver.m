@@ -189,7 +189,7 @@ classdef Solver < handle
             options.seed = randi([1,1e6]);
             options.stiff = true;
             options.timespan = [Inf,Inf];
-            options.verbose = 0;
+            options.verbose = 1;
         end
         
         function options = parseOptions(varargin, defaultOptions)

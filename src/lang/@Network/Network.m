@@ -216,6 +216,10 @@ classdef Network < Model
                         nodeTypes(i) = NodeType.Delay;
                     case 'Sink'
                         nodeTypes(i) = NodeType.Sink;
+                    case 'Fork'
+                        nodeTypes(i) = NodeType.Fork;
+                    case 'Join'
+                        nodeTypes(i) = NodeType.Join;
                     case 'Source'
                         nodeTypes(i) = NodeType.Source;
                 end

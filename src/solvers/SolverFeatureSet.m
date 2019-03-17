@@ -104,14 +104,14 @@ classdef SolverFeatureSet < handle
     end
     
     methods(Static)
-        function bool = supports(featSupported, featUsed)        
+        function bool = supports(featSupportedList, featUsedList)        
             bool = true;
             unsupported = {};
             
             % Nodes and Stations
             fields = SolverFeatureSet.fields;
             for f=1:length(fields)
-                if featUsed.list.(fields{f}) > featSupported.list.(fields{f})
+                if featUsedList.list.(fields{f}) > featSupportedList.list.(fields{f})
                     bool = false;
                     unsupported{end+1} = fields{f}; %#ok<AGROW>
                 end

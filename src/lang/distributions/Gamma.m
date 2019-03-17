@@ -1,11 +1,11 @@
-classdef Gamma < Distrib
+classdef Gamma < ContinuousDistrib
     % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     
     methods
         %Constructor
         function self = Gamma(shape, scale)
-            self = self@Distrib('Gamma',2,[0,Inf]);
+            self = self@ContinuousDistrib('Gamma',2,[0,Inf]);
             setParam(self, 1, 'alpha', shape, 'java.lang.Double');
             setParam(self, 2, 'beta', scale, 'java.lang.Double');
             self.javaClass = 'jmt.engine.random.GammaDistr';

@@ -124,8 +124,8 @@ for a=1:A
                                 node_a_sf = qn.nodeToStateful(node_a);
                                 node_p_sf = qn.nodeToStateful(node_p);
                             end
-                            if node_p < local && ~csmask(class_a, class_p) && rate_a(ia) * prob_sync_p >0 && qn.nodetype(node_p)~=NodeType.Source
-                                error('Fatal error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a, node_a, node_p, class_a, class_p);
+                            if node_p < local && ~csmask(class_a, class_p) && rate_a(ia) * prob_sync_p >0 && (qn.nodetype(node_p)~=NodeType.Source)
+                                error('Error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a, node_a, node_p, class_a, class_p);
                             end
                             if size(D{a}) >= [s,ns] % needed for sparse matrix
                                 D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;

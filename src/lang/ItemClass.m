@@ -16,8 +16,8 @@ classdef ItemClass < NetworkElement
             self.nitems = nitems;
             self.index = 1;
             self.replicable = false;
-            if ~isa(reference, 'CacheStation')
-                error('ItemClass must be pinned to a CacheStation.');
+            if ~isa(reference, 'Cache')
+                error('ItemClass must be pinned to a Cache.');
             end
             self.reference = reference;
             model.addItemClass(self);

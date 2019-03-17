@@ -15,11 +15,11 @@ classdef SolverMAM < NetworkSolver
             options = self.getOptions;
             
             if ~self.supports(self.model)
-                if options.verbose
-                    warning('This model is not supported by the %s solver. Quitting.',mfilename);
-                end
-                runtime = toc(T0);
-                return
+%                if options.verbose
+                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver. Quitting.',mfilename);
+%                end
+%                runtime = toc(T0);
+%                return
             end
             
             rand('seed',options.seed);

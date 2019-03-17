@@ -1,4 +1,4 @@
-classdef Forker < Section
+classdef Forker < OutputSection
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
@@ -9,7 +9,7 @@ classdef Forker < Section
     methods
         %Constructor
         function self = Forker(customerClasses)
-            self = self@Section('Forker');
+            self = self@OutputSection('Forker');
             self.tasksPerLink=1.0;
             initDispatcherJobClasses(self, customerClasses);
         end

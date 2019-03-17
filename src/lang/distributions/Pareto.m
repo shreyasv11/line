@@ -1,11 +1,11 @@
-classdef Pareto < Distrib
+classdef Pareto < ContinuousDistrib
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     methods
         %Constructor
         function self = Pareto(shape, scale)
-            self = self@Distrib('Pareto',2,[0,Inf]);
+            self = self@ContinuousDistrib('Pareto',2,[0,Inf]);
             if shape < 2
                 error('shape parameter must be >= 2.0');
             end

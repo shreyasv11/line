@@ -62,7 +62,6 @@ classdef NetworkStruct <handle
         %constructor
         function self = NetworkStruct(nodetype, nodenames, classnames, numservers, njobs, refstat, routing)
             self.nnodes = numel(nodenames);
-            self.nstations = length(numservers);
             self.nclasses = length(classnames);
             self.nclosedjobs = sum(njobs(isfinite(njobs)));
             self.nservers = numservers;
@@ -80,6 +79,7 @@ classdef NetworkStruct <handle
             if exist('nodetype','var') && ~isempty(nodetype)
                 self.nodetype = nodetype;
                 self.isstation = NodeType.isStation(nodetype);
+                self.nstations = sum(self.isstation);
                 self.isstateful = NodeType.isStateful(nodetype);
                 self.isstatedep = false(self.nnodes,3); % col 1: buffer, col 2: srv, col 3: routing
                 for ind=1:self.nnodes
@@ -112,8 +112,7 @@ classdef NetworkStruct <handle
                 for j = 1:self.nclasses
                     self.classnames{j,1} = int2str(j);
                 end
-            end
-            
+            end            
             self.reindex();
         end
         

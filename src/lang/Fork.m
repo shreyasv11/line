@@ -4,6 +4,7 @@ classdef Fork < Node
 
     properties
         schedStrategy;
+        cap;
     end
     
     methods
@@ -12,10 +13,12 @@ classdef Fork < Node
             self = self@Node(name);
             if(model ~= 0)
                 classes = model.classes;
+                self.cap = Inf;
                 self.input = Buffer(classes);
                 self.schedStrategy = SchedStrategy.FORK;
                 self.server = ServiceTunnel();
-                self.output = Fork(classes);
+                self.output = Forker(classes);
+                self.setModel(model);
                 addNode(model, self);
             end
         end

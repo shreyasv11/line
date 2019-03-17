@@ -3,9 +3,9 @@ function jsimgView(self, options)
 % All rights reserved.
 
 if ~self.supports(self.model)
-    warning('This model is not supported by the %s solver. Quitting.',mfilename);
-    runtime = toc(T0);
-    return
+    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver. Quitting.',mfilename);
+%    runtime = toc(T0);
+%    return
 end
 if ~exist('options','var')
     options=Solver.defaultOptions();
