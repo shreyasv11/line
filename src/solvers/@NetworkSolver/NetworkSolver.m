@@ -129,9 +129,9 @@ classdef NetworkSolver < Solver
                 RNn(ind,:) = RN(ist,:);
                 TNn(ind,:) = TN(ist,:);
             end
-            % update tputs for all nodes but the sink
+            % update tputs for all nodes but the sink and the joins
             for ind=1:I
-                if qn.nodetype(ind) ~= NodeType.Sink
+                if qn.nodetype(ind) ~= NodeType.Sink && qn.nodetype(ind) ~= NodeType.Join
                     if qn.isstatedep(ist,3) % if state-dep routing
                         error('getNodeAvg does not support models with state-dependent routing.');
                     else
