@@ -8,7 +8,7 @@ end
 
 if nargin == 1
     if isempty(self.qn)
-        error('refreshRoutingMatrix cannot retrieve station rates, pass them as an input parameters.');
+        error('refreshRoutingMatrix cannot retrieve station rates, please pass them as an input parameters.');
     else
         rates = self.qn.rates;
     end
@@ -71,7 +71,7 @@ if wantVisits
         alpha_visited = dtmc_solve(Pchain(visited,visited));
         alpha = zeros(1,M); alpha(visited) = alpha_visited;
         if max(alpha)>=1-1e-10
-            error('One chain has an absorbing state.');
+            error('Line:ChainAbsorbingState','One chain has an absorbing state.');
         end
         visits{c} = zeros(M,K);
         for i=1:M
@@ -99,7 +99,7 @@ if wantVisits
         nodes_alpha_visited = dtmc_solve(nodes_Pchain(nodes_visited,nodes_visited));
         nodes_alpha = zeros(1,I); nodes_alpha(nodes_visited) = nodes_alpha_visited;
         if max(nodes_alpha)>=1-1e-10
-            error('One chain has an absorbing state.');
+            error('Line:ChainAbsorbingState','One chain has an absorbing state.');
         end
         nodevisits{c} = zeros(I,K);
         for i=1:I

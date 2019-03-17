@@ -83,7 +83,7 @@ for i=1:(numOfClasses)
         concStratNode5bStation.setAttribute('classPath', 'java.lang.String');
         concStratNode5bStation.setAttribute('name', 'numbers');
         concStratNode5bStationValueNode = simDoc.createElement('value');
-        concStratNode5bStationValueNode.appendChild(simDoc.createTextNode('1'));
+        concStratNode5bStationValueNode.appendChild((simDoc.createTextNode(int2str(currentNode.output.tasksPerLink))));
         concStratNode5bStation.appendChild(concStratNode5bStationValueNode);
         concStratNode4b.appendChild(concStratNode5bStation);
         concStratNode5bProbability = simDoc.createElement('subParameter');

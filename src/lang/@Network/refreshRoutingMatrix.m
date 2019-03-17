@@ -22,8 +22,8 @@ end
 
 rnodefuncell = cell(M*K,M*K);
 stateful = self.getIndexStatefulNodes;
-for ind=1:M % source
-    for jnd=1:M % source
+for ind=1:M % from
+    for jnd=1:M % to
         for r=1:K
             for s=1:K
                 if qn.isstatedep(ind,3)

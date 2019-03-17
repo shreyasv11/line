@@ -1,4 +1,4 @@
-function [rt,rtNodes,rtNodesByClass,rtNodesByStation,linksMatrix] = getRoutingMatrix(self, arvRates)
+function [rt,rtNodes,rtNodesByClass,rtNodesByStation,connMatrix] = getRoutingMatrix(self, arvRates)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -10,11 +10,11 @@ end
 
 nodeNames = self.getNodeNames();
 % connectivity matrix
-linksMatrix = zeros(self.getNumberOfNodes);
+connMatrix = zeros(self.getNumberOfNodes);
 for r=1:size(self.links,1)
     i=findstring(nodeNames,self.links{r}{1}.name);
     j=findstring(nodeNames,self.links{r}{2}.name);
-    linksMatrix(i,j) = 1;
+    connMatrix(i,j) = 1;
 end
 
 if ~exist('arvRates','var')
@@ -28,39 +28,61 @@ NK = self.getNumberOfJobs;
 rtNodes = zeros(self.getNumberOfNodes()*K);
 % The first loop considers the class at which a job enters the
 % target station
-for k=1:K
-    for i=1:self.getNumberOfNodes()
-        switch self.nodes{i}.output.outputStrategy{k}{2}
-            case RoutingStrategy.RAND
-                if isinf(NK(k)) || (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink')) % don't route closed classes out of source nodes
-                    for j=1:self.getNumberOfNodes()
-                        if linksMatrix(i,j)>0
-                            rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(linksMatrix(i,:));
+for i=1:self.getNumberOfNodes()
+    switch class(self.nodes{i}.output)
+        case 'Forker'
+            for j=1:self.getNumberOfNodes()
+                for k=1:K
+                    if connMatrix(i,j)>0
+                        rtNodes((i-1)*K+k,(j-1)*K+k)=1.0;
+                        switch self.nodes{i}.output.outputStrategy{k}{2}
+                            case 'Probabilities'
+                                if length(self.nodes{i}.output.outputStrategy{k}{end}) ~= sum(connMatrix(i,:))
+                                    error('Fork must have 1.0 routing probability towards all outgoing links.');
+                                end
+                                for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
+                                    if self.nodes{i}.output.outputStrategy{k}{end}{t}{2} ~= 1.0
+                                        error('Fork must have 1.0 routing probability towards all outgoing links, but a routing probability is at %f.',self.nodes{i}.output.outputStrategy{k}{end}{t}{2});
+                                    end
+                                end
                         end
                     end
                 end
-            case RoutingStrategy.PROB
-                if isinf(NK(k)) || ~isa(self.nodes{i},'Sink')
-                    for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
-                        j = findstring(nodeNames,self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
-                        rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
-                    end
-                end
-            case {RoutingStrategy.RR, RoutingStrategy.JSQ}
-                % we set the routing probabilities for the chain as in
-                % RoutingStrategy.RAND
-                if isinf(NK(k)) || (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink')) % don't route closed classes out of source nodes
-                    for j=1:self.getNumberOfNodes()
-                        if linksMatrix(i,j)>0
-                            rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(linksMatrix(i,:));
+            end
+        otherwise
+            for k=1:K
+                switch self.nodes{i}.output.outputStrategy{k}{2}
+                    case RoutingStrategy.RAND
+                        if isinf(NK(k)) || (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink')) % don't route closed classes out of source nodes
+                            for j=1:self.getNumberOfNodes()
+                                if connMatrix(i,j)>0
+                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
+                                end
+                            end
                         end
-                    end
+                    case RoutingStrategy.PROB
+                        if isinf(NK(k)) || ~isa(self.nodes{i},'Sink')
+                            for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
+                                j = findstring(nodeNames,self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
+                                rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
+                            end
+                        end
+                    case {RoutingStrategy.RR, RoutingStrategy.JSQ}
+                        % we set the routing probabilities for the chain as in
+                        % RoutingStrategy.RAND
+                        if isinf(NK(k)) || (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink')) % don't route closed classes out of source nodes
+                            for j=1:self.getNumberOfNodes()
+                                if connMatrix(i,j)>0
+                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
+                                end
+                            end
+                        end
+                    otherwise
+                        if self.nodes{i}.output.outputStrategy{k}{2}~=0 % disabled
+                            error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);
+                        end
                 end
-            otherwise
-                if self.nodes{i}.output.outputStrategy{k}{2}~=0 % disabled
-                    error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);
-                end
-        end
+            end
     end
 end
 

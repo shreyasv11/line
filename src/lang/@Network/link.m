@@ -157,12 +157,13 @@ for i=1:Mplus
 end
 
 if isReset
-    nodetypes = self.getNodeTypes();
-    wantVisits = true;
-    if any(nodetypes == NodeType.Cache)
-        wantVisits = false;
-    end
-    self.refreshStruct; % without this exception with linkAndLog
+    %%re-instate all of this if re-instating refreshChains
+    %nodetypes = self.getNodeTypes();
+    %wantVisits = true;
+    %if any(nodetypes == NodeType.Cache)
+    %    wantVisits = false;
+    %end
     %self.refreshChains(self.qn.rates, wantVisits);
+    self.refreshStruct; % without this exception with linkAndLog
 end
 end
