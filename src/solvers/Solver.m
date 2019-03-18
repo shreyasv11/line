@@ -286,7 +286,7 @@ classdef Solver < handle
                     options.method = erase(options.method,'mam.');
                     solver = SolverMAM(model, options);
                 case {'mm1','mg1','gig1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b','gm1'}
-                    solver = Library(model, options);                    
+                    solver = NetworkSolverLibrary(model, options);                    
             end
         end
     end

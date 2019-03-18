@@ -1,9 +1,9 @@
-classdef Library < NetworkSolver
+classdef NetworkSolverLibrary < NetworkSolver
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     
     methods
-        function self = Library(model,varargin)
+        function self = NetworkSolverLibrary(model,varargin)
             self = self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if strcmp(self.getOptions.method,'default')
@@ -46,7 +46,7 @@ classdef Library < NetworkSolver
         
         function [bool, featSupported] = supports(model)
             featUsed = model.getUsedLangFeatures();    
-            featSupported = Library.getFeatureSet();
+            featSupported = NetworkSolverLibrary.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end
     end
