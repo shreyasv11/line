@@ -22,14 +22,14 @@ classdef SolverEnv < EnsembleSolver
             for e=1:length(self.env)
                 for h=1:length(self.env)
                     if ~isa(self.env{e,h},'PhaseType')
-                        error('The distribution of the environment transition from stage %d to %d is not supported by the %s solver. Quitting.',e,h,self.getName);
+                        error('The distribution of the environment transition from stage %d to %d is not supported by the %s solver.',e,h,self.getName);
                     end
                 end
             end
             
             for e=1:length(self.ensemble)
                 if ~self.solvers{e}.supports(self.ensemble{e})
-                    error('Model in the environment stage %d is not supported by the %s solver. Quitting.',e,self.getName);
+                    error('Model in the environment stage %d is not supported by the %s solver.',e,self.getName);
                 end
             end
         end

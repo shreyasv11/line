@@ -1,11 +1,14 @@
-classdef SolverMAM < NetworkSolver
-    % Copyright (c) 2012-2019, Imperial College London
-    % All rights reserved.
+classdef Library < NetworkSolver
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
     
     methods
-        function self = SolverMAM(model,varargin)
+        function self = Library(model,varargin)
             self = self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
+            if strcmp(self.getOptions.method,'default')
+                error('Line:UnsupportedMethod','This solver does not have a default solution method. Used the method option to choose a solution technique.');
+            end                
         end
         
         function runtime = run(self)
@@ -13,18 +16,18 @@ classdef SolverMAM < NetworkSolver
             options = self.getOptions;
             
             if ~self.supports(self.model)
-                %                if options.verbose
-                error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-                %                end
-                %                runtime = toc(T0);
-                %                return
+%                if options.verbose
+                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+%                end
+%                runtime = toc(T0);
+%                return
             end
             
             rand('seed',options.seed);
             
             [qn] = self.model.getStruct();
             
-            [Q,U,R,T,C,X] = solver_mam_analysis(qn, options);
+            [Q,U,R,T,C,X] = solver_lib_analysis(qn, options);
             
             runtime=toc(T0);
             self.setAvgResults(Q,U,R,T,C,X,runtime);
@@ -39,11 +42,11 @@ classdef SolverMAM < NetworkSolver
                 'Buffer','Server','JobSink','RandomSource','ServiceTunnel',...
                 'RoutingStrategy_PROB','RoutingStrategy_RAND',...
                 'SchedStrategy_HOL','SchedStrategy_FCFS','OpenClass','Replayer'});
-        end
+        end        
         
         function [bool, featSupported] = supports(model)
-            featUsed = model.getUsedLangFeatures();
-            featSupported = SolverMAM.getFeatureSet();
+            featUsed = model.getUsedLangFeatures();    
+            featSupported = Library.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end
     end

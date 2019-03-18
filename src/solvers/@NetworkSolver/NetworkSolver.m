@@ -17,7 +17,7 @@ classdef NetworkSolver < Solver
             self.handles.U = [];
             self.handles.W = [];
             self.handles.T = [];
-            sa = model.getStruct(); % force model to refresh
+            model.refreshStruct(); % force model to refresh
         end
     end
     

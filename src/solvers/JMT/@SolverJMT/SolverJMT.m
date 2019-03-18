@@ -26,7 +26,7 @@ classdef SolverJMT < NetworkSolver
             self = self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~Solver.isJavaAvailable
-                error('SolverJMT requires the java command to be available on the system path. Quitting.');
+                error('SolverJMT requires the java command to be available on the system path.');
             end
             if ~Solver.isAvailable            
                 error('SolverJMT cannot located JMT.jar in the MATLAB path.');

@@ -36,6 +36,7 @@ if M==2 && K==1 && all(isinf(N))
     [X, q, u, pqueue, Rmat, eta] = qbd_mapmap1(A,PHs);
     T(idx,1) = X;
     Q(idx,1) = q;
+    U(idx,1) = u;
     R(idx,1) = Q(idx,1) / X;
     C = R;
 elseif M==2 && K>1 && all(isinf(N))

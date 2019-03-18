@@ -10,7 +10,7 @@ classdef Solver < handle
         result; % last result
     end
     
-    methods
+    methods (Hidden)
         %Constructor
         function self = Solver(model, name, options)
             if ~exist('options','var')
@@ -80,7 +80,8 @@ classdef Solver < handle
         end
     end
     
-    methods (Static)
+    methods (Static)        
+        
         function bool = isAvailable()
             % to be over-ridden by classes depending on external solvers
             bool = true;
@@ -250,6 +251,42 @@ classdef Solver < handle
             end
             if SolverNC.supports(model)
                 solvers{end+1} = SolverNC(model, options);
+            end
+        end
+        
+        function solver = get(model, varargin)
+            options = Solver.parseOptions(varargin, Solver.defaultOptions);
+            switch options.method
+                case {'default','auto'}
+                    if strcmp(options.method,'auto'), options.method='default'; end
+                    solver = SolverAuto(model, options);
+                case {'ctmc','ctmc.gpu','gpu'}
+                    if strcmp(options.method,'ctmc'), options.method='default'; end
+                    options.method = erase(options.method,'ctmc.');
+                    solver = SolverCTMC(model, options);
+                case {'mva','mva.exact','amva','mva.amva'}
+                    if strcmp(options.method,'mva'), options.method='default'; end
+                    options.method = erase(options.method,'mva.');
+                    solver = SolverMVA(model, options);
+                case {'ssa','ssa.serial.hash','ssa.serial','ssa.para','ssa.parallel','serial.hash','serial','para','parallel'}
+                    if strcmp(options.method,'ssa'), options.method='default'; end
+                    options.method = erase(options.method,'ssa.');
+                    solver = SolverSSA(model, options);
+                case {'jmt','jsim','jmva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
+                        'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
+                    if strcmp(options.method,'jmt'), options.method='default'; end
+                    options.method = erase(options.method,'jmt.');
+                    solver = SolverJMT(model, options);
+                case 'fluid'
+                    if strcmp(options.method,'fluid'), options.method='default'; end
+                    options.method = erase(options.method,'fluid.');
+                    solver = SolverFluid(model, options);
+                case 'mam'
+                    if strcmp(options.method,'mam'), options.method='default'; end
+                    options.method = erase(options.method,'mam.');
+                    solver = SolverMAM(model, options);
+                case {'mm1','mg1','gig1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b','gm1'}
+                    solver = Library(model, options);                    
             end
         end
     end

@@ -19,7 +19,7 @@ end
 
 if ~self.supports(self.model)
 %    if options.verbose
-        error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver. Quitting.',mfilename);
+        error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
 %    end
 %    runtime = toc(T0);
 %    return

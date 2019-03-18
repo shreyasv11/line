@@ -5,12 +5,8 @@ function [QN,UN,RN,TN,CN,XN,runtime] = solver_mam_analysis(qn, options)
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 
-rt = qn.rt;
 mu = qn.mu;
 phi = qn.phi;
-S = qn.nservers;
-NK = qn.njobs';  % initial population per class
-sched = qn.sched;
 
 Tstart = tic;
 
@@ -26,24 +22,6 @@ for i=1:M
             D1 = zeros(size(D0));
             D1(:,1)=(phi{i,k}.*mu{i,k});
             PH{i,k} = map_normalize({D0,D1});
-        end
-    end
-end
-
-myP = cell(K,K);
-for k = 1:K
-    for c = 1:K
-        myP{k,c} = zeros(M);
-    end
-end
-
-for i=1:M
-    for j=1:M
-        for k = 1:K
-            for c = 1:K
-                % routing table for each class
-                myP{k,c}(i,j) = rt((i-1)*K+k,(j-1)*K+c);
-            end
         end
     end
 end

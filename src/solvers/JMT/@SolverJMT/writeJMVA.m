@@ -3,11 +3,11 @@ function [outputFileName] = writeJMVA(self, outputFileName)
 % All rights reserved.
 
 if ~self.model.hasProductFormSolution
-    error('JMVA requires the model to have a product-form solution. Quitting.');
+    error('JMVA requires the model to have a product-form solution.');
 end
 
 if self.model.hasClassSwitch
-    %    error('JMVA does not support class switching. Quitting.');
+    %    error('JMVA does not support class switching.');
 end
 
 if isoctave
@@ -127,23 +127,23 @@ end
 STchain(~isfinite(STchain))=0;
 Lchain(~isfinite(Lchain))=0;
 %%%%%%%%%%
-parametersElem = mvaDoc.createElem('parameters');
-classesElem = mvaDoc.createElem('classes');
+parametersElem = mvaDoc.createElement('parameters');
+classesElem = mvaDoc.createElement('classes');
 classesElem.setAttribute('number',num2str(qn.nchains));
-stationsElem = mvaDoc.createElem('stations');
+stationsElem = mvaDoc.createElement('stations');
 stationsElem.setAttribute('number',num2str(qn.nstations - sum(self.getStruct.nodetype == NodeType.Source)));
-refStationsElem = mvaDoc.createElem('ReferenceStation');
+refStationsElem = mvaDoc.createElement('ReferenceStation');
 refStationsElem.setAttribute('number',num2str(qn.nchains));
-algParamsElem = mvaDoc.createElem('algParams');
+algParamsElem = mvaDoc.createElement('algParams');
 
 sourceid = self.getStruct.nodetype == NodeType.Source;
 for c=1:qn.nchains
     if isfinite(sum(qn.njobs(qn.chains(c,:))))
-        classElem = mvaDoc.createElem('closedclass');
+        classElem = mvaDoc.createElement('closedclass');
         classElem.setAttribute('population',num2str(Nchain(c)));
         classElem.setAttribute('name',sprintf('Chain%02d',c));
     else
-        classElem = mvaDoc.createElem('openclass');
+        classElem = mvaDoc.createElement('openclass');
         classElem.setAttribute('rate',num2str(sum(qn.rates(sourceid,qn.chains(c,:)))));
         classElem.setAttribute('name',sprintf('Chain%02d',c));
     end
@@ -154,27 +154,27 @@ isLoadDep = false(1,qn.nstations);
 for i=1:qn.nstations
     switch self.getStruct.nodetype(self.getStruct.stationToNode(i))
         case NodeType.Delay
-            statElem = mvaDoc.createElem('delaystation');
+            statElem = mvaDoc.createElement('delaystation');
             statElem.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
         case NodeType.Queue
             if qn.nservers(i) == 1
                 isLoadDep(i) = false;
-                statElem = mvaDoc.createElem('listation');
+                statElem = mvaDoc.createElement('listation');
                 statElem.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
                 statElem.setAttribute('servers',num2str(1));
             else
                 isLoadDep(i) = true;
-                statElem = mvaDoc.createElem('ldstation');
+                statElem = mvaDoc.createElement('ldstation');
                 statElem.setAttribute('name',qn.nodenames{self.getStruct.stationToNode(i)});
                 statElem.setAttribute('servers',num2str(1));
             end
         otherwise
             continue
     end
-    srvTimesElem = mvaDoc.createElem('servicetimes');
+    srvTimesElem = mvaDoc.createElement('servicetimes');
     for c=1:qn.nchains
         if isLoadDep(i)
-            statSrvTimeElem = mvaDoc.createElem('servicetimes');
+            statSrvTimeElem = mvaDoc.createElement('servicetimes');
             statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));
             ldSrvString = num2str(STchain(i,c));
             for n=2:sum(NK)
@@ -183,16 +183,16 @@ for i=1:qn.nstations
             statSrvTimeElem.appendChild(mvaDoc.createTextNode(ldSrvString));
             srvTimesElem.appendChild(statSrvTimeElem);
         else
-            statSrvTimeElem = mvaDoc.createElem('servicetime');
+            statSrvTimeElem = mvaDoc.createElement('servicetime');
             statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));
             statSrvTimeElem.appendChild(mvaDoc.createTextNode(num2str(STchain(i,c))));
             srvTimesElem.appendChild(statSrvTimeElem);
         end
     end
     statElem.appendChild(srvTimesElem);
-    visitsElem = mvaDoc.createElem('visits');
+    visitsElem = mvaDoc.createElement('visits');
     for c=1:qn.nchains
-        statVisitElem = mvaDoc.createElem('visit');
+        statVisitElem = mvaDoc.createElement('visit');
         statVisitElem.setAttribute('customerclass',sprintf('Chain%02d',c));
         statVisitElem.appendChild(mvaDoc.createTextNode(num2str(Lchain(i,c) ./ STchain(i,c))));
         visitsElem.appendChild(statVisitElem);
@@ -203,15 +203,15 @@ for i=1:qn.nstations
 end
 
 for c=1:qn.nchains
-    classRefElem = mvaDoc.createElem('Class');
+    classRefElem = mvaDoc.createElement('Class');
     classRefElem.setAttribute('name',sprintf('Chain%d',c));
     classRefElem.setAttribute('refStation',qn.nodenames{qn.stationToNode(refstatchain(c))});
     refStationsElem.appendChild(classRefElem);
 end
 
-compareAlgsElem = mvaDoc.createElem('compareAlgs');
+compareAlgsElem = mvaDoc.createElement('compareAlgs');
 compareAlgsElem.setAttribute('value','false');
-algParamsElem.appendChild(algTypeElem);
+algParamsElem.appendChild(algTypeElement);
 algParamsElem.appendChild(compareAlgsElem);
 
 parametersElem.appendChild(classesElem);

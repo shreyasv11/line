@@ -13,7 +13,7 @@ classdef SolverMVA < NetworkSolver
             options = self.getOptions;
             if ~self.supports(self.model)
 %                if options.verbose
-                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver. Quitting.',mfilename);
+                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
 %                end
 %                runtime = toc(T0);
 %                return
@@ -28,7 +28,7 @@ classdef SolverMVA < NetworkSolver
             [qn] = self.model.getStruct();
             
             if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && ~self.model.hasProductFormSolution
-                error('The exact method requires the model to have a product-form solution. Quitting.');
+                error('The exact method requires the model to have a product-form solution.');
             end            
             
             if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer

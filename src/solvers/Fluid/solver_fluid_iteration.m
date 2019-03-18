@@ -59,7 +59,7 @@ while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
                 [t_iter, ymean_t_iter] = solveode(ydefault);
  %           otherwise
  %               me
- %               error('Unspecified ODE solver exception. Quitting.');
+ %               error('Unspecified ODE solver exception.');
 %        end
     end
     ymean_t(end+1:end+size(ymean_t_iter,1),:) = ymean_t_iter;

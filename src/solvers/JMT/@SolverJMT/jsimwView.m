@@ -3,7 +3,7 @@ function jsimwView(self, options)
 % All rights reserved.
 
 if ~self.supports(self.model)
-    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver. Quitting.',mfilename);
+    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
 %    runtime = toc(T0);
 %    return
 end

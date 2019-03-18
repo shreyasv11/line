@@ -7,7 +7,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             self = self@LayeredNetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~SolverLQNS.isAvailable()
-                error('SolverLQNS requires the lqns and lqsim commands to be available on the system path. Quitting.');
+                error('SolverLQNS requires the lqns and lqsim commands to be available on the system path.');
             end
         end        
         

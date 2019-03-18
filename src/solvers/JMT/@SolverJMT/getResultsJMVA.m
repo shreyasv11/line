@@ -17,11 +17,17 @@ self.result.('solver') = self.getName();
 self.result.('model') = parsed.ATTRIBUTE;
 self.result.('metric') = {};
 self.result.('Prob') = struct();
-switch class(parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue)
-    case 'double'
-        self.result.Prob.logNormConst = parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue;
-    otherwise
-        self.result.Prob.logNormConst = NaN;
+try
+    % older JMVA versions do not have the logValue field and will throw an
+    % exception
+    switch class(parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue)
+        case 'double'
+            self.result.Prob.logNormConst = parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue;
+        otherwise
+            self.result.Prob.logNormConst = NaN;
+    end
+catch
+    self.result.Prob.logNormConst = NaN;
 end
 
 qn = self.model.getStruct;
