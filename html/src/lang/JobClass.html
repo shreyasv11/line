@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of JobClass</title>
+  <meta name="keywords" content="JobClass">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; JobClass.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>JobClass
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JobClass.html" class="code" title="">JobClass</a>	</li><li><a href="NetworkElement.html" class="code" title="">NetworkElement</a>	</li><li><a href="Node.html" class="code" title="">Node</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ClosedClass.html" class="code" title="">ClosedClass</a>	</li><li><a href="JobClass.html" class="code" title="">JobClass</a>	</li><li><a href="OpenClass.html" class="code" title="">OpenClass</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = JobClass(type, name)</a></li><li><a href="#_sub2" class="code">function self = setReferenceStation(self, source)</a></li><li><a href="#_sub3" class="code">function boolIsa = isReferenceStation(self, node)</a></li><li><a href="#_sub4" class="code">function ind = subsindex(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="JobClass.html" class="code" title="">JobClass</a> &lt; <a href="NetworkElement.html" class="code" title="">NetworkElement</a>
+0002     <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         priority;
+0007         reference; <span class="comment">% reference station</span>
+0008         index;
+0009         type;
+0010         completes; <span class="comment">% true if passage through reference station is a completion</span>
+0011     <span class="keyword">end</span>
+0012     
+0013     methods (Hidden)
+0014         <span class="comment">%Constructor</span>
+0015         <a name="_sub0" href="#_subfunctions" class="code">function self = JobClass(type, name)</a>
+0016             self@<a href="NetworkElement.html" class="code" title="">NetworkElement</a>(name);
+0017             self.priority = 0;
+0018             self.reference = <a href="Node.html" class="code" title="">Node</a>(<span class="string">''</span>);
+0019             self.index = 1;
+0020             self.type=type;
+0021             self.completes = true;
+0022         <span class="keyword">end</span>
+0023         
+0024         <a name="_sub1" href="#_subfunctions" class="code">function self = setReferenceStation(self, source)</a>
+0025             self.reference = source;
+0026         <span class="keyword">end</span>
+0027         
+0028         <a name="_sub2" href="#_subfunctions" class="code">function boolIsa = isReferenceStation(self, node)</a>
+0029             boolIsa = strcmp(self.reference.name,node.name);
+0030         <span class="keyword">end</span>
+0031         
+0032         
+0033         <span class="comment">%         function self = set.priority(self, priority)</span>
+0034         <span class="comment">%             if ~(rem(priority,1) == 0 &amp;&amp; priority &gt;= 0)</span>
+0035         <span class="comment">%                 error('Priority must be an integer.\n');</span>
+0036         <span class="comment">%             end</span>
+0037         <span class="comment">%             self.priority = priority;</span>
+0038         <span class="comment">%         end</span>
+0039     <span class="keyword">end</span>
+0040     
+0041     methods (Access=public)
+0042         <a name="_sub3" href="#_subfunctions" class="code">function ind = subsindex(self)</a>
+0043             ind = double(self.index)-1; <span class="comment">% 0 based</span>
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">end</span>
+0046     
+0047 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

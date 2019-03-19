@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_nc_marg</title>
+  <meta name="keywords" content="solver_nc_marg">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">NC</a> &gt; solver_nc_marg.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\NC&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_nc_marg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Pr,G,runtime] = solver_nc_marg(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverNC.html" class="code" title="">SolverNC</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Pr,G,runtime] = solver_nc_marg(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 M = qn.nstations;    <span class="comment">%number of stations</span>
+0006 K = qn.nclasses;    <span class="comment">%number of classes</span>
+0007 state = qn.state;
+0008 mu = qn.mu;
+0009 phi = qn.phi;
+0010 S = qn.nservers;
+0011 NK = qn.njobs';  <span class="comment">% initial population per class</span>
+0012 C = qn.nchains;
+0013 
+0014 PH=cell(M,K);
+0015 <span class="keyword">for</span> i=1:M
+0016     <span class="keyword">for</span> k=1:K
+0017         <span class="keyword">if</span> length(mu{i,k})==1
+0018             PH{i,k} = map_exponential(1/mu{i,k});
+0019         <span class="keyword">else</span>
+0020             D0 = diag(-mu{i,k})+diag(mu{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
+0021             D1 = zeros(size(D0));
+0022             D1(:,1)=(phi{i,k}.*mu{i,k});
+0023             PH{i,k} = map_normalize({D0,D1});
+0024         <span class="keyword">end</span>
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 <span class="comment">%% initialization</span>
+0028 
+0029 <span class="comment">% determine service times</span>
+0030 ST = zeros(M,K);
+0031 V = zeros(M,K);
+0032 <span class="keyword">for</span> k = 1:K
+0033     <span class="keyword">for</span> i=1:M
+0034         ST(i,k) = 1 ./ map_lambda(PH{i,k});
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 ST(isnan(ST))=0;
+0038 <span class="keyword">for</span> c=1:qn.nchains
+0039     V = V + qn.visits{c};
+0040 <span class="keyword">end</span>
+0041 
+0042 alpha = zeros(qn.nstations,qn.nclasses);
+0043 Vchain = zeros(qn.nstations,qn.nchains);
+0044 REFchain = zeros(qn.nstations,qn.nchains);
+0045 <span class="keyword">for</span> c=1:qn.nchains
+0046     inchain = find(qn.chains(c,:));
+0047     <span class="keyword">for</span> i=1:qn.nstations
+0048         Vchain(i,c) = sum(qn.visits{c}(i,inchain)) / sum(qn.visits{c}(qn.refstat(inchain(1)),inchain));
+0049         REFchain(i,c) = 1 / sum(qn.visits{c}(qn.refstat(inchain(1)),inchain));
+0050         <span class="keyword">for</span> k=inchain
+0051             alpha(i,k) = alpha(i,k) + qn.visits{c}(i,k) / sum(qn.visits{c}(i,inchain)); <span class="comment">% isn't alpha(i,j) always zero when entering here?</span>
+0052         <span class="keyword">end</span>
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 Vchain(~isfinite(Vchain))=0;
+0057 alpha(~isfinite(alpha))=0;
+0058 
+0059 Lchain = zeros(M,C);
+0060 STchain = zeros(M,C);
+0061 
+0062 Nchain = zeros(1,C);
+0063 refstatchain = zeros(C,1);
+0064 <span class="keyword">for</span> c=1:qn.nchains
+0065     inchain = find(qn.chains(c,:));
+0066     isOpenChain = any(isinf(qn.njobs(inchain)));
+0067     <span class="keyword">for</span> i=1:qn.nstations
+0068         <span class="comment">% we assume that the visits in L(i,inchain) are equal to 1</span>
+0069         STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
+0070         <span class="keyword">if</span> isOpenChain &amp;&amp; i == qn.refstat(inchain(1)) <span class="comment">% if this is a source ST = 1 / arrival rates</span>
+0071             STchain(i,c) = 1 / sumfinite(qn.rates(i,inchain)); <span class="comment">% ignore degenerate classes with zero arrival rates</span>
+0072         <span class="keyword">else</span>
+0073             STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
+0074         <span class="keyword">end</span>
+0075     <span class="keyword">end</span>
+0076     Nchain(c) = sum(NK(inchain));
+0077     refstatchain(c) = qn.refstat(inchain(1));
+0078     <span class="keyword">if</span> any((qn.refstat(inchain(1))-refstatchain(c))~=0)
+0079         error(sprintf(<span class="string">'Classes in chain %d have different reference station.'</span>,c));
+0080     <span class="keyword">end</span>
+0081 <span class="keyword">end</span>
+0082 STchain(~isfinite(STchain))=0;
+0083 Tstart = tic;
+0084 
+0085 [M,K]=size(STchain);
+0086 
+0087 Lchain = zeros(M,K);
+0088 mu = ones(M,sum(Nchain));
+0089 <span class="keyword">for</span> i=1:M
+0090     Lchain(i,:) = STchain(i,:) .* Vchain(i,:);
+0091     <span class="keyword">if</span> isinf(S(i)) <span class="comment">% infinite server</span>
+0092         mu(i,1:sum(Nchain)) = 1:sum(Nchain);
+0093     <span class="keyword">else</span>
+0094         mu(i,1:sum(Nchain)) = min(1:sum(Nchain), S(i)*ones(1,sum(Nchain)));
+0095     <span class="keyword">end</span>
+0096 <span class="keyword">end</span>
+0097 Lchain(~isfinite(Lchain))=0;
+0098 
+0099 G = pfqn_gmvald(Lchain, Nchain, mu);
+0100 <span class="keyword">for</span> ist=1:qn.nstations
+0101     ind = qn.stationToNode(ist);
+0102     isf = qn.stationToStateful(ist);
+0103     [~,nivec] = State.toMarginal(qn, ind, state{isf});
+0104     <span class="keyword">if</span> min(nivec) &lt; 0 <span class="comment">% user flags that state of i should be ignored</span>
+0105         Pr(i) = NaN;
+0106     <span class="keyword">else</span>
+0107         set_ist = setdiff(1:qn.nstations,ist);
+0108         nivec_chain = nivec * qn.chains';
+0109         
+0110 <span class="comment">%        F_i = pfqn_ca(ST(ist,:).*V(ist,:),nivec);</span>
+0111 <span class="comment">%        Vchain_i = pfqn_gmvald(REFchain(ist,:), nivec_chain, mu_chain(ist,:), options);</span>
+0112 <span class="comment">%        Gchain_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);</span>
+0113 <span class="comment">%        Pr(ist) = F_i * Vchain_i * Gchain_minus_i / G ;</span>
+0114         
+0115 <span class="comment">%        F_i = pfqn_gmvald(Lchain(ist,:), nivec_chain, mu_chain(ist,:), options);</span>
+0116 <span class="comment">%        G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);</span>
+0117 <span class="comment">%        g0_i = pfqn_gmvald(ST(ist,:).*alpha(ist,:),nivec, mu_chain(ist,:), options);</span>
+0118 <span class="comment">%        G0_i = pfqn_gmvald(STchain(ist,:),nivec_chain, mu_chain(ist,:), options);</span>
+0119 <span class="comment">%        Pr(ist) = F_i * G_minus_i / G * (g0_i / G0_i);</span>
+0120         
+0121 <span class="comment">%        G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);</span>
+0122 <span class="comment">%        F_i = prod(Vchain(ist,:).^nivec_chain);</span>
+0123 <span class="comment">%        H_i = pfqn_gmvald(ST(ist,:).*alpha(ist,:),nivec, mu_chain(ist,:), options);</span>
+0124 <span class="comment">%        Pr(ist) =  G_minus_i / G * H_i * F_i;</span>
+0125         
+0126         G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu(set_ist,:), options);
+0127         F_i = pfqn_gmvald(ST(ist,:).*V(ist,:), nivec, mu(ist,:), options);
+0128         Pr(ist) =  F_i * G_minus_i / G;
+0129     <span class="keyword">end</span>
+0130 <span class="keyword">end</span>
+0131 runtime = toc(Tstart);
+0132 Pr(isnan(Pr))=0;
+0133 lG = log(G);
+0134 <span class="keyword">if</span> options.verbose &gt; 0
+0135     fprintf(1,<span class="string">'Normalizing constant (NC) analysis completed in %f sec\n'</span>,runtime);
+0136 <span class="keyword">end</span>
+0137 <span class="keyword">return</span>
+0138 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

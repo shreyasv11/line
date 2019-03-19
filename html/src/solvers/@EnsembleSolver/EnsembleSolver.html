@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of EnsembleSolver</title>
+  <meta name="keywords" content="EnsembleSolver">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">@EnsembleSolver</a> &gt; EnsembleSolver.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\@EnsembleSolver&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>EnsembleSolver
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="EnsembleSolver.html" class="code" title="">EnsembleSolver</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="EnsembleSolver.html" class="code" title="">EnsembleSolver</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = EnsembleSolver(model, name, options)</a></li><li><a href="#_sub2" class="code">function bool = supports(self, model)</a></li><li><a href="#_sub3" class="code">function [QN,UN,RT,TT] = getAvg(self)</a></li><li><a href="#_sub4" class="code">function init(self)</a></li><li><a href="#_sub5" class="code">function pre(self, it)</a></li><li><a href="#_sub6" class="code">function [results, runtime] = analyze(self, e)</a></li><li><a href="#_sub7" class="code">function post(self, it)</a></li><li><a href="#_sub8" class="code">function finish(self)</a></li><li><a href="#_sub9" class="code">function bool = converged(self, it)</a></li><li><a href="#_sub10" class="code">function submodels = list(self, it)</a></li><li><a href="#_sub11" class="code">function it = getIteration(self)</a></li><li><a href="#_sub12" class="code">function solver = getSolver(self, e)</a></li><li><a href="#_sub13" class="code">function solver = setSolver(self, solver, e)</a></li><li><a href="#_sub14" class="code">function E = getNumberOfModels(self)</a></li><li><a href="#_sub15" class="code">function [runtime, sruntime, results] = run(self)</a></li><li><a href="#_sub16" class="code">function options = defaultOptions()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="EnsembleSolver.html" class="code" title="">EnsembleSolver</a> &lt; Solver
+0002     <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         ensemble;
+0007         solvers;
+0008         results;
+0009     <span class="keyword">end</span>
+0010     
+0011     methods (Hidden)
+0012         <a name="_sub0" href="#_subfunctions" class="code">function self = EnsembleSolver(model, name, options)</a>
+0013             self = self@Solver(model, name);
+0014             <span class="keyword">if</span> exist(<span class="string">'options'</span>,<span class="string">'var'</span>)
+0015                 self.setOptions(options);
+0016             <span class="keyword">else</span>
+0017                 self.setOptions(EnsembleSolver.defaultOptions);
+0018             <span class="keyword">end</span>
+0019             self.ensemble = model.getEnsemble;
+0020             self.solvers = {};
+0021         <span class="keyword">end</span>
+0022     <span class="keyword">end</span>
+0023     
+0024     methods <span class="comment">%(Abstract) % implemented with errors for Octave compatibility</span>
+0025         <a name="_sub1" href="#_subfunctions" class="code">function bool = supports(self, model) </a><span class="comment">% true if model is supported by the solver</span>
+0026             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0027         <span class="keyword">end</span>
+0028         <a name="_sub2" href="#_subfunctions" class="code">function [QN,UN,RT,TT] = getAvg(self)</a>
+0029             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0030         <span class="keyword">end</span>        
+0031         <a name="_sub3" href="#_subfunctions" class="code">function init(self) </a><span class="comment">% operations before starting to iterate</span>
+0032             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0033         <span class="keyword">end</span>
+0034         <a name="_sub4" href="#_subfunctions" class="code">function pre(self, it) </a><span class="comment">% operations before an iteration</span>
+0035             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0036         <span class="keyword">end</span>
+0037         <a name="_sub5" href="#_subfunctions" class="code">function [results, runtime] = analyze(self, e) </a><span class="comment">% operations within an iteration</span>
+0038             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0039         <span class="keyword">end</span>
+0040         <a name="_sub6" href="#_subfunctions" class="code">function post(self, it) </a><span class="comment">% operations after an iteration</span>
+0041             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0042         <span class="keyword">end</span>
+0043         <a name="_sub7" href="#_subfunctions" class="code">function finish(self) </a><span class="comment">% operations after interations are completed</span>
+0044             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0045         <span class="keyword">end</span>
+0046         <a name="_sub8" href="#_subfunctions" class="code">function bool = converged(self, it) </a><span class="comment">% convergence test at iteration it</span>
+0047             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0048         <span class="keyword">end</span>
+0049     <span class="keyword">end</span>
+0050     
+0051     methods <span class="comment">% default implementations</span>
+0052         <a name="_sub9" href="#_subfunctions" class="code">function submodels = list(self, it) </a><span class="comment">% submodels to be considered at iteration it</span>
+0053             submodels = 1:self.getNumberOfModels;
+0054         <span class="keyword">end</span>
+0055         
+0056         <a name="_sub10" href="#_subfunctions" class="code">function it = getIteration(self)</a>
+0057             it = size(results,1);
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">end</span>
+0060     
+0061     methods
+0062         <a name="_sub11" href="#_subfunctions" class="code">function solver = getSolver(self, e) </a><span class="comment">% solver for ensemble model e</span>
+0063             solver = self.solvers{e};
+0064         <span class="keyword">end</span>
+0065         
+0066         <span class="comment">% setSolver(solvers) : solver cell array is stored as such</span>
+0067         <span class="comment">% setSolver(solver) : solver is assigned to all stages</span>
+0068         <span class="comment">% setSolver(solver, e) : solver is assigned to stage e</span>
+0069         <a name="_sub12" href="#_subfunctions" class="code">function solver = setSolver(self, solver, e)</a>
+0070             <span class="keyword">if</span> iscell(solver)
+0071                 self.solvers = solver;
+0072             <span class="keyword">else</span>
+0073                 <span class="keyword">if</span> ~exist(<span class="string">'e'</span>,<span class="string">'var'</span>)
+0074                     <span class="keyword">for</span> e=1:self.getNumberOfModels
+0075                         self.solvers{e} = solver;
+0076                     <span class="keyword">end</span>
+0077                 <span class="keyword">else</span>
+0078                     self.solvers{e} = solver;
+0079                 <span class="keyword">end</span>
+0080             <span class="keyword">end</span>
+0081         <span class="keyword">end</span>
+0082         
+0083         <a name="_sub13" href="#_subfunctions" class="code">function E = getNumberOfModels(self)</a>
+0084             E = length(self.ensemble);
+0085         <span class="keyword">end</span>
+0086         
+0087         <a name="_sub14" href="#_subfunctions" class="code">function [runtime, sruntime, results] = run(self)</a>
+0088             T0 = tic;
+0089             it = 0;
+0090             options = self.options;
+0091             E = self.getNumberOfModels();
+0092             results = cell(1,E);
+0093             sruntime = zeros(1,E); <span class="comment">% solver runtimes</span>
+0094             self.init();
+0095             <span class="keyword">switch</span> options.method
+0096                 <span class="keyword">case</span> {<span class="string">'default'</span>,<span class="string">'serial'</span>}
+0097                     <span class="keyword">while</span> ~self.converged(it) &amp; it &lt; options.iter_max
+0098                         it = it + 1;
+0099                         self.pre(it);
+0100                         sruntime(it,1:E) = 0;
+0101                         <span class="keyword">for</span> e = self.list(it)
+0102                             [self.results{it,e}, solverTime] = self.analyze(it,e);
+0103                             sruntime(it,e) = sruntime(it,e) + solverTime;
+0104                         <span class="keyword">end</span>
+0105                         self.post(it);
+0106                     <span class="keyword">end</span>
+0107                 <span class="keyword">case</span> {<span class="string">'para'</span>}
+0108                     <span class="comment">%                     while ~self.converged(it) &amp; it &lt; options.iter_max</span>
+0109                     <span class="comment">%                         it = it + 1;</span>
+0110                     <span class="comment">%                         self.pre(it);</span>
+0111                     <span class="comment">%                         sruntime(it,1:E) = 0;</span>
+0112                     <span class="comment">%                         parfor e = self.list(it)</span>
+0113                     <span class="comment">%                             [results{it,e}, solverTime] = self.run(it,e);</span>
+0114                     <span class="comment">%                             sruntime(it,1+e) = sruntime(it,1+e) + solverTime;</span>
+0115                     <span class="comment">%                         end</span>
+0116                     <span class="comment">%                         for e=1:E % cannot be put within parfor</span>
+0117                     <span class="comment">%                             self.results{it,e} = results{it,e};</span>
+0118                     <span class="comment">%                         end</span>
+0119                     <span class="comment">%                         self.post(it);</span>
+0120                     <span class="comment">%                     end</span>
+0121             <span class="keyword">end</span>
+0122             self.finish();
+0123             runtime = toc(T0);
+0124         <span class="keyword">end</span>
+0125         
+0126     <span class="keyword">end</span>
+0127     
+0128     methods (Static)
+0129         <span class="comment">% ensemble solver options</span>
+0130         <a name="_sub15" href="#_subfunctions" class="code">function options = defaultOptions()</a>
+0131             options = Solver.defaultOptions;
+0132             options.method = <span class="string">'default'</span>;
+0133             options.init_sol = [];
+0134             options.iter_max = 100;
+0135             options.iter_tol = 1e-4;
+0136             options.tol = 1e-4;
+0137             options.verbose = 0;
+0138         <span class="keyword">end</span>
+0139     <span class="keyword">end</span>
+0140 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

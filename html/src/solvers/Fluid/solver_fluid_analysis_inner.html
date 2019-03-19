@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_fluid_analysis_inner</title>
+  <meta name="keywords" content="solver_fluid_analysis_inner">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">Fluid</a> &gt; solver_fluid_analysis_inner.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\Fluid&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_fluid_analysis_inner
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ymean_t, t,iters,runtime] = solver_fluid_analysis_inner(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_fluid.html" class="code" title="function [QN,ymean,QNt,UNt,ymean_t,t,iters,runtime] = solver_fluid(qn, options)">solver_fluid</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_fluid_analysis.html" class="code" title="function [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSolution] = solver_fluid_analysis(qn, options)">solver_fluid_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ymean_t, t,iters,runtime] = solver_fluid_analysis_inner(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 chains = qn.chains;
+0005 
+0006 <span class="comment">% inner iteration of fluid analysis</span>
+0007 
+0008 [Q,ymean,Qfull_t,Ufull_t,ymean_t,t,iters,runtime] = <a href="solver_fluid.html" class="code" title="function [QN,ymean,QNt,UNt,ymean_t,t,iters,runtime] = solver_fluid(qn, options)">solver_fluid</a>(qn, options);
+0009 
+0010 <span class="comment">%% assumes the existence of a delay node through which all classes pass</span>
+0011 delayNodes = zeros(1,qn.nstations);
+0012 delayrefstat = zeros(1,qn.nstations); <span class="comment">% delay nodes that are also reference nodes</span>
+0013 <span class="keyword">for</span> i = 1:qn.nstations
+0014     <span class="keyword">if</span> strcmp(qn.sched{i},SchedStrategy.INF)
+0015         delayNodes(i) = 1;
+0016     <span class="keyword">end</span>
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">for</span> k = 1:qn.nclasses
+0019     <span class="keyword">if</span> qn.refstat(k) &gt; 0 <span class="comment">% artificial classes do not need to have a reference node</span>
+0020         delayrefstat(qn.refstat(k)) = 1;
+0021     <span class="keyword">end</span>
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="comment">%% simpler version: no chain analysis</span>
+0025 M = qn.nstations;
+0026 K = qn.nclasses;
+0027 refstat = qn.refstat;
+0028 Lambda = qn.mu;
+0029 Pi = qn.phi;
+0030 phases = qn.phases;
+0031 
+0032 <span class="comment">%Qlength for all stations, classes,</span>
+0033 Qfull = ymean{end};
+0034 
+0035 <span class="comment">%% Tput for all classes in each station</span>
+0036 Rlittle = zeros(qn.nstations,qn.nclasses); <span class="comment">% throughput of every class at each station</span>
+0037 Tfull = zeros(qn.nstations,qn.nclasses); <span class="comment">% throughput of every class at each station</span>
+0038 Tfull_t = cell(size(Tfull));
+0039 <span class="keyword">for</span> i=1:size(Tfull_t,1)
+0040     <span class="keyword">for</span> j=1:size(Tfull_t,2)
+0041         Tfull_t{i,j} = 0;
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044 Xservice = cell(M,K); <span class="comment">%throughput per class, station and phase</span>
+0045 <span class="keyword">for</span> i = 1:qn.nstations
+0046     <span class="keyword">if</span> delayNodes(i) == 1
+0047         <span class="keyword">for</span> k = 1:qn.nclasses
+0048             idx = sum(sum(phases(1:i-1,:))) + sum( phases(i,1:k-1) );
+0049             Xservice{i,k} = zeros(phases(i,k),1);
+0050             <span class="keyword">for</span> f = 1:phases(i,k)
+0051                 Tfull(i,k) = Tfull(i,k) + Qfull(idx+f)*Lambda{i,k}(f)*Pi{i,k}(f);
+0052                 Tfull_t{i,k} = Tfull_t{i,k} + Qfull_t{idx+f}*Lambda{i,k}(f)*Pi{i,k}(f);
+0053                 Xservice{i,k}(f) = Qfull(idx+f)*Lambda{i,k}(f);
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">else</span>
+0057         xi = sum(Q(i,:)); <span class="comment">%number of jobs in the station</span>
+0058         xi_t = Qfull_t{i,1};
+0059         <span class="keyword">for</span> r=2:size(Qfull_t,2)
+0060             xi_t = xi_t + Qfull_t{i,r};
+0061         <span class="keyword">end</span>
+0062         <span class="keyword">if</span> xi&gt;0
+0063             <span class="keyword">for</span> k = 1:qn.nclasses
+0064                 idx = sum(sum(phases(1:i-1,:))) + sum( phases(i,1:k-1) );
+0065                 Xservice{i,k} = zeros(phases(i,k),1);
+0066                 <span class="keyword">for</span> f = 1:phases(i,k)
+0067                     <span class="keyword">switch</span> qn.sched{i}
+0068                         <span class="keyword">case</span> SchedStrategy.EXT
+0069                             <span class="keyword">if</span> f==1
+0070                                 Tfull(i,k) = Tfull(i,k) + (1-sum(Qfull(idx+(2:phases(i,k)))))*Lambda{i,k}(f)*Pi{i,k}(f);                               
+0071                                 Tfull_t{i,k} = Tfull_t{i,k} + (1-sum(ymean_t(:,idx+(2:phases(i,k))),2))*Lambda{i,k}(f)*Pi{i,k}(f);
+0072                                 Xservice{i,k}(f) = (1-sum(Qfull(idx+(2:phases(i,k)))))*Lambda{i,k}(f);
+0073                             <span class="keyword">else</span>
+0074                                 Tfull(i,k) = Tfull(i,k) + Qfull(idx+f)*Lambda{i,k}(f)*Pi{i,k}(f);
+0075                                 Tfull_t{i,k} = Tfull_t{i,k} + ymean_t(:,idx+f)*Lambda{i,k}(f)*Pi{i,k}(f);
+0076                                 Xservice{i,k}(f) = Qfull(idx+f)*Lambda{i,k}(f);
+0077                             <span class="keyword">end</span>
+0078                         <span class="keyword">case</span> {SchedStrategy.PS, SchedStrategy.FCFS, SchedStrategy.DPS}
+0079                             Tfull(i,k) = Tfull(i,k) + Qfull(idx+f)*Lambda{i,k}(f)*Pi{i,k}(f)/xi*min(xi,qn.nservers(i));
+0080                             Tfull_t{i,k} = Tfull_t{i,k} + ymean_t(:,idx+f)*Lambda{i,k}(f)*Pi{i,k}(f)./xi_t.*min(xi_t,qn.nservers(i));
+0081                             Xservice{i,k}(f) = Qfull(idx+f)*Lambda{i,k}(f)/xi*min(xi,qn.nservers(i));
+0082                         <span class="keyword">otherwise</span>
+0083                             error(<span class="string">'Unsupported scheduling policy'</span>);
+0084                     <span class="keyword">end</span>
+0085                 <span class="keyword">end</span>
+0086             <span class="keyword">end</span>
+0087         <span class="keyword">end</span>
+0088     <span class="keyword">end</span>
+0089 <span class="keyword">end</span>
+0090 <span class="keyword">for</span> i=1:size(Tfull_t,1)
+0091     <span class="keyword">for</span> j=1:size(Tfull_t,2)
+0092         <span class="keyword">if</span> numel(Tfull_t{i,j}) == 1
+0093             Tfull_t{i,j} = Tfull_t{i,j} * ones(size(ymean_t(:,1),1),1);
+0094         <span class="keyword">end</span>
+0095     <span class="keyword">end</span>
+0096 <span class="keyword">end</span>
+0097 <span class="comment">%% response times</span>
+0098 origK = size(chains,1);
+0099 <span class="comment">% This is approximate, Little's law does not hold in transient</span>
+0100 R = zeros(qn.nstations, qn.nclasses);
+0101 <span class="keyword">for</span> i = 1:qn.nstations
+0102     R(i, Tfull(i,:)&gt;0) = Q(i,Tfull(i,:)&gt;0) ./ Tfull(i,Tfull(i,:)&gt;0);
+0103 <span class="keyword">end</span>
+0104 <span class="comment">%R = Rlittle;</span>
+0105 <span class="comment">%Tfull = Tlittle;</span>
+0106 newR = zeros(qn.nstations,origK);
+0107 X = zeros(1,origK);
+0108 newQ = zeros(qn.nstations,origK);
+0109 <span class="comment">% determine eventual probability of visiting each station in each class (expected number of visits)</span>
+0110 <span class="comment">% weight response time of each original class with the expented number of</span>
+0111 <span class="comment">% visits to each station in each associated artificial class</span>
+0112 idxNR = reshape(1:qn.nstations*qn.nclasses, qn.nclasses, qn.nstations); <span class="comment">%indices of non-delay (non-reference) nodes</span>
+0113 idxNR = reshape(idxNR(:,delayrefstat==0),1,[]);
+0114 rtTrans = qn.rt(idxNR,idxNR); <span class="comment">%transient transition matrix for non-reference nodes</span>
+0115 eventualVisit = inv( eye(size(rtTrans)) - rtTrans );
+0116 idxOrigClasses = zeros(origK,1);
+0117 
+0118 <span class="keyword">for</span> k = 1:origK
+0119     idxOrigClasses(k) = find(chains(k,:),1);
+0120     refNode = refstat(idxOrigClasses(k));
+0121     
+0122     eventualVisitProb = reshape( qn.rt((refNode-1)*qn.nclasses+k,idxNR)*eventualVisit, qn.nclasses , qn.nstations-sum(delayrefstat&gt;0) )'; <span class="comment">%#ok&lt;MINV&gt; %probability of eventual visit</span>
+0123     eventualVisitProb = eventualVisitProb(:,chains(k,:)==1);
+0124     
+0125     newR(refNode,k) = sum( R(refNode,chains(k,:)==1),2 );
+0126     newR(delayrefstat==0,k) = sum( R(delayrefstat==0,chains(k,:)==1).*eventualVisitProb,  2 );
+0127     newR(refNode,chains(k,:)==1) = R(refNode,chains(k,:)==1);
+0128     newR(delayrefstat==0,chains(k,:)==1) = R(delayrefstat==0,chains(k,:)==1).*eventualVisitProb;
+0129     
+0130     <span class="comment">%X(k,find(chains(k,:)))= sum(Tfull(refNode,find(chains(k,:))));</span>
+0131     X(1,k) = sum( Tfull(refNode,chains(k,:)==1) );
+0132     newQ(:,k) = sum( Q(:,chains(k,:)==1),2 );
+0133 <span class="keyword">end</span>
+0134 Qfull = Q;
+0135 Rfull = R;
+0136 
+0137 <span class="comment">%% Utilization</span>
+0138 Ufull = zeros(M,K);
+0139 <span class="keyword">for</span> i =1:M
+0140     <span class="keyword">for</span> k = 1:K
+0141         idx = Xservice{i,k}&gt;0;
+0142         Ufull(i,k) = sum(Xservice{i,k}(idx)./ Lambda{i,k}(idx));
+0143     <span class="keyword">end</span>
+0144 <span class="keyword">end</span>
+0145 Ufull(delayNodes==0,:) = Ufull(delayNodes==0,:)./repmat(qn.nservers(delayNodes==0),1,K);
+0146 
+0147 <span class="comment">% for i = 1:qn.nstations</span>
+0148 <span class="comment">%     for k=1:qn.nclasses</span>
+0149 <span class="comment">%         c = find(qn.chains(:,k));</span>
+0150 <span class="comment">%         if delayNodes(i) == 1</span>
+0151 <span class="comment">%             Rlittle(i,k) = qn.visits{c}(i,k)*(1/qn.rates(i,k));</span>
+0152 <span class="comment">%         else</span>
+0153 <span class="comment">%             Rlittle(i,k) = qn.visits{c}(i,k)*(1/qn.rates(i,k))*sum(Qfull(i,:));</span>
+0154 <span class="comment">%         end</span>
+0155 <span class="comment">%     end</span>
+0156 <span class="comment">% end</span>
+0157 <span class="comment">% Rlittle(isnan(Rlittle)) = 0;</span>
+0158 <span class="comment">% Tlittle = Qfull ./ Rlittle; Tlittle(isnan(Tlittle)) = 0;</span>
+0159 <span class="comment">% Tfull = Tlittle;</span>
+0160 <span class="comment">% Rfull = Rlittle;</span>
+0161 
+0162 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

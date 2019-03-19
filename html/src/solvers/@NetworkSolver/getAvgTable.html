@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getAvgTable</title>
+  <meta name="keywords" content="getAvgTable">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">@NetworkSolver</a> &gt; getAvgTable.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\@NetworkSolver&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getAvgTable
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="NetworkSolver.html" class="code" title="">NetworkSolver</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 <span class="keyword">if</span> ~exist(<span class="string">'keepDisabled'</span>,<span class="string">'var'</span>)
+0005     keepDisabled = false;
+0006 <span class="keyword">end</span>
+0007 
+0008 M = self.model.getNumberOfStations();
+0009 K = self.model.getNumberOfClasses();
+0010 <span class="keyword">if</span> nargin == 1
+0011     [Q,U,R,T] = self.model.getAvgHandles();
+0012 <span class="keyword">end</span>
+0013 [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
+0014 <span class="keyword">if</span> isempty(QN)
+0015     AvgTable = Table();
+0016     QT = Table();
+0017     UT = Table();
+0018     RT = Table();
+0019     TT = Table();
+0020 <span class="keyword">elseif</span> ~keepDisabled
+0021     Qval = []; Uval = [];
+0022     Rval = []; Tval = [];
+0023     Class = {};
+0024     Station = {};
+0025     <span class="keyword">for</span> i=1:M
+0026         <span class="keyword">for</span> k=1:K
+0027             <span class="keyword">if</span> any(sum([QN(i,k),UN(i,k),RN(i,k),TN(i,k)])&gt;0)
+0028                 Class{end+1,1} = Q{i,k}.class.name;
+0029                 Station{end+1,1} = Q{i,k}.station.name;
+0030                 Qval(end+1) = QN(i,k);
+0031                 Uval(end+1) = UN(i,k);
+0032                 Rval(end+1) = RN(i,k);
+0033                 Tval(end+1) = TN(i,k);
+0034             <span class="keyword">end</span>
+0035         <span class="keyword">end</span>
+0036     <span class="keyword">end</span>
+0037     QLen = Qval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0038     QT = Table(Station,Class,QLen);
+0039     Util = Uval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0040     UT = Table(Station,Class,Util);
+0041     RespT = Rval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0042     RT = Table(Station,Class,RespT);
+0043     Tput = Tval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0044     TT = Table(Station,Class,Tput);
+0045     AvgTable = Table(Station,Class,QLen,Util,RespT,Tput);
+0046 <span class="keyword">else</span>
+0047     Qval = zeros(M,K); Uval = zeros(M,K);
+0048     Rval = zeros(M,K); Tval = zeros(M,K);
+0049     Class = cell(K*M,1);
+0050     Station = cell(K*M,1);
+0051     <span class="keyword">for</span> i=1:M
+0052         <span class="keyword">for</span> k=1:K
+0053             Class{(i-1)*K+k} = Q{i,k}.class.name;
+0054             Station{(i-1)*K+k} = Q{i,k}.station.name;
+0055             Qval((i-1)*K+k) = QN(i,k);
+0056             Uval((i-1)*K+k) = UN(i,k);
+0057             Rval((i-1)*K+k) = RN(i,k);
+0058             Tval((i-1)*K+k) = TN(i,k);
+0059         <span class="keyword">end</span>
+0060     <span class="keyword">end</span>
+0061     QLen = Qval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0062     QT = Table(Station,Class,QLen);
+0063     Util = Uval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0064     UT = Table(Station,Class,Util);
+0065     RespT = Rval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0066     RT = Table(Station,Class,RespT);
+0067     Tput = Tval(:); <span class="comment">% we need to save first in a variable named like the column</span>
+0068     TT = Table(Station,Class,Tput);
+0069     AvgTable = Table(Station,Class,QLen,Util,RespT,Tput);
+0070 <span class="keyword">end</span>
+0071 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

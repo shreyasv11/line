@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spaceGenerator</title>
+  <meta name="keywords" content="spaceGenerator">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">+State</a> &gt; spaceGenerator.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\+State&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>spaceGenerator
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [SS,SSh,qn] = spaceGenerator(qn, cutoff) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [SS,SSh,qn] = spaceGenerator(qn, cutoff)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="comment">% State space generator</span>
+0006 <span class="comment">% SS: state space</span>
+0007 <span class="comment">% SSh: hashed state space</span>
+0008 <span class="comment">% qn: updated qn</span>
+0009 N = qn.njobs';
+0010 Np = N;
+0011 
+0012 <span class="keyword">if</span> ~exist(<span class="string">'cutoff'</span>,<span class="string">'var'</span>) &amp; any(isinf(Np)) <span class="comment">% if has open classes</span>
+0013     error(<span class="string">'Unspecified cutoff for open classes in state space generator.'</span>);
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="keyword">if</span> prod(size(cutoff))==1
+0017     cutoff = cutoff * ones(qn.nstations, qn.nclasses);
+0018 <span class="keyword">end</span>
+0019 
+0020 capacityc = zeros(qn.nnodes, qn.nclasses);
+0021 <span class="keyword">for</span> ind=1:qn.nnodes
+0022     <span class="keyword">if</span> qn.isstation(ind) <span class="comment">% place jobs across stations</span>
+0023         ist = qn.nodeToStation(ind);
+0024         isf = qn.nodeToStateful(ind);
+0025         <span class="keyword">for</span> r=1:qn.nclasses <span class="comment">%cut-off open classes to finite capacity</span>
+0026             c = find(qn.chains(:,r));
+0027             <span class="keyword">if</span> ~isempty(qn.visits{c}) &amp;&amp; qn.visits{c}(ist,r) == 0
+0028                 capacityc(ind,r) = 0;
+0029             <span class="keyword">elseif</span> any(isnan(qn.mu{ist,r})) <span class="comment">% disabled</span>
+0030                 capacityc(ind,r) = 0;
+0031             <span class="keyword">else</span>
+0032                 <span class="keyword">if</span> isinf(N(r))
+0033                     capacityc(ind,r) =  min(cutoff(ist,r), qn.classcap(ist,r));
+0034                 <span class="keyword">else</span>
+0035                     capacityc(ind,r) =  sum(qn.njobs(qn.chains(c,:)));
+0036                 <span class="keyword">end</span>
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">end</span>
+0039         qn.space{isf} = State.fromMarginalBounds(qn, ind, [], capacityc(ind,:), qn.cap(ist));
+0040         <span class="keyword">if</span> isinf(qn.nservers(ist))
+0041             qn.nservers(ist) = sum(capacityc(ind,:));
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">elseif</span> qn.isstateful(ind) <span class="comment">% generate state space of other stateful nodes that are not stations</span>
+0044         isf = qn.nodeToStateful(ind);
+0045         ist = qn.nodeToStation(ind);
+0046         <span class="keyword">switch</span> qn.nodetype(ind)
+0047             <span class="keyword">case</span> NodeType.Cache
+0048                 <span class="keyword">for</span> r=1:qn.nclasses <span class="comment">% restrict state space generation for immediate events</span>
+0049                     <span class="keyword">if</span> isnan(qn.varsparam{ind}.pref{r})
+0050                         capacityc(ind,r) =  1; <span class="comment">%</span>
+0051                     <span class="keyword">else</span>
+0052                         capacityc(ind,r) =  1; <span class="comment">%</span>
+0053                     <span class="keyword">end</span>
+0054                 <span class="keyword">end</span>
+0055             <span class="keyword">otherwise</span>
+0056                 capacityc(ind,:) =  1; <span class="comment">%</span>
+0057         <span class="keyword">end</span>
+0058         state_var = State.spaceLocalVars(qn, ind);
+0059         state_bufsrv = State.fromMarginalBounds(qn, ind, [], capacityc(ind,:), 1);
+0060         qn.space{isf} = State.decorate(state_bufsrv,state_var); <span class="comment">% generate all possible states for local variables</span>
+0061     <span class="keyword">end</span>
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">%%</span>
+0065 isOpenClass = isinf(Np);
+0066 isClosedClass = ~isOpenClass;
+0067 <span class="keyword">for</span> r=1:qn.nclasses <span class="comment">%cut-off open classes to finite capacity</span>
+0068     <span class="keyword">if</span> isOpenClass(r)
+0069         Np(r) = max(capacityc(:,r)); <span class="comment">% if replaced by sum stateMarg_i can exceed capacity</span>
+0070     <span class="keyword">end</span>
+0071 <span class="keyword">end</span>
+0072 
+0073 nstatefulp = qn.nstateful - sum(qn.nodetype == NodeType.Source); <span class="comment">% M without sources</span>
+0074 n = pprod(Np);
+0075 chainStationPos=[];
+0076 <span class="comment">%J = zeros(1,Mns*R);</span>
+0077 <span class="comment">%n = pprod(n,Np);</span>
+0078 <span class="keyword">while</span> n&gt;=0
+0079     <span class="comment">% this is rather inefficient since n ignores chains and thus it can</span>
+0080     <span class="comment">% generated state spaces such as</span>
+0081     <span class="comment">%   J =</span>
+0082     <span class="comment">%</span>
+0083     <span class="comment">%      0     0     0     0</span>
+0084     <span class="comment">%      0     0     0     1</span>
+0085     <span class="comment">%      0     0     1     0</span>
+0086     <span class="comment">%      0     1     0     0</span>
+0087     <span class="comment">%      1     0     0     0</span>
+0088     <span class="comment">%      0     0     0     1</span>
+0089     <span class="comment">%      0     0     1     0</span>
+0090     <span class="comment">%      0     1     0     0</span>
+0091     <span class="comment">%      1     0     0     0</span>
+0092     <span class="comment">%      0     0     0     2</span>
+0093     <span class="comment">%      0     0     1     1</span>
+0094     <span class="comment">%      0     0     2     0</span>
+0095     <span class="comment">%      0     1     0     1</span>
+0096     <span class="comment">%      1     0     0     1</span>
+0097     <span class="comment">%      0     1     1     0</span>
+0098     <span class="comment">%      1     0     1     0</span>
+0099     <span class="comment">%      0     2     0     0</span>
+0100     <span class="comment">%      1     1     0     0</span>
+0101     <span class="comment">%      2     0     0     0</span>
+0102     <span class="comment">% that are then in the need for a call to unique</span>
+0103     <span class="keyword">if</span> all(isOpenClass) | (Np(isClosedClass) == n(isClosedClass))
+0104         chainStationPos = [chainStationPos; State.spaceClosedMultiCS(nstatefulp,n,qn.chains)];
+0105     <span class="keyword">end</span>
+0106     n = pprod(n,Np);
+0107 <span class="keyword">end</span>
+0108 chainStationPos = unique(chainStationPos,<span class="string">'rows'</span>);
+0109 
+0110 netstates = cell(size(chainStationPos,1), qn.nstateful);
+0111 <span class="keyword">for</span> j=1:size(chainStationPos,1)
+0112     <span class="keyword">for</span> ind=1:qn.nnodes
+0113         <span class="keyword">if</span> qn.nodetype(ind) == NodeType.Source
+0114             isf = qn.nodeToStateful(ind);
+0115             state_i = State.fromMarginal(qn,ind,[]);
+0116             netstates{j,isf} = State.getHash(qn,ind,state_i);
+0117         <span class="keyword">elseif</span> qn.isstation(ind)
+0118             isf = qn.nodeToStateful(ind);
+0119             stateMarg_i = chainStationPos(j,(isf-sum(qn.nodetype(1:ind-1) == NodeType.Source)):nstatefulp:end);
+0120             <span class="keyword">if</span> any(stateMarg_i &gt; capacityc(ind,:))
+0121                 netstates{j,isf} = State.getHash(qn,ind,[]);
+0122             <span class="keyword">else</span>
+0123                 state_i = State.fromMarginal(qn,ind,stateMarg_i);
+0124                 netstates{j,isf} = State.getHash(qn,ind,state_i);
+0125             <span class="keyword">end</span>
+0126         <span class="keyword">elseif</span> qn.isstateful(ind)
+0127             isf = qn.nodeToStateful(ind);
+0128             stateMarg_i = chainStationPos(j,(isf-sum(qn.nodetype(1:ind-1) == NodeType.Source)):nstatefulp:end);
+0129             state_i = qn.space{isf};
+0130             <span class="keyword">if</span> any(stateMarg_i &gt; capacityc(ind,:))
+0131                 netstates{j,isf} = State.getHash(qn,ind,[]);
+0132             <span class="keyword">else</span>
+0133                 state_i = state_i(findrows(state_i(:,1:length(stateMarg_i)),stateMarg_i),:);
+0134                 netstates{j,isf} = State.getHash(qn,ind,state_i);
+0135             <span class="keyword">end</span>
+0136         <span class="keyword">end</span>
+0137     <span class="keyword">end</span>
+0138 <span class="keyword">end</span>
+0139 
+0140 ctr = 0;
+0141 <span class="comment">%SS = sparse([]);</span>
+0142 SS = [];
+0143 SSh = [];
+0144 <span class="keyword">for</span> j=1:size(chainStationPos,1)
+0145     <span class="comment">% for each network state</span>
+0146     v = {netstates{j,:}};
+0147     <span class="comment">% cycle over lattice</span>
+0148     vN = cellfun(@length,v)-1;
+0149     n = pprod(vN);
+0150     <span class="keyword">while</span> n &gt;=0
+0151         u={}; h={};
+0152         skip = false;
+0153         <span class="keyword">for</span> isf=1:length(n)
+0154             h{isf} = v{isf}(1+n(isf));
+0155             <span class="keyword">if</span> h{isf} &lt; 0
+0156                 skip = true;
+0157                 <span class="keyword">break</span>
+0158             <span class="keyword">end</span>
+0159             u{isf} = qn.space{isf}(v{isf}(1+n(isf)),:);
+0160         <span class="keyword">end</span>
+0161         <span class="keyword">if</span> skip == false
+0162             ctr = ctr + 1; <span class="comment">% do not move</span>
+0163             SS(ctr,:)=cell2mat(u);
+0164             SSh(ctr,:)=cell2mat(h);
+0165         <span class="keyword">end</span>
+0166         n = pprod(n,vN);
+0167     <span class="keyword">end</span>
+0168 <span class="keyword">end</span>
+0169 [SS,IA] = unique(SS,<span class="string">'rows'</span>);
+0170 SSh = SSh(IA,:);
+0171 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

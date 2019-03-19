@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fromMarginal</title>
+  <meta name="keywords" content="fromMarginal">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">+State</a> &gt; fromMarginal.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\+State&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>fromMarginal
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function space = fromMarginal(qn, ind, n, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function space = fromMarginal(qn, ind, n, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">if</span> ~exist(<span class="string">'options'</span>,<span class="string">'var'</span>)
+0006     options.force = false;
+0007 <span class="keyword">end</span>
+0008 <span class="keyword">if</span> isa(qn,<span class="string">'Network'</span>)
+0009     qn=qn.getStruct();
+0010 <span class="keyword">end</span>
+0011 <span class="comment">% generate states such that the marginal queue-lengths are as in vector n</span>
+0012 <span class="comment">%  n(r): number of jobs at the station in class r</span>
+0013 R = qn.nclasses;
+0014 S = qn.nservers;
+0015 state = [];
+0016 space = [];
+0017 
+0018 <span class="comment">% ind: node index</span>
+0019 ist = qn.nodeToStation(ind);
+0020 isf = qn.nodeToStateful(ind);
+0021 
+0022 <span class="keyword">if</span> qn.isstateful(ind) &amp;&amp; ~qn.isstation(ind)
+0023     <span class="keyword">for</span> r=1:R
+0024         init = State.spaceClosedSingle(1,n(r));
+0025         state = State.decorate(state,init);
+0026     <span class="keyword">end</span>
+0027     space = State.decorate(space,state);
+0028     <span class="keyword">return</span>
+0029 <span class="keyword">end</span>
+0030 
+0031 K = zeros(1,R);
+0032 <span class="keyword">for</span> r=1:R
+0033     K(r) = length(qn.mu{ist,r});
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">if</span> (qn.schedid(ist) ~= SchedStrategy.ID_EXT) &amp;&amp; any(n&gt;qn.classcap(ist,:))
+0036     <span class="keyword">return</span>
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">% generate local-state space</span>
+0040 <span class="keyword">switch</span> qn.nodetype(ind)
+0041     <span class="keyword">case</span> {NodeType.Queue, NodeType.Delay, NodeType.Source}
+0042         <span class="keyword">switch</span> qn.sched{ist}
+0043             <span class="keyword">case</span> SchedStrategy.EXT
+0044                 <span class="keyword">for</span> r=1:R
+0045                     <span class="keyword">if</span> isnan(qn.mu{ist,r})
+0046                         init = 0*ones(1,K(r));
+0047                     <span class="keyword">else</span>
+0048                         init = State.spaceClosedSingle(K(r),1);
+0049                     <span class="keyword">end</span>
+0050                     state = State.decorate(state,init);
+0051                 <span class="keyword">end</span>
+0052                 space = State.decorate(space,state);
+0053                 space = [Inf*ones(size(space,1),1),space];
+0054             <span class="keyword">case</span> {SchedStrategy.INF, SchedStrategy.PS, SchedStrategy.DPS, SchedStrategy.GPS}
+0055                 <span class="comment">% in these policies we only track the jobs in the servers</span>
+0056                 <span class="keyword">for</span> r=1:R
+0057                     init = State.spaceClosedSingle(K(r),n(r));
+0058                     state = State.decorate(state,init);
+0059                 <span class="keyword">end</span>
+0060                 space = State.decorate(space,state);
+0061             <span class="keyword">case</span> {SchedStrategy.RAND, SchedStrategy.LEPT, SchedStrategy.SEPT}
+0062                 <span class="comment">% in these policies we track an un-ordered buffer and</span>
+0063                 <span class="comment">% the jobs in the servers</span>
+0064                 <span class="comment">% build list of job classes in the node, with repetition</span>
+0065                 <span class="keyword">if</span> sum(n) &lt;= S(ist)
+0066                     <span class="keyword">for</span> r=1:R
+0067                         init = State.spaceClosedSingle(K(r),n(r));
+0068                         state = State.decorate(state,init);
+0069                     <span class="keyword">end</span>
+0070                     space = State.decorate(space,[zeros(size(state,1),R),state]);
+0071                 <span class="keyword">else</span>
+0072                     si = multichoosecon(n,S(ist)); <span class="comment">% jobs of class r that are running</span>
+0073                     mi_buf = repmat(n,size(si,1),1) - si; <span class="comment">% jobs of class r in buffer</span>
+0074                     <span class="keyword">for</span> k=1:size(si,1)
+0075                         <span class="comment">% determine number of classes r jobs running in phase j</span>
+0076                         kstate=[];
+0077                         <span class="keyword">for</span> r=1:R
+0078                             init = State.spaceClosedSingle(K(r),si(k,r));
+0079                             kstate = State.decorate(kstate,init);
+0080                         <span class="keyword">end</span>
+0081                         state = [repmat(mi_buf(k,:),size(kstate,1),1), kstate];
+0082                         space = [space; state];
+0083                     <span class="keyword">end</span>
+0084                 <span class="keyword">end</span>
+0085             <span class="keyword">case</span> {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.LCFS}
+0086                 sizeEstimator = multinomialln(n);
+0087                 sizeEstimator = round(sizeEstimator/log(10));
+0088                 <span class="keyword">if</span> sizeEstimator &gt; 2
+0089                     <span class="keyword">if</span> ~isfield(options,<span class="string">'force'</span>) || options.force == false
+0090                         error(sprintf(<span class="string">'State space size is very large: 1e%d states. Stopping execution. Set options.force=true to bypass this control.\n'</span>,sizeEstimator));
+0091                     <span class="keyword">end</span>
+0092                 <span class="keyword">end</span>
+0093                 
+0094                 <span class="keyword">if</span> sum(n) == 0
+0095                     space = zeros(1,1+sum(K)); <span class="comment">% unclear if this should 1+sum(K), was sum(K) but State.fromMarginalAndStarted uses 1+sum(K) so was changed here as well</span>
+0096                     <span class="keyword">return</span>
+0097                 <span class="keyword">end</span>
+0098                 <span class="comment">% in these policies we track an ordered buffer and</span>
+0099                 <span class="comment">% the jobs in the servers</span>
+0100                 
+0101                 <span class="comment">% build list of job classes in the node, with repetition</span>
+0102                 vi = [];
+0103                 <span class="keyword">for</span> r=1:R
+0104                     <span class="keyword">if</span> n(r)&gt;0
+0105                         vi=[vi, r*ones(1,n(r))];
+0106                     <span class="keyword">end</span>
+0107                 <span class="keyword">end</span>
+0108                 
+0109                 <span class="comment">% gen permutation of their positions in the fcfs buffer</span>
+0110                 mi = uniqueperms(vi);
+0111                 <span class="keyword">if</span> isempty(mi)
+0112                     mi_buf = zeros(1,max(0,sum(n)-S(ist)));
+0113                     state = zeros(1,R);
+0114                     state = State.decorate(state,[mi_buf,state]);
+0115                 <span class="keyword">else</span>
+0116                     <span class="comment">% mi_buf: class of job in buffer position i (0=empty)</span>
+0117                     mi_buf = [zeros(size(mi,1),sum(n)-S(ist)-size(mi(:,1:end-S(ist)),2)), mi(:,1:end-S(ist))];
+0118                     <span class="keyword">if</span> isempty(mi_buf)
+0119                         mi_buf = zeros(size(mi,1),1);
+0120                     <span class="keyword">end</span>
+0121                     <span class="comment">% mi_srv: class of job running in server i</span>
+0122                     mi_srv = mi(:,max(size(mi,2)-S(ist)+1,1):end);
+0123                     <span class="comment">% si: number of class r jobs that are running</span>
+0124                     si =[];
+0125                     <span class="keyword">for</span> k=1:size(mi_srv,1)
+0126                         si(k,1:R) = hist(mi_srv(k,:),1:R);
+0127                     <span class="keyword">end</span>
+0128                     <span class="comment">%si = unique(si,'rows');</span>
+0129                     <span class="keyword">for</span> k=1:size(si,1)
+0130                         <span class="comment">% determine number of classs r jobs running in phase</span>
+0131                         <span class="comment">% j in server state mi_srv(kjs,:) and build</span>
+0132                         <span class="comment">% state</span>
+0133                         kstate=[];
+0134                         <span class="keyword">for</span> r=1:R
+0135                             kstate = State.decorate(kstate,State.spaceClosedSingle(K(r),si(k,r)));
+0136                         <span class="keyword">end</span>
+0137                         state = [state; repmat(mi_buf(k,:),size(kstate,1),1), kstate];
+0138                     <span class="keyword">end</span>
+0139                 <span class="keyword">end</span>
+0140                 space = state;
+0141             <span class="keyword">case</span> {SchedStrategy.SJF, SchedStrategy.LJF}
+0142                 <span class="comment">% in these policies the state space includes continuous</span>
+0143                 <span class="comment">% random variables for the service times</span>
+0144                 error(<span class="string">'The scheduling policy does not admit a discrete state space.\n'</span>);
+0145         <span class="keyword">end</span>
+0146         <span class="keyword">switch</span> qn.routing(ind)
+0147             <span class="keyword">case</span> RoutingStrategy.ID_RR
+0148                 space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
+0149         <span class="keyword">end</span>
+0150     <span class="keyword">case</span> NodeType.Cache
+0151         <span class="keyword">switch</span> qn.sched{ist}
+0152             <span class="keyword">case</span> SchedStrategy.INF
+0153                 <span class="comment">% in this policies we only track the jobs in the servers</span>
+0154                 <span class="keyword">for</span> r=1:R
+0155                     init = State.spaceClosedSingle(K(r),n(r));
+0156                     state = State.decorate(state,init);
+0157                 <span class="keyword">end</span>
+0158                 space = State.decorate(space,state);
+0159         <span class="keyword">end</span>
+0160         <span class="keyword">switch</span> qn.routing(ind)
+0161             <span class="keyword">case</span> RoutingStrategy.ID_RR
+0162                 space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
+0163         <span class="keyword">end</span>
+0164 <span class="keyword">end</span>
+0165 space = unique(space,<span class="string">'rows'</span>); <span class="comment">% do not comment, required to sort empty state as first</span>
+0166 space = space(end:-1:1,:); <span class="comment">% so that states with jobs in phase 1 comes earlier</span>
+0167 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SolverJMT</title>
+  <meta name="keywords" content="SolverJMT">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../../index.html">solvers</a> &gt; <a href="../index.html">JMT</a> &gt; <a href="index.html">@SolverJMT</a> &gt; SolverJMT.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\JMT\@SolverJMT&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>SolverJMT
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="SolverJMT.html" class="code" title="">SolverJMT</a>	</li><li><a href="getResultsJMVA.html" class="code" title="function [result, parsed] = getResultsJMVA(self)">getResultsJMVA</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getResultsJSIM.html" class="code" title="function [result, parsed] = getResultsJSIM(self)">getResultsJSIM</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="jsimgView.html" class="code" title="function jsimgView(self, options)">jsimgView</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="parseLogs.html" class="code" title="function logData = parseLogs(model,isNodeLogged, metric)">parseLogs</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="parseTranRespT.html" class="code" title="function [classResT, jobRespT, jobResTArvTS] = parseTranRespT(fileArv, fileDep)">parseTranRespT</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="parseTranState.html" class="code" title="function state = parseTranState(fileArv, fileDep, nodePreload)">parseTranState</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="run.html" class="code" title="function Tsim = run(self)">run</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveArrivalStrategy.html" class="code" title="function [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode)">saveArrivalStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveBufferCapacity.html" class="code" title="function [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode)">saveBufferCapacity</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveClassSwitchStrategy.html" class="code" title="function [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode)">saveClassSwitchStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveClasses.html" class="code" title="function [simElem, simDoc] = saveClasses(self, simElem, simDoc)">saveClasses</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveDropStrategy.html" class="code" title="function [simDoc, section] = saveDropStrategy(self, simDoc, section)">saveDropStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveForkStrategy.html" class="code" title="function [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode)">saveForkStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveGetStrategy.html" class="code" title="function [simDoc, section] = saveGetStrategy(self, simDoc, section, currentNode)">saveGetStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveJoinStrategy.html" class="code" title="function [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode)">saveJoinStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveLinks.html" class="code" title="function [simElem, simDoc] = saveLinks(self, simElem, simDoc)">saveLinks</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveLogTunnel.html" class="code" title="function [simDoc, section] = saveLogTunnel(self, simDoc, section, currentNode)">saveLogTunnel</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveMetrics.html" class="code" title="function [simElem, simDoc] = saveMetrics(self, simElem, simDoc)">saveMetrics</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveNumberOfServers.html" class="code" title="function [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode)">saveNumberOfServers</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="savePreemptiveStrategy.html" class="code" title="function [simDoc, section] = savePreemptiveStrategy(self, simDoc, section, currentNode)">savePreemptiveStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="savePreemptiveWeights.html" class="code" title="function [simDoc, section] = savePreemptiveWeights(self, simDoc, section, currentNode)">savePreemptiveWeights</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="savePutStrategy.html" class="code" title="function [simDoc, section] = savePutStrategy(self, simDoc, section, currentNode)">savePutStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveRoutingStrategy.html" class="code" title="function [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode)">saveRoutingStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveServerVisits.html" class="code" title="function [simDoc, section] = saveServerVisits(self, simDoc, section)">saveServerVisits</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveServiceStrategy.html" class="code" title="function [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode)">saveServiceStrategy</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="saveXMLHeader.html" class="code" title="function [simElem,simDoc] = saveXMLHeader(self, logPath)">saveXMLHeader</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="writeJMVA.html" class="code" title="function [outputFileName] = writeJMVA(self, outputFileName)">writeJMVA</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="writeJSIM.html" class="code" title="function fname = writeJSIM(self)">writeJSIM</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="SolverJMT.html" class="code" title="">SolverJMT</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = SolverJMT(model, varargin)</a></li><li><a href="#_sub2" class="code">function supported = getSupported(self,supported)</a></li><li><a href="#_sub3" class="code">function fileName = getFileName(self)</a></li><li><a href="#_sub4" class="code">function self = setJMTJarPath(self, path)</a></li><li><a href="#_sub5" class="code">function out = getJMTJarPath(self)</a></li><li><a href="#_sub6" class="code">function out = getFilePath(self)</a></li><li><a href="#_sub7" class="code">function [result, parsed] = getResults(self)</a></li><li><a href="#_sub8" class="code">function out = getJSIMTempPath(self)</a></li><li><a href="#_sub9" class="code">function out = getJMVATempPath(self)</a></li><li><a href="#_sub10" class="code">function bool = hasAvgResults(self)</a></li><li><a href="#_sub11" class="code">function bool = isAvailable()</a></li><li><a href="#_sub12" class="code">function featSupported = getFeatureSet()</a></li><li><a href="#_sub13" class="code">function [bool, featSupported] = supports(model)</a></li><li><a href="#_sub14" class="code">function jsimgOpen(filename)</a></li><li><a href="#_sub15" class="code">function jsimwOpen(filename)</a></li><li><a href="#_sub16" class="code">function options = defaultOptions()</a></li><li><a href="#_sub17" class="code">function lNormConst = getProbNormConst(self)</a></li><li><a href="#_sub18" class="code">function Pr = getProbSysState(self)</a></li><li><a href="#_sub19" class="code">function StateSys = getTranStateSys(self)</a></li><li><a href="#_sub20" class="code">function State = getTranState(self, Q)</a></li><li><a href="#_sub21" class="code">function RD = getCdfRespT(self, R)</a></li><li><a href="#_sub22" class="code">function RD = getTranCdfRespT(self, R)</a></li><li><a href="#_sub23" class="code">function RD = getTranCdfPassT(self, R)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SolverJMT.html" class="code" title="">SolverJMT</a> &lt; NetworkSolver
+0002     <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     <span class="comment">%Private properties</span>
+0006     properties <span class="comment">%(GetAccess = 'private', SetAccess='private')</span>
+0007         jmtPath;
+0008         filePath;
+0009         fileName;
+0010         maxSamples;
+0011         seed;
+0012     <span class="keyword">end</span>
+0013     
+0014     <span class="comment">%Constants</span>
+0015     properties (Constant)
+0016         xmlnsXsi = <span class="string">'http://www.w3.org/2001/XMLSchema-instance'</span>;
+0017         xsiNoNamespaceSchemaLocation = <span class="string">'Archive.xsd'</span>;
+0018         fileFormat = <span class="string">'jsimg'</span>;
+0019         jsimgPath = <span class="string">''</span>;
+0020     <span class="keyword">end</span>
+0021     
+0022     <span class="comment">% PUBLIC METHODS</span>
+0023     methods
+0024         <span class="comment">%Constructor</span>
+0025         <a name="_sub0" href="#_subfunctions" class="code">function self = SolverJMT(model, varargin)</a>
+0026             self = self@NetworkSolver(model, mfilename);
+0027             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
+0028             <span class="keyword">if</span> ~Solver.isJavaAvailable
+0029                 error(<span class="string">'SolverJMT requires the java command to be available on the system path.'</span>);
+0030             <span class="keyword">end</span>
+0031             <span class="keyword">if</span> ~Solver.isAvailable            
+0032                 error(<span class="string">'SolverJMT cannot located JMT.jar in the MATLAB path.'</span>);
+0033             <span class="keyword">end</span>
+0034 
+0035             jarPath = jmtGetPath;
+0036             self.setJMTJarPath(jarPath);
+0037             filePath = tempdir;
+0038             self.filePath = filePath;
+0039             [~,fileName]=fileparts(tempname);
+0040             self.fileName = fileName;
+0041         <span class="keyword">end</span>
+0042         
+0043         [simDoc, section] = <a href="saveArrivalStrategy.html" class="code" title="function [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode)">saveArrivalStrategy</a>(self, simDoc, section, currentNode)
+0044         [simDoc, section] = <a href="saveBufferCapacity.html" class="code" title="function [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode)">saveBufferCapacity</a>(self, simDoc, section, currentNode)
+0045         [simDoc, section] = <a href="saveClassSwitchStrategy.html" class="code" title="function [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode)">saveClassSwitchStrategy</a>(self, simDoc, section, currentNode)
+0046         [simDoc, section] = <a href="saveDropStrategy.html" class="code" title="function [simDoc, section] = saveDropStrategy(self, simDoc, section)">saveDropStrategy</a>(self, simDoc, section)
+0047         [simDoc, section] = <a href="saveForkStrategy.html" class="code" title="function [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode)">saveForkStrategy</a>(self, simDoc, section, currentNode)
+0048         [simDoc, section] = <a href="saveGetStrategy.html" class="code" title="function [simDoc, section] = saveGetStrategy(self, simDoc, section, currentNode)">saveGetStrategy</a>(self, simDoc, section, currentNode)
+0049         [simDoc, section] = <a href="saveJoinStrategy.html" class="code" title="function [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode)">saveJoinStrategy</a>(self, simDoc, section, currentNode)
+0050         [simDoc, section] = <a href="saveLogTunnel.html" class="code" title="function [simDoc, section] = saveLogTunnel(self, simDoc, section, currentNode)">saveLogTunnel</a>(self, simDoc, section, currentNode)
+0051         [simDoc, section] = <a href="saveNumberOfServers.html" class="code" title="function [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode)">saveNumberOfServers</a>(self, simDoc, section, currentNode)
+0052         [simDoc, section] = <a href="savePreemptiveStrategy.html" class="code" title="function [simDoc, section] = savePreemptiveStrategy(self, simDoc, section, currentNode)">savePreemptiveStrategy</a>(self, simDoc, section, currentNode)
+0053         [simDoc, section] = <a href="savePreemptiveWeights.html" class="code" title="function [simDoc, section] = savePreemptiveWeights(self, simDoc, section, currentNode)">savePreemptiveWeights</a>(self, simDoc, section, currentNode)
+0054         [simDoc, section] = <a href="savePutStrategy.html" class="code" title="function [simDoc, section] = savePutStrategy(self, simDoc, section, currentNode)">savePutStrategy</a>(self, simDoc, section, currentNode)
+0055         [simDoc, section] = <a href="saveRoutingStrategy.html" class="code" title="function [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode)">saveRoutingStrategy</a>(self, simDoc, section, currentNode)
+0056         [simDoc, section] = <a href="saveServerVisits.html" class="code" title="function [simDoc, section] = saveServerVisits(self, simDoc, section)">saveServerVisits</a>(self, simDoc, section)
+0057         [simDoc, section] = <a href="saveServiceStrategy.html" class="code" title="function [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode)">saveServiceStrategy</a>(self, simDoc, section, currentNode)
+0058         [simElem, simDoc] = <a href="saveClasses.html" class="code" title="function [simElem, simDoc] = saveClasses(self, simElem, simDoc)">saveClasses</a>(self, simElem, simDoc)
+0059         [simElem, simDoc] = <a href="saveLinks.html" class="code" title="function [simElem, simDoc] = saveLinks(self, simElem, simDoc)">saveLinks</a>(self, simElem, simDoc)
+0060         [simElem, simDoc] = <a href="saveMetrics.html" class="code" title="function [simElem, simDoc] = saveMetrics(self, simElem, simDoc)">saveMetrics</a>(self, simElem, simDoc)
+0061         [simElem, simDoc] = <a href="saveXMLHeader.html" class="code" title="function [simElem,simDoc] = saveXMLHeader(self, logPath)">saveXMLHeader</a>(self, logPath)
+0062         
+0063         <a name="_sub1" href="#_subfunctions" class="code">function supported = getSupported(self,supported)</a>
+0064             <span class="keyword">if</span> ~exist(<span class="string">'supported'</span>,<span class="string">'var'</span>)
+0065                 supported=struct();
+0066             <span class="keyword">end</span>
+0067         <span class="keyword">end</span>
+0068         
+0069         <a name="_sub2" href="#_subfunctions" class="code">function fileName = getFileName(self)</a>
+0070             fileName = self.fileName;
+0071         <span class="keyword">end</span>
+0072         
+0073         <span class="comment">%Setter</span>
+0074         <a name="_sub3" href="#_subfunctions" class="code">function self = setJMTJarPath(self, path)</a>
+0075             self.jmtPath = path;
+0076         <span class="keyword">end</span>
+0077         
+0078         <span class="comment">% Getters</span>
+0079         <a name="_sub4" href="#_subfunctions" class="code">function out = getJMTJarPath(self)</a>
+0080             out = self.jmtPath;
+0081         <span class="keyword">end</span>
+0082         
+0083         <a name="_sub5" href="#_subfunctions" class="code">function out = getFilePath(self)</a>
+0084             out = self.filePath;
+0085         <span class="keyword">end</span>
+0086         
+0087         Tsim = <a href="run.html" class="code" title="function Tsim = run(self)">run</a>(self)
+0088         
+0089         jwatView(self, options)
+0090         <a href="jsimgView.html" class="code" title="function jsimgView(self, options)">jsimgView</a>(self, options)
+0091         
+0092         [outputFileName] = <a href="writeJMVA.html" class="code" title="function [outputFileName] = writeJMVA(self, outputFileName)">writeJMVA</a>(self, outputFileName)
+0093         [outputFileName] = <a href="writeJSIM.html" class="code" title="function fname = writeJSIM(self)">writeJSIM</a>(self, outputFileName)
+0094 
+0095         <a name="_sub6" href="#_subfunctions" class="code">function [result, parsed] = getResults(self)</a>
+0096             options = self.getOptions;            
+0097             <span class="keyword">switch</span> options.method
+0098                 <span class="keyword">case</span> {<span class="string">'jsim'</span>,<span class="string">'default'</span>}
+0099                     [result, parsed] = self.getResultsJSIM;
+0100                 <span class="keyword">otherwise</span>
+0101                     [result, parsed] = self.getResultsJMVA;
+0102             <span class="keyword">end</span>
+0103         <span class="keyword">end</span>
+0104 
+0105         [result, parsed] = <a href="getResultsJSIM.html" class="code" title="function [result, parsed] = getResultsJSIM(self)">getResultsJSIM</a>(self)
+0106         [result, parsed] = <a href="getResultsJMVA.html" class="code" title="function [result, parsed] = getResultsJMVA(self)">getResultsJMVA</a>(self)
+0107     <span class="keyword">end</span>
+0108     
+0109     <span class="comment">%Private methods.</span>
+0110     methods (Access = <span class="string">'private'</span>)
+0111         <a name="_sub7" href="#_subfunctions" class="code">function out = getJSIMTempPath(self)</a>
+0112             fname = [self.getFileName(), [<span class="string">'.'</span>, <span class="string">'jsimg'</span>]];
+0113             out = [self.filePath,<span class="string">'jsimg'</span>,filesep, fname];
+0114         <span class="keyword">end</span>
+0115         
+0116         <a name="_sub8" href="#_subfunctions" class="code">function out = getJMVATempPath(self)</a>
+0117             fname = [self.getFileName(), [<span class="string">'.'</span>, <span class="string">'jmva'</span>]];
+0118             out = [self.filePath,<span class="string">'jmva'</span>,filesep, fname];
+0119         <span class="keyword">end</span>
+0120     <span class="keyword">end</span>
+0121     
+0122     <span class="comment">%Private methods.</span>
+0123     methods (Access = <span class="string">'protected'</span>)
+0124         <a name="_sub9" href="#_subfunctions" class="code">function bool = hasAvgResults(self)</a>
+0125             bool = self.hasResults();
+0126         <span class="keyword">end</span>
+0127     <span class="keyword">end</span>
+0128     
+0129     methods (Static)
+0130         <a name="_sub10" href="#_subfunctions" class="code">function bool = isAvailable()</a>
+0131             bool = true;
+0132             <span class="keyword">if</span> isempty(which(<span class="string">'JMT.jar'</span>))
+0133                 bool = false;
+0134             <span class="keyword">end</span>
+0135         <span class="keyword">end</span>
+0136         
+0137         <a name="_sub11" href="#_subfunctions" class="code">function featSupported = getFeatureSet()</a>
+0138             featSupported = SolverFeatureSet;
+0139             featSupported.setTrue({<span class="string">'Sink'</span>,<span class="keyword">...</span>
+0140                 <span class="string">'Source'</span>,<span class="keyword">...</span>
+0141                 <span class="string">'Router'</span>,<span class="keyword">...</span>
+0142                 <span class="string">'ClassSwitch'</span>,<span class="keyword">...</span>
+0143                 <span class="string">'DelayStation'</span>,<span class="keyword">...</span>
+0144                 <span class="string">'Queue'</span>,<span class="keyword">...</span>
+0145                 <span class="string">'Fork'</span>,<span class="keyword">...</span>
+0146                 <span class="string">'Join'</span>,<span class="keyword">...</span>
+0147                 <span class="string">'Logger'</span>,<span class="keyword">...</span>
+0148                 <span class="string">'Cox2'</span>,<span class="keyword">...</span>
+0149                 <span class="string">'Erlang'</span>,<span class="keyword">...</span>
+0150                 <span class="string">'Exponential'</span>,<span class="keyword">...</span>
+0151                 <span class="string">'HyperExp'</span>,<span class="keyword">...</span>
+0152                 <span class="string">'Det'</span>,<span class="keyword">...</span>
+0153                 <span class="string">'Gamma'</span>,<span class="keyword">...</span>
+0154                 <span class="string">'MMPP2'</span>,<span class="keyword">...</span>
+0155                 <span class="string">'Normal'</span>,<span class="keyword">...</span>
+0156                 <span class="string">'Pareto'</span>,<span class="keyword">...</span>
+0157                 <span class="string">'Replayer'</span>,<span class="keyword">...</span>
+0158                 <span class="string">'Uniform'</span>,<span class="keyword">...</span>
+0159                 <span class="string">'StatelessClassSwitcher'</span>,<span class="keyword">...</span>
+0160                 <span class="string">'InfiniteServer'</span>,<span class="keyword">...</span>
+0161                 <span class="string">'SharedServer'</span>,<span class="keyword">...</span>
+0162                 <span class="string">'Buffer'</span>,<span class="keyword">...</span>
+0163                 <span class="string">'Dispatcher'</span>,<span class="keyword">...</span>
+0164                 <span class="string">'Server'</span>,<span class="keyword">...</span>
+0165                 <span class="string">'JobSink'</span>,<span class="keyword">...</span>
+0166                 <span class="string">'RandomSource'</span>,<span class="keyword">...</span>
+0167                 <span class="string">'ServiceTunnel'</span>,<span class="keyword">...</span>
+0168                 <span class="string">'Forker'</span>,<span class="keyword">...</span>
+0169                 <span class="string">'Joiner'</span>,<span class="keyword">...</span>
+0170                 <span class="string">'LogTunnel'</span>,<span class="keyword">...</span>
+0171                 <span class="string">'SchedStrategy_INF'</span>,<span class="keyword">...</span>
+0172                 <span class="string">'SchedStrategy_PS'</span>,<span class="keyword">...</span>
+0173                 <span class="string">'SchedStrategy_DPS'</span>,<span class="keyword">...</span>
+0174                 <span class="string">'SchedStrategy_FCFS'</span>,<span class="keyword">...</span>
+0175                 <span class="string">'SchedStrategy_GPS'</span>,<span class="keyword">...</span>
+0176                 <span class="string">'SchedStrategy_RAND'</span>,<span class="keyword">...</span>
+0177                 <span class="string">'SchedStrategy_HOL'</span>,<span class="keyword">...</span>
+0178                 <span class="string">'SchedStrategy_LCFS'</span>,<span class="keyword">...</span>
+0179                 <span class="string">'SchedStrategy_SEPT'</span>,<span class="keyword">...</span>
+0180                 <span class="string">'SchedStrategy_LEPT'</span>,<span class="keyword">...</span>
+0181                 <span class="string">'SchedStrategy_SJF'</span>,<span class="keyword">...</span>
+0182                 <span class="string">'SchedStrategy_LJF'</span>,<span class="keyword">...</span>
+0183                 <span class="string">'RoutingStrategy_PROB'</span>,<span class="keyword">...</span>
+0184                 <span class="string">'RoutingStrategy_RAND'</span>,<span class="keyword">...</span>
+0185                 <span class="string">'RoutingStrategy_RR'</span>,<span class="keyword">...</span>
+0186                 <span class="string">'SchedStrategy_EXT'</span>,<span class="keyword">...</span>
+0187                 <span class="string">'ClosedClass'</span>,<span class="keyword">...</span>
+0188                 <span class="string">'OpenClass'</span>});
+0189         <span class="keyword">end</span>
+0190         
+0191         <a name="_sub12" href="#_subfunctions" class="code">function [bool, featSupported] = supports(model)</a>
+0192             featUsed = model.getUsedLangFeatures();
+0193             featSupported = SolverJMT.getFeatureSet();
+0194             bool = SolverFeatureSet.supports(featSupported, featUsed);
+0195         <span class="keyword">end</span>
+0196     <span class="keyword">end</span>
+0197     
+0198     methods (Static)
+0199         <a name="_sub13" href="#_subfunctions" class="code">function jsimgOpen(filename)</a>
+0200             [path] = fileparts(filename);
+0201             <span class="keyword">if</span> isempty(path)
+0202                 filename=[pwd,filesep,filename];
+0203             <span class="keyword">end</span>
+0204             runtime = java.lang.Runtime.getRuntime();
+0205             cmd = [<span class="string">'java -cp &quot;'</span>,jmtGetPath,filesep,<span class="string">'JMT.jar&quot; jmt.commandline.Jmt jsimg &quot;'</span>,filename,<span class="string">'&quot;'</span>];
+0206             system(cmd);
+0207             <span class="comment">%runtime.exec(cmd);</span>
+0208         <span class="keyword">end</span>
+0209         
+0210         <a name="_sub14" href="#_subfunctions" class="code">function jsimwOpen(filename)</a>
+0211             runtime = java.lang.Runtime.getRuntime();
+0212             cmd = [<span class="string">'java -cp &quot;'</span>,jmtGetPath,filesep,<span class="string">'JMT.jar&quot; jmt.commandline.Jmt jsimw &quot;'</span>,which(filename)];
+0213             <span class="comment">%system(cmd);</span>
+0214             runtime.exec(cmd);
+0215         <span class="keyword">end</span>
+0216         
+0217         dataSet = <a href="parseLogs.html" class="code" title="function logData = parseLogs(model,isNodeLogged, metric)">parseLogs</a>(model, isNodeLogged, metric);
+0218         state = <a href="parseTranState.html" class="code" title="function state = parseTranState(fileArv, fileDep, nodePreload)">parseTranState</a>(fileArv, fileDep, nodePreload);
+0219         [classResT, jobResT, jobResTArvTS, classResTJobID] = <a href="parseTranRespT.html" class="code" title="function [classResT, jobRespT, jobResTArvTS] = parseTranRespT(fileArv, fileDep)">parseTranRespT</a>(fileArv, fileDep);
+0220         
+0221         <a name="_sub15" href="#_subfunctions" class="code">function options = defaultOptions()</a>
+0222             options = Solver.defaultOptions();
+0223         <span class="keyword">end</span>
+0224     <span class="keyword">end</span>
+0225     
+0226     methods
+0227         <a name="_sub16" href="#_subfunctions" class="code">function lNormConst = getProbNormConst(self) </a>
+0228             <span class="keyword">switch</span> self.options.method
+0229                 <span class="keyword">case</span> {<span class="string">'jmva'</span>,<span class="string">'jmva.recal'</span>,<span class="string">'jmva.comom'</span>,<span class="string">'jmva.ls'</span>}
+0230                     self.run();
+0231                     lNormConst = self.result.Prob.logNormConst;
+0232                 <span class="keyword">otherwise</span>
+0233                     lNormConst = NaN; <span class="comment">%#ok&lt;NASGU&gt;</span>
+0234                     error(<span class="string">'Selected solver method does not compute normalizing constants. Choose either jmva.recal, jmva.comom, or jmva.ls.'</span>);
+0235             <span class="keyword">end</span>
+0236         <span class="keyword">end</span>        
+0237         
+0238         <a name="_sub17" href="#_subfunctions" class="code">function Pr = getProbSysState(self)</a>
+0239             state = self.getTranStateSys;
+0240             qn = self.model.getStruct;
+0241             iat = diff(state.t);
+0242             [unique_states,~,IC] = unique(state.nir,<span class="string">'rows'</span>);
+0243             Pr = zeros(1,max(IC));
+0244             <span class="keyword">for</span> i=1:max(IC)
+0245                 Pr(i) = sum(iat(IC(1:end-1)==i));
+0246             <span class="keyword">end</span>
+0247             Pr = Pr/sum(Pr);
+0248             nir = [];
+0249             state = self.model.getState;
+0250             <span class="keyword">for</span> i=1:self.model.getNumberOfStations
+0251                 [~, nir(i,:), ~, ~] = State.toMarginal(qn, i, state{i}, self.getOptions);
+0252             <span class="keyword">end</span>
+0253             nir=nir'; nir=nir(:)'; <span class="comment">% put as row</span>
+0254             Pr = Pr(matchrow(unique_states, nir));
+0255         <span class="keyword">end</span>
+0256         
+0257         <a name="_sub18" href="#_subfunctions" class="code">function StateSys = getTranStateSys(self)</a>
+0258             Q = self.model.getAvgQLenHandles();
+0259             Qsys = cell(size(Q));
+0260             <span class="keyword">for</span> i=1:size(Q,1)
+0261                 <span class="keyword">for</span> j=1:size(Q,2)
+0262                     Qsys{i,j} = Q{i,j}.copy;
+0263                     Qsys{i,j}.disabled = false; <span class="comment">% enable all</span>
+0264                 <span class="keyword">end</span>
+0265             <span class="keyword">end</span>
+0266             State =  self.getTranState(Qsys);
+0267             StateSys = struct();
+0268             
+0269             StateSys.t = [];
+0270             <span class="keyword">for</span> i=1:size(Q,1)
+0271                 <span class="keyword">for</span> j=1:size(Q,2)
+0272                     StateSys.t = union(StateSys.t, State{i,j}.t);
+0273                 <span class="keyword">end</span>
+0274             <span class="keyword">end</span>
+0275             
+0276             StateSys.nir = [];
+0277             <span class="keyword">for</span> i=1:size(Q,1)
+0278                 <span class="keyword">for</span> j=1:size(Q,2)
+0279                     [~,uniqTS] = unique(State{i,j}.t);
+0280                     <span class="comment">% we round the interpolation to have integer states</span>
+0281                     Qijt = round(interp1(State{i,j}.t(uniqTS), State{i,j}.nir(uniqTS), StateSys.t));
+0282                     StateSys.nir = [StateSys.nir, Qijt];
+0283                 <span class="keyword">end</span>
+0284             <span class="keyword">end</span>
+0285         <span class="keyword">end</span>
+0286         
+0287         <a name="_sub19" href="#_subfunctions" class="code">function State = getTranState(self, Q)</a>
+0288             <span class="keyword">if</span> ~exist(<span class="string">'Q'</span>,<span class="string">'var'</span>)
+0289                 Q = self.model.getAvgQLenHandles();
+0290             <span class="keyword">end</span>
+0291             State = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
+0292             cdfmodel = self.model.copy;
+0293             cdfmodel.resetNetwork;
+0294             isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
+0295             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0296                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0297                     <span class="keyword">if</span> ~Q{i,r}.disabled
+0298                         ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
+0299                         isNodeClassLogged(ni,r) = true;
+0300                     <span class="keyword">end</span>
+0301                 <span class="keyword">end</span>
+0302             <span class="keyword">end</span>
+0303             Plinked = self.model.getLinkedRoutingMatrix();
+0304             isNodeLogged = max(isNodeClassLogged,[],2);
+0305             logpath = tempdir;
+0306             cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
+0307             <a href="SolverJMT.html" class="code" title="">SolverJMT</a>(cdfmodel, self.getOptions).getAvg(); <span class="comment">% log data</span>
+0308             logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.QLen);
+0309             <span class="comment">% from here convert from nodes in logData to stations</span>
+0310             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0311                 ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
+0312                 [~,uniqTS] = unique(logData{ni,r}.t);
+0313                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0314                     <span class="keyword">if</span> isNodeClassLogged(ni,r)
+0315                         <span class="keyword">if</span> ~isempty(logData{ni,r})
+0316                             State{i,r} = struct();
+0317                             State{i,r}.t = logData{ni,r}.t(uniqTS);
+0318                             State{i,r}.nir = logData{ni,r}.QLen(uniqTS);
+0319                         <span class="keyword">end</span>
+0320                     <span class="keyword">end</span>
+0321                 <span class="keyword">end</span>
+0322             <span class="keyword">end</span>
+0323         <span class="keyword">end</span>
+0324 
+0325         <a name="_sub20" href="#_subfunctions" class="code">function RD = getCdfRespT(self, R)</a>
+0326             <span class="keyword">if</span> ~exist(<span class="string">'R'</span>,<span class="string">'var'</span>)
+0327                 R = self.model.getAvgRespTHandles();
+0328             <span class="keyword">end</span>
+0329             RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
+0330             cdfmodel = self.model.copy;
+0331             cdfmodel.resetNetwork;
+0332             QN = <a href="SolverJMT.html" class="code" title="">SolverJMT</a>(self.model, self.getOptions).getAvgQLen(); <span class="comment">% steady-state qlen</span>
+0333             cdfmodel.initFromMarginal(QN);
+0334             isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
+0335             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0336                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0337                     <span class="keyword">if</span> ~R{i,r}.disabled
+0338                         ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
+0339                         isNodeClassLogged(ni,r) = true;
+0340                     <span class="keyword">end</span>
+0341                 <span class="keyword">end</span>
+0342             <span class="keyword">end</span>
+0343             Plinked = self.model.getLinkedRoutingMatrix();
+0344             isNodeLogged = max(isNodeClassLogged,[],2);
+0345             logpath = tempdir;
+0346             cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
+0347             <a href="SolverJMT.html" class="code" title="">SolverJMT</a>(cdfmodel, self.getOptions).getAvg(); <span class="comment">% log data</span>
+0348             logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);
+0349             <span class="comment">% from here convert from nodes in logData to stations</span>
+0350             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0351                 ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
+0352                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0353                     <span class="keyword">if</span> isNodeClassLogged(ni,r)
+0354                         <span class="keyword">if</span> ~isempty(logData{ni,r})
+0355                             [F,X] = ecdf(logData{ni,r}.RespT);
+0356                             RD{i,r} = [F,X];
+0357                         <span class="keyword">end</span>
+0358                     <span class="keyword">end</span>
+0359                 <span class="keyword">end</span>
+0360             <span class="keyword">end</span>
+0361         <span class="keyword">end</span>        
+0362         
+0363         <a name="_sub21" href="#_subfunctions" class="code">function RD = getTranCdfRespT(self, R)</a>
+0364             <span class="keyword">if</span> ~exist(<span class="string">'R'</span>,<span class="string">'var'</span>)
+0365                 R = self.model.getAvgRespTHandles();
+0366             <span class="keyword">end</span>
+0367             RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
+0368             cdfmodel = self.model.copy;
+0369             cdfmodel.resetNetwork;
+0370             isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
+0371             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0372                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0373                     <span class="keyword">if</span> ~R{i,r}.disabled
+0374                         ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
+0375                         isNodeClassLogged(ni,r) = true;
+0376                     <span class="keyword">end</span>
+0377                 <span class="keyword">end</span>
+0378             <span class="keyword">end</span>
+0379             Plinked = self.model.getLinkedRoutingMatrix();
+0380             isNodeLogged = max(isNodeClassLogged,[],2);
+0381             logpath = tempdir;
+0382             cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
+0383             <a href="SolverJMT.html" class="code" title="">SolverJMT</a>(cdfmodel, self.getOptions).getAvg(); <span class="comment">% log data</span>
+0384             logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);
+0385             <span class="comment">% from here convert from nodes in logData to stations</span>
+0386             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0387                 ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
+0388                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0389                     <span class="keyword">if</span> isNodeClassLogged(ni,r)
+0390                         <span class="keyword">if</span> ~isempty(logData{ni,r})
+0391                             [F,X] = ecdf(logData{ni,r}.RespT);
+0392                             RD{i,r} = [F,X];
+0393                         <span class="keyword">end</span>
+0394                     <span class="keyword">end</span>
+0395                 <span class="keyword">end</span>
+0396             <span class="keyword">end</span>
+0397         <span class="keyword">end</span>
+0398         
+0399         <a name="_sub22" href="#_subfunctions" class="code">function RD = getTranCdfPassT(self, R)</a>
+0400             <span class="keyword">if</span> ~exist(<span class="string">'R'</span>,<span class="string">'var'</span>)
+0401                 R = self.model.getAvgRespTHandles();
+0402             <span class="keyword">end</span>
+0403             RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
+0404             cdfmodel = self.model.copy;
+0405             cdfmodel.resetNetwork;
+0406             isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
+0407             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0408                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0409                     <span class="keyword">if</span> ~R{i,r}.disabled
+0410                         ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
+0411                         isNodeClassLogged(ni,r) = true;
+0412                     <span class="keyword">end</span>
+0413                 <span class="keyword">end</span>
+0414             <span class="keyword">end</span>
+0415             Plinked = self.model.getLinkedRoutingMatrix();
+0416             isNodeLogged = max(isNodeClassLogged,[],2);
+0417             logpath = tempdir;
+0418             cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
+0419             <a href="SolverJMT.html" class="code" title="">SolverJMT</a>(cdfmodel, self.getOptions).getAvg(); <span class="comment">% log data</span>
+0420             logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);
+0421             <span class="comment">% from here convert from nodes in logData to stations</span>
+0422             <span class="keyword">for</span> i= 1:cdfmodel.getNumberOfStations
+0423                 ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
+0424                 <span class="keyword">for</span> r=1:cdfmodel.getNumberOfClasses
+0425                     <span class="keyword">if</span> isNodeClassLogged(ni,r)
+0426                         <span class="keyword">if</span> ~isempty(logData{ni,r})
+0427                             [F,X] = ecdf(logData{ni,r}.RespT);
+0428                             RD{i,r} = [F,X];
+0429                         <span class="keyword">end</span>
+0430                     <span class="keyword">end</span>
+0431                 <span class="keyword">end</span>
+0432             <span class="keyword">end</span>
+0433         <span class="keyword">end</span>
+0434     <span class="keyword">end</span>
+0435     
+0436     
+0437 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

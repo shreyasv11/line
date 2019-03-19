@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of refreshRoutingMatrix</title>
+  <meta name="keywords" content="refreshRoutingMatrix">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@Network</a> &gt; refreshRoutingMatrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@Network&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>refreshRoutingMatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Network.html" class="code" title="">Network</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function p = sub_rr(ind, jnd, r, s, linksmat, state_before, state_after)</a></li><li><a href="#_sub2" class="code">function p = sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">if</span> nargin == 1
+0006     <span class="keyword">if</span> isempty(self.qn)
+0007         error(<span class="string">'refreshRoutingMatrix cannot retrieve station rates, pass them as an input parameters.'</span>);
+0008     <span class="keyword">else</span>
+0009         rates = self.qn.rates;
+0010     <span class="keyword">end</span>
+0011 <span class="keyword">end</span>
+0012 
+0013 qn = self.qn;
+0014 M = self.getNumberOfNodes;
+0015 K = self.getNumberOfClasses();
+0016 arvRates = zeros(1,K);
+0017 <span class="keyword">for</span> r = self.getIndexOpenClasses
+0018     arvRates(r) = rates(self.getIndexSourceStation,r);
+0019 <span class="keyword">end</span>
+0020 
+0021 [rt, rtnodes, ~, ~, linksmat] = self.getRoutingMatrix(arvRates);
+0022 
+0023 rnodefuncell = cell(M*K,M*K);
+0024 stateful = self.getIndexStatefulNodes;
+0025 <span class="keyword">for</span> ind=1:M <span class="comment">% from</span>
+0026     <span class="keyword">for</span> jnd=1:M <span class="comment">% to</span>
+0027         <span class="keyword">for</span> r=1:K
+0028             <span class="keyword">for</span> s=1:K
+0029                 <span class="keyword">if</span> qn.isstatedep(ind,3)
+0030                     <span class="keyword">switch</span> qn.routing(ind)
+0031                         <span class="keyword">case</span> RoutingStrategy.ID_RR
+0032                             rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) <a href="#_sub1" class="code" title="subfunction p = sub_rr(ind, jnd, r, s, linksmat, state_before, state_after)">sub_rr</a>(ind, jnd, r, s, linksmat, state_before, state_after);
+0033                         <span class="keyword">case</span> RoutingStrategy.ID_JSQ
+0034                             rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) <a href="#_sub2" class="code" title="subfunction p = sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after) ">sub_jsq</a>(ind, jnd, r, s, linksmat, state_before, state_after);
+0035                     <span class="keyword">end</span>
+0036                 <span class="keyword">else</span>
+0037                     rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
+0038                 <span class="keyword">end</span>
+0039             <span class="keyword">end</span>
+0040         <span class="keyword">end</span>
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 
+0044 csmask = false(K,K);
+0045 <span class="keyword">for</span> ind=1:M <span class="comment">% source</span>
+0046     <span class="keyword">for</span> jnd=1:M <span class="comment">% source</span>
+0047         <span class="keyword">for</span> r=1:K
+0048             <span class="keyword">for</span> s=1:K
+0049                 <span class="keyword">if</span> r==s
+0050                     csmask(r,s) = true;
+0051                 <span class="keyword">else</span>
+0052                     <span class="keyword">if</span> isa(self.nodes{ind}.server,<span class="string">'ClassSwitcher'</span>)
+0053                         <span class="keyword">if</span> self.nodes{ind}.server.csFun(r,s,[],[])&gt;0
+0054                             csmask(r,s) = true;
+0055                         <span class="keyword">end</span>
+0056                     <span class="keyword">end</span>
+0057                 <span class="keyword">end</span>
+0058             <span class="keyword">end</span>
+0059         <span class="keyword">end</span>
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 
+0063 statefulNodesClasses = [];
+0064 <span class="keyword">for</span> ind=self.getIndexStatefulNodes()
+0065     statefulNodesClasses(end+1:end+K)= ((ind-1)*K+1):(ind*K);
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="comment">% we now generate the node routing matrix for the given state and then</span>
+0069 <span class="comment">% lump the states for non-stateful nodes so that run gives the routing</span>
+0070 <span class="comment">% touble for stateful nodes only</span>
+0071 statefulNodesClasses = [];
+0072 <span class="keyword">for</span> ind=stateful
+0073     statefulNodesClasses(end+1:end+K)= ((ind-1)*K+1):(ind*K);
+0074 <span class="keyword">end</span>
+0075 
+0076 
+0077 rtfunraw = @(state_before, state_after) dtmc_stochcomp(cell2mat(cellfun(@(f) f(state_before, state_after), rnodefuncell,<span class="string">'UniformOutput'</span>,false)), statefulNodesClasses);
+0078 rtfun = rtfunraw;
+0079 <span class="comment">%rtfun = memoize(rtfunraw); % memoize to reduce the number of stoch comp calls</span>
+0080 <span class="comment">%rtfun.CacheSize = 6000^2;</span>
+0081 
+0082 <span class="keyword">if</span> ~isempty(self.qn)
+0083     self.qn.rt = rt;
+0084     self.qn.rtnodes = rtnodes;
+0085     self.qn.setRoutingFunction(rtfun, csmask);
+0086 <span class="keyword">end</span>
+0087 
+0088     <a name="_sub1" href="#_subfunctions" class="code">function p = sub_rr(ind, jnd, r, s, linksmat, state_before, state_after)</a>
+0089         isf = qn.nodeToStateful(ind);
+0090         <span class="keyword">if</span> isempty(state_before{isf})
+0091             p = min(linksmat(ind,jnd),1);
+0092         <span class="keyword">else</span>
+0093             <span class="keyword">if</span> r==s
+0094                 p = double(state_after{isf}(end-r+1)==jnd);
+0095             <span class="keyword">else</span>
+0096                 p = 0;
+0097             <span class="keyword">end</span>
+0098         <span class="keyword">end</span>
+0099     <span class="keyword">end</span>
+0100 
+0101     <a name="_sub2" href="#_subfunctions" class="code">function p = sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after) </a><span class="comment">%#ok&lt;INUSD&gt;</span>
+0102         isf = qn.nodeToStateful(ind);
+0103         <span class="keyword">if</span> isempty(state_before{isf})
+0104             p = min(linksmat(ind,jnd),1);
+0105         <span class="keyword">else</span>
+0106             <span class="keyword">if</span> r==s
+0107                 n = Inf*ones(1,qn.nnodes);
+0108                 <span class="keyword">for</span> knd=1:qn.nnodes
+0109                     <span class="keyword">if</span> linksmat(ind,knd)
+0110                         ksf = qn.nodeToStateful(knd);
+0111                         n(knd) = State.toMarginal(qn, knd, state_before{ksf});
+0112                     <span class="keyword">end</span>
+0113                 <span class="keyword">end</span>
+0114                 <span class="keyword">if</span> n(jnd) == min(n)
+0115                     p = 1 / sum(n == min(n));
+0116                 <span class="keyword">else</span>
+0117                     p = 0;
+0118                 <span class="keyword">end</span>
+0119             <span class="keyword">else</span>
+0120                 p = 0;
+0121             <span class="keyword">end</span>
+0122         <span class="keyword">end</span>
+0123     <span class="keyword">end</span>
+0124 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

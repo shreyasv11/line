@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SchedStrategy</title>
+  <meta name="keywords" content="SchedStrategy">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; SchedStrategy.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>SchedStrategy
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SchedStrategy.html" class="code" title="">SchedStrategy</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SchedStrategy.html" class="code" title="">SchedStrategy</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function id = toId(type)</a></li><li><a href="#_sub2" class="code">function property = toProperty(text)</a></li><li><a href="#_sub3" class="code">function text = toFeature(type)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef (Sealed) <a href="SchedStrategy.html" class="code" title="">SchedStrategy</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties (Constant)
+0006         INF = <span class="string">'inf'</span>; <span class="comment">% infinite server</span>
+0007         FCFS = <span class="string">'fcfs'</span>;
+0008         LCFS = <span class="string">'lcfs'</span>;
+0009         RAND = <span class="string">'rand'</span>;
+0010         SJF = <span class="string">'sjf'</span>;
+0011         LJF = <span class="string">'ljf'</span>;
+0012         PS = <span class="string">'ps'</span>; <span class="comment">% egalitarian PS</span>
+0013         DPS = <span class="string">'dps'</span>;
+0014         GPS = <span class="string">'gps'</span>;
+0015         SEPT = <span class="string">'sept'</span>;
+0016         LEPT = <span class="string">'lept'</span>;
+0017         HOL = <span class="string">'hol'</span>;
+0018         FORK = <span class="string">'fork'</span>;
+0019         EXT = <span class="string">'ext'</span>; <span class="comment">% external world (open arrival source and sink)</span>
+0020         REF = <span class="string">'ref'</span>; <span class="comment">% reference node in LayeredNetworks</span>
+0021         
+0022         ID_INF = 0;
+0023         ID_FCFS = 1;
+0024         ID_LCFS = 2;
+0025         ID_RAND = 3;
+0026         ID_SJF = 4;
+0027         ID_LJF = 5;
+0028         ID_PS = 6;
+0029         ID_DPS = 7;
+0030         ID_GPS = 8;
+0031         ID_SEPT = 9;
+0032         ID_LEPT = 10;
+0033         ID_HOL = 11;
+0034         ID_FORK = 12;
+0035         ID_EXT = 13;
+0036         ID_REF = 14;
+0037     <span class="keyword">end</span>
+0038     
+0039     methods (Static)
+0040         <a name="_sub0" href="#_subfunctions" class="code">function id = toId(type)</a>
+0041             <span class="keyword">switch</span> type
+0042                 <span class="keyword">case</span> SchedStrategy.INF
+0043                     id = 0;
+0044                 <span class="keyword">case</span> SchedStrategy.FCFS
+0045                     id = 1;
+0046                 <span class="keyword">case</span> SchedStrategy.LCFS
+0047                     id = 2;
+0048                 <span class="keyword">case</span> SchedStrategy.RAND
+0049                     id = 3;
+0050                 <span class="keyword">case</span> SchedStrategy.SJF
+0051                     id = 4;
+0052                 <span class="keyword">case</span> SchedStrategy.LJF
+0053                     id = 5;
+0054                 <span class="keyword">case</span> SchedStrategy.PS
+0055                     id = 6;
+0056                 <span class="keyword">case</span> SchedStrategy.DPS
+0057                     id = 7;
+0058                 <span class="keyword">case</span> SchedStrategy.GPS
+0059                     id = 8;
+0060                 <span class="keyword">case</span> SchedStrategy.SEPT
+0061                     id = 9;
+0062                 <span class="keyword">case</span> SchedStrategy.LEPT
+0063                     id = 10;
+0064                 <span class="keyword">case</span> SchedStrategy.HOL
+0065                     id = 11;
+0066                 <span class="keyword">case</span> SchedStrategy.FORK
+0067                     id = 12;
+0068                 <span class="keyword">case</span> SchedStrategy.EXT
+0069                     id = 13;
+0070                 <span class="keyword">case</span> SchedStrategy.REF
+0071                     id = 14;
+0072             <span class="keyword">end</span>            
+0073         <span class="keyword">end</span>
+0074         
+0075         <a name="_sub1" href="#_subfunctions" class="code">function property = toProperty(text)</a>
+0076             <span class="keyword">switch</span> text
+0077                 <span class="keyword">case</span> <span class="string">'inf'</span>
+0078                     property = <span class="string">'INF'</span>;
+0079                 <span class="keyword">case</span> <span class="string">'fcfs'</span>
+0080                     property = <span class="string">'FCFS'</span>;
+0081                 <span class="keyword">case</span> <span class="string">'lcfs'</span>
+0082                     property = <span class="string">'LCFS'</span>;
+0083                 <span class="keyword">case</span> <span class="string">'rand'</span>
+0084                     property = <span class="string">'RAND'</span>;
+0085                 <span class="keyword">case</span> <span class="string">'sjf'</span>
+0086                     property = <span class="string">'SJF'</span>;
+0087                 <span class="keyword">case</span> <span class="string">'ljf'</span>
+0088                     property = <span class="string">'LJF'</span>;
+0089                 <span class="keyword">case</span> <span class="string">'ps'</span>
+0090                     property = <span class="string">'PS'</span>;
+0091                 <span class="keyword">case</span> <span class="string">'dps'</span>
+0092                     property = <span class="string">'DPS'</span>;
+0093                 <span class="keyword">case</span> <span class="string">'gps'</span>
+0094                     property = <span class="string">'GPS'</span>;
+0095                 <span class="keyword">case</span> <span class="string">'sept'</span>
+0096                     property = <span class="string">'SEPT'</span>;
+0097                 <span class="keyword">case</span> <span class="string">'lept'</span>
+0098                     property = <span class="string">'LEPT'</span>;
+0099                 <span class="keyword">case</span> <span class="string">'hol'</span>
+0100                     property = <span class="string">'HOL'</span>;
+0101                 <span class="keyword">case</span> <span class="string">'ext'</span>
+0102                     property = <span class="string">'EXT'</span>;
+0103                 <span class="keyword">case</span> <span class="string">'fork'</span>
+0104                     property = <span class="string">'FORK'</span>;
+0105                 <span class="keyword">case</span> <span class="string">'ref'</span>
+0106                     property = <span class="string">'REF'</span>;
+0107                 <span class="keyword">case</span> <span class="string">'ext'</span>
+0108                     property = <span class="string">'EXT'</span>;
+0109             <span class="keyword">end</span>
+0110             
+0111         <span class="keyword">end</span>
+0112         
+0113         <a name="_sub2" href="#_subfunctions" class="code">function text = toFeature(type)</a>
+0114             <span class="keyword">switch</span> type
+0115                 <span class="keyword">case</span> SchedStrategy.INF
+0116                     text = <span class="string">'SchedStrategy_INF'</span>;
+0117                 <span class="keyword">case</span> SchedStrategy.FCFS
+0118                     text = <span class="string">'SchedStrategy_FCFS'</span>;
+0119                 <span class="keyword">case</span> SchedStrategy.LCFS
+0120                     text = <span class="string">'SchedStrategy_LCFS'</span>;
+0121                 <span class="keyword">case</span> SchedStrategy.RAND
+0122                     text = <span class="string">'SchedStrategy_RAND'</span>;
+0123                 <span class="keyword">case</span> SchedStrategy.SJF
+0124                     text = <span class="string">'SchedStrategy_SJF'</span>;
+0125                 <span class="keyword">case</span> SchedStrategy.LJF
+0126                     text = <span class="string">'SchedStrategy_LJF'</span>;
+0127                 <span class="keyword">case</span> SchedStrategy.PS
+0128                     text = <span class="string">'SchedStrategy_PS'</span>;
+0129                 <span class="keyword">case</span> SchedStrategy.DPS
+0130                     text = <span class="string">'SchedStrategy_DPS'</span>;
+0131                 <span class="keyword">case</span> SchedStrategy.GPS
+0132                     text = <span class="string">'SchedStrategy_GPS'</span>;
+0133                 <span class="keyword">case</span> SchedStrategy.SEPT
+0134                     text = <span class="string">'SchedStrategy_SEPT'</span>;
+0135                 <span class="keyword">case</span> SchedStrategy.LEPT
+0136                     text = <span class="string">'SchedStrategy_LEPT'</span>;
+0137                 <span class="keyword">case</span> SchedStrategy.HOL
+0138                     text = <span class="string">'SchedStrategy_HOL'</span>;
+0139                 <span class="keyword">case</span> SchedStrategy.FORK
+0140                     text = <span class="string">'SchedStrategy_FORK'</span>;
+0141                 <span class="keyword">case</span> SchedStrategy.EXT
+0142                     text = <span class="string">'SchedStrategy_EXT'</span>;
+0143                 <span class="keyword">case</span> SchedStrategy.REF
+0144                     text = <span class="string">'SchedStrategy_REF'</span>;
+0145             <span class="keyword">end</span>
+0146         <span class="keyword">end</span>
+0147     <span class="keyword">end</span>
+0148     
+0149 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

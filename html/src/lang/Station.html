@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Station</title>
+  <meta name="keywords" content="Station">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; Station.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>Station
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="StatefulNode.html" class="code" title="">StatefulNode</a>	</li><li><a href="Station.html" class="code" title="">Station</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Join.html" class="code" title="">Join</a>	</li><li><a href="Queue.html" class="code" title="">Queue</a>	</li><li><a href="Source.html" class="code" title="">Source</a>	</li><li><a href="Station.html" class="code" title="">Station</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = Station(name)</a></li><li><a href="#_sub2" class="code">function setNumServers(self, value)</a></li><li><a href="#_sub3" class="code">function setCapacity(self, value)</a></li><li><a href="#_sub4" class="code">function setChainCapacity(self, values)</a></li><li><a href="#_sub5" class="code">function K = getNumberOfServerPhases(self)</a></li><li><a href="#_sub6" class="code">function isD = isServiceDisabled(self, class)</a></li><li><a href="#_sub7" class="code">function isI = isServiceImmediate(self, class)</a></li><li><a href="#_sub8" class="code">function R = getNumberOfServiceClasses(self)</a></li><li><a href="#_sub9" class="code">function [R,K,S] = getStationParams(self)</a></li><li><a href="#_sub10" class="code">function [p] = getSelfLoopProbabilities(self)</a></li><li><a href="#_sub11" class="code">function [mu,phi] = getCoxSourceRates(self)</a></li><li><a href="#_sub12" class="code">function [mu,phi] = getCoxServiceRates(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Station.html" class="code" title="">Station</a> &lt; <a href="StatefulNode.html" class="code" title="">StatefulNode</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         numberOfServers;
+0007         numberOfServerPhases;
+0008         cap;
+0009         classCap;
+0010     <span class="keyword">end</span>
+0011     
+0012     methods(Hidden)
+0013         <span class="comment">%Constructor</span>
+0014         <a name="_sub0" href="#_subfunctions" class="code">function self = Station(name)</a>
+0015             self = self@<a href="StatefulNode.html" class="code" title="">StatefulNode</a>(name);
+0016             self.cap = Inf;
+0017             self.classCap = [];
+0018             self.numberOfServerPhases = [];
+0019         <span class="keyword">end</span>
+0020     <span class="keyword">end</span>
+0021     
+0022     methods
+0023         <a name="_sub1" href="#_subfunctions" class="code">function setNumServers(self, value)</a>
+0024             self.numberOfServers = value;
+0025         <span class="keyword">end</span>
+0026                 
+0027         <a name="_sub2" href="#_subfunctions" class="code">function setCapacity(self, value)</a>
+0028             self.cap = value;
+0029         <span class="keyword">end</span>
+0030         
+0031         <a name="_sub3" href="#_subfunctions" class="code">function setChainCapacity(self, values)</a>
+0032             qn = self.model.getStruct;
+0033             <span class="keyword">if</span> numel(values) ~= qn.nchains
+0034                 error(<span class="string">'The method requires in input a capacity value for each chain.'</span>);
+0035             <span class="keyword">end</span>
+0036             <span class="keyword">for</span> c = 1:qn.nchains
+0037                 inchain = find(qn.chains(c,:));
+0038                 <span class="keyword">for</span> r = inchain
+0039                     <span class="keyword">if</span> ~self.isServiceDisabled(r)
+0040                         self.classCap(r) = values(c);
+0041                     <span class="keyword">else</span>
+0042                         self.classCap(r) = Inf;
+0043                     <span class="keyword">end</span>
+0044                 <span class="keyword">end</span>
+0045             <span class="keyword">end</span>
+0046             self.cap = min(sum(self.classCap(self.classCap&gt;0)), self.cap);
+0047         <span class="keyword">end</span>
+0048         
+0049         <a name="_sub4" href="#_subfunctions" class="code">function K = getNumberOfServerPhases(self)</a>
+0050             R = size(self.server.serviceProcess,2);
+0051             <span class="keyword">if</span> isempty(self.numberOfServerPhases)
+0052                 K = zeros(1,R);
+0053                 <span class="keyword">for</span> r=1:R
+0054                     K(r) = self.server.serviceProcess{1,r}{end}.getNumberOfPhases();
+0055                 <span class="keyword">end</span>
+0056                 self.numberOfServerPhases = K;
+0057             <span class="keyword">else</span>
+0058                 K = self.numberOfServerPhases;
+0059             <span class="keyword">end</span>
+0060         <span class="keyword">end</span>
+0061         
+0062         <a name="_sub5" href="#_subfunctions" class="code">function isD = isServiceDisabled(self, class)</a>
+0063             <span class="keyword">switch</span> self.server.className
+0064                 <span class="keyword">case</span> <span class="string">'ServiceTunnel'</span>
+0065                     isD = false;
+0066                 <span class="keyword">otherwise</span>
+0067                     isD = self.server.serviceProcess{1,class}{end}.isDisabled();
+0068             <span class="keyword">end</span>
+0069         <span class="keyword">end</span>
+0070         
+0071         <a name="_sub6" href="#_subfunctions" class="code">function isI = isServiceImmediate(self, class)</a>
+0072             isI = self.server.serviceProcess{1,class}{end}.isImmediate();
+0073         <span class="keyword">end</span>
+0074         
+0075         <a name="_sub7" href="#_subfunctions" class="code">function R = getNumberOfServiceClasses(self)</a>
+0076             R = size(self.server.serviceProcess,2);
+0077         <span class="keyword">end</span>
+0078         
+0079         <a name="_sub8" href="#_subfunctions" class="code">function [R,K,S] = getStationParams(self)</a>
+0080             R = self.getNumberOfServiceClasses();
+0081             K = self.getNumberOfServerPhases();
+0082             S = self.numberOfServers;
+0083         <span class="keyword">end</span>
+0084         
+0085         <a name="_sub9" href="#_subfunctions" class="code">function [p] = getSelfLoopProbabilities(self)</a>
+0086             R = self.getNumberOfServiceClasses();
+0087             p = zeros(1,R);
+0088             <span class="keyword">for</span> k=1:R
+0089                 nOutLinks = length(self.output.outputStrategy{k}{end});
+0090                 <span class="keyword">switch</span> RoutingStrategy.toText(self.output.outputStrategy{k}{2})
+0091                     <span class="keyword">case</span> <span class="string">'Random'</span>
+0092                         p(k) = 1 / nOutLinks;
+0093                     <span class="keyword">case</span> <span class="string">'Probabilities'</span>
+0094                         <span class="keyword">for</span> t=1:nOutLinks <span class="comment">% for all outgoing links</span>
+0095                             <span class="keyword">if</span> strcmp(self.output.outputStrategy{k}{end}{t}{1}.name, self.name)
+0096                                 p(k) = self.output.outputStrategy{k}{end}{t}{2};
+0097                                 <span class="keyword">break</span>
+0098                             <span class="keyword">end</span>
+0099                         <span class="keyword">end</span>
+0100                 <span class="keyword">end</span>
+0101             <span class="keyword">end</span>
+0102         <span class="keyword">end</span>
+0103         
+0104         <a name="_sub10" href="#_subfunctions" class="code">function [mu,phi] = getCoxSourceRates(self)</a>
+0105             R = size(self.input.sourceClasses,2);
+0106             mu = cell(1,R);
+0107             phi = cell(1,R);
+0108             <span class="keyword">for</span> r=1:R
+0109                 <span class="keyword">if</span> isempty(self.input.sourceClasses{r})
+0110                     self.input.sourceClasses{r} = {[],ServiceStrategy.LI,Disabled()};
+0111                     mu{r}  = NaN;
+0112                     phi{r} = NaN;
+0113                 <span class="keyword">elseif</span> ~self.input.sourceClasses{r}{end}.isDisabled()
+0114                     <span class="keyword">switch</span> self.input.sourceClasses{r}{end}.javaClass
+0115                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.Replayer'</span>
+0116                             [mu{r}, phi{r}] = self.input.sourceClasses{r}{end}.fitCox();
+0117                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.Exponential'</span>
+0118                             mu{r} = self.input.sourceClasses{r}{end}.params{1}.paramValue;
+0119                             phi{r} = 1;
+0120                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.CoxianDistr'</span>
+0121                             mu1 = self.input.sourceClasses{r}{end}.params{1}.paramValue;
+0122                             mu2 = self.input.sourceClasses{r}{end}.params{2}.paramValue;
+0123                             p = self.input.sourceClasses{r}{end}.params{3}.paramValue;
+0124                             mu{r} = [mu1;mu2];
+0125                             phi{r} = [p;1.0];
+0126                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.HyperExp'</span>
+0127                             p = self.input.sourceClasses{r}{end}.params{1}.paramValue;
+0128                             mu1 = self.input.sourceClasses{r}{end}.params{2}.paramValue;
+0129                             mu2 = self.input.sourceClasses{r}{end}.params{3}.paramValue;
+0130                             PH = {[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
+0131                             [mu{r}, phi{r}] = Cox.fitMeanAndSCV(map_mean(PH), map_scv(PH));
+0132                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.Erlang'</span>
+0133                             mu1 = self.input.sourceClasses{r}{end}.params{1}.paramValue;
+0134                             k = self.input.sourceClasses{r}{end}.params{2}.paramValue;
+0135                             mu{r} = mu1*ones(k,1);
+0136                             phi{r} = zeros(k,1); phi{r}(end)=1;
+0137                     <span class="keyword">end</span>
+0138                 <span class="keyword">else</span>
+0139                     mu{r} = NaN;
+0140                     phi{r} = NaN;
+0141                 <span class="keyword">end</span>
+0142             <span class="keyword">end</span>
+0143         <span class="keyword">end</span>
+0144         
+0145         <a name="_sub11" href="#_subfunctions" class="code">function [mu,phi] = getCoxServiceRates(self)</a>
+0146             R = size(self.server.serviceProcess,2);
+0147             mu = cell(1,R);
+0148             phi = cell(1,R);
+0149             <span class="keyword">for</span> r=1:R
+0150                 <span class="keyword">if</span> isempty(self.server.serviceProcess{r})
+0151                     self.server.serviceProcess{r} = {[],ServiceStrategy.LI,Disabled()};
+0152                     mu{r}  = NaN;
+0153                     phi{r} = NaN;
+0154                 <span class="keyword">elseif</span> self.server.serviceProcess{r}{end}.isImmediate()
+0155                     mu{r} = Distrib.InfRate;
+0156                     phi{r} = 1;
+0157                 <span class="keyword">elseif</span> ~self.server.serviceProcess{r}{end}.isDisabled()
+0158                     <span class="keyword">switch</span> self.server.serviceProcess{r}{end}.javaClass
+0159                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.Replayer'</span>
+0160                             cox2 = self.server.serviceProcess{r}{end}.fitCox();
+0161                             mu1 = cox2.params{1}.paramValue;
+0162                             mu2 = cox2.params{2}.paramValue;
+0163                             phi1 = cox2.params{3}.paramValue;
+0164                             mu{r} = [mu1, mu2];
+0165                             phi{r} = [phi1,1.0];
+0166                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.Exponential'</span>
+0167                             mu{r} = self.server.serviceProcess{r}{end}.params{1}.paramValue;
+0168                             phi{r} = 1;
+0169                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.CoxianDistr'</span>
+0170                             mu1 = self.server.serviceProcess{r}{end}.params{1}.paramValue;
+0171                             mu2 = self.server.serviceProcess{r}{end}.params{2}.paramValue;
+0172                             p = self.server.serviceProcess{r}{end}.params{3}.paramValue;
+0173                             mu{r} = [mu1;mu2];
+0174                             phi{r} = [p;1.0];
+0175                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.HyperExp'</span>
+0176                             p = self.server.serviceProcess{r}{end}.params{1}.paramValue;
+0177                             mu1 = self.server.serviceProcess{r}{end}.params{2}.paramValue;
+0178                             mu2 = self.server.serviceProcess{r}{end}.params{3}.paramValue;
+0179                             PH = {[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
+0180                             [mu{r}, phi{r}] = Cox.fitMeanAndSCV(map_mean(PH), map_scv(PH));
+0181                         <span class="keyword">case</span> <span class="string">'jmt.engine.random.Erlang'</span>
+0182                             mu1 = self.server.serviceProcess{r}{end}.params{1}.paramValue;
+0183                             k = self.server.serviceProcess{r}{end}.params{2}.paramValue;
+0184                             mu{r} = mu1*ones(k,1);
+0185                             phi{r} = zeros(k,1); phi{r}(end)=1;
+0186                     <span class="keyword">end</span>
+0187                 <span class="keyword">else</span>
+0188                     mu{r} = NaN;
+0189                     phi{r} = NaN;
+0190                 <span class="keyword">end</span>
+0191             <span class="keyword">end</span>
+0192         <span class="keyword">end</span>
+0193     <span class="keyword">end</span>
+0194 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

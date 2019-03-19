@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getAvgSys</title>
+  <meta name="keywords" content="getAvgSys">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">@NetworkSolver</a> &gt; getAvgSys.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\@NetworkSolver&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getAvgSys
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [CNchain,XNchain] = getAvgSys(self,R,T) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="NetworkSolver.html" class="code" title="">NetworkSolver</a>	</li><li><a href="getAvgSysRespT.html" class="code" title="function [CNchain] = getAvgSysRespT(self,R)">getAvgSysRespT</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgSysTable.html" class="code" title="function [AvgSysChainTable, CT,XT] = getAvgSysTable(self,R,T)">getAvgSysTable</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgSysTput.html" class="code" title="function [TNchain] = getAvgSysTput(self,T)">getAvgSysTput</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [CNchain,XNchain] = getAvgSys(self,R,T)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 qn = self.model.getStruct();
+0006 <span class="keyword">if</span> nargin &lt; 3
+0007     R = self.model.getAvgRespTHandles;
+0008     T = self.model.getAvgTputHandles;
+0009 <span class="keyword">end</span>
+0010 [~,~,RN,TN] = self.getAvg([],[],R,T);
+0011 
+0012 refstats = qn.refstat;
+0013 completes = true(1,qn.nclasses);
+0014 <span class="keyword">for</span> r=1:qn.nclasses
+0015     completes(r) = T{refstats(r),r}.class.completes;
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="keyword">if</span> any(isinf(qn.njobs')) <span class="comment">% if the model has any open class</span>
+0019     <span class="comment">% TODO: this could be optimised by computing the statistics</span>
+0020     <span class="comment">% only for open chains</span>
+0021     
+0022     <span class="comment">% compute chain visits</span>
+0023     alpha = zeros(qn.nstations,qn.nclasses);
+0024     CNclass = zeros(1,qn.nclasses);
+0025     <span class="keyword">for</span> c=1:qn.nchains
+0026         inchain = find(qn.chains(c,:));
+0027         <span class="keyword">for</span> r=inchain
+0028             CNclass(r)=0;
+0029             <span class="keyword">for</span> i=1:qn.nstations
+0030                 <span class="keyword">if</span> ~isempty(RN) &amp;&amp; ~(isinf(qn.njobs(r)) &amp;&amp; i==qn.refstat(r)) <span class="comment">% not empty and not source</span>
+0031                     CNclass(r) = CNclass(r) + qn.visits{c}(i,r)*RN(i,r)/qn.visits{c}(qn.refstat(r),r);
+0032                 <span class="keyword">end</span>
+0033             <span class="keyword">end</span>
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036     
+0037     <span class="keyword">for</span> c=1:qn.nchains
+0038         inchain = find(qn.chains(c,:));
+0039         <span class="keyword">for</span> i=1:qn.nstations
+0040             <span class="keyword">for</span> k=inchain <span class="comment">% for all classes within the chain (a class belongs to a single chain, the reference station must be identical for all classes within a chain )</span>
+0041                 alpha(i,k) = alpha(i,k) + qn.visits{c}(i,k)/sum(qn.visits{c}(qn.refstat(k),inchain));
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045     alpha(~isfinite(alpha))=0;
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="comment">% compute average chain metrics</span>
+0049 CNchain = zeros(1,qn.nchains);
+0050 XNchain = zeros(1,qn.nchains);
+0051 <span class="keyword">for</span> c=1:qn.nchains
+0052     inchain = find(qn.chains(c,:));
+0053     completingclasses = find(qn.chains(c,:) &amp; completes);
+0054     <span class="keyword">if</span> ~isempty(TN)
+0055         XNchain(c) = 0;
+0056         <span class="comment">% all classes in same chain must share the same refstation, so we use the first one</span>
+0057         ref = refstats(inchain(1));
+0058         <span class="comment">% we now compute the incoming throughput to the</span>
+0059         <span class="comment">% reference station from completing classes</span>
+0060         <span class="keyword">for</span> i=1:qn.nstations
+0061             <span class="keyword">for</span> r=completingclasses(:)'
+0062                 <span class="keyword">for</span> s=inchain(:)'
+0063                     <span class="keyword">if</span> ~isnan(TN(i,r))
+0064                         XNchain(c) = XNchain(c) + qn.rt((i-1)*qn.nclasses + r, (ref-1)*qn.nclasses + s )*TN(i,r);
+0065                     <span class="keyword">end</span>
+0066                 <span class="keyword">end</span>
+0067             <span class="keyword">end</span>
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070     
+0071     <span class="comment">% If this is a closed chain we simply apply Little's law</span>
+0072     nJobsChain = sum(qn.njobs(find(qn.chains(c,:)))); <span class="comment">%#ok&lt;FNDSB&gt;</span>
+0073     <span class="keyword">if</span> ~isinf(nJobsChain)
+0074         CNchain(c) = nJobsChain / XNchain(c);
+0075     <span class="keyword">else</span> <span class="comment">% if this is an open chain</span>
+0076         <span class="keyword">if</span> length(inchain) ~= length(completingclasses)
+0077             error(<span class="string">'Edge-based chain definition not yet supported for open queueing networks.'</span>);
+0078         <span class="keyword">else</span>
+0079             <span class="comment">% we use nan sum to disregard response at stations where</span>
+0080             <span class="comment">% the class is not defined</span>
+0081             CNchain(c) = sumfinite(alpha(refstats(inchain(1)),inchain).*CNclass(inchain));
+0082         <span class="keyword">end</span>
+0083     <span class="keyword">end</span>
+0084 <span class="keyword">end</span>
+0085 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

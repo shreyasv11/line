@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of NetworkSolver</title>
+  <meta name="keywords" content="NetworkSolver">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">@NetworkSolver</a> &gt; NetworkSolver.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\@NetworkSolver&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>NetworkSolver
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="NetworkSolver.html" class="code" title="">NetworkSolver</a>	</li><li><a href="getAvg.html" class="code" title="function [QNclass,UNclass,RNclass,TNclass] = getAvg(self,Q,U,R,T)">getAvg</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgArvRChain.html" class="code" title="function [AN] = getAvgArvRChain(self,A)">getAvgArvRChain</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgChain.html" class="code" title="function [QN,UN,RN,TN] = getAvgChain(self,~,~,~,~)">getAvgChain</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgQLenChain.html" class="code" title="function [QN] = getAvgQLenChain(self,Q)">getAvgQLenChain</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgRespTChain.html" class="code" title="function [RN] = getAvgRespTChain(self,R)">getAvgRespTChain</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgSys.html" class="code" title="function [CNchain,XNchain] = getAvgSys(self,R,T)">getAvgSys</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgSysRespT.html" class="code" title="function [CNchain] = getAvgSysRespT(self,R)">getAvgSysRespT</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgSysTable.html" class="code" title="function [AvgSysChainTable, CT,XT] = getAvgSysTable(self,R,T)">getAvgSysTable</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgSysTput.html" class="code" title="function [TNchain] = getAvgSysTput(self,T)">getAvgSysTput</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgTable.html" class="code" title="function [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled)">getAvgTable</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgTputChain.html" class="code" title="function [TN] = getAvgTputChain(self,T)">getAvgTputChain</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getAvgUtilChain.html" class="code" title="function [UN] = getAvgUtilChain(self,U)">getAvgUtilChain</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeAvgTable.html" class="code" title="function [AvgTable,QT,UT,RT,TT] = getNodeAvgTable(self,Q,U,R,T,keepDisabled)">getNodeAvgTable</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getTranAvg.html" class="code" title="function [QNclass_t, UNclass_t, TNclass_t] = getTranAvg(self,Qt,Ut,Tt)">getTranAvg</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="NetworkSolver.html" class="code" title="">NetworkSolver</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = NetworkSolver(model, name, options)</a></li><li><a href="#_sub2" class="code">function bool = hasAvgResults(self)</a></li><li><a href="#_sub3" class="code">function bool = hasTranResults(self)</a></li><li><a href="#_sub4" class="code">function bool = hasDistribResults(self)</a></li><li><a href="#_sub5" class="code">function self = updateModel(self, model)</a></li><li><a href="#_sub6" class="code">function ag = getAG(self)</a></li><li><a href="#_sub7" class="code">function qn = getStruct(self)</a></li><li><a href="#_sub8" class="code">function QN = getAvgQLen(self)</a></li><li><a href="#_sub9" class="code">function UN = getAvgUtil(self)</a></li><li><a href="#_sub10" class="code">function RN = getAvgRespT(self)</a></li><li><a href="#_sub11" class="code">function TN = getAvgTput(self)</a></li><li><a href="#_sub12" class="code">function AN = getAvgArvR(self)</a></li><li><a href="#_sub13" class="code">function [QNn,UNn,RNn,TNn] = getNodeAvg(self, Q, U, R, T)</a></li><li><a href="#_sub14" class="code">function self = setAvgResults(self,Q,U,R,T,C,X,runtime)</a></li><li><a href="#_sub15" class="code">function self = setCdfResults(self,Cd,runtime)</a></li><li><a href="#_sub16" class="code">function self = setTranAvgResults(self,Qt,Ut,Rt,Tt,Ct,Xt,runtimet)</a></li><li><a href="#_sub17" class="code">function [lNormConst] = getProbNormConst(self)</a></li><li><a href="#_sub18" class="code">function Pnir = getProbState(self, ist)</a></li><li><a href="#_sub19" class="code">function Pnjoint = getProbSysState(self)</a></li><li><a href="#_sub20" class="code">function RD = getCdfRespT(self, R)</a></li><li><a href="#_sub21" class="code">function RD = getTranCdfRespT(self, R)</a></li><li><a href="#_sub22" class="code">function RD = getTranCdfPassT(self, R)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="NetworkSolver.html" class="code" title="">NetworkSolver</a> &lt; Solver
+0002     <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     
+0006     properties
+0007         handles;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods
+0011         <span class="comment">%Constructor</span>
+0012         <a name="_sub0" href="#_subfunctions" class="code">function self = NetworkSolver(model, name, options)</a>
+0013             self = self@Solver(model, name);
+0014             <span class="keyword">if</span> exist(<span class="string">'options'</span>,<span class="string">'var'</span>), self.setOptions(options); <span class="keyword">end</span>
+0015             self.result = [];
+0016             self.handles.Q = [];
+0017             self.handles.U = [];
+0018             self.handles.W = [];
+0019             self.handles.T = [];
+0020             model.refreshStruct(); <span class="comment">% force model to refresh</span>
+0021         <span class="keyword">end</span>
+0022     <span class="keyword">end</span>
+0023     
+0024     methods(Access = <span class="string">'protected'</span>)
+0025         <a name="_sub1" href="#_subfunctions" class="code">function bool = hasAvgResults(self)</a>
+0026             bool = false;
+0027             <span class="keyword">if</span> self.hasResults
+0028                 <span class="keyword">if</span> isfield(self.result,<span class="string">'Avg'</span>)
+0029                     bool = true;
+0030                 <span class="keyword">end</span>
+0031             <span class="keyword">end</span>
+0032         <span class="keyword">end</span>
+0033         
+0034         <a name="_sub2" href="#_subfunctions" class="code">function bool = hasTranResults(self)</a>
+0035             bool = false;
+0036             <span class="keyword">if</span> self.hasResults
+0037                 bool = isfield(self.result.TranAvg,<span class="string">'Qt'</span>);
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">end</span>
+0040         
+0041         <a name="_sub3" href="#_subfunctions" class="code">function bool = hasDistribResults(self)</a>
+0042             bool = false;
+0043             <span class="keyword">if</span> self.hasResults
+0044                 bool = isfield(self.result.Distrib,<span class="string">'C'</span>);
+0045             <span class="keyword">end</span>
+0046         <span class="keyword">end</span>
+0047     <span class="keyword">end</span>
+0048     
+0049     methods
+0050         <a name="_sub4" href="#_subfunctions" class="code">function self = updateModel(self, model)</a>
+0051             self.model = model;
+0052         <span class="keyword">end</span>
+0053         
+0054         <a name="_sub5" href="#_subfunctions" class="code">function ag = getAG(self)</a>
+0055             ag = self.model.getAG();
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub6" href="#_subfunctions" class="code">function qn = getStruct(self)</a>
+0059             qn = self.model.getStruct();
+0060         <span class="keyword">end</span>
+0061         
+0062         <a name="_sub7" href="#_subfunctions" class="code">function QN = getAvgQLen(self)</a>
+0063             Q = self.model.getAvgQLenHandles();
+0064             [QN,~,~,~] = self.getAvg(Q,[],[],[]);
+0065         <span class="keyword">end</span>
+0066         
+0067         <a name="_sub8" href="#_subfunctions" class="code">function UN = getAvgUtil(self)</a>
+0068             U = self.model.getAvgUtilHandles();
+0069             [~,UN,~,~] = self.getAvg([],U,[],[]);
+0070         <span class="keyword">end</span>
+0071         
+0072         <a name="_sub9" href="#_subfunctions" class="code">function RN = getAvgRespT(self)</a>
+0073             R = self.model.getAvgRespTHandles();
+0074             [~,~,RN,~] = self.getAvg([],[],R,[]);
+0075         <span class="keyword">end</span>
+0076         
+0077         <a name="_sub10" href="#_subfunctions" class="code">function TN = getAvgTput(self)</a>
+0078             T = self.model.getAvgTputHandles();
+0079             [~,~,~,TN] = self.getAvg([],[],[],T);
+0080         <span class="keyword">end</span>
+0081         
+0082         <a name="_sub11" href="#_subfunctions" class="code">function AN = getAvgArvR(self)</a>
+0083             M = self.model.getNumberOfStations;
+0084             K = self.model.getNumberOfClasses;
+0085             T = self.model.getAvgTputHandles();
+0086             [~,~,~,TN] = self.getAvg([],[],[],T);
+0087             qn = self.model.getStruct;
+0088             <span class="keyword">if</span> ~isempty(T)
+0089                 AN = zeros(M,K);
+0090                 <span class="keyword">for</span> k=1:K
+0091                     <span class="keyword">for</span> i=1:M
+0092                         <span class="keyword">for</span> j=1:M
+0093                             <span class="keyword">for</span> r=1:K
+0094                                 AN(i,k) = AN(i,k) + TN(j,r)*qn.rt((j-1)*K+r, (i-1)*K+k);
+0095                             <span class="keyword">end</span>
+0096                         <span class="keyword">end</span>
+0097                     <span class="keyword">end</span>
+0098                 <span class="keyword">end</span>
+0099             <span class="keyword">end</span>
+0100         <span class="keyword">end</span>
+0101         
+0102         <a name="_sub12" href="#_subfunctions" class="code">function [QNn,UNn,RNn,TNn] = getNodeAvg(self, Q, U, R, T)</a>
+0103             <span class="keyword">if</span> nargin == 1 <span class="comment">% no parameter</span>
+0104                 <span class="keyword">if</span> isempty(self.model.handles) || ~isfield(self.model.handles,<span class="string">'Q'</span>) || ~isfield(self.model.handles,<span class="string">'U'</span>) || ~isfield(self.model.handles,<span class="string">'R'</span>) || ~isfield(self.model.handles,<span class="string">'T'</span>)
+0105                     self.reset(); <span class="comment">% reset in case there are partial results saved</span>
+0106                 <span class="keyword">end</span>
+0107                 [Q,U,R,T] = self.model.getAvgHandles;
+0108             <span class="keyword">elseif</span> nargin == 2
+0109                 handlers = Q;
+0110                 Q=handlers{1};
+0111                 U=handlers{2};
+0112                 R=handlers{3};
+0113                 T=handlers{4};
+0114             <span class="keyword">end</span>
+0115             qn = self.model.getStruct;
+0116             [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
+0117             I = self.model.getNumberOfNodes;
+0118             M = self.model.getNumberOfStations;
+0119             R = self.model.getNumberOfClasses;
+0120             C = self.model.getNumberOfChains;
+0121             QNn = zeros(I,R);
+0122             UNn = zeros(I,R);
+0123             RNn = zeros(I,R);
+0124             TNn = zeros(I,R);
+0125             <span class="keyword">for</span> ist=1:M
+0126                 ind = qn.stationToNode(ist);
+0127                 QNn(ind,:) = QN(ist,:);
+0128                 UNn(ind,:) = UN(ist,:);
+0129                 RNn(ind,:) = RN(ist,:);
+0130                 TNn(ind,:) = TN(ist,:);
+0131             <span class="keyword">end</span>
+0132             <span class="comment">% update tputs for all nodes but the sink and the joins</span>
+0133             <span class="keyword">for</span> ind=1:I
+0134                 <span class="keyword">if</span> qn.nodetype(ind) ~= NodeType.Sink &amp;&amp; qn.nodetype(ind) ~= NodeType.Join
+0135                     <span class="keyword">if</span> qn.isstatedep(ist,3) <span class="comment">% if state-dep routing</span>
+0136                         error(<span class="string">'getNodeAvg does not support models with state-dependent routing.'</span>);
+0137                     <span class="keyword">else</span>
+0138                         <span class="keyword">for</span> c = 1:C
+0139                             inchain = find(qn.chains(c,:));
+0140                             <span class="keyword">for</span> r = inchain
+0141                                 anystat = find(qn.visits{c}(:,r));
+0142                                 <span class="keyword">if</span> ~isempty(anystat)
+0143                                     anystat = anystat(1);
+0144                                     TNn(ind, r) =  (qn.nodevisits{c}(ind,r) / qn.visits{c}(anystat,r)) * TN(anystat,r);
+0145                                 <span class="keyword">end</span>
+0146                             <span class="keyword">end</span>
+0147                         <span class="keyword">end</span>
+0148                     <span class="keyword">end</span>
+0149                     TNn(isnan(TNn)) = 0;
+0150                 <span class="keyword">end</span>
+0151             <span class="keyword">end</span>
+0152             <span class="comment">% now update sink</span>
+0153             <span class="keyword">for</span> ind=1:I
+0154                 <span class="keyword">if</span> qn.nodetype(ind) == NodeType.Sink
+0155                     <span class="keyword">for</span> jnd=1:I
+0156                         <span class="keyword">for</span> k=1:R
+0157                             <span class="keyword">for</span> r=1:R
+0158                                 TNn(ind, k) = TNn(ind, k) + TNn(jnd,r)*qn.rtnodes((jnd-1)*R+r, (ind-1)*R+k);
+0159                             <span class="keyword">end</span>
+0160                         <span class="keyword">end</span>
+0161                     <span class="keyword">end</span>
+0162                 <span class="keyword">end</span>
+0163             <span class="keyword">end</span>
+0164         <span class="keyword">end</span>
+0165     
+0166     <span class="comment">% also accepts a cell array with the handlers in it</span>
+0167     [QN,UN,RN,TN]       = <a href="getAvg.html" class="code" title="function [QNclass,UNclass,RNclass,TNclass] = getAvg(self,Q,U,R,T)">getAvg</a>(self,Q,U,R,T);
+0168     [AvgTable,QT,UT,RT,TT] = <a href="getAvgTable.html" class="code" title="function [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled)">getAvgTable</a>(self,Q,U,R,T,keepDisabled);
+0169     [NodeAvgTable,QTn,UTn,RTn,TTn] = <a href="getNodeAvgTable.html" class="code" title="function [AvgTable,QT,UT,RT,TT] = getNodeAvgTable(self,Q,U,R,T,keepDisabled)">getNodeAvgTable</a>(self,Q,U,R,T,keepDisabled);
+0170     [QNc,UNc,RNc,TNc]   = <a href="getAvgChain.html" class="code" title="function [QN,UN,RN,TN] = getAvgChain(self,~,~,~,~)">getAvgChain</a>(self,Q,U,R,T);
+0171     [CNc,XNc]           = <a href="getAvgSys.html" class="code" title="function [CNchain,XNchain] = getAvgSys(self,R,T)">getAvgSys</a>(self,R,T);
+0172     [AN]                = <a href="getAvgArvRChain.html" class="code" title="function [AN] = getAvgArvRChain(self,A)">getAvgArvRChain</a>(self,Q);
+0173     [QN]                = <a href="getAvgQLenChain.html" class="code" title="function [QN] = getAvgQLenChain(self,Q)">getAvgQLenChain</a>(self,Q);
+0174     [UN]                = <a href="getAvgUtilChain.html" class="code" title="function [UN] = getAvgUtilChain(self,U)">getAvgUtilChain</a>(self,U);
+0175     [RN]                = <a href="getAvgRespTChain.html" class="code" title="function [RN] = getAvgRespTChain(self,R)">getAvgRespTChain</a>(self,R);
+0176     [TN]                = <a href="getAvgTputChain.html" class="code" title="function [TN] = getAvgTputChain(self,T)">getAvgTputChain</a>(self,T);
+0177     [RN]                = <a href="getAvgSysRespT.html" class="code" title="function [CNchain] = getAvgSysRespT(self,R)">getAvgSysRespT</a>(self,R);
+0178     [TN]                = <a href="getAvgSysTput.html" class="code" title="function [TNchain] = getAvgSysTput(self,T)">getAvgSysTput</a>(self,T);
+0179     [CT,XT]             = <a href="getAvgSysTable.html" class="code" title="function [AvgSysChainTable, CT,XT] = getAvgSysTable(self,R,T)">getAvgSysTable</a>(self,R,T);
+0180     [QNt,UNt,TNt] = <a href="getTranAvg.html" class="code" title="function [QNclass_t, UNclass_t, TNclass_t] = getTranAvg(self,Qt,Ut,Tt)">getTranAvg</a>(self,Qt,Ut,Tt);
+0181     
+0182     <a name="_sub13" href="#_subfunctions" class="code">function self = setAvgResults(self,Q,U,R,T,C,X,runtime)</a>
+0183     self.result.(<span class="string">'solver'</span>) = self.getName();
+0184     self.result.Avg.(<span class="string">'method'</span>) = self.getOptions().method;
+0185     <span class="keyword">if</span> isnan(Q), Q=[]; <span class="keyword">end</span>
+0186     <span class="keyword">if</span> isnan(R), R=[]; <span class="keyword">end</span>
+0187     <span class="keyword">if</span> isnan(T), T=[]; <span class="keyword">end</span>
+0188     <span class="keyword">if</span> isnan(U), U=[]; <span class="keyword">end</span>
+0189     <span class="keyword">if</span> isnan(X), X=[]; <span class="keyword">end</span>
+0190     <span class="keyword">if</span> isnan(C), C=[]; <span class="keyword">end</span>
+0191     self.result.Avg.Q = Q;
+0192     self.result.Avg.R = R;
+0193     self.result.Avg.X = X;
+0194     self.result.Avg.U = U;
+0195     self.result.Avg.T = T;
+0196     self.result.Avg.C = C;
+0197     self.result.Avg.runtime = runtime;
+0198     <span class="keyword">end</span>
+0199     
+0200     <a name="_sub14" href="#_subfunctions" class="code">function self = setCdfResults(self,Cd,runtime)</a>
+0201     self.result.(<span class="string">'solver'</span>) = self.getName();
+0202     self.result.Distrib.(<span class="string">'method'</span>) = self.getOptions().method;
+0203     self.result.Distrib.C = Cd;
+0204     self.result.Distrib.runtime = runtime;
+0205     <span class="keyword">end</span>
+0206     
+0207     <a name="_sub15" href="#_subfunctions" class="code">function self = setTranAvgResults(self,Qt,Ut,Rt,Tt,Ct,Xt,runtimet)</a>
+0208     self.result.(<span class="string">'solver'</span>) = self.getName();
+0209     self.result.TranAvg.(<span class="string">'method'</span>) = self.getOptions().method;
+0210     <span class="keyword">for</span> i=1:size(Qt,1), <span class="keyword">for</span> r=1:size(Qt,2), <span class="keyword">if</span> isnan(Qt{i,r}), Qt={}; <span class="keyword">end</span>, <span class="keyword">end</span>, <span class="keyword">end</span>
+0211     <span class="keyword">for</span> i=1:size(Rt,1), <span class="keyword">for</span> r=1:size(Rt,2), <span class="keyword">if</span> isnan(Rt{i,r}), Rt={}; <span class="keyword">end</span>, <span class="keyword">end</span>, <span class="keyword">end</span>
+0212     <span class="keyword">for</span> i=1:size(Ut,1), <span class="keyword">for</span> r=1:size(Ut,2), <span class="keyword">if</span> isnan(Ut{i,r}), Ut={}; <span class="keyword">end</span>, <span class="keyword">end</span>, <span class="keyword">end</span>
+0213     <span class="keyword">for</span> i=1:size(Tt,1), <span class="keyword">for</span> r=1:size(Tt,2), <span class="keyword">if</span> isnan(Tt{i,r}), Tt={}; <span class="keyword">end</span>, <span class="keyword">end</span>, <span class="keyword">end</span>
+0214     <span class="keyword">for</span> i=1:size(Xt,1), <span class="keyword">for</span> r=1:size(Xt,2), <span class="keyword">if</span> isnan(Xt{i,r}), Xt={}; <span class="keyword">end</span>, <span class="keyword">end</span>, <span class="keyword">end</span>
+0215     <span class="keyword">for</span> i=1:size(Ct,1), <span class="keyword">for</span> r=1:size(Ct,2), <span class="keyword">if</span> isnan(Ct{i,r}), Ct={}; <span class="keyword">end</span>, <span class="keyword">end</span>, <span class="keyword">end</span>
+0216     self.result.TranAvg.Q = Qt;
+0217     self.result.TranAvg.R = Rt;
+0218     self.result.TranAvg.U = Ut;
+0219     self.result.TranAvg.T = Tt;
+0220     self.result.TranAvg.X = Xt;
+0221     self.result.TranAvg.C = Ct;
+0222     self.result.TranAvg.runtime = runtimet;
+0223     <span class="keyword">end</span>
+0224     
+0225     <span class="comment">% default warnings for advanced features to be over-ridden in subclasses</span>
+0226     <a name="_sub16" href="#_subfunctions" class="code">function [lNormConst] = getProbNormConst(self)</a>
+0227     error(<span class="string">'getProbNormConst is not supported by this solver.'</span>);
+0228     <span class="keyword">end</span>
+0229     
+0230     <a name="_sub17" href="#_subfunctions" class="code">function Pnir = getProbState(self, ist)</a>
+0231     error(<span class="string">'getProbState is not supported by this solver.'</span>);
+0232     <span class="keyword">end</span>
+0233     
+0234     <a name="_sub18" href="#_subfunctions" class="code">function Pnjoint = getProbSysState(self)</a>
+0235     error(<span class="string">'getStateSysProb is not supported by this solver.'</span>);
+0236     <span class="keyword">end</span>
+0237     
+0238     <a name="_sub19" href="#_subfunctions" class="code">function RD = getCdfRespT(self, R)</a>
+0239     error(<span class="string">'getCdfRespT is not supported by this solver.'</span>);
+0240     <span class="keyword">end</span>
+0241     
+0242     <a name="_sub20" href="#_subfunctions" class="code">function RD = getTranCdfRespT(self, R)</a>
+0243     error(<span class="string">'getTranCdfRespT is not supported by this solver.'</span>);
+0244     <span class="keyword">end</span>
+0245     
+0246     <a name="_sub21" href="#_subfunctions" class="code">function RD = getTranCdfPassT(self, R)</a>
+0247     error(<span class="string">'getTranCdfPassT is not supported by this solver.'</span>);
+0248     <span class="keyword">end</span>
+0249     
+0250 <span class="keyword">end</span>
+0251 
+0252 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

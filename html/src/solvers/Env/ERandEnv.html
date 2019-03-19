@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ERandEnv</title>
+  <meta name="keywords" content="ERandEnv">
+  <meta name="description" content="classdef ERandEnv &lt; ESolver">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">Env</a> &gt; ERandEnv.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\Env&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>ERandEnv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>classdef ERandEnv &lt; ESolver</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> classdef ERandEnv &lt; ESolver
+ % Copyright (c) 2012-2019, Imperial College London
+ % All rights reserved.
+ 
+     
+     properties
+         holdingTimes;
+         transitionMatrix;
+         transient_handlers;
+         solversInit;
+         solversIter;
+     end
+     
+     methods
+         function self = ERandEnv(networks,holdingTimes,transitionMatrix,options)
+             self = self@ESolver(networks,options);
+             self.transitionMatrix = transitionMatrix;
+             self.holdingTimes = holdingTimes;
+         end
+         
+         function runtime = run(self)
+             tic;
+                 options = self.getOptions;
+             if ~isfield(options,'verbose')
+                 options.verbose = 0;
+             end
+             
+             if ~isfield(options,'samples')
+                 options.samples = 1e4;
+             end
+             
+             if ~isfield(options,'iter_max')
+                 options.iter_max = 100;
+             end
+             if ~isfield(options,'iter_tol')
+                 options.iter_tol = 1e-4;
+             end
+             
+             if ~isfield(options,'force')
+                 options.force = false;
+             end
+             
+             for e=1:length(self.models)
+                 if ~options.force &amp;&amp; ~self.supports(self.models{e})
+                     if options.verbose
+                         fprintf(1,'The model in the random environment stage %d is not supported by the %s solver.',e,self.getName);
+                     end
+                     runtime = toc(T0);
+                     return
+                 end
+             end
+             
+             if ~isfield(options,'seed')
+                 options.seed = randi([1,1e6]);
+             end
+             
+             if isfield(options,'seed')
+                 rand('seed',options.seed);
+             end
+             
+             if ~isfield(options,'timespan')
+                 options.timespan = [0,Inf];
+             end
+             
+             E = length(self.models);
+             
+             self.solversIter = {};
+             lambda=zeros(1,E);
+             A=zeros(E); I=eye(E);
+             for e=1:E
+                 self.solversInit{e} = SolverMVA(self.models{e},self.options);
+                 self.solversIter{e} = SolverFluid(self.models{e},self.options);
+                 lambda(e) = 1/self.holdingTimes{e}.getMean;
+                 for h=1:E
+                     A(e,h)=-lambda(e)*(I(e,h)-self.transitionMatrix(e,h));
+                 end
+             end         
+             pi = ctmc_solve(A);
+             psrc = zeros(E);
+             for e = 1:E
+                 for h = setdiff(1:E,e)
+                     psrc(h,e) = pi(h) * lambda(h) * self.transitionMatrix(h,e);
+                 end
+                 if pi(e) &gt; 0
+                     psrc(:,e) = psrc(:,e) / sum(psrc(:,e));
+                 end
+             end
+             
+             for e = 1:E
+                 [Qt,Ut,Xt] = self.models{e}.getTranHandles();
+                 self.models{e}.initFromMarginal(QN);
+                 self.handlers{e} = {Qt,Ut,Xt};
+             end
+             
+             %% initialize
+             for it=1:options.iter_max
+                 QE=cell(1,E);
+                 s0 = {};
+                 for e = 1:E
+                     s0(e,:)=self.models{e}.getState;
+                     [QNt{e},UNt{e},TNt{e}] = self.solversIter{e}.getTranAvg(self.transient_handlers{e});
+                     QE{e} = zeros(size(QNt{e}));
+                     for i=1:size(QNt{e},1)
+                         for r=1:size(QNt{e},2)
+                             w{e} = [0; self.holdingTimes{e}.evalCDFInterval(QNt{e}{i,r}.Time(1:end-1), QNt{e}{i,r}.Time(2:end))];
+                             QE{e}(i,r) = QNt{e}{i,r}.Data'*w{e}/sum(w{e});
+                         end
+                     end
+                 end
+                 if it==1
+                     plot(w{e})
+                 end
+                 Q0 = cell(1,E);
+                 for e = 1:E
+                     Q0{e} = zeros(size(QE{e}));
+                     for h=1:E
+                         Q0{e} = Q0{e} + psrc(h,e) * QE{h};
+                     end
+                     self.solversIter{e}.reset();
+                     self.models{e}.initFromMarginal(Q0{e});
+                 end
+                 s0 = cell2mat(s0);
+                 if it &gt; 1 &amp;&amp; norm(s0-s0_1) &lt; options.iter_tol
+                     break
+                 end
+                 s0_1 = s0;
+             end
+             % compute the other performance indexes
+             for e=1:E
+                 for i=1:size(QNt{e},1)
+                     for r=1:size(QNt{e},2)
+                         w{e} = [0; self.holdingTimes{e}.evalCDFInterval(UNt{e}{i,r}.Time(1:end-1), UNt{e}{i,r}.Time(2:end))];
+                         UE{e}(i,r) = UNt{e}{i,r}.Data'*w{e}/sum(w{e});
+                         w{e} = [0; self.holdingTimes{e}.evalCDFInterval(TNt{e}{i,r}.Time(1:end-1), TNt{e}{i,r}.Time(2:end))];
+                         TE{e}(i,r) = TNt{e}{i,r}.Data'*w{e}/sum(w{e});
+                     end
+                 end
+             end
+             
+             QN=0*QE{e};
+             UN=0*UE{e};
+             TN=0*TE{e};
+             for e=1:E
+                 QN = QN + pi(e) * QE{e};
+                 UN = UN + pi(e) * UE{e};
+                 TN = TN + pi(e) * TE{e};
+             end
+             runtime = toc;
+             self.result.('solver') = self.getName();
+             self.result.Avg.Q = QN;
+             %    self.result.Avg.R = R;
+             %    self.result.Avg.X = X;
+             self.result.Avg.U = UN;
+             self.result.Avg.T = TN;
+             %    self.result.Avg.C = C;
+             self.result.runtime = runtime;
+         end
+         
+         function name = getName(self)
+             name = mfilename;
+         end
+         
+         function [results,runtime] = solve(self, options)
+             %            try
+                 options = self.getOptions;
+             runtime = self.run();
+             results = self.getResults();
+             %            catch me
+             %                error(getReport(me));
+             %            end
+         end
+         
+         function [QNclass, UNclass, TNclass] = getAvg(self)
+             if isempty(self.result) || (isfield(self.options,'force') &amp;&amp; self.options.force)
+                 self.solve(self.options);
+                 if isempty(self.result)
+                     QNclass=[];
+                     UNclass=[];
+                     TNclass=[];
+                     return
+                 end
+             end
+             QNclass = self.result.Avg.Q;
+             UNclass = self.result.Avg.U;
+             TNclass = self.result.Avg.T;
+         end
+     end
+     
+     methods (Static)
+         function [bool, featSupported] = supports(model)
+             featUsed = model.getUsedLangFeatures();
+             
+             featSupported = SolverFeatureSet;
+             
+             % Nodes
+             featSupported.setTrue('ClassSwitch');
+             featSupported.setTrue('DelayStation');
+             featSupported.setTrue('Queue');
+             featSupported.setTrue('Sink');
+             featSupported.setTrue('Source');
+             
+             % Distributions
+             featSupported.setTrue('Cox2');
+             featSupported.setTrue('Erlang');
+             featSupported.setTrue('Exponential');
+             featSupported.setTrue('HyperExp');
+             
+             % Sections
+             featSupported.setTrue('StatelessClassSwitcher'); % Section
+             featSupported.setTrue('InfiniteServer'); % Section
+             featSupported.setTrue('SharedServer'); % Section
+             featSupported.setTrue('Buffer'); % Section
+             featSupported.setTrue('Dispatcher'); % Section
+             featSupported.setTrue('Server'); % Section (Non-preemptive)
+             featSupported.setTrue('JobSink'); % Section
+             featSupported.setTrue('RandomSource'); % Section
+             featSupported.setTrue('ServiceTunnel'); % Section
+             
+             % Scheduling strategy
+             featSupported.setTrue('SchedStrategy_INF');
+             featSupported.setTrue('SchedStrategy_PS');
+             
+             % Customer Classes
+             featSupported.setTrue('ClosedClass');
+             featSupported.setTrue('OpenClass');
+             
+             bool = SolverFeatureSet.supports(featSupported, featUsed);
+         end
+     end
+ end</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% classdef ERandEnv &lt; ESolver</span>
+0002 <span class="comment">% % Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% % All rights reserved.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%     properties</span>
+0007 <span class="comment">%         holdingTimes;</span>
+0008 <span class="comment">%         transitionMatrix;</span>
+0009 <span class="comment">%         transient_handlers;</span>
+0010 <span class="comment">%         solversInit;</span>
+0011 <span class="comment">%         solversIter;</span>
+0012 <span class="comment">%     end</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%     methods</span>
+0015 <span class="comment">%         function self = ERandEnv(networks,holdingTimes,transitionMatrix,options)</span>
+0016 <span class="comment">%             self = self@ESolver(networks,options);</span>
+0017 <span class="comment">%             self.transitionMatrix = transitionMatrix;</span>
+0018 <span class="comment">%             self.holdingTimes = holdingTimes;</span>
+0019 <span class="comment">%         end</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%         function runtime = run(self)</span>
+0022 <span class="comment">%             tic;</span>
+0023 <span class="comment">%                 options = self.getOptions;</span>
+0024 <span class="comment">%             if ~isfield(options,'verbose')</span>
+0025 <span class="comment">%                 options.verbose = 0;</span>
+0026 <span class="comment">%             end</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%             if ~isfield(options,'samples')</span>
+0029 <span class="comment">%                 options.samples = 1e4;</span>
+0030 <span class="comment">%             end</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%             if ~isfield(options,'iter_max')</span>
+0033 <span class="comment">%                 options.iter_max = 100;</span>
+0034 <span class="comment">%             end</span>
+0035 <span class="comment">%             if ~isfield(options,'iter_tol')</span>
+0036 <span class="comment">%                 options.iter_tol = 1e-4;</span>
+0037 <span class="comment">%             end</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%             if ~isfield(options,'force')</span>
+0040 <span class="comment">%                 options.force = false;</span>
+0041 <span class="comment">%             end</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">%             for e=1:length(self.models)</span>
+0044 <span class="comment">%                 if ~options.force &amp;&amp; ~self.supports(self.models{e})</span>
+0045 <span class="comment">%                     if options.verbose</span>
+0046 <span class="comment">%                         fprintf(1,'The model in the random environment stage %d is not supported by the %s solver.',e,self.getName);</span>
+0047 <span class="comment">%                     end</span>
+0048 <span class="comment">%                     runtime = toc(T0);</span>
+0049 <span class="comment">%                     return</span>
+0050 <span class="comment">%                 end</span>
+0051 <span class="comment">%             end</span>
+0052 <span class="comment">%</span>
+0053 <span class="comment">%             if ~isfield(options,'seed')</span>
+0054 <span class="comment">%                 options.seed = randi([1,1e6]);</span>
+0055 <span class="comment">%             end</span>
+0056 <span class="comment">%</span>
+0057 <span class="comment">%             if isfield(options,'seed')</span>
+0058 <span class="comment">%                 rand('seed',options.seed);</span>
+0059 <span class="comment">%             end</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">%             if ~isfield(options,'timespan')</span>
+0062 <span class="comment">%                 options.timespan = [0,Inf];</span>
+0063 <span class="comment">%             end</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">%             E = length(self.models);</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">%             self.solversIter = {};</span>
+0068 <span class="comment">%             lambda=zeros(1,E);</span>
+0069 <span class="comment">%             A=zeros(E); I=eye(E);</span>
+0070 <span class="comment">%             for e=1:E</span>
+0071 <span class="comment">%                 self.solversInit{e} = SolverMVA(self.models{e},self.options);</span>
+0072 <span class="comment">%                 self.solversIter{e} = SolverFluid(self.models{e},self.options);</span>
+0073 <span class="comment">%                 lambda(e) = 1/self.holdingTimes{e}.getMean;</span>
+0074 <span class="comment">%                 for h=1:E</span>
+0075 <span class="comment">%                     A(e,h)=-lambda(e)*(I(e,h)-self.transitionMatrix(e,h));</span>
+0076 <span class="comment">%                 end</span>
+0077 <span class="comment">%             end</span>
+0078 <span class="comment">%             pi = ctmc_solve(A);</span>
+0079 <span class="comment">%             psrc = zeros(E);</span>
+0080 <span class="comment">%             for e = 1:E</span>
+0081 <span class="comment">%                 for h = setdiff(1:E,e)</span>
+0082 <span class="comment">%                     psrc(h,e) = pi(h) * lambda(h) * self.transitionMatrix(h,e);</span>
+0083 <span class="comment">%                 end</span>
+0084 <span class="comment">%                 if pi(e) &gt; 0</span>
+0085 <span class="comment">%                     psrc(:,e) = psrc(:,e) / sum(psrc(:,e));</span>
+0086 <span class="comment">%                 end</span>
+0087 <span class="comment">%             end</span>
+0088 <span class="comment">%</span>
+0089 <span class="comment">%             for e = 1:E</span>
+0090 <span class="comment">%                 [Qt,Ut,Xt] = self.models{e}.getTranHandles();</span>
+0091 <span class="comment">%                 self.models{e}.initFromMarginal(QN);</span>
+0092 <span class="comment">%                 self.handlers{e} = {Qt,Ut,Xt};</span>
+0093 <span class="comment">%             end</span>
+0094 <span class="comment">%</span>
+0095 <span class="comment">%             %% initialize</span>
+0096 <span class="comment">%             for it=1:options.iter_max</span>
+0097 <span class="comment">%                 QE=cell(1,E);</span>
+0098 <span class="comment">%                 s0 = {};</span>
+0099 <span class="comment">%                 for e = 1:E</span>
+0100 <span class="comment">%                     s0(e,:)=self.models{e}.getState;</span>
+0101 <span class="comment">%                     [QNt{e},UNt{e},TNt{e}] = self.solversIter{e}.getTranAvg(self.transient_handlers{e});</span>
+0102 <span class="comment">%                     QE{e} = zeros(size(QNt{e}));</span>
+0103 <span class="comment">%                     for i=1:size(QNt{e},1)</span>
+0104 <span class="comment">%                         for r=1:size(QNt{e},2)</span>
+0105 <span class="comment">%                             w{e} = [0; self.holdingTimes{e}.evalCDFInterval(QNt{e}{i,r}.Time(1:end-1), QNt{e}{i,r}.Time(2:end))];</span>
+0106 <span class="comment">%                             QE{e}(i,r) = QNt{e}{i,r}.Data'*w{e}/sum(w{e});</span>
+0107 <span class="comment">%                         end</span>
+0108 <span class="comment">%                     end</span>
+0109 <span class="comment">%                 end</span>
+0110 <span class="comment">%                 if it==1</span>
+0111 <span class="comment">%                     plot(w{e})</span>
+0112 <span class="comment">%                 end</span>
+0113 <span class="comment">%                 Q0 = cell(1,E);</span>
+0114 <span class="comment">%                 for e = 1:E</span>
+0115 <span class="comment">%                     Q0{e} = zeros(size(QE{e}));</span>
+0116 <span class="comment">%                     for h=1:E</span>
+0117 <span class="comment">%                         Q0{e} = Q0{e} + psrc(h,e) * QE{h};</span>
+0118 <span class="comment">%                     end</span>
+0119 <span class="comment">%                     self.solversIter{e}.reset();</span>
+0120 <span class="comment">%                     self.models{e}.initFromMarginal(Q0{e});</span>
+0121 <span class="comment">%                 end</span>
+0122 <span class="comment">%                 s0 = cell2mat(s0);</span>
+0123 <span class="comment">%                 if it &gt; 1 &amp;&amp; norm(s0-s0_1) &lt; options.iter_tol</span>
+0124 <span class="comment">%                     break</span>
+0125 <span class="comment">%                 end</span>
+0126 <span class="comment">%                 s0_1 = s0;</span>
+0127 <span class="comment">%             end</span>
+0128 <span class="comment">%             % compute the other performance indexes</span>
+0129 <span class="comment">%             for e=1:E</span>
+0130 <span class="comment">%                 for i=1:size(QNt{e},1)</span>
+0131 <span class="comment">%                     for r=1:size(QNt{e},2)</span>
+0132 <span class="comment">%                         w{e} = [0; self.holdingTimes{e}.evalCDFInterval(UNt{e}{i,r}.Time(1:end-1), UNt{e}{i,r}.Time(2:end))];</span>
+0133 <span class="comment">%                         UE{e}(i,r) = UNt{e}{i,r}.Data'*w{e}/sum(w{e});</span>
+0134 <span class="comment">%                         w{e} = [0; self.holdingTimes{e}.evalCDFInterval(TNt{e}{i,r}.Time(1:end-1), TNt{e}{i,r}.Time(2:end))];</span>
+0135 <span class="comment">%                         TE{e}(i,r) = TNt{e}{i,r}.Data'*w{e}/sum(w{e});</span>
+0136 <span class="comment">%                     end</span>
+0137 <span class="comment">%                 end</span>
+0138 <span class="comment">%             end</span>
+0139 <span class="comment">%</span>
+0140 <span class="comment">%             QN=0*QE{e};</span>
+0141 <span class="comment">%             UN=0*UE{e};</span>
+0142 <span class="comment">%             TN=0*TE{e};</span>
+0143 <span class="comment">%             for e=1:E</span>
+0144 <span class="comment">%                 QN = QN + pi(e) * QE{e};</span>
+0145 <span class="comment">%                 UN = UN + pi(e) * UE{e};</span>
+0146 <span class="comment">%                 TN = TN + pi(e) * TE{e};</span>
+0147 <span class="comment">%             end</span>
+0148 <span class="comment">%             runtime = toc;</span>
+0149 <span class="comment">%             self.result.('solver') = self.getName();</span>
+0150 <span class="comment">%             self.result.Avg.Q = QN;</span>
+0151 <span class="comment">%             %    self.result.Avg.R = R;</span>
+0152 <span class="comment">%             %    self.result.Avg.X = X;</span>
+0153 <span class="comment">%             self.result.Avg.U = UN;</span>
+0154 <span class="comment">%             self.result.Avg.T = TN;</span>
+0155 <span class="comment">%             %    self.result.Avg.C = C;</span>
+0156 <span class="comment">%             self.result.runtime = runtime;</span>
+0157 <span class="comment">%         end</span>
+0158 <span class="comment">%</span>
+0159 <span class="comment">%         function name = getName(self)</span>
+0160 <span class="comment">%             name = mfilename;</span>
+0161 <span class="comment">%         end</span>
+0162 <span class="comment">%</span>
+0163 <span class="comment">%         function [results,runtime] = solve(self, options)</span>
+0164 <span class="comment">%             %            try</span>
+0165 <span class="comment">%                 options = self.getOptions;</span>
+0166 <span class="comment">%             runtime = self.run();</span>
+0167 <span class="comment">%             results = self.getResults();</span>
+0168 <span class="comment">%             %            catch me</span>
+0169 <span class="comment">%             %                error(getReport(me));</span>
+0170 <span class="comment">%             %            end</span>
+0171 <span class="comment">%         end</span>
+0172 <span class="comment">%</span>
+0173 <span class="comment">%         function [QNclass, UNclass, TNclass] = getAvg(self)</span>
+0174 <span class="comment">%             if isempty(self.result) || (isfield(self.options,'force') &amp;&amp; self.options.force)</span>
+0175 <span class="comment">%                 self.solve(self.options);</span>
+0176 <span class="comment">%                 if isempty(self.result)</span>
+0177 <span class="comment">%                     QNclass=[];</span>
+0178 <span class="comment">%                     UNclass=[];</span>
+0179 <span class="comment">%                     TNclass=[];</span>
+0180 <span class="comment">%                     return</span>
+0181 <span class="comment">%                 end</span>
+0182 <span class="comment">%             end</span>
+0183 <span class="comment">%             QNclass = self.result.Avg.Q;</span>
+0184 <span class="comment">%             UNclass = self.result.Avg.U;</span>
+0185 <span class="comment">%             TNclass = self.result.Avg.T;</span>
+0186 <span class="comment">%         end</span>
+0187 <span class="comment">%     end</span>
+0188 <span class="comment">%</span>
+0189 <span class="comment">%     methods (Static)</span>
+0190 <span class="comment">%         function [bool, featSupported] = supports(model)</span>
+0191 <span class="comment">%             featUsed = model.getUsedLangFeatures();</span>
+0192 <span class="comment">%</span>
+0193 <span class="comment">%             featSupported = SolverFeatureSet;</span>
+0194 <span class="comment">%</span>
+0195 <span class="comment">%             % Nodes</span>
+0196 <span class="comment">%             featSupported.setTrue('ClassSwitch');</span>
+0197 <span class="comment">%             featSupported.setTrue('DelayStation');</span>
+0198 <span class="comment">%             featSupported.setTrue('Queue');</span>
+0199 <span class="comment">%             featSupported.setTrue('Sink');</span>
+0200 <span class="comment">%             featSupported.setTrue('Source');</span>
+0201 <span class="comment">%</span>
+0202 <span class="comment">%             % Distributions</span>
+0203 <span class="comment">%             featSupported.setTrue('Cox2');</span>
+0204 <span class="comment">%             featSupported.setTrue('Erlang');</span>
+0205 <span class="comment">%             featSupported.setTrue('Exponential');</span>
+0206 <span class="comment">%             featSupported.setTrue('HyperExp');</span>
+0207 <span class="comment">%</span>
+0208 <span class="comment">%             % Sections</span>
+0209 <span class="comment">%             featSupported.setTrue('StatelessClassSwitcher'); % Section</span>
+0210 <span class="comment">%             featSupported.setTrue('InfiniteServer'); % Section</span>
+0211 <span class="comment">%             featSupported.setTrue('SharedServer'); % Section</span>
+0212 <span class="comment">%             featSupported.setTrue('Buffer'); % Section</span>
+0213 <span class="comment">%             featSupported.setTrue('Dispatcher'); % Section</span>
+0214 <span class="comment">%             featSupported.setTrue('Server'); % Section (Non-preemptive)</span>
+0215 <span class="comment">%             featSupported.setTrue('JobSink'); % Section</span>
+0216 <span class="comment">%             featSupported.setTrue('RandomSource'); % Section</span>
+0217 <span class="comment">%             featSupported.setTrue('ServiceTunnel'); % Section</span>
+0218 <span class="comment">%</span>
+0219 <span class="comment">%             % Scheduling strategy</span>
+0220 <span class="comment">%             featSupported.setTrue('SchedStrategy_INF');</span>
+0221 <span class="comment">%             featSupported.setTrue('SchedStrategy_PS');</span>
+0222 <span class="comment">%</span>
+0223 <span class="comment">%             % Customer Classes</span>
+0224 <span class="comment">%             featSupported.setTrue('ClosedClass');</span>
+0225 <span class="comment">%             featSupported.setTrue('OpenClass');</span>
+0226 <span class="comment">%</span>
+0227 <span class="comment">%             bool = SolverFeatureSet.supports(featSupported, featUsed);</span>
+0228 <span class="comment">%         end</span>
+0229 <span class="comment">%     end</span>
+0230 <span class="comment">% end</span>
+0231 <span class="comment">%</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

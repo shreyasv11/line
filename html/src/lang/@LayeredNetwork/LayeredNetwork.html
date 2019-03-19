@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of LayeredNetwork</title>
+  <meta name="keywords" content="LayeredNetwork">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@LayeredNetwork</a> &gt; LayeredNetwork.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@LayeredNetwork&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>LayeredNetwork
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a>	</li><li><a href="findEdgeIndex.html" class="code" title="function idx = findEdgeIndex(self,source,dest)">findEdgeIndex</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="findEntryOfActivity.html" class="code" title="function [entry, entryFullName] = findEntryOfActivity(self,activity)">findEntryOfActivity</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="generateGraph.html" class="code" title="function self = generateGraph(self)">generateGraph</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getGraph.html" class="code" title="function [lqnGraph,taskGraph]=getGraph(self)">getGraph</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getGraphLayers.html" class="code" title="function [submodels, levels] = getGraphLayers(self, lqnGraph, taskGraph)">getGraphLayers</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeFullName.html" class="code" title="function name = getNodeFullName(self,node)">getNodeFullName</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeIndex.html" class="code" title="function idx = getNodeIndex(self,node)">getNodeIndex</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeIndexInTaskGraph.html" class="code" title="function idx = getNodeIndexInTaskGraph(self,node)">getNodeIndexInTaskGraph</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeName.html" class="code" title="function name = getNodeName(self,node,useNode)">getNodeName</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeObject.html" class="code" title="function obj = getNodeObject(self,node)">getNodeObject</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeProcessor.html" class="code" title="function proc = getNodeProcessor(self,node)">getNodeProcessor</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeTask.html" class="code" title="function task = getNodeTask(self,node)">getNodeTask</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="getNodeType.html" class="code" title="function type = getNodeType(self,nodeid)">getNodeType</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="initDefault.html" class="code" title="function self = initDefault(self)">initDefault</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="isValid.html" class="code" title="function bool = isValid(self)">isValid</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="listActivitiesOfEntry.html" class="code" title="function acts=listActivitiesOfEntry(self,entry)">listActivitiesOfEntry</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="listEntriesOfTask.html" class="code" title="function entries=listEntriesOfTask(self,task)">listEntriesOfTask</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="parseXML.html" class="code" title="function myLN = parseXML(filename, verbose)">parseXML</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="plot.html" class="code" title="function plot(self,useNodes, showProcs)">plot</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="setGraph.html" class="code" title="function [self]=setGraph(self,lqnGraph,taskGraph)">setGraph</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="update.html" class="code" title="function self = update(self)">update</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="updateEnsemble.html" class="code" title="function self = updateEnsemble(self, isBuild, deepUpdate)">updateEnsemble</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="updateParam.html" class="code" title="function self = updateParam(self, AvgTable)">updateParam</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="writeSRVN.html" class="code" title="function writeSRVN(self, filename)">writeSRVN</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="writeXML.html" class="code" title="function writeXML(self,filename)">writeXML</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a>	</li><li><a href="parseXML.html" class="code" title="function myLN = parseXML(filename, verbose)">parseXML</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = LayeredNetwork(name, filename)</a></li><li><a href="#_sub2" class="code">function self = init(self)</a></li><li><a href="#_sub3" class="code">function E = getNumberOfLayers(self)</a></li><li><a href="#_sub4" class="code">function E = getNumberOfModels(self)</a></li><li><a href="#_sub5" class="code">function layers = getLayers(self)</a></li><li><a href="#_sub6" class="code">function self = setUsedFeatures(self,e,className)</a></li><li><a href="#_sub7" class="code">function self = initUsedFeatures(self)</a></li><li><a href="#_sub8" class="code">function usedFeatures = getUsedLangFeatures(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a> &lt; Model &amp; Ensemble
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         objects = struct();    <span class="comment">% cell arrays of objects</span>
+0007         processors = cell(0,4);      <span class="comment">% list of processors</span>
+0008         lqnGraph; <span class="comment">% digraph representation of all dependencies</span>
+0009         taskGraph; <span class="comment">% digraph representation of task dependencies</span>
+0010         layerGraph;
+0011         clientTask;
+0012         nodeNames;
+0013         nodeDep; <span class="comment">% (i,1) = procId, (i,2) = taskId, (i,3) = entryId, NaN is n/a</span>
+0014         endNodes;
+0015         nodeMult;
+0016         edgeWeight;
+0017         param; <span class="comment">% Avg performance metrics are input parameters in LQNs</span>
+0018         
+0019         syncCall = cell(1,0);
+0020         asyncCall = cell(1,0);
+0021         isCall = cell(1,0);
+0022         syncSource = cell(1,0);
+0023         asyncSource = cell(1,0);
+0024         syncDest = cell(1,0);
+0025         asyncDest = cell(1,0);
+0026         chains = cell(1,0);
+0027         serverName = cell(1,0);
+0028         
+0029         usedFeatures; <span class="comment">% cell with structures of booleans listing the used classes</span>
+0030         <span class="comment">% it must be accessed via getUsedLangFeatures</span>
+0031     <span class="keyword">end</span>
+0032     
+0033     methods
+0034         <span class="comment">%public methods, including constructor</span>
+0035         
+0036         <span class="comment">% constructor</span>
+0037         <a name="_sub0" href="#_subfunctions" class="code">function self = LayeredNetwork(name, filename)</a>
+0038             self@Ensemble({})
+0039             <span class="keyword">if</span> ~exist(<span class="string">'name'</span>,<span class="string">'var'</span>)
+0040                 [~,name]=fileparts(tempname);
+0041             <span class="keyword">end</span>
+0042             self = self@Model(name);
+0043             self.lqnGraph = [];
+0044             self.taskGraph = [];
+0045             self.ensemble = {};
+0046             self.objects.processors = {};
+0047             self.objects.tasks = {};
+0048             self.objects.entries = {};
+0049             self.objects.activities = {};
+0050             self.param.Nodes.RespT = [];
+0051             self.param.Nodes.Tput = [];
+0052             self.param.Nodes.Util = [];
+0053             self.param.Edges.RespT = [];
+0054             self.param.Edges.Tput = [];
+0055             
+0056             <span class="keyword">if</span> exist(<span class="string">'filename'</span>,<span class="string">'var'</span>)
+0057                 self = LayeredNetwork.parseXML(filename, false);
+0058                 self.init;
+0059             <span class="keyword">end</span>
+0060         <span class="keyword">end</span>
+0061         
+0062         <a name="_sub1" href="#_subfunctions" class="code">function self = init(self)</a>
+0063             self.generateGraph;
+0064             self.initDefault;
+0065             self.param.Nodes.RespT = []; 
+0066             self.param.Nodes.Tput = []; 
+0067             self.param.Nodes.Util = []; 
+0068             self.param.Nodes.QLen = [];            
+0069             self.param.Edges.RespT = []; 
+0070             self.param.Edges.Tput = []; 
+0071             self.param.Edges.QLen = [];
+0072         <span class="keyword">end</span>
+0073                                 
+0074         ensemble = <a href="updateEnsemble.html" class="code" title="function self = updateEnsemble(self, isBuild, deepUpdate)">updateEnsemble</a>(self, isBuild, deepUpdate)
+0075         
+0076         self = <a href="generateGraph.html" class="code" title="function self = generateGraph(self)">generateGraph</a>(self);
+0077         [lqnGraph,taskGraph] = <a href="getGraph.html" class="code" title="function [lqnGraph,taskGraph]=getGraph(self)">getGraph</a>(self)
+0078         self = <a href="setGraph.html" class="code" title="function [self]=setGraph(self,lqnGraph,taskGraph)">setGraph</a>(self,lqnGraph,taskGraph)
+0079         [subgraphs, levels] = <a href="getGraphLayers.html" class="code" title="function [submodels, levels] = getGraphLayers(self, lqnGraph, taskGraph)">getGraphLayers</a>(self, lqnGraph, taskGraph)
+0080         
+0081         bool = <a href="isValid.html" class="code" title="function bool = isValid(self)">isValid</a>(self)
+0082         self = <a href="update.html" class="code" title="function self = update(self)">update</a>(self)
+0083         self = <a href="updateParam.html" class="code" title="function self = updateParam(self, AvgTable)">updateParam</a>(self, AvgTable)
+0084         self = <a href="initDefault.html" class="code" title="function self = initDefault(self)">initDefault</a>(self)
+0085         <a href="plot.html" class="code" title="function plot(self,useNodes, showProcs)">plot</a>(self)
+0086     <span class="keyword">end</span>
+0087     
+0088     methods
+0089         <span class="comment">% these methods access the graph functions</span>
+0090         [entry, entryFullName] = <a href="findEntryOfActivity.html" class="code" title="function [entry, entryFullName] = findEntryOfActivity(self,activity)">findEntryOfActivity</a>(self,activity)
+0091         idx = <a href="findEdgeIndex.html" class="code" title="function idx = findEdgeIndex(self,source,dest)">findEdgeIndex</a>(self,source,dest)
+0092         entries = <a href="listEntriesOfTask.html" class="code" title="function entries=listEntriesOfTask(self,task)">listEntriesOfTask</a>(self,task);
+0093         acts = <a href="listActivitiesOfEntry.html" class="code" title="function acts=listActivitiesOfEntry(self,entry)">listActivitiesOfEntry</a>(self,entry);
+0094         
+0095         <span class="comment">% these methods extract node data from lqnGraph.Nodes</span>
+0096         idx = <a href="getNodeIndex.html" class="code" title="function idx = getNodeIndex(self,node)">getNodeIndex</a>(self,node) <span class="comment">%converted</span>
+0097         idx = <a href="getNodeIndexInTaskGraph.html" class="code" title="function idx = getNodeIndexInTaskGraph(self,node)">getNodeIndexInTaskGraph</a>(self,node)
+0098         fullName = <a href="getNodeFullName.html" class="code" title="function name = getNodeFullName(self,node)">getNodeFullName</a>(self,node)
+0099         name = <a href="getNodeName.html" class="code" title="function name = getNodeName(self,node,useNode)">getNodeName</a>(self,node,useNode)
+0100         obj = <a href="getNodeObject.html" class="code" title="function obj = getNodeObject(self,node)">getNodeObject</a>(self,node)
+0101         proc = <a href="getNodeProcessor.html" class="code" title="function proc = getNodeProcessor(self,node)">getNodeProcessor</a>(self,node)
+0102         task = <a href="getNodeTask.html" class="code" title="function task = getNodeTask(self,node)">getNodeTask</a>(self,nodeNameOrIdx)
+0103         type = <a href="getNodeType.html" class="code" title="function type = getNodeType(self,nodeid)">getNodeType</a>(self,nodeNameOrIdx)
+0104         
+0105         <a href="writeSRVN.html" class="code" title="function writeSRVN(self, filename)">writeSRVN</a>(self,filename);
+0106         <a href="writeXML.html" class="code" title="function writeXML(self,filename)">writeXML</a>(self,filename);
+0107     <span class="keyword">end</span>
+0108     
+0109     methods
+0110         <a name="_sub2" href="#_subfunctions" class="code">function E = getNumberOfLayers(self)</a>
+0111             E = self.getNumberOfModels();
+0112         <span class="keyword">end</span>
+0113         <a name="_sub3" href="#_subfunctions" class="code">function E = getNumberOfModels(self)</a>
+0114             <span class="keyword">if</span> isempty(self.ensemble)
+0115                 self.ensemble = self.getEnsemble();
+0116             <span class="keyword">end</span>
+0117             E = length(self.ensemble);
+0118         <span class="keyword">end</span>
+0119 
+0120         <a name="_sub4" href="#_subfunctions" class="code">function layers = getLayers(self)</a>
+0121             layers = self.getEnsemble();
+0122         <span class="keyword">end</span>
+0123 
+0124         <span class="comment">% setUsedFeatures : records that a certain language feature has been used</span>
+0125         <a name="_sub5" href="#_subfunctions" class="code">function self = setUsedFeatures(self,e,className)</a>
+0126             self.usedFeatures{e}.setTrue(className);
+0127         <span class="keyword">end</span>
+0128         
+0129         <a name="_sub6" href="#_subfunctions" class="code">function self = initUsedFeatures(self)</a>
+0130             <span class="keyword">for</span> e=1:self.getNumberOfModels()
+0131                 self.usedFeatures{e} = SolverFeatureSet;
+0132             <span class="keyword">end</span>
+0133         <span class="keyword">end</span>
+0134         
+0135         <a name="_sub7" href="#_subfunctions" class="code">function usedFeatures = getUsedLangFeatures(self)</a>
+0136             E = self.getNumberOfLayers();
+0137             usedFeatures = cell(1,E);
+0138             <span class="keyword">for</span> e=1:E
+0139                 usedFeatures{e} = self.ensemble{e}.getUsedLangFeatures;
+0140             <span class="keyword">end</span>
+0141             self.usedFeatures = usedFeatures;
+0142         <span class="keyword">end</span>
+0143     <span class="keyword">end</span>
+0144     
+0145     methods (Static)
+0146         myLN = <a href="parseXML.html" class="code" title="function myLN = parseXML(filename, verbose)">parseXML</a>(filename, verbose)     
+0147     <span class="keyword">end</span>   
+0148 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_fluid_iteration</title>
+  <meta name="keywords" content="solver_fluid_iteration">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">Fluid</a> &gt; solver_fluid_iteration.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\Fluid&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_fluid_iteration
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ymean, ymean_t, t, iter] = solver_fluid_iteration(qn, N, Lambda, Pi, P, S, ymean, ydefault, slowrate, Tstart, max_time, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_fluid_odes.html" class="code" title="function [ode_h,q_indices] = solver_fluid_odes(N, Mu, Phi, P, S, sched, schedparam)">solver_fluid_odes</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_fluid.html" class="code" title="function [QN,ymean,QNt,UNt,ymean_t,t,iters,runtime] = solver_fluid(qn, options)">solver_fluid</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [t, yt_e] = solveode(y0)</a></li><li><a href="#_sub2" class="code">function [t, yt_e] = solveodestiff(y0)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ymean, ymean_t, t, iter] = solver_fluid_iteration(qn, N, Lambda, Pi, P, S, ymean, ydefault, slowrate, Tstart, max_time, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 iter_max = options.iter_max;
+0006 verbose = options.verbose; 
+0007 tol = options.tol;
+0008 iter_tol = options.iter_tol;
+0009 stiff = options.stiff; 
+0010 timespan = options.timespan;
+0011 
+0012 goon = true; <span class="comment">% max stiff solver</span>
+0013 iter = 0;
+0014 allt=[];
+0015 ally =[];
+0016 lastmsg = <span class="string">''</span>;
+0017 t=[];
+0018 ymean_t=[];
+0019 <span class="comment">% heuristic to select stiff or non-stiff ODE solver</span>
+0020 nonZeroRates = slowrate(:);
+0021 nonZeroRates = nonZeroRates(nonZeroRates&gt;0);
+0022 nonZeroRates = nonZeroRates(isfinite(nonZeroRates));
+0023 rategap = log10(max(nonZeroRates)/min(nonZeroRates)); <span class="comment">% if the max rate is Distrib.InfRate and the min is 1, then rategap = 6</span>
+0024 
+0025 <span class="comment">% init ode</span>
+0026 [ode_h, ~] = <a href="solver_fluid_odes.html" class="code" title="function [ode_h,q_indices] = solver_fluid_odes(N, Mu, Phi, P, S, sched, schedparam)">solver_fluid_odes</a>(N, Lambda, Pi, P, S, qn.sched, qn.schedparam);
+0027 T0 = timespan(1);
+0028 <span class="comment">%opt = odeset();</span>
+0029 <span class="comment">%opt = odeset('AbsTol', min(10^(-rategap),1e-4), 'RelTol', 1e-3, 'NonNegative', 1:length(y0));</span>
+0030 opt = odeset(<span class="string">'AbsTol'</span>, tol, <span class="string">'RelTol'</span>, tol, <span class="string">'NonNegative'</span>, 1:length(ymean{1}));
+0031 T = 0;
+0032 <span class="keyword">while</span> (isfinite(timespan(2)) &amp;&amp; T &lt; timespan(2)) || (goon &amp;&amp; iter &lt; iter_max)
+0033     iter = iter + 1;
+0034     <span class="keyword">if</span> toc(Tstart) &gt; max_time
+0035         goon = false;
+0036         <span class="keyword">break</span>;
+0037     <span class="keyword">end</span>
+0038     
+0039     <span class="comment">% determine entry state vector in e</span>
+0040     y0 = ymean{iter-1 +1};
+0041     
+0042     <span class="keyword">if</span> iter == 1 <span class="comment">% first iteration</span>
+0043         T = min(timespan(2),abs(10/min(nonZeroRates))); <span class="comment">% solve ode until T = 1 event with slowest exit rate</span>
+0044     <span class="keyword">else</span>
+0045         T = min(timespan(2),abs(10*iter/min(nonZeroRates)));
+0046     <span class="keyword">end</span>
+0047     
+0048     <span class="keyword">try</span>
+0049         <span class="keyword">if</span> stiff
+0050             [t_iter, ymean_t_iter] = <a href="#_sub2" class="code" title="subfunction [t, yt_e] = solveodestiff(y0)">solveodestiff</a>(y0);
+0051         <span class="keyword">else</span>
+0052             [t_iter, ymean_t_iter] = <a href="#_sub1" class="code" title="subfunction [t, yt_e] = solveode(y0)">solveode</a>(y0);
+0053         <span class="keyword">end</span>
+0054     <span class="keyword">catch</span> me
+0055 <span class="comment">%        switch me.identifier</span>
+0056 <span class="comment">%            case 'MATLAB:odearguments:SizeIC' % if the cached initial point fails</span>
+0057                 fprintf(1,<span class="string">'Supplied initial point failed, Fluid solver switching to default initialization.\n'</span>);
+0058                 opt = odeset(<span class="string">'AbsTol'</span>, tol, <span class="string">'RelTol'</span>, tol, <span class="string">'NonNegative'</span>, 1:length(ydefault));
+0059                 [t_iter, ymean_t_iter] = <a href="#_sub1" class="code" title="subfunction [t, yt_e] = solveode(y0)">solveode</a>(ydefault);
+0060  <span class="comment">%           otherwise</span>
+0061  <span class="comment">%               me</span>
+0062  <span class="comment">%               error('Unspecified ODE solver exception.');</span>
+0063 <span class="comment">%        end</span>
+0064     <span class="keyword">end</span>
+0065     ymean_t(end+1:end+size(ymean_t_iter,1),:) = ymean_t_iter;
+0066     t(end+1:end+size(t_iter,1),:) = t_iter;
+0067     ymean{iter +1} = ymean_t(<span class="keyword">end</span>,:);
+0068     movedMassRatio = norm(ymean{iter +1} - ymean{iter-1 +1}, 1) / 2 / sum(ymean{iter-1 +1});
+0069     T0  = T; <span class="comment">% for next iteration</span>
+0070     
+0071     <span class="keyword">if</span> nargout&gt;3
+0072         <span class="keyword">if</span> isempty(allt)
+0073             allt = t;
+0074         <span class="keyword">else</span>
+0075             allt = [allt; allt(end)+t];
+0076         <span class="keyword">end</span>
+0077         ally = [ally; ymean_t];
+0078     <span class="keyword">end</span>
+0079     
+0080     <span class="comment">% check termination condition</span>
+0081     
+0082     <span class="keyword">if</span> verbose &gt; 0
+0083         llmsg = length(lastmsg);
+0084         <span class="keyword">if</span> llmsg&gt;0
+0085             <span class="keyword">for</span> ib=1:llmsg
+0086                 fprintf(1,<span class="string">'\b'</span>);
+0087             <span class="keyword">end</span>
+0088         <span class="keyword">end</span>
+0089     <span class="keyword">end</span>
+0090     
+0091     <span class="keyword">if</span> movedMassRatio &lt; iter_tol  <span class="comment">% converged</span>
+0092         <span class="comment">% stop only if this is not a transient analysis, in which case keep</span>
+0093         <span class="comment">% going until the specified end time</span>
+0094     <span class="keyword">end</span>
+0095     
+0096     <span class="keyword">if</span> T &gt;= timespan(2)
+0097         goon = false;
+0098     <span class="keyword">end</span>
+0099 <span class="keyword">end</span>
+0100 
+0101     <a name="_sub1" href="#_subfunctions" class="code">function [t, yt_e] = solveode(y0)</a>
+0102         <span class="keyword">if</span> tol &lt;= 1e-3
+0103             [t, yt_e] = feval(options.odesolvers.accurateOdeSolver, ode_h, [T0 T], y0, opt);
+0104         <span class="keyword">else</span>
+0105             [t, yt_e] = feval(options.odesolvers.fastOdeSolver, ode_h, [T0 T], y0, opt);
+0106         <span class="keyword">end</span>
+0107     <span class="keyword">end</span>
+0108 
+0109     <a name="_sub2" href="#_subfunctions" class="code">function [t, yt_e] = solveodestiff(y0)</a>
+0110         <span class="keyword">if</span> tol &lt;= 1e-3
+0111             [t, yt_e] = feval(options.odesolvers.accurateStiffOdeSolver, ode_h, [T0 T], y0, opt);
+0112         <span class="keyword">else</span>
+0113             opt.NonNegative = []; <span class="comment">% not supported by ode23s</span>
+0114             [t, yt_e] = feval(options.odesolvers.fastStiffOdeSolver, ode_h, [T0 T], y0, opt);
+0115         <span class="keyword">end</span>
+0116     <span class="keyword">end</span>
+0117 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

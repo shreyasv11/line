@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of link</title>
+  <meta name="keywords" content="link">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@Network</a> &gt; link.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@Network&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>link
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function self = link(self, P) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Network.html" class="code" title="">Network</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function self = link(self, P)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 isReset = false;
+0006 <span class="keyword">if</span> ~isempty(self.qn)
+0007     <span class="comment">%    warning('Network topology already instantiated. Calling resetNetwork automatically.');</span>
+0008     isReset = true;
+0009     self.resetNetwork;
+0010 <span class="keyword">end</span>
+0011 R = self.getNumberOfClasses;
+0012 M = self.getNumberOfNodes;
+0013 
+0014 issink = cellisa(self.nodes,<span class="string">'Sink'</span>);
+0015 <span class="keyword">if</span> sum(issink) &gt; 1
+0016     error(<span class="string">'The model can have at most one sink node.'</span>);
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">if</span> sum(cellisa(self.nodes,<span class="string">'Source'</span>)) &gt; 1
+0020     error(<span class="string">'The model can have at most one source node.'</span>);
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> ~iscell(P)
+0024     <span class="comment">% single class</span>
+0025     <span class="keyword">for</span> i=find(issink)'
+0026         P((i-1)*R+1:i*R,:)=0;
+0027     <span class="keyword">end</span>
+0028     Pmat = P;
+0029     P = cell(R,R);
+0030     <span class="keyword">for</span> r=1:R
+0031         <span class="keyword">for</span> s=1:R
+0032             P{r,s} = zeros(M);
+0033             <span class="keyword">for</span> i=1:M
+0034                 <span class="keyword">for</span> j=1:M
+0035                     P{r,s}(i,j) = Pmat((i-1)*R+r,(j-1)*R+s);
+0036                 <span class="keyword">end</span>
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">end</span>
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="keyword">if</span> numel(P) == R
+0043     <span class="comment">% 1 matrix per class</span>
+0044     <span class="keyword">for</span> r=1:R
+0045         <span class="keyword">for</span> i=find(issink)'
+0046             P{r}((i-1)*R+1:i*R,:)=0;
+0047         <span class="keyword">end</span>
+0048     <span class="keyword">end</span>
+0049     Pmat = P;
+0050     P = cell(R,R);
+0051     <span class="keyword">for</span> r=1:R
+0052         P{r,r} = Pmat{r};
+0053         <span class="keyword">for</span> s=setdiff(1:R,r)
+0054             P{r,s} = zeros(M);
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="keyword">for</span> r=1:R
+0060     <span class="keyword">for</span> s=1:R
+0061         <span class="keyword">if</span> isempty(P{r,s})
+0062             P{r,s} = zeros(M);
+0063         <span class="keyword">else</span>
+0064             <span class="keyword">for</span> i=find(issink)'
+0065                 P{r,s}(i,:)=0;
+0066             <span class="keyword">end</span>
+0067         <span class="keyword">end</span>
+0068     <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070 
+0071 <span class="comment">%             for r=1:R</span>
+0072 <span class="comment">%                 Psum=cellsum({P{r,:}})*ones(M,1);</span>
+0073 <span class="comment">%                 if min(Psum)&lt;1-1e-4</span>
+0074 <span class="comment">%                   error('Invalid routing probabilities (Node %d departures, switching from class %d).',minpos(Psum),r);</span>
+0075 <span class="comment">%                 end</span>
+0076 <span class="comment">%                 if max(Psum)&gt;1+1e-4</span>
+0077 <span class="comment">%                   error(sprintf('Invalid routing probabilities (Node %d departures, switching from class %d).',maxpos(Psum),r));</span>
+0078 <span class="comment">%                 end</span>
+0079 <span class="comment">%             end</span>
+0080 
+0081 self.linkedP = P;
+0082 <span class="keyword">for</span> i=1:M
+0083     <span class="keyword">for</span> j=1:M
+0084         csMatrix{i,j} = zeros(R);
+0085         <span class="keyword">for</span> r=1:R
+0086             <span class="keyword">for</span> s=1:R
+0087                 csMatrix{i,j}(r,s) = P{r,s}(i,j);
+0088             <span class="keyword">end</span>
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">% As we will now create a CS for each link i-&gt;j,</span>
+0094 <span class="comment">% we now condition on the job going from node i to j</span>
+0095 <span class="keyword">for</span> i=1:M
+0096     <span class="keyword">for</span> j=1:M
+0097         <span class="keyword">for</span> r=1:R
+0098             <span class="keyword">if</span> sum(csMatrix{i,j}(r,:))&gt;0
+0099                 csMatrix{i,j}(r,:)=csMatrix{i,j}(r,:)/sum(csMatrix{i,j}(r,:));
+0100             <span class="keyword">else</span>
+0101                 csMatrix{i,j}(r,r)=1.0;
+0102             <span class="keyword">end</span>
+0103         <span class="keyword">end</span>
+0104     <span class="keyword">end</span>
+0105 <span class="keyword">end</span>
+0106 
+0107 csid = zeros(M);
+0108 nodeNames = self.getNodeNames;
+0109 <span class="keyword">for</span> i=1:M
+0110     <span class="keyword">for</span> j=1:M
+0111         <span class="keyword">if</span> ~isdiag(csMatrix{i,j})
+0112             self.nodes{end+1} = ClassSwitch(self, sprintf(<span class="string">'CS_%s_to_%s'</span>,nodeNames{i},nodeNames{j}),csMatrix{i,j});
+0113             csid(i,j) = length(self.nodes);
+0114         <span class="keyword">end</span>
+0115     <span class="keyword">end</span>
+0116 <span class="keyword">end</span>
+0117 
+0118 Mplus = length(self.nodes); <span class="comment">% number of nodes after addition of cs nodes</span>
+0119 
+0120 <span class="comment">% resize matrices</span>
+0121 <span class="keyword">for</span> r=1:R
+0122     <span class="keyword">for</span> s=1:R
+0123         P{r,s}((M+1):Mplus,(M+1):Mplus)=0;
+0124     <span class="keyword">end</span>
+0125 <span class="keyword">end</span>
+0126 
+0127 
+0128 <span class="keyword">for</span> i=1:M
+0129     <span class="keyword">for</span> j=1:M
+0130         <span class="keyword">if</span> csid(i,j)&gt;0
+0131             <span class="comment">% re-route</span>
+0132             <span class="keyword">for</span> r=1:R
+0133                 <span class="keyword">for</span> s=1:R
+0134                     P{r,r}(i,csid(i,j)) = P{r,r}(i,csid(i,j))+ P{r,s}(i,j);
+0135                     P{r,s}(i,j) = 0;
+0136                     P{s,s}(csid(i,j),j) = 1;
+0137                 <span class="keyword">end</span>
+0138             <span class="keyword">end</span>
+0139         <span class="keyword">end</span>
+0140     <span class="keyword">end</span>
+0141 <span class="keyword">end</span>
+0142 
+0143 connected = zeros(Mplus);
+0144 
+0145 <span class="keyword">for</span> i=1:Mplus
+0146     <span class="keyword">for</span> j=1:Mplus
+0147         <span class="keyword">for</span> r=1:R
+0148             <span class="keyword">if</span> P{r,r}(i,j) &gt; 0
+0149                 <span class="keyword">if</span> connected(i,j) == 0
+0150                     self.addLink(self.nodes{i}, self.nodes{j});
+0151                     connected(i,j) = 1;
+0152                 <span class="keyword">end</span>
+0153                 self.nodes{i}.setProbRouting(self.classes{r}, self.nodes{j}, P{r,r}(i,j));
+0154             <span class="keyword">end</span>
+0155         <span class="keyword">end</span>
+0156     <span class="keyword">end</span>
+0157 <span class="keyword">end</span>
+0158 
+0159 <span class="keyword">if</span> isReset
+0160     <span class="comment">%%re-instate all of this if re-instating refreshChains</span>
+0161     <span class="comment">%nodetypes = self.getNodeTypes();</span>
+0162     <span class="comment">%wantVisits = true;</span>
+0163     <span class="comment">%if any(nodetypes == NodeType.Cache)</span>
+0164     <span class="comment">%    wantVisits = false;</span>
+0165     <span class="comment">%end</span>
+0166     <span class="comment">%self.refreshChains(self.qn.rates, wantVisits);</span>
+0167     self.refreshStruct; <span class="comment">% without this exception with linkAndLog</span>
+0168 <span class="keyword">end</span>
+0169 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

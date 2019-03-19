@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Erlang</title>
+  <meta name="keywords" content="Erlang">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">distributions</a> &gt; Erlang.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\distributions&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Erlang
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Erlang.html" class="code" title="">Erlang</a>	</li><li><a href="PhaseType.html" class="code" title="">PhaseType</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Erlang.html" class="code" title="">Erlang</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = Erlang(alpha, r)</a></li><li><a href="#_sub2" class="code">function phases = getNumberOfPhases(self)</a></li><li><a href="#_sub3" class="code">function bool = isImmmediate(self)</a></li><li><a href="#_sub4" class="code">function ex = getMean(self)</a></li><li><a href="#_sub5" class="code">function SCV = getSCV(self)</a></li><li><a href="#_sub6" class="code">function Ft = evalCDF(self,t)</a></li><li><a href="#_sub7" class="code">function PH = getRenewalProcess(self)</a></li><li><a href="#_sub8" class="code">function er = fit(MEAN,SCV)</a></li><li><a href="#_sub9" class="code">function er = fitMeanAndSCV(MEAN, SCV)</a></li><li><a href="#_sub10" class="code">function er = fitMeanAndOrder(MEAN, n)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Erlang.html" class="code" title="">Erlang</a> &lt; <a href="PhaseType.html" class="code" title="">PhaseType</a>
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods
+0006         <span class="comment">%Constructor</span>
+0007         <a name="_sub0" href="#_subfunctions" class="code">function self = Erlang(alpha, r)</a>
+0008             self = self@<a href="PhaseType.html" class="code" title="">PhaseType</a>(<span class="string">'Erlang'</span>,2);
+0009             setParam(self, 1, <span class="string">'alpha'</span>, alpha, <span class="string">'java.lang.Double'</span>); <span class="comment">% rate in each state</span>
+0010             setParam(self, 2, <span class="string">'r'</span>, round(r), <span class="string">'java.lang.Long'</span>); <span class="comment">% number of phases</span>
+0011             self.javaClass = <span class="string">'jmt.engine.random.Erlang'</span>;
+0012             self.javaParClass = <span class="string">'jmt.engine.random.ErlangPar'</span>;
+0013         <span class="keyword">end</span>
+0014         
+0015         <a name="_sub1" href="#_subfunctions" class="code">function phases = getNumberOfPhases(self)</a>
+0016             phases  = self.getParam(2).paramValue; <span class="comment">%r</span>
+0017         <span class="keyword">end</span>
+0018         
+0019         <a name="_sub2" href="#_subfunctions" class="code">function bool = isImmmediate(self)</a>
+0020             bool = self.getMean() == 0;
+0021         <span class="keyword">end</span>
+0022         
+0023         <a name="_sub3" href="#_subfunctions" class="code">function ex = getMean(self)</a>
+0024             alpha = self.getParam(1).paramValue;
+0025             r = self.getParam(2).paramValue;
+0026             ex = r/alpha;
+0027         <span class="keyword">end</span>
+0028         
+0029         <a name="_sub4" href="#_subfunctions" class="code">function SCV = getSCV(self)</a>
+0030             r = self.getParam(2).paramValue;
+0031             SCV = 1/r;
+0032         <span class="keyword">end</span>
+0033                 
+0034         <a name="_sub5" href="#_subfunctions" class="code">function Ft = evalCDF(self,t)</a>
+0035             alpha = self.getParam(1).paramValue;
+0036             r = self.getParam(2).paramValue;
+0037             Ft = 1;
+0038             <span class="keyword">for</span> j=0:(r-1)
+0039                 Ft = Ft - exp(-r*alpha*t).*(r*alpha*t).^j/factorial(j);
+0040             <span class="keyword">end</span>
+0041         <span class="keyword">end</span>
+0042         
+0043         <a name="_sub6" href="#_subfunctions" class="code">function PH = getRenewalProcess(self)</a>
+0044             r = self.getParam(2).paramValue;
+0045             PH = map_erlang(self.getMean(),r);
+0046         <span class="keyword">end</span>
+0047         
+0048     <span class="keyword">end</span>
+0049     
+0050     methods(Static)
+0051         <a name="_sub7" href="#_subfunctions" class="code">function er = fit(MEAN,SCV)</a>
+0052             er = Erlang.fitMeanAndSCV(MEAN,SCV);
+0053         <span class="keyword">end</span>
+0054         
+0055         <a name="_sub8" href="#_subfunctions" class="code">function er = fitMeanAndSCV(MEAN, SCV)</a>
+0056             r = ceil(1/SCV);
+0057             alpha = r/MEAN;
+0058             er = <a href="Erlang.html" class="code" title="">Erlang</a>(alpha, r);
+0059         <span class="keyword">end</span>
+0060         
+0061         <a name="_sub9" href="#_subfunctions" class="code">function er = fitMeanAndOrder(MEAN, n)</a>
+0062             SCV = 1/n;
+0063             r = ceil(1/SCV);
+0064             alpha = r/MEAN;
+0065             er = <a href="Erlang.html" class="code" title="">Erlang</a>(alpha, r);
+0066         <span class="keyword">end</span>
+0067         
+0068     <span class="keyword">end</span>
+0069     
+0070 <span class="keyword">end</span>
+0071</pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

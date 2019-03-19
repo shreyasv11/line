@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveForkStrategy</title>
+  <meta name="keywords" content="saveForkStrategy">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../../index.html">solvers</a> &gt; <a href="../index.html">JMT</a> &gt; <a href="index.html">@SolverJMT</a> &gt; saveForkStrategy.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\JMT\@SolverJMT&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>saveForkStrategy
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="SolverJMT.html" class="code" title="">SolverJMT</a>	</li><li><a href="writeJSIM.html" class="code" title="function fname = writeJSIM(self)">writeJSIM</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 jplNode = simDoc.createElement(<span class="string">'parameter'</span>);
+0006 jplNode.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.Integer'</span>);
+0007 jplNode.setAttribute(<span class="string">'name'</span>, <span class="string">'jobsPerLink'</span>);
+0008 valueNode = simDoc.createElement(<span class="string">'value'</span>);
+0009 valueNode.appendChild(simDoc.createTextNode(int2str(currentNode.output.tasksPerLink)));
+0010 jplNode.appendChild(valueNode);
+0011 section.appendChild(jplNode);
+0012 
+0013 blockNode = simDoc.createElement(<span class="string">'parameter'</span>);
+0014 blockNode.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.Integer'</span>);
+0015 blockNode.setAttribute(<span class="string">'name'</span>, <span class="string">'block'</span>);
+0016 valueNode = simDoc.createElement(<span class="string">'value'</span>);
+0017 valueNode.appendChild(simDoc.createTextNode(int2str(-1)));
+0018 blockNode.appendChild(valueNode);
+0019 section.appendChild(blockNode);
+0020 
+0021 issimplNode = simDoc.createElement(<span class="string">'parameter'</span>);
+0022 issimplNode.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.Boolean'</span>);
+0023 issimplNode.setAttribute(<span class="string">'name'</span>, <span class="string">'isSimplifiedFork'</span>);
+0024 valueNode = simDoc.createElement(<span class="string">'value'</span>);
+0025 valueNode.appendChild(simDoc.createTextNode(<span class="string">'true'</span>));
+0026 issimplNode.appendChild(valueNode);
+0027 section.appendChild(issimplNode);
+0028 
+0029 strategyNode = simDoc.createElement(<span class="string">'parameter'</span>);
+0030 strategyNode.setAttribute(<span class="string">'array'</span>, <span class="string">'true'</span>);
+0031 strategyNode.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.NetStrategies.ForkStrategy'</span>);
+0032 strategyNode.setAttribute(<span class="string">'name'</span>, <span class="string">'ForkStrategy'</span>);
+0033 
+0034 numOfClasses = length(self.model.classes);
+0035 <span class="keyword">for</span> i=1:(numOfClasses)
+0036     currentClass = self.model.classes{i,1};
+0037     
+0038     refClassNode = simDoc.createElement(<span class="string">'refClass'</span>);
+0039     refClassNode.appendChild(simDoc.createTextNode(currentClass.name));
+0040     strategyNode.appendChild(refClassNode);
+0041     
+0042     concStratNode = simDoc.createElement(<span class="string">'subParameter'</span>);
+0043     concStratNode.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.NetStrategies.ForkStrategies.ProbabilitiesFork'</span>);
+0044     concStratNode.setAttribute(<span class="string">'name'</span>, <span class="string">'Branch Probabilities'</span>);
+0045     concStratNode2 = simDoc.createElement(<span class="string">'subParameter'</span>);
+0046     concStratNode2.setAttribute(<span class="string">'array'</span>, <span class="string">'true'</span>);
+0047     concStratNode2.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.NetStrategies.ForkStrategies.OutPath'</span>);
+0048     concStratNode2.setAttribute(<span class="string">'name'</span>, <span class="string">'EmpiricalEntryArray'</span>);
+0049     <span class="keyword">for</span> k=1:length(currentNode.output.outputStrategy{i}{end})
+0050         concStratNode3 = simDoc.createElement(<span class="string">'subParameter'</span>);
+0051         concStratNode3.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.NetStrategies.ForkStrategies.OutPath'</span>);
+0052         concStratNode3.setAttribute(<span class="string">'name'</span>, <span class="string">'OutPathEntry'</span>);
+0053         concStratNode4 = simDoc.createElement(<span class="string">'subParameter'</span>);
+0054         concStratNode4.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.random.EmpiricalEntry'</span>);
+0055         concStratNode4.setAttribute(<span class="string">'name'</span>, <span class="string">'outUnitProbability'</span>);
+0056         concStratNode4Station = simDoc.createElement(<span class="string">'subParameter'</span>);
+0057         concStratNode4Station.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.String'</span>);
+0058         concStratNode4Station.setAttribute(<span class="string">'name'</span>, <span class="string">'stationName'</span>);
+0059         concStratNode4StationValueNode = simDoc.createElement(<span class="string">'value'</span>);        
+0060         <span class="keyword">if</span> length(currentNode.output.outputStrategy{i}{end}) == 1
+0061             concStratNode4StationValueNode.appendChild(simDoc.createTextNode(<span class="string">'Random'</span>));
+0062         <span class="keyword">else</span>
+0063 <span class="comment">%            concStratNode4StationValueNode.appendChild(simDoc.createTextNode(sprintf('%s',RoutingStrategy.toText(currentNode.output.outputStrategy{i}{end}{k}{2}))));</span>
+0064             concStratNode4StationValueNode.appendChild(simDoc.createTextNode(sprintf(<span class="string">'%s'</span>,RoutingStrategy.toText(currentNode.output.outputStrategy{i}{2}))));
+0065         <span class="keyword">end</span>
+0066         concStratNode4Station.appendChild(concStratNode4StationValueNode);
+0067         concStratNode3.appendChild(concStratNode4Station);
+0068         concStratNode4Probability = simDoc.createElement(<span class="string">'subParameter'</span>);
+0069         concStratNode4Probability.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.Double'</span>);
+0070         concStratNode4Probability.setAttribute(<span class="string">'name'</span>, <span class="string">'probability'</span>);
+0071         concStratNode4ProbabilityValueNode = simDoc.createElement(<span class="string">'value'</span>);
+0072         concStratNode4ProbabilityValueNode.appendChild(simDoc.createTextNode(<span class="string">'1.0'</span>));
+0073         concStratNode4Probability.appendChild(concStratNode4ProbabilityValueNode);
+0074         
+0075         concStratNode4b = simDoc.createElement(<span class="string">'subParameter'</span>);
+0076         concStratNode4b.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.random.EmpiricalEntry'</span>);
+0077         concStratNode4b.setAttribute(<span class="string">'array'</span>, <span class="string">'true'</span>);
+0078         concStratNode4b.setAttribute(<span class="string">'name'</span>, <span class="string">'JobsPerLinkDis'</span>);
+0079         concStratNode5b = simDoc.createElement(<span class="string">'subParameter'</span>);
+0080         concStratNode5b.setAttribute(<span class="string">'classPath'</span>, <span class="string">'jmt.engine.random.EmpiricalEntry'</span>);
+0081         concStratNode5b.setAttribute(<span class="string">'name'</span>, <span class="string">'EmpiricalEntry'</span>);
+0082         concStratNode5bStation = simDoc.createElement(<span class="string">'subParameter'</span>);
+0083         concStratNode5bStation.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.String'</span>);
+0084         concStratNode5bStation.setAttribute(<span class="string">'name'</span>, <span class="string">'numbers'</span>);
+0085         concStratNode5bStationValueNode = simDoc.createElement(<span class="string">'value'</span>);
+0086         concStratNode5bStationValueNode.appendChild((simDoc.createTextNode(int2str(currentNode.output.tasksPerLink))));
+0087         concStratNode5bStation.appendChild(concStratNode5bStationValueNode);
+0088         concStratNode4b.appendChild(concStratNode5bStation);
+0089         concStratNode5bProbability = simDoc.createElement(<span class="string">'subParameter'</span>);
+0090         concStratNode5bProbability.setAttribute(<span class="string">'classPath'</span>, <span class="string">'java.lang.Double'</span>);
+0091         concStratNode5bProbability.setAttribute(<span class="string">'name'</span>, <span class="string">'probability'</span>);
+0092         concStratNode5bProbabilityValueNode = simDoc.createElement(<span class="string">'value'</span>);
+0093         concStratNode5bProbabilityValueNode.appendChild(simDoc.createTextNode(<span class="string">'1.0'</span>));
+0094         concStratNode5bProbability.appendChild(concStratNode5bProbabilityValueNode);
+0095         
+0096         concStratNode4.appendChild(concStratNode4Station);
+0097         concStratNode4.appendChild(concStratNode4Probability);
+0098         concStratNode3.appendChild(concStratNode4);
+0099         concStratNode5b.appendChild(concStratNode5bStation);
+0100         concStratNode5b.appendChild(concStratNode5bProbability);
+0101         concStratNode4b.appendChild(concStratNode5b);
+0102         concStratNode3.appendChild(concStratNode4b);
+0103         concStratNode2.appendChild(concStratNode3);
+0104         concStratNode.appendChild(concStratNode2);
+0105         strategyNode.appendChild(concStratNode);
+0106         section.appendChild(strategyNode);
+0107     <span class="keyword">end</span>
+0108 <span class="keyword">end</span>
+0109 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

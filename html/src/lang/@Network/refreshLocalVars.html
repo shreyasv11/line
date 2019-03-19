@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of refreshLocalVars</title>
+  <meta name="keywords" content="refreshLocalVars">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@Network</a> &gt; refreshLocalVars.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@Network&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>refreshLocalVars
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function nvars = refreshLocalVars(self) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Network.html" class="code" title="">Network</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function nvars = refreshLocalVars(self)</a>
+0002 nvars = zeros(self.getNumberOfNodes, 1);
+0003 varsparam = cell(self.getNumberOfNodes, 1);
+0004 rtnodes = self.qn.rtnodes; 
+0005 <span class="keyword">for</span> ind=1:self.getNumberOfNodes
+0006     <span class="keyword">switch</span> class(self.nodes{ind})
+0007         <span class="keyword">case</span> <span class="string">'Cache'</span>
+0008             nvars(ind) = sum(self.nodes{ind}.itemLevelCap);
+0009             varsparam{ind} = struct();            
+0010             varsparam{ind}.nitems = 0;
+0011             varsparam{ind}.accost = self.nodes{ind}.accessCost;
+0012             <span class="keyword">for</span> r=1:self.getNumberOfClasses
+0013                 <span class="keyword">if</span> ~self.nodes{ind}.popularity{r}.isDisabled
+0014                     varsparam{ind}.nitems = max(varsparam{ind}.nitems,self.nodes{ind}.popularity{r}.support(2));
+0015                 <span class="keyword">end</span>
+0016             <span class="keyword">end</span>
+0017             varsparam{ind}.cap = self.nodes{ind}.itemLevelCap;
+0018             varsparam{ind}.pref = cell(1,self.getNumberOfClasses);
+0019             <span class="keyword">for</span> r=1:self.getNumberOfClasses
+0020                 <span class="keyword">if</span> self.nodes{ind}.popularity{r}.isDisabled
+0021                     varsparam{ind}.pref{r} = NaN;
+0022                 <span class="keyword">else</span>
+0023                     varsparam{ind}.pref{r} = self.nodes{ind}.popularity{r}.getPmf(1:varsparam{ind}.nitems);
+0024                 <span class="keyword">end</span>
+0025             <span class="keyword">end</span>
+0026             varsparam{ind}.rpolicy = self.nodes{ind}.replacementPolicy;
+0027             varsparam{ind}.hitclass = self.nodes{ind}.server.hitClass;
+0028             varsparam{ind}.missclass = self.nodes{ind}.server.missClass;
+0029     <span class="keyword">end</span>
+0030     <span class="keyword">switch</span> self.qn.routing(ind)
+0031         <span class="keyword">case</span> RoutingStrategy.ID_RR
+0032             nvars(ind) = nvars(ind) + 1;
+0033             <span class="comment">% save indexes of outgoing links</span>
+0034             <span class="keyword">if</span> isempty(varsparam) <span class="comment">% reinstantiate if not a cache</span>
+0035                 varsparam{ind} = struct();
+0036             <span class="keyword">end</span>
+0037             varsparam{ind}.outlinks = find(sum(reshape(rtnodes(ind,:)&gt;0,self.qn.nnodes,self.qn.nclasses),2)');
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">if</span> ~isempty(self.qn) <span class="comment">%&amp;&amp; isprop(self.qn,'nvars')</span>
+0041     self.qn.setLocalVars(nvars, varsparam);
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

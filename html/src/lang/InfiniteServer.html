@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of InfiniteServer</title>
+  <meta name="keywords" content="InfiniteServer">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; InfiniteServer.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>InfiniteServer
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="InfiniteServer.html" class="code" title="">InfiniteServer</a>	</li><li><a href="ServiceSection.html" class="code" title="">ServiceSection</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="InfiniteServer.html" class="code" title="">InfiniteServer</a>	</li><li><a href="Queue.html" class="code" title="">Queue</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = InfiniteServer(customerClasses)</a></li><li><a href="#_sub2" class="code">function initServers(self, customerClasses)</a></li><li><a href="#_sub3" class="code">function clone = copyElement(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="InfiniteServer.html" class="code" title="">InfiniteServer</a> &lt; <a href="ServiceSection.html" class="code" title="">ServiceSection</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods
+0006         <span class="comment">%Constructor</span>
+0007         <a name="_sub0" href="#_subfunctions" class="code">function self = InfiniteServer(customerClasses)</a>
+0008             self = self@<a href="ServiceSection.html" class="code" title="">ServiceSection</a>(<span class="string">'InfiniteServer'</span>);
+0009             self.numberOfServers = Inf;
+0010             self.serviceProcess = {};
+0011             <a href="#_sub2" class="code" title="subfunction initServers(self, customerClasses)">initServers</a>(self, customerClasses); 
+0012         <span class="keyword">end</span>
+0013     <span class="keyword">end</span>
+0014     
+0015     methods (Access = <span class="string">'private'</span>)
+0016         <a name="_sub1" href="#_subfunctions" class="code">function initServers(self, customerClasses)</a>
+0017            <span class="keyword">for</span> i = 1 : length(customerClasses),
+0018               self.serviceProcess{1, i} = {customerClasses{1, i}.name, ServiceStrategy.ID_LI, Exp(0.0)};  
+0019            <span class="keyword">end</span>
+0020         <span class="keyword">end</span>
+0021     <span class="keyword">end</span>
+0022     
+0023     methods(Access = protected)
+0024         <span class="comment">% Override copyElement method:</span>
+0025         <a name="_sub2" href="#_subfunctions" class="code">function clone = copyElement(self)</a>
+0026             <span class="comment">% Make a shallow copy of all properties</span>
+0027             clone = <a href="#_sub3" class="code" title="subfunction clone = copyElement(self)">copyElement</a>@Copyable(self);
+0028             <span class="comment">% Make a deep copy of each object</span>
+0029             <span class="keyword">for</span> i=1:length(self.serviceProcess)
+0030             <span class="keyword">if</span> ishandle(self.serviceProcess{i}{3})
+0031                 clone.serviceProcess{i}{3} = self.serviceProcess{i}{3}.copy;
+0032             <span class="keyword">end</span>
+0033             <span class="keyword">end</span>
+0034         <span class="keyword">end</span>        
+0035     <span class="keyword">end</span>
+0036     
+0037 <span class="keyword">end</span>
+0038</pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

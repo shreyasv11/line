@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SolverFluid</title>
+  <meta name="keywords" content="SolverFluid">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">Fluid</a> &gt; SolverFluid.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\Fluid&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SolverFluid
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverFluid.html" class="code" title="">SolverFluid</a>	</li><li><a href="solver_fluid_analysis.html" class="code" title="function [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSolution] = solver_fluid_analysis(qn, options)">solver_fluid_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="solver_fluid_initsol.html" class="code" title="function [init_sol, state] = solver_fluid_initsol(qn, options) %#ok<INUSD>">solver_fluid_initsol</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="solver_fluid_passage_time.html" class="code" title="function RTret = solver_fluid_passt(qn, options)">solver_fluid_passage_time</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverFluid.html" class="code" title="">SolverFluid</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = SolverFluid(model,varargin)</a></li><li><a href="#_sub2" class="code">function RD = getTranCdfPassT(self, R)</a></li><li><a href="#_sub3" class="code">function RD = getCdfRespT(self, R)</a></li><li><a href="#_sub4" class="code">function supported = getSupported(self,supported)</a></li><li><a href="#_sub5" class="code">function runtime = run(self)</a></li><li><a href="#_sub6" class="code">function featSupported = getFeatureSet()</a></li><li><a href="#_sub7" class="code">function [bool, featSupported] = supports(model)</a></li><li><a href="#_sub8" class="code">function options = defaultOptions()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SolverFluid.html" class="code" title="">SolverFluid</a> &lt; NetworkSolver
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005     methods
+0006         <a name="_sub0" href="#_subfunctions" class="code">function self = SolverFluid(model,varargin)</a>
+0007             self = self@NetworkSolver(model, mfilename);
+0008             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
+0009         <span class="keyword">end</span>
+0010         
+0011         <a name="_sub1" href="#_subfunctions" class="code">function RD = getTranCdfPassT(self, R)</a>
+0012             T0 = tic;
+0013             <span class="keyword">if</span> ~exist(<span class="string">'R'</span>,<span class="string">'var'</span>)
+0014                 R = self.model.getAvgRespTHandles;
+0015             <span class="keyword">end</span>
+0016             qn = self.getStruct;
+0017             [s0, s0prior] = self.model.getState;
+0018             <span class="keyword">for</span> ind=1:qn.nnodes
+0019                 <span class="keyword">if</span> qn.isstateful(ind)
+0020                     isf = QN.nodeToStateful(ind);
+0021                     <span class="keyword">if</span> nnz(s0prior{isf})&gt;1
+0022                         error(<span class="string">'getTranCdfPassT: multiple initial states have non-zero prior - unsupported.'</span>);
+0023                     <span class="keyword">end</span>
+0024                     qn.state{isf} = s0{isf}(1,:); <span class="comment">% assign initial state to network</span>
+0025                 <span class="keyword">end</span>
+0026             <span class="keyword">end</span>
+0027             options = self.getOptions;
+0028             [odeStateVec] = <a href="solver_fluid_initsol.html" class="code" title="function [init_sol, state] = solver_fluid_initsol(qn, options) %#ok<INUSD>">solver_fluid_initsol</a>(qn, options);
+0029             options.init_sol = odeStateVec;
+0030             RD = <a href="solver_fluid_passage_time.html" class="code" title="function RTret = solver_fluid_passt(qn, options)">solver_fluid_passage_time</a>(qn, options);
+0031             runtime = toc(T0);
+0032             self.setCdfResults(RD, runtime);
+0033         <span class="keyword">end</span>
+0034         
+0035         <a name="_sub2" href="#_subfunctions" class="code">function RD = getCdfRespT(self, R)</a>
+0036             T0 = tic;
+0037             <span class="keyword">if</span> ~exist(<span class="string">'R'</span>,<span class="string">'var'</span>)
+0038                 R = self.model.getAvgRespTHandles;
+0039             <span class="keyword">end</span>
+0040             qn = self.getStruct;
+0041             self.getAvg; <span class="comment">% get steady-state solution</span>
+0042             options = self.getOptions;
+0043             options.init_sol = self.result.solverSpecific.odeStateVec;
+0044             RD = <a href="solver_fluid_passage_time.html" class="code" title="function RTret = solver_fluid_passt(qn, options)">solver_fluid_passage_time</a>(qn, options);
+0045             runtime = toc(T0);
+0046             self.setCdfResults(RD, runtime);
+0047         <span class="keyword">end</span>
+0048         
+0049         <a name="_sub3" href="#_subfunctions" class="code">function supported = getSupported(self,supported)</a>
+0050             <span class="keyword">if</span> ~exist(<span class="string">'supported'</span>,<span class="string">'var'</span>)
+0051                 supported=struct();
+0052             <span class="keyword">end</span>
+0053         <span class="keyword">end</span>
+0054         
+0055         <span class="comment">% solve method is supplied by Solver superclass</span>
+0056         <a name="_sub4" href="#_subfunctions" class="code">function runtime = run(self)</a>
+0057             self.reset();
+0058             T0=tic;
+0059             options=self.options;
+0060             
+0061             <span class="keyword">if</span> isinf(options.timespan(1))
+0062                 <span class="keyword">if</span> options.verbose  == 2
+0063                     warning(<span class="string">'%s requires options.timespan(1) to be finite. Setting it to 0.'</span>,mfilename);
+0064                 <span class="keyword">end</span>
+0065                 options.timespan(1) = 0;
+0066             <span class="keyword">end</span>
+0067             
+0068             <span class="keyword">if</span> options.timespan(1) == options.timespan(2)
+0069                 warning(<span class="string">'%s: timespan is a single point, unsupported. Setting options.timespace(1) to 0.\n'</span>,mfilename);
+0070                 options.timespan(1) = 0;
+0071             <span class="keyword">end</span>
+0072             
+0073             <span class="keyword">if</span> ~self.supports(self.model)
+0074 <span class="comment">%                if options.verbose</span>
+0075                     error(<span class="string">'Line:FeatureNotSupportedBySolver'</span>,<span class="string">'This model contains features not supported by the %s solver.'</span>,mfilename);
+0076 <span class="comment">%                end</span>
+0077 <span class="comment">%                runtime = toc(T0);</span>
+0078 <span class="comment">%                return</span>
+0079             <span class="keyword">end</span>
+0080             
+0081             qn = self.model.getStruct();
+0082             
+0083             M = self.model.getNumberOfStations;
+0084             K = self.model.getNumberOfClasses;
+0085             RT = 0;
+0086             lastSol= [];
+0087             Q = zeros(M,K); R = zeros(M,K); T = zeros(M,K);
+0088             U = zeros(M,K); C = zeros(1,K); X = zeros(1,K);
+0089             [s0, s0prior] = self.model.getState;
+0090             s0_sz = cellfun(@(x) size(x,1), s0)';
+0091             s0_id = pprod(s0_sz-1);
+0092             <span class="keyword">while</span> s0_id&gt;=0 <span class="comment">% for all possible initial states</span>
+0093                 s0prior_val = 1;
+0094                 <span class="keyword">for</span> ind=1:qn.nnodes
+0095                     <span class="keyword">if</span> qn.isstateful(ind)
+0096                         isf = qn.nodeToStateful(ind);
+0097                         s0prior_val = s0prior_val * s0prior{isf}(1+s0_id(isf)); <span class="comment">% update prior</span>
+0098                         qn.state{isf} = s0{isf}(1+s0_id(isf),:); <span class="comment">% assign initial state to network</span>
+0099                     <span class="keyword">end</span>
+0100                 <span class="keyword">end</span>
+0101                 <span class="keyword">if</span> s0prior_val &gt; 0
+0102                     [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSol] = <a href="solver_fluid_analysis.html" class="code" title="function [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSolution] = solver_fluid_analysis(qn, options)">solver_fluid_analysis</a>(qn, options);
+0103                     [t,uniqueIdx] = unique(t);
+0104                     <span class="keyword">if</span> isempty(lastSol) <span class="comment">% if solution fails</span>
+0105                         Q = NaN*ones(M,K); R = NaN*ones(M,K);
+0106                         T = NaN*ones(M,K); U = NaN*ones(M,K);
+0107                         C = NaN*ones(1,K); X = NaN*ones(1,K);
+0108                         Qt = cell(M,K); Ut = cell(M,K); Tt = cell(M,K);
+0109                         <span class="keyword">for</span> ist=1:M
+0110                             <span class="keyword">for</span> r=1:K
+0111                                 Qt{ist,r} = [NaN,NaN];
+0112                                 Ut{ist,r} = [NaN,NaN];
+0113                                 Tt{ist,r} = [NaN,NaN];
+0114                             <span class="keyword">end</span>
+0115                         <span class="keyword">end</span>
+0116                     <span class="keyword">else</span>
+0117                         <span class="keyword">if</span> isempty(self.result) &amp;&amp; ~exist(<span class="string">'Qt'</span>,<span class="string">'var'</span>)
+0118                             Q = Qfull*s0prior_val;
+0119                             R = Rfull*s0prior_val;
+0120                             T = Tfull*s0prior_val;
+0121                             U = Ufull*s0prior_val;
+0122                             C = Cfull*s0prior_val;
+0123                             X = Xfull*s0prior_val;
+0124                             Qt = cell(M,K);
+0125                             Ut = cell(M,K);
+0126                             Tt = cell(M,K);
+0127                             <span class="keyword">for</span> ist=1:M
+0128                                 <span class="keyword">for</span> r=1:K
+0129                                     Qfull_t{ist,r} = Qfull_t{ist,r}(uniqueIdx);
+0130                                     Ufull_t{ist,r} = Ufull_t{ist,r}(uniqueIdx);
+0131                                     Tfull_t{ist,r} = Tfull_t{ist,r}(uniqueIdx);
+0132                                     Qt{ist,r} = [Qfull_t{ist,r} * s0prior_val,t];
+0133                                     Ut{ist,r} = [Ufull_t{ist,r} * s0prior_val,t];
+0134                                     Tt{ist,r} = [Tfull_t{ist,r} * s0prior_val,t];
+0135                                 <span class="keyword">end</span>
+0136                             <span class="keyword">end</span>
+0137                         <span class="keyword">else</span>
+0138                             Q = Q + Qfull*s0prior_val;
+0139                             R = R + Rfull*s0prior_val;
+0140                             T = T + Tfull*s0prior_val;
+0141                             U = U + Ufull*s0prior_val;
+0142                             C = C + Cfull*s0prior_val;
+0143                             X = X + Xfull*s0prior_val;
+0144                             <span class="keyword">for</span> ist=1:M
+0145                                 <span class="keyword">for</span> r=1:K
+0146                                     [t,uniqueIdx] = unique(t);
+0147                                     Qfull_t{ist,r} = Qfull_t{ist,r}(uniqueIdx);
+0148                                     Ufull_t{ist,r} = Ufull_t{ist,r}(uniqueIdx);
+0149                                     <span class="comment">%                                  Tfull_t{i,r} = Tfull_t{i,r}(uniqueIdx);</span>
+0150                                     
+0151                                     tunion = union(Qt{ist,r}(:,2), t);
+0152                                     dataOld = interp1(Qt{ist,r}(:,2),Qt{ist,r}(:,1),tunion);
+0153                                     dataNew = interp1(t,Qfull_t{ist,r},tunion);
+0154                                     Qt{ist,r} = [dataOld + s0prior_val * dataNew, tunion];
+0155                                     
+0156                                     dataOld = interp1(Ut{ist,r}(:,2),Ut{ist,r}(:,1),tunion);
+0157                                     dataNew = interp1(t,Ufull_t{ist,r},tunion);
+0158                                     Ut{ist,r} = [dataOld + s0prior_val * dataNew, tunion];
+0159                                     
+0160                                     <span class="comment">%                                 dataOld = interp1(Tt{i,r}(:,2),Tt{i,r}(:,1),tunion);</span>
+0161                                     <span class="comment">%                                 dataNew = interp1(t,Tfull_t{i,r},tunion);</span>
+0162                                     <span class="comment">%                                 Tt{i,r} = [dataOld + s0prior_val * dataNew, tunion];</span>
+0163                                 <span class="keyword">end</span>
+0164                             <span class="keyword">end</span>
+0165                         <span class="keyword">end</span>
+0166                     <span class="keyword">end</span>
+0167                 <span class="keyword">end</span>
+0168                 s0_id=pprod(s0_id,s0_sz-1); <span class="comment">% update initial state</span>
+0169             <span class="keyword">end</span>
+0170             runtime = toc(T0);
+0171             self.result.solverSpecific = lastSol;
+0172             self.setAvgResults(Q,U,R,T,C,X,runtime);
+0173             Rt={}; Xt={}; Ct={};
+0174             self.setTranAvgResults(Qt,Ut,Rt,Tt,Ct,Xt,runtime);
+0175         <span class="keyword">end</span>
+0176     <span class="keyword">end</span>
+0177     methods (Static)
+0178         <a name="_sub5" href="#_subfunctions" class="code">function featSupported = getFeatureSet()</a>
+0179             featSupported = SolverFeatureSet;
+0180             featSupported.setTrue({
+0181                 <span class="string">'ClassSwitch'</span>,<span class="string">'DelayStation'</span>,<span class="string">'Queue'</span>,<span class="keyword">...</span>
+0182                 <span class="string">'Cox2'</span>,<span class="string">'Erlang'</span>,<span class="string">'Exponential'</span>,<span class="string">'HyperExp'</span>,<span class="keyword">...</span>
+0183                 <span class="string">'StatelessClassSwitcher'</span>,<span class="string">'InfiniteServer'</span>,<span class="string">'SharedServer'</span>,<span class="string">'Buffer'</span>,<span class="string">'Dispatcher'</span>,<span class="keyword">...</span>
+0184                 <span class="string">'Server'</span>,<span class="string">'RandomSource'</span>,<span class="string">'ServiceTunnel'</span>,<span class="keyword">...</span>
+0185                 <span class="string">'SchedStrategy_INF'</span>,<span class="string">'SchedStrategy_PS'</span>,<span class="keyword">...</span>
+0186                 <span class="string">'SchedStrategy_DPS'</span>,<span class="string">'SchedStrategy_FCFS'</span>,<span class="keyword">...</span>
+0187                 <span class="string">'RoutingStrategy_PROB'</span>,<span class="string">'RoutingStrategy_RAND'</span>,<span class="keyword">...</span><span class="comment">                </span>
+0188                 <span class="string">'ClosedClass'</span>,<span class="string">'Replayer'</span>}); <span class="comment">%,...</span>
+0189                 <span class="comment">%SolverFluid has very weak performance on open models</span>
+0190                 <span class="comment">%'Sink','Source','OpenClass','JobSink'});</span>
+0191         <span class="keyword">end</span>        
+0192         
+0193         <a name="_sub6" href="#_subfunctions" class="code">function [bool, featSupported] = supports(model)</a>
+0194             featUsed = model.getUsedLangFeatures();    
+0195             featSupported = SolverFluid.getFeatureSet();
+0196             bool = SolverFeatureSet.supports(featSupported, featUsed);
+0197         <span class="keyword">end</span>
+0198     <span class="keyword">end</span>
+0199     
+0200     methods (Static)
+0201         <a name="_sub7" href="#_subfunctions" class="code">function options = defaultOptions()</a>
+0202             options = Solver.defaultOptions();
+0203             options.iter_max = 50;
+0204             options.stiff = true;
+0205             options.timespan = [0,Inf];
+0206         <span class="keyword">end</span>
+0207     <span class="keyword">end</span>
+0208 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

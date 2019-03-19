@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of linkAndLog</title>
+  <meta name="keywords" content="linkAndLog">
+  <meta name="description" content="this macro will need refactoring to decouple the observation from the Model class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@Network</a> &gt; linkAndLog.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@Network&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>linkAndLog
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>this macro will need refactoring to decouple the observation from the Model class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [loggerBefore,loggerAfter] = linkAndLog(self, P, isNodeLogged, logPath) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> this macro will need refactoring to decouple the observation from the Model class
+ Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Network.html" class="code" title="">Network</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% this macro will need refactoring to decouple the observation from the Model class</span>
+0002 <a name="_sub0" href="#_subfunctions" class="code">function [loggerBefore,loggerAfter] = linkAndLog(self, P, isNodeLogged, logPath)</a>
+0003 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0004 <span class="comment">% All rights reserved.</span>
+0005 
+0006 <span class="keyword">if</span> ~isempty(self.links)
+0007     warning(<span class="string">'Network topology already instantiated. Calling resetNetwork automatically before adding loggers.'</span>);
+0008     self.resetNetwork;
+0009 <span class="keyword">end</span>
+0010 R = self.getNumberOfClasses;
+0011 Mnodes = self.getNumberOfNodes;
+0012 Mstations = self.getNumberOfStations;
+0013 
+0014 <span class="keyword">if</span> Mnodes ~= numel(isNodeLogged)
+0015     error(<span class="string">'The size of the isNodeLogged vector does not match the number of nodes.'</span>);
+0016 <span class="keyword">end</span>
+0017 
+0018 isNodeLogged = [isNodeLogged(:)'];
+0019 <span class="keyword">if</span> ~isempty(self.getSource)
+0020     sinkIndex = self.getIndexSinkNode;
+0021     <span class="keyword">if</span> isNodeLogged(sinkIndex)
+0022         warning(<span class="string">'Sink station cannot be logged, ignoring.'</span>);
+0023         isNodeLogged(sinkIndex) = false;
+0024     <span class="keyword">end</span>
+0025 <span class="keyword">end</span>
+0026 <span class="keyword">if</span> ~isempty(self.getSource)
+0027     sourceIndex = self.getIndexSourceNode;
+0028     <span class="keyword">if</span> isNodeLogged(sourceIndex)
+0029         warning(<span class="string">'Source station cannot be logged, ignoring.'</span>);
+0030         isNodeLogged(sourceIndex) = false;
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="keyword">if</span> exist(<span class="string">'logPath'</span>,<span class="string">'var'</span>)
+0035     self.setLogPath(logPath);
+0036 <span class="keyword">else</span>
+0037     logPath = self.getLogPath();
+0038 <span class="keyword">end</span>
+0039 
+0040 Mnodesnew = 3*Mnodes;
+0041 loggerBefore = cell(1,0);
+0042 loggerAfter = cell(1,0);
+0043 <span class="keyword">for</span> i=1:Mnodes
+0044     <span class="keyword">if</span> isNodeLogged(i)
+0045         <span class="keyword">if</span> ispc
+0046             loggerBefore{end+1} = Logger(self,sprintf(<span class="string">'Arv_%s'</span>,self.getNodeNames{i}),[logPath,filesep,sprintf(<span class="string">'%s-Arv.csv'</span>,self.getNodeNames{i})]);
+0047             <span class="keyword">for</span> r=1:R
+0048                 loggerBefore{end}.setRouting(self.classes{r}, RoutingStrategy.RAND);
+0049             <span class="keyword">end</span>
+0050         <span class="keyword">elseif</span> isunix
+0051             loggerBefore{end+1} = Logger(self,sprintf(<span class="string">'Arv_%s'</span>,self.getNodeNames{i}),[logPath,filesep,sprintf(<span class="string">'%s-Arv.csv'</span>,self.getNodeNames{i})]);
+0052             <span class="keyword">for</span> r=1:R
+0053                 loggerBefore{end}.setRouting(self.classes{r}, RoutingStrategy.RAND);
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
+0058 <span class="keyword">for</span> i=1:Mnodes
+0059     <span class="keyword">if</span> isNodeLogged(i)
+0060         <span class="keyword">if</span> ispc
+0061             loggerAfter{end+1} = Logger(self,sprintf(<span class="string">'Dep_%s'</span>,self.getNodeNames{i}),[logPath,filesep,sprintf(<span class="string">'%s-Dep.csv'</span>,self.getNodeNames{i})]);
+0062             <span class="keyword">for</span> r=1:R
+0063                 loggerAfter{end}.setRouting(self.classes{r}, RoutingStrategy.RAND);
+0064             <span class="keyword">end</span>
+0065         <span class="keyword">elseif</span> isunix
+0066             loggerAfter{end+1} = Logger(self,sprintf(<span class="string">'Dep_%s'</span>,self.getNodeNames{i}),[logPath,filesep,sprintf(<span class="string">'%s-Dep.csv'</span>,self.getNodeNames{i})]);
+0067             <span class="keyword">for</span> r=1:R
+0068                 loggerAfter{end}.setRouting(self.classes{r}, RoutingStrategy.RAND);
+0069             <span class="keyword">end</span>
+0070         <span class="keyword">end</span>
+0071     <span class="keyword">end</span>
+0072 <span class="keyword">end</span>
+0073 newP = cellzeros(R,R,Mnodesnew,Mnodesnew);
+0074 <span class="keyword">for</span> r=1:R
+0075     <span class="keyword">for</span> s=1:R
+0076         <span class="keyword">for</span> i=1:Mnodes
+0077             <span class="keyword">for</span> j=1:Mnodes
+0078                 <span class="keyword">if</span> P{r,s}(i,j)&gt;0
+0079                     <span class="keyword">if</span> isNodeLogged(i) &amp;&amp; isNodeLogged(j)
+0080                         <span class="comment">% link loggerArvi to loggerDepj</span>
+0081                         newP{r,s}(2*Mnodes+i,Mnodes+j) = P{r,s}(i,j);
+0082                     <span class="keyword">elseif</span> isNodeLogged(i) &amp;&amp; ~isNodeLogged(j)
+0083                         <span class="comment">% link logAi to j</span>
+0084                         newP{r,s}(2*Mnodes+i,j) = P{r,s}(i,j);
+0085                     <span class="keyword">elseif</span> ~isNodeLogged(i) &amp;&amp; isNodeLogged(j)
+0086                         <span class="comment">% link i to logBj</span>
+0087                         newP{r,s}(i,Mnodes+j) = P{r,s}(i,j);
+0088                     <span class="keyword">else</span>
+0089                         <span class="comment">% link i to j</span>
+0090                         newP{r,s}(i,j) = P{r,s}(i,j);
+0091                     <span class="keyword">end</span>
+0092                 <span class="keyword">end</span>
+0093             <span class="keyword">end</span>
+0094         <span class="keyword">end</span>
+0095         <span class="keyword">for</span> i=1:Mnodes
+0096             <span class="keyword">if</span> isNodeLogged(i)
+0097                 newP{r,r}(Mnodes+i,i) = 1.0; <span class="comment">% logBi -&gt; i</span>
+0098                 newP{r,r}(i,2*Mnodes+i) = 1.0; <span class="comment">% i -&gt; logAi</span>
+0099             <span class="keyword">end</span>
+0100         <span class="keyword">end</span>
+0101     <span class="keyword">end</span>
+0102 <span class="keyword">end</span>
+0103 <span class="keyword">for</span> r=1:R
+0104     <span class="keyword">for</span> s=1:R
+0105         idx = find(isNodeLogged);
+0106         newP{r,s} = newP{r,s}([1:Mnodes,Mnodes+idx,2*Mnodes+idx],[1:Mnodes,Mnodes+idx,2*Mnodes+idx]);
+0107     <span class="keyword">end</span>
+0108 <span class="keyword">end</span>
+0109 self.link(newP);
+0110 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

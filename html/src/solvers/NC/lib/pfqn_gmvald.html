@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pfqn_gmvald</title>
+  <meta name="keywords" content="pfqn_gmvald">
+  <meta name="description" content="G=pfqn_gmvald(L,N,mu)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../../index.html">solvers</a> &gt; <a href="../index.html">NC</a> &gt; <a href="index.html">lib</a> &gt; pfqn_gmvald.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\NC\lib&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>pfqn_gmvald
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>G=pfqn_gmvald(L,N,mu)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [G,lG]=pfqn_gmvald(L,N,mu,options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> G=pfqn_gmvald(L,N,mu)
+ mu: MxN matrix of load-dependent rates</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="pfqn_gmvald.html" class="code" title="function [G,lG]=pfqn_gmvald(L,N,mu,options)">pfqn_gmvald</a>	G=pfqn_gmvald(L,N,mu)</li><li><a href="pfqn_nc.html" class="code" title="function [lGn] = pfqn_nc(L,N,Z,varargin)">pfqn_nc</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="pfqn_gmvald.html" class="code" title="function [G,lG]=pfqn_gmvald(L,N,mu,options)">pfqn_gmvald</a>	G=pfqn_gmvald(L,N,mu)</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function mushifted=mushift(mu,i)</a></li><li><a href="#_sub2" class="code">function G=pfqn_gmvaldsingle(L,N,mu)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [G,lG]=pfqn_gmvald(L,N,mu,options)</a>
+0002 <span class="comment">% G=pfqn_gmvald(L,N,mu)</span>
+0003 <span class="comment">% mu: MxN matrix of load-dependent rates</span>
+0004 [M,R]=size(L);
+0005 <span class="keyword">if</span> isempty(L)
+0006     G = 0; lG = -Inf; <span class="keyword">return</span>
+0007 <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin==2
+0009     mu=ones(M,sum(N));
+0010 <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4
+0012     options = SolverNC.defaultOptions;
+0013 <span class="keyword">end</span>
+0014 isLoadDep = false;
+0015 isInfServer = [];
+0016 <span class="keyword">for</span> i=1:M
+0017     <span class="keyword">if</span> min(mu(i,1:sum(N))) == 1 &amp; max(mu(i,1:sum(N))) == 1
+0018         isInfServer(i) = false;
+0019         <span class="keyword">continue</span>; <span class="comment">% this is a LI station</span>
+0020     <span class="keyword">elseif</span> all(mu(i,1:sum(N)) == 1:sum(N))
+0021         isInfServer(i) = true;
+0022         <span class="keyword">continue</span>; <span class="comment">% this is a infinite server station</span>
+0023     <span class="keyword">else</span>
+0024         isInfServer(i) = false;
+0025         isLoadDep = true;
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> ~isLoadDep
+0030     <span class="comment">% if load-independent model then use faster pfqn_gmva solver</span>
+0031     Lli = L(find(~isInfServer),:);
+0032     <span class="keyword">if</span> isempty(Lli)
+0033         Lli = 0*N;
+0034     <span class="keyword">end</span>
+0035     Zli = L(find(isInfServer),:);
+0036     <span class="keyword">if</span> isempty(Zli)
+0037         Zli = 0*N;
+0038     <span class="keyword">end</span>
+0039     G = <a href="pfqn_nc.html" class="code" title="function [lGn] = pfqn_nc(L,N,Z,varargin)">pfqn_nc</a>(Lli,N,Zli, options);
+0040 <span class="keyword">end</span>
+0041 
+0042 G=0;
+0043 <span class="keyword">if</span> M==0 G=0; lG=log(G); <span class="keyword">return</span>; <span class="keyword">end</span>
+0044 <span class="keyword">if</span> sum(N==zeros(1,R))==R G=1; lG=log(G); <span class="keyword">return</span>; <span class="keyword">end</span>
+0045 
+0046 <span class="keyword">if</span> R==1
+0047     G=<a href="#_sub2" class="code" title="subfunction G=pfqn_gmvaldsingle(L,N,mu)">pfqn_gmvaldsingle</a>(L,N,mu);
+0048     lG=log(G);
+0049     <span class="keyword">return</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 G=G + <a href="pfqn_gmvald.html" class="code" title="function [G,lG]=pfqn_gmvald(L,N,mu,options)">pfqn_gmvald</a>(L(1:(M-1),:),N,mu(1:(M-1),:));
+0053 <span class="keyword">for</span> r=1:R
+0054     <span class="keyword">if</span> N(r)&gt;0
+0055         <span class="keyword">if</span> R&gt;1
+0056             N_1 = oner(N,r);
+0057         <span class="keyword">else</span>
+0058             N_1 = N-1;
+0059         <span class="keyword">end</span>
+0060         G = G + (L(M,r)/mu(M,1))*<a href="pfqn_gmvald.html" class="code" title="function [G,lG]=pfqn_gmvald(L,N,mu,options)">pfqn_gmvald</a>(L,N_1,<a href="#_sub1" class="code" title="subfunction mushifted=mushift(mu,i)">mushift</a>(mu,M));
+0061     <span class="keyword">end</span>
+0062 <span class="keyword">end</span>
+0063 lG=log(G);
+0064 <span class="keyword">return</span>
+0065 <span class="keyword">end</span>
+0066 
+0067 <a name="_sub1" href="#_subfunctions" class="code">function mushifted=mushift(mu,i)</a>
+0068 <span class="comment">% shifts the service rate vector</span>
+0069 [M,N]=size(mu);
+0070 
+0071 <span class="keyword">for</span> m=1:M
+0072     <span class="keyword">if</span> m==i
+0073         mushifted(m,1:(N-1))=mu(m,2:N);
+0074     <span class="keyword">else</span>
+0075         mushifted(m,1:(N-1))=mu(m,1:(N-1));
+0076     <span class="keyword">end</span>
+0077 <span class="keyword">end</span>
+0078 <span class="keyword">end</span>
+0079 
+0080 <a name="_sub2" href="#_subfunctions" class="code">function G=pfqn_gmvaldsingle(L,N,mu)</a>
+0081 [M,R]=size(L);
+0082 <span class="keyword">if</span> R&gt;1
+0083     error(<span class="string">'multiclass model detected. gmvaldsingle is for single class models.'</span>);
+0084 <span class="keyword">end</span>
+0085 g=L(1,1)*0;
+0086 <span class="keyword">for</span> n=1:N
+0087     g(0 +1,n +1, 1 +1)=0;
+0088 <span class="keyword">end</span>
+0089 <span class="keyword">for</span> m=1:M
+0090     <span class="keyword">for</span> tm=1:(N+1)
+0091         g(m +1,0 +1,tm +1)=1;
+0092     <span class="keyword">end</span>
+0093     <span class="keyword">for</span> n=1:N
+0094         <span class="keyword">for</span> tm=1:(N-n+1)
+0095             g(m +1, n +1, tm +1)= g(m-1 +1, n +1, 1 +1)+L(m)*g(m +1, n-1 +1, tm+1 +1)/mu(m,tm);
+0096         <span class="keyword">end</span>
+0097     <span class="keyword">end</span>
+0098 <span class="keyword">end</span>
+0099 G=g(M +1,N +1,1 +1);
+0100 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

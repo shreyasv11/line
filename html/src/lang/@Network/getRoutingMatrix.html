@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getRoutingMatrix</title>
+  <meta name="keywords" content="getRoutingMatrix">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@Network</a> &gt; getRoutingMatrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@Network&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getRoutingMatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [rt,rtNodes,rtNodesByClass,rtNodesByStation,connMatrix] = getRoutingMatrix(self, arvRates) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Network.html" class="code" title="">Network</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rt,rtNodes,rtNodesByClass,rtNodesByStation,connMatrix] = getRoutingMatrix(self, arvRates)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">if</span> ~exist(<span class="string">'arvRates'</span>,<span class="string">'var'</span>)
+0006     <span class="keyword">for</span> r=self.getIndexOpenClasses
+0007         arvRates(r) = 1 / self.getSource.input.sourceClasses{r}{end}.getMean;
+0008     <span class="keyword">end</span>
+0009 <span class="keyword">end</span>
+0010 
+0011 nodeNames = self.getNodeNames();
+0012 <span class="comment">% connectivity matrix</span>
+0013 connMatrix = zeros(self.getNumberOfNodes);
+0014 <span class="keyword">for</span> r=1:size(self.links,1)
+0015     i=findstring(nodeNames,self.links{r}{1}.name);
+0016     j=findstring(nodeNames,self.links{r}{2}.name);
+0017     connMatrix(i,j) = 1;
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="keyword">if</span> ~exist(<span class="string">'arvRates'</span>,<span class="string">'var'</span>)
+0021     <span class="keyword">if</span> self.hasOpenClasses()
+0022         error(<span class="string">'getRoutingMatrix requires arrival rates for open classes.'</span>);
+0023     <span class="keyword">end</span>
+0024 <span class="keyword">end</span>
+0025 
+0026 K = self.getNumberOfClasses;
+0027 NK = self.getNumberOfJobs;
+0028 rtNodes = zeros(self.getNumberOfNodes()*K);
+0029 <span class="comment">% The first loop considers the class at which a job enters the</span>
+0030 <span class="comment">% target station</span>
+0031 <span class="keyword">for</span> i=1:self.getNumberOfNodes()
+0032     <span class="keyword">switch</span> class(self.nodes{i}.output)
+0033         <span class="keyword">case</span> <span class="string">'Forker'</span>
+0034             <span class="keyword">for</span> j=1:self.getNumberOfNodes()
+0035                 <span class="keyword">for</span> k=1:K
+0036                     <span class="keyword">if</span> connMatrix(i,j)&gt;0
+0037                         rtNodes((i-1)*K+k,(j-1)*K+k)=1.0;
+0038                         <span class="keyword">switch</span> self.nodes{i}.output.outputStrategy{k}{2}
+0039                             <span class="keyword">case</span> <span class="string">'Probabilities'</span>
+0040                                 <span class="keyword">if</span> length(self.nodes{i}.output.outputStrategy{k}{end}) ~= sum(connMatrix(i,:))
+0041                                     error(<span class="string">'Fork must have 1.0 routing probability towards all outgoing links.'</span>);
+0042                                 <span class="keyword">end</span>
+0043                                 <span class="keyword">for</span> t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) <span class="comment">% for all outgoing links</span>
+0044                                     <span class="keyword">if</span> self.nodes{i}.output.outputStrategy{k}{end}{t}{2} ~= 1.0
+0045                                         error(<span class="string">'Fork must have 1.0 routing probability towards all outgoing links, but a routing probability is at %f.'</span>,self.nodes{i}.output.outputStrategy{k}{end}{t}{2});
+0046                                     <span class="keyword">end</span>
+0047                                 <span class="keyword">end</span>
+0048                         <span class="keyword">end</span>
+0049                     <span class="keyword">end</span>
+0050                 <span class="keyword">end</span>
+0051             <span class="keyword">end</span>
+0052         <span class="keyword">otherwise</span>
+0053             <span class="keyword">for</span> k=1:K
+0054                 <span class="keyword">switch</span> self.nodes{i}.output.outputStrategy{k}{2}
+0055                     <span class="keyword">case</span> RoutingStrategy.RAND
+0056                         <span class="keyword">if</span> isinf(NK(k)) || (~isa(self.nodes{i},<span class="string">'Source'</span>) &amp;&amp; ~isa(self.nodes{i},<span class="string">'Sink'</span>)) <span class="comment">% don't route closed classes out of source nodes</span>
+0057                             <span class="keyword">for</span> j=1:self.getNumberOfNodes()
+0058                                 <span class="keyword">if</span> connMatrix(i,j)&gt;0
+0059                                     rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
+0060                                 <span class="keyword">end</span>
+0061                             <span class="keyword">end</span>
+0062                         <span class="keyword">end</span>
+0063                     <span class="keyword">case</span> RoutingStrategy.PROB
+0064                         <span class="keyword">if</span> isinf(NK(k)) || ~isa(self.nodes{i},<span class="string">'Sink'</span>)
+0065                             <span class="keyword">for</span> t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) <span class="comment">% for all outgoing links</span>
+0066                                 j = findstring(nodeNames,self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
+0067                                 rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
+0068                             <span class="keyword">end</span>
+0069                         <span class="keyword">end</span>
+0070                     <span class="keyword">case</span> {RoutingStrategy.RR, RoutingStrategy.JSQ}
+0071                         <span class="comment">% we set the routing probabilities for the chain as in</span>
+0072                         <span class="comment">% RoutingStrategy.RAND</span>
+0073                         <span class="keyword">if</span> isinf(NK(k)) || (~isa(self.nodes{i},<span class="string">'Source'</span>) &amp;&amp; ~isa(self.nodes{i},<span class="string">'Sink'</span>)) <span class="comment">% don't route closed classes out of source nodes</span>
+0074                             <span class="keyword">for</span> j=1:self.getNumberOfNodes()
+0075                                 <span class="keyword">if</span> connMatrix(i,j)&gt;0
+0076                                     rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
+0077                                 <span class="keyword">end</span>
+0078                             <span class="keyword">end</span>
+0079                         <span class="keyword">end</span>
+0080                     <span class="keyword">otherwise</span>
+0081                         <span class="keyword">if</span> self.nodes{i}.output.outputStrategy{k}{2}~=0 <span class="comment">% disabled</span>
+0082                             error([self.nodes{i}.output.outputStrategy{k}{2},<span class="string">' routing policy is not yet supported.'</span>]);
+0083                         <span class="keyword">end</span>
+0084                 <span class="keyword">end</span>
+0085             <span class="keyword">end</span>
+0086     <span class="keyword">end</span>
+0087 <span class="keyword">end</span>
+0088 
+0089 <span class="comment">% The second loop corrects the first one at nodes that change</span>
+0090 <span class="comment">% the class of the job in the service section.</span>
+0091 
+0092 <span class="keyword">for</span> i=1:self.getNumberOfNodes <span class="comment">% source</span>
+0093     <span class="keyword">if</span> isa(self.nodes{i}.server,<span class="string">'StatelessClassSwitcher'</span>)
+0094         Pi = rtNodes(((i-1)*K+1):i*K,:);
+0095         <span class="keyword">for</span> r=1:K
+0096             <span class="keyword">for</span> s=1:K
+0097                 Pcs(r,s) = self.nodes{i}.server.csFun(r,s);
+0098             <span class="keyword">end</span>
+0099         <span class="keyword">end</span>
+0100         rtNodes(((i-1)*K+1):i*K,:) = 0;
+0101         <span class="keyword">for</span> j=1:self.getNumberOfNodes() <span class="comment">% destination</span>
+0102             Pij = Pi(1:K,((j-1)*K+1):j*K); <span class="comment">%Pij(r,s)</span>
+0103             <span class="keyword">for</span> r=1:self.getNumberOfClasses()
+0104                 <span class="keyword">for</span> s=1:self.getNumberOfClasses()
+0105                     <span class="comment">% Find the routing probability section determined by the router section in the first loop</span>
+0106                     <span class="comment">%Pnodes(((i-1)*K+1):i*K,((j-1)*K+1):j*K) = Pcs*Pij;</span>
+0107                     rtNodes((i-1)*K+r,(j-1)*K+s) = Pcs(r,s)*Pij(s,s);
+0108                 <span class="keyword">end</span>
+0109             <span class="keyword">end</span>
+0110         <span class="keyword">end</span>
+0111     <span class="keyword">elseif</span> isa(self.nodes{i}.server,<span class="string">'StatefulClassSwitcher'</span>)
+0112         Pi = rtNodes(((i-1)*K+1):i*K,:);
+0113         <span class="keyword">for</span> r=1:K
+0114             <span class="keyword">for</span> s=1:K
+0115                 Pcs(r,s) = self.nodes{i}.server.csFun(r,s,[],[]); <span class="comment">% get csmask</span>
+0116             <span class="keyword">end</span>
+0117         <span class="keyword">end</span>
+0118         rtNodes(((i-1)*K+1):i*K,:) = 0;
+0119         <span class="keyword">if</span> isa(self.nodes{i}.server,<span class="string">'CacheClassSwitcher'</span>)
+0120             <span class="keyword">for</span> r=1:K
+0121                 <span class="keyword">if</span> (isempty(find(r == self.nodes{i}.server.hitClass)) &amp;&amp; isempty(find(r == self.nodes{i}.server.missClass)))
+0122                     Pcs(r,:) = Pcs(r,:)/sum(Pcs(r,:));
+0123                 <span class="keyword">end</span>
+0124             <span class="keyword">end</span>
+0125             <span class="keyword">for</span> r=1:self.getNumberOfClasses()
+0126                 <span class="keyword">if</span> (isempty(find(r == self.nodes{i}.server.hitClass)) &amp;&amp; isempty(find(r == self.nodes{i}.server.missClass)))
+0127                     <span class="keyword">for</span> j=1:self.getNumberOfNodes() <span class="comment">% destination</span>
+0128                         <span class="keyword">for</span> s=1:self.getNumberOfClasses()
+0129                             Pi((i-1)*K+r,(j-1)*K+s) = 0;
+0130                         <span class="keyword">end</span>
+0131                     <span class="keyword">end</span>
+0132                 <span class="keyword">end</span>
+0133             <span class="keyword">end</span>
+0134             <span class="keyword">for</span> j=1:self.getNumberOfNodes() <span class="comment">% destination</span>
+0135                 Pij = Pi(1:K,((j-1)*K+1):j*K); <span class="comment">%Pij(r,s)</span>
+0136                 <span class="keyword">for</span> r=1:self.getNumberOfClasses()
+0137                     <span class="keyword">if</span> ~(isempty(find(r == self.nodes{i}.server.hitClass)) &amp;&amp; isempty(find(r == self.nodes{i}.server.missClass)))
+0138                         <span class="keyword">for</span> s=1:self.getNumberOfClasses()
+0139                             <span class="comment">% Find the routing probability section determined by the router section in the first loop</span>
+0140                             <span class="comment">%Pnodes(((i-1)*K+1):i*K,((j-1)*K+1):j*K) = Pcs*Pij;</span>
+0141                             rtNodes((i-1)*K+r,(j-1)*K+s) = Pcs(r,s)*Pij(s,s);
+0142                         <span class="keyword">end</span>
+0143                     <span class="keyword">end</span>
+0144                 <span class="keyword">end</span>
+0145             <span class="keyword">end</span>
+0146         <span class="keyword">end</span>
+0147     <span class="keyword">end</span>
+0148     
+0149     <span class="comment">% ignore all chains containing a Pnodes column that sums to 0,</span>
+0150     <span class="comment">% since these are classes that cannot arrive to the node</span>
+0151     <span class="comment">% unless this column belongs to the source</span>
+0152     colsToIgnore = find(sum(rtNodes,1)==0);
+0153     <span class="keyword">if</span> self.hasOpenClasses()
+0154         idxSource = self.getIndexSourceNode;
+0155         colsToIgnore = setdiff(colsToIgnore,(idxSource-1)*K+(1:K));
+0156     <span class="keyword">end</span>
+0157     
+0158     <span class="comment">% We route back from the sink to the source. Since open classes</span>
+0159     <span class="comment">% have an infinite population, if there is a class switch QN</span>
+0160     <span class="comment">% with the following chains</span>
+0161     <span class="comment">% Source -&gt; (A or B) -&gt; C -&gt; Sink</span>
+0162     <span class="comment">% Source -&gt; D -&gt; Sink</span>
+0163     <span class="comment">% We can re-route class C into the source either as A or B or C.</span>
+0164     <span class="comment">% We here re-route back as C and leave for the chain analyzer</span>
+0165     <span class="comment">% to detect that C is in a chain with A and B and change this</span>
+0166     <span class="comment">% part.</span>
+0167     [C,inChain]=weaklyconncomp(rtNodes+rtNodes');
+0168     inChain(colsToIgnore) = 0;
+0169     chainCandidates = cell(1,C);
+0170     <span class="keyword">for</span> r=1:C
+0171         chainCandidates{r} = find(inChain==r);
+0172     <span class="keyword">end</span>
+0173     
+0174     chainsPnodes = []; <span class="comment">% columns are classes? rows are definitely chains</span>
+0175     <span class="keyword">for</span> t=1:length(chainCandidates)
+0176         <span class="keyword">if</span> length(chainCandidates{t})&gt;1
+0177             chainsPnodes(end+1,unique(mod(chainCandidates{t}-1,K)+1))=1;
+0178         <span class="keyword">end</span>
+0179     <span class="keyword">end</span>
+0180     <span class="keyword">try</span>
+0181         chainsPnodes = sortrows(chainsPnodes,<span class="string">'descend'</span>);
+0182     <span class="keyword">catch</span> <span class="comment">% old MATLABs</span>
+0183         chainsPnodes = sortrows(chainsPnodes);
+0184     <span class="keyword">end</span>
+0185     <span class="comment">% this routes open classes back from the sink into the source</span>
+0186     <span class="comment">% it will not work with non-renewal arrivals as it choses in which open</span>
+0187     <span class="comment">% class to reroute a job with probability depending on the arrival rates</span>
+0188     <span class="keyword">if</span> self.hasOpenClasses()
+0189         arvRates(isnan(arvRates)) = 0;
+0190         idxSink = self.getIndexSinkNode;
+0191         <span class="keyword">for</span> s=self.getIndexOpenClasses
+0192             s_chain = find(chainsPnodes(:,s));
+0193             others_in_chain = find(chainsPnodes(s_chain,:));
+0194             rtNodes((idxSink-1)*K+others_in_chain,(idxSource-1)*K+others_in_chain) = repmat(arvRates(others_in_chain)/sum(arvRates(others_in_chain)),length(others_in_chain),1);
+0195         <span class="keyword">end</span>
+0196     <span class="keyword">end</span>
+0197     
+0198     <span class="comment">% We now obtain the routing matrix P by ignoring the non-stateless</span>
+0199     <span class="comment">% nodes and calculating by the stochastic complement method the</span>
+0200     <span class="comment">% correct transition probabilities, that includes the effects</span>
+0201     <span class="comment">% of the non-station nodes (e.g., ClassSwitch)</span>
+0202     statefulNodesClasses = [];
+0203     <span class="keyword">for</span> i=self.getIndexStatefulNodes()
+0204         statefulNodesClasses(end+1:end+K)= ((i-1)*K+1):(i*K);
+0205     <span class="keyword">end</span>
+0206     
+0207     <span class="comment">% Hide the nodes that are not stations</span>
+0208     rt = dtmc_stochcomp(rtNodes,statefulNodesClasses);
+0209     <span class="keyword">if</span> nargout &gt;= 3
+0210         M = self.getNumberOfNodes();
+0211         K = self.getNumberOfClasses();
+0212         rtNodesByClass = cellzeros(K,K,M,M);
+0213         <span class="keyword">for</span> i=1:M
+0214             <span class="keyword">for</span> j=1:M
+0215                 <span class="keyword">for</span> r=1:K
+0216                     <span class="keyword">for</span> s=1:K
+0217                         rtNodesByClass{s,r}(i,j) = rtNodes((i-1)*K+s,(j-1)*K+r);
+0218                     <span class="keyword">end</span>
+0219                 <span class="keyword">end</span>
+0220             <span class="keyword">end</span>
+0221         <span class="keyword">end</span>
+0222     <span class="keyword">end</span>
+0223     
+0224     <span class="keyword">if</span> nargout &gt;= 4
+0225         M = self.getNumberOfNodes();
+0226         K = self.getNumberOfClasses();
+0227         rtNodesByStation = cellzeros(M,M,K,K);
+0228         <span class="keyword">for</span> i=1:M
+0229             <span class="keyword">for</span> j=1:M
+0230                 <span class="keyword">for</span> r=1:K
+0231                     <span class="keyword">for</span> s=1:K
+0232                         rtNodesByStation{i,j}(r,s) = rtNodes((i-1)*K+s,(j-1)*K+r);
+0233                     <span class="keyword">end</span>
+0234                 <span class="keyword">end</span>
+0235             <span class="keyword">end</span>
+0236         <span class="keyword">end</span>
+0237     <span class="keyword">end</span>
+0238 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

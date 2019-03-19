@@ -1,0 +1,555 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of updateEnsemble</title>
+  <meta name="keywords" content="updateEnsemble">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@LayeredNetwork</a> &gt; updateEnsemble.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@LayeredNetwork&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>updateEnsemble
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function self = updateEnsemble(self, isBuild, deepUpdate) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function myP = initclass(myP,M,R)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function self = updateEnsemble(self, isBuild, deepUpdate)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 ensemble = self.ensemble;
+0005 [lqnGraph, taskGraph] = self.getGraph();
+0006 <span class="comment">%if isempty(self.param.Nodes.RespT)</span>
+0007 self.nodeMult = lqnGraph.Nodes.Mult(:);
+0008 self.edgeWeight = lqnGraph.Edges.Weight(:);
+0009 <span class="comment">%end</span>
+0010 
+0011 <span class="keyword">if</span> isempty(self.layerGraph)
+0012     [self.layerGraph, ~] = self.getGraphLayers(lqnGraph, taskGraph);
+0013 <span class="keyword">end</span>
+0014 graphLayer = self.layerGraph;
+0015 <span class="comment">%graphs are returned with updated Multiplicity fields on the 'inf' tasks</span>
+0016 maxJobs = Distrib.InfItems; <span class="comment">% maximum number of jobs allowed in a submodel class.</span>
+0017 <span class="keyword">if</span> isempty(self.clientTask)
+0018     <span class="keyword">for</span> net=1:length(graphLayer)
+0019         self.clientTask{net} = unique(graphLayer{net}.Edges.EndNodes(:,1)');
+0020     <span class="keyword">end</span>
+0021 <span class="keyword">end</span>
+0022 clientTask = self.clientTask;
+0023 
+0024 <span class="comment">% this script is valid only for loose layering</span>
+0025 <span class="keyword">for</span> net=1:length(graphLayer)
+0026     <span class="keyword">if</span> isBuild
+0027         ensemble{net} = Network(sprintf(<span class="string">'Submodel_%d'</span>,net));
+0028         node = {};
+0029         jobclass = {};
+0030         myP = {};
+0031     <span class="keyword">else</span>
+0032         node{1} = ensemble{net}.nodes{1};
+0033         node{2} = ensemble{net}.nodes{2};
+0034         jobclass = ensemble{net}.classes;
+0035         qn = ensemble{net}.getStruct();
+0036     <span class="keyword">end</span>
+0037     
+0038     <span class="comment">%% define stations</span>
+0039     <span class="comment">% create surrogate delay node for the layer</span>
+0040     <span class="keyword">if</span> isBuild
+0041         node{1} = DelayStation(ensemble{net}, <span class="string">'Clients'</span>);
+0042     <span class="keyword">end</span>
+0043     <span class="comment">% create a queueing station for the single target in the lower layer</span>
+0044     <span class="keyword">if</span> isBuild
+0045         serverName = graphLayer{net}.Edges.EndNodes{1,2};
+0046     <span class="keyword">else</span>
+0047         serverName = self.serverName{net};
+0048     <span class="keyword">end</span>
+0049     serverIndex = self.getNodeIndex(serverName);
+0050     <span class="keyword">if</span> isBuild
+0051         obj = self.getNodeObject(serverName);
+0052         <span class="keyword">switch</span> obj.scheduling
+0053             <span class="keyword">case</span> <span class="string">'inf'</span>
+0054                 node{2} = DelayStation(ensemble{net}, serverName);
+0055             <span class="keyword">otherwise</span>
+0056                 node{2} = Queue(ensemble{net}, serverName, obj.scheduling);
+0057                 node{2}.setNumServers(self.nodeMult(serverIndex));
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">end</span>
+0060     
+0061     <span class="comment">%% define classes</span>
+0062     <span class="keyword">if</span> isBuild
+0063         myP{1,1} = zeros(length(node)); <span class="comment">% initialize routing matrix - don't move</span>
+0064     <span class="keyword">end</span>
+0065     
+0066     <span class="keyword">if</span> isBuild
+0067         <span class="keyword">for</span> s = 1:length(clientTask{net}) <span class="comment">% for all client activities</span>
+0068             entries = self.listEntriesOfTask(clientTask{net}{s});
+0069             taskobj = self.getNodeObject(clientTask{net}{s});
+0070             <span class="keyword">if</span> strcmpi(taskobj.scheduling,<span class="string">'ref'</span>)
+0071                 isRefTask = true;
+0072                 isRefTaskPopulationLoaded = false;
+0073             <span class="keyword">else</span>
+0074                 isRefTask = false;
+0075             <span class="keyword">end</span>
+0076             isDestTask = false;
+0077             <span class="keyword">if</span> graphLayer{net}.Edges.EndNodes{s,2}(1) == <span class="string">'T'</span>
+0078                 isDestTask = true; <span class="comment">% otherwise is a processor</span>
+0079             <span class="keyword">end</span>
+0080             <span class="keyword">for</span> e=1:length(entries) <span class="comment">% for all entries in the client</span>
+0081                 activities = self.listActivitiesOfEntry(entries{e});
+0082                 entryobj = self.getNodeObject(entries{e});
+0083                 <span class="comment">% add a new class for this entry's think time</span>
+0084                 myP = <a href="#_sub1" class="code" title="subfunction myP = initclass(myP,M,R)">initclass</a>(myP,length(node),length(jobclass));
+0085                 className = entries{e};
+0086                 jobclass{end+1} = ClosedClass(ensemble{net}, className, 0, node{1}, 0);
+0087                 jobclass{end}.completes = false;
+0088                 <span class="keyword">if</span> isRefTask
+0089                     <span class="comment">% if client is a reference task set the clients</span>
+0090                     <span class="keyword">if</span> ~isRefTaskPopulationLoaded <span class="comment">% load population in first entry of the ref task</span>
+0091                         jobclass{end}.population = taskobj.multiplicity;
+0092                         isRefTaskPopulationLoaded = true;
+0093                     <span class="keyword">end</span>
+0094                 <span class="keyword">else</span>
+0095                     <span class="comment">% else this is a non-reference task</span>
+0096                     <span class="keyword">if</span> isinf(taskobj.multiplicity) <span class="comment">% if the client task uses the inf policy</span>
+0097                         taskName = clientTask{net}{s};
+0098                         predecessors = taskGraph.predecessors(taskName);
+0099                         predecJobs = 0; <span class="comment">% number of jobs that can call the task</span>
+0100                         <span class="keyword">for</span> p=1:length(predecessors)
+0101                             predecJobs = predecJobs + self.nodeMult(self.getNodeIndex(predecessors{p}));
+0102                         <span class="keyword">end</span>
+0103                         <span class="keyword">if</span> isinf(predecJobs)
+0104                             predecJobs = maxJobs;
+0105                             self.nodeMult(self.getNodeIndex(clientTask{net}{s})) = Inf; <span class="comment">% problem if set to maxJobs, but worth retrying</span>
+0106                             <span class="comment">%taskGraph.Nodes.Mult(self.getNodeIndexInTaskGraph(clientTask{net}{s})) = Inf;</span>
+0107                         <span class="keyword">else</span>
+0108                             self.nodeMult(self.getNodeIndex(clientTask{net}{s})) = predecJobs;
+0109                             <span class="comment">%taskGraph.Nodes.Mult(self.getNodeIndexInTaskGraph(clientTask{net}{s})) = predecJobs;</span>
+0110                         <span class="keyword">end</span>
+0111                         jobclass{end}.population = predecJobs;
+0112                     <span class="keyword">else</span> <span class="comment">% else use the number of servers</span>
+0113                         jobclass{end}.population = taskobj.multiplicity;
+0114                     <span class="keyword">end</span>
+0115                 <span class="keyword">end</span>
+0116                 
+0117                 isEntryCallingDestTask = false;
+0118                 <span class="keyword">for</span> a=1:length(activities) <span class="comment">% for all activities in the entry</span>
+0119                     actobj = self.getNodeObject(activities{a});
+0120                     
+0121                     <span class="comment">% add a new class for this activity</span>
+0122                     myP = <a href="#_sub1" class="code" title="subfunction myP = initclass(myP,M,R)">initclass</a>(myP,length(node),length(jobclass));
+0123                     className = activities{a};
+0124                     jobclass{end+1} = ClosedClass(ensemble{net}, className, 0, node{1}, 0);
+0125                     jobclass{end}.completes = false;
+0126                     
+0127                     <span class="comment">% add artificial classes for synch-calls</span>
+0128                     <span class="keyword">for</span> d=1:length(actobj.synchCallDests)
+0129                         myP = <a href="#_sub1" class="code" title="subfunction myP = initclass(myP,M,R)">initclass</a>(myP,length(node),length(jobclass));
+0130                         nJobs = 0;
+0131                         destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.synchCallDests{d})};
+0132                         className = [activities{a},<span class="string">'=&gt;'</span>,destEntry];
+0133                         <span class="keyword">if</span> isDestTask
+0134                             isEntryCallingDestTask = true;
+0135                         <span class="keyword">end</span>
+0136                         jobclass{end+1} = ClosedClass(ensemble{net}, className, nJobs, node{1}, 0);
+0137                         jobclass{end}.completes = false;
+0138                     <span class="keyword">end</span>
+0139                     
+0140                     <span class="comment">% add artificial classes for asynch-calls</span>
+0141                     <span class="keyword">for</span> d=1:length(actobj.asynchCallDests)
+0142                         myP = <a href="#_sub1" class="code" title="subfunction myP = initclass(myP,M,R)">initclass</a>(myP,length(node),length(jobclass));
+0143                         nJobs = 0;
+0144                         
+0145                         destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asynchCallDests{d})};
+0146                         className = [activities{a},<span class="string">'-&gt;'</span>,destEntry];
+0147                         <span class="keyword">if</span> isDestTask
+0148                             isEntryCallingDestTask = true;
+0149                         <span class="keyword">end</span>
+0150                         
+0151                         jobclass{end+1} = ClosedClass(ensemble{net}, className, nJobs, node{1}, 0);
+0152                         jobclass{end}.completes = false;
+0153                     <span class="keyword">end</span>
+0154                     <span class="comment">%                    if isDestTask &amp;&amp; ~isEntryCallingDestTask</span>
+0155                     <span class="comment">%                        jobclass{entryJobClass}.population = 0;</span>
+0156                     <span class="comment">%                    end</span>
+0157                 <span class="keyword">end</span>
+0158             <span class="keyword">end</span>
+0159         <span class="keyword">end</span>
+0160     <span class="keyword">end</span>
+0161     
+0162     <span class="comment">%% define routing matrix</span>
+0163     <span class="keyword">for</span> s = 1:length(clientTask{net}) <span class="comment">% for all clients</span>
+0164         entries = self.listEntriesOfTask(clientTask{net}{s});
+0165         taskobj = self.getNodeObject(clientTask{net}{s});
+0166         isRefTask = strcmpi(taskobj.scheduling,<span class="string">'ref'</span>);
+0167         <span class="keyword">for</span> e=1:length(entries) <span class="comment">% for all entries in the client task</span>
+0168             activities = self.listActivitiesOfEntry(entries{e});
+0169             entryobj = self.getNodeObject(entries{e});
+0170             <span class="comment">%% setup think time for this entry</span>
+0171             classEntryName = entries{e};
+0172             class_entry = cellfun(@(c) strcmpi(c.name,classEntryName),jobclass);
+0173             
+0174             <span class="keyword">if</span> isRefTask
+0175                 interArrivalFromUpperLayer = 0; <span class="comment">% no upper layer</span>
+0176             <span class="keyword">else</span> <span class="comment">% if this is not a ref task</span>
+0177                 eidx = self.getNodeIndex(classEntryName);
+0178                 tname = self.getNodeTask(eidx);
+0179                 tidx = self.getNodeIndex(tname);
+0180                 utilUpperLayerEntry = self.param.Nodes.Util(eidx);
+0181                 tputUpperLayerEntry = self.param.Nodes.Tput(eidx);
+0182                 <span class="keyword">if</span> utilUpperLayerEntry &gt; 1 <span class="comment">% infinite server</span>
+0183                     <span class="keyword">if</span> utilUpperLayerEntry &lt; 1 + 1e-7
+0184                         utilUpperLayerEntry = 1;
+0185                     <span class="keyword">else</span>
+0186                         utilUpperLayerEntry = 1;
+0187                         warning(<span class="string">'Invalid utilization of the upper layer. Setting value to 1.0.'</span>);
+0188                     <span class="keyword">end</span>
+0189                 <span class="keyword">end</span>
+0190                 <span class="keyword">if</span> tputUpperLayerEntry == 0
+0191                     interArrivalFromUpperLayer = Distrib.InfTime;
+0192                 <span class="keyword">else</span>
+0193                     interArrivalFromUpperLayer = jobclass{class_entry}.population*(1-utilUpperLayerEntry) / tputUpperLayerEntry;
+0194                 <span class="keyword">end</span>
+0195             <span class="keyword">end</span>
+0196             isProcessorInSubmodel = strcmpi(self.getNodeProcessor(entries{e}), serverName);
+0197             
+0198             thinkTime = taskobj.thinkTimeMean; <span class="keyword">if</span> isnan(thinkTime), thinkTime = 0; <span class="keyword">end</span>
+0199             destEntryRate = min(Distrib.InfRate,1/(thinkTime + interArrivalFromUpperLayer));
+0200             <span class="keyword">if</span> thinkTime == 0
+0201                 destEntryProcess = Exp(destEntryRate);
+0202                 <span class="keyword">if</span> ~isBuild
+0203                     demandMu = destEntryRate;
+0204                     demandPhi = 1.0;
+0205                 <span class="keyword">end</span>
+0206             <span class="keyword">elseif</span> interArrivalFromUpperLayer == 0
+0207                 destEntryProcess = taskobj.thinkTime;
+0208                 <span class="keyword">if</span> isempty(destEntryProcess)
+0209                     destEntryProcess = Exp(Distrib.InfRate);
+0210                 <span class="keyword">end</span>
+0211                 <span class="keyword">if</span> ~isBuild
+0212                     [demandMu,demandPhi] = Cox.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
+0213                 <span class="keyword">end</span>                
+0214             <span class="keyword">else</span> <span class="comment">% convolution of thinkTime and interArrivalFromUpperLayer processes</span>
+0215 <span class="comment">% The code will never enter this section since thinkTime is available only</span>
+0216 <span class="comment">% in the reference task that has no arrivals from an upper layer</span>
+0217 <span class="comment">%                 thinkTimeMAP = taskobj.thinkTime.getRenewalProcess();</span>
+0218 <span class="comment">%                 D0 = [thinkTimeMAP{1},sum(thinkTimeMAP{2},2);zeros(1,size(thinkTimeMAP{1},2)),-interArrivalFromUpperLayer];</span>
+0219 <span class="comment">%                 D1 = zeros(size(D0)); D1(end,1:end-1) = interArrivalFromUpperLayer*map_pie(thinkTimeMAP);</span>
+0220 <span class="comment">%                 destEntryMAP = {D0,D1};</span>
+0221 <span class="comment">%                 destEntryMean = map_mean(destEntryMAP);</span>
+0222 <span class="comment">%                 destEntrySCV = map_scv(destEntryMAP);</span>
+0223 <span class="comment">%                 destEntryProcess = Cox2.fitMeanAndSCV(destEntryMean,destEntrySCV);</span>
+0224 <span class="comment">%                 if destEntryMean == 0</span>
+0225 <span class="comment">%                     destEntryProcess = Exp(Distrib.InfRate);</span>
+0226 <span class="comment">%                     destEntrySCV = 1;</span>
+0227 <span class="comment">%                     demandMu = Distrib.InfRate;</span>
+0228 <span class="comment">%                     demandPhi = 1.0;</span>
+0229 <span class="comment">%                 elseif ~isBuild</span>
+0230 <span class="comment">%                     [demandMu,demandPhi] = Cox.fitMeanAndSCV(destEntryMean, destEntrySCV);</span>
+0231 <span class="comment">%                 end</span>
+0232             <span class="keyword">end</span>
+0233             <span class="keyword">if</span> isBuild
+0234                 node{1}.setService(jobclass{class_entry}, destEntryProcess);
+0235                 node{2}.setService(jobclass{class_entry}, Disabled());
+0236             <span class="keyword">else</span>
+0237                 qn.rates(1,jobclass{class_entry}.index) = destEntryRate;
+0238                 qn.mu{1,jobclass{class_entry}.index} = demandMu;
+0239                 qn.phi{1,jobclass{class_entry}.index} = demandPhi;
+0240                 <span class="keyword">if</span> deepUpdate
+0241                     node{1}.setService(jobclass{class_entry},  destEntryProcess);
+0242                 <span class="keyword">end</span>
+0243             <span class="keyword">end</span>
+0244             classlast = class_entry;
+0245             stationlast = 1;
+0246             
+0247             <span class="keyword">for</span> a=1:length(activities) <span class="comment">% for all activities in this entry</span>
+0248                 <span class="comment">%% determine properties of this activity</span>
+0249                 actobj = self.getNodeObject(activities{a});
+0250                 isBoundToEntry = strcmpi(actobj.boundToEntry, entryobj.name);
+0251                 
+0252                 <span class="comment">%% first setup the host-demand of this activity</span>
+0253                 <span class="comment">% TODO: spread host-demand in-between calls</span>
+0254                 className = activities{a};
+0255                 class_hostdemand = cellfun(@(c) strcmpi(c.name,className),jobclass);
+0256                 
+0257                 <span class="keyword">if</span> isProcessorInSubmodel
+0258                     <span class="comment">% if host is the server in this submodel</span>
+0259                     <span class="comment">% consume hostdemand at the server</span>
+0260                     <span class="keyword">if</span> isBuild
+0261                         <span class="keyword">if</span> isBoundToEntry
+0262                             <span class="keyword">if</span> isRefTask
+0263                                 myP{classlast, class_hostdemand}(stationlast,2) = 1/length(entries); <span class="comment">% visit first the activity bound to entry</span>
+0264                                 <span class="keyword">for</span> h=setdiff(1:length(entries),e) <span class="comment">% for all other entries in the client ref task</span>
+0265                                     classhEntryName = entries{h};
+0266                                     classh_entry = cellfun(@(c) strcmpi(c.name,classhEntryName),jobclass);
+0267                                     myP{classlast, classh_entry}(stationlast,stationlast) = 1/length(entries); <span class="comment">% visit first the activity bound to entry</span>
+0268                                 <span class="keyword">end</span>
+0269                             <span class="keyword">else</span>
+0270                                 myP{classlast, class_hostdemand}(stationlast,2) = 1; <span class="comment">% visit first the activity bound to entry</span>
+0271                             <span class="keyword">end</span>
+0272                         <span class="keyword">end</span>
+0273                         demandRate = 1/actobj.hostDemandMean;
+0274                         <span class="keyword">if</span> isnan(demandRate), demandRate = Distrib.InfRate; <span class="keyword">end</span>
+0275                         <span class="keyword">if</span> isBuild
+0276                             node{1}.setService(jobclass{class_hostdemand}, Disabled());
+0277                             <span class="comment">%node{2}.setService(jobclass{class_hostdemand}, Exp(demandRate));</span>
+0278                             node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
+0279                         <span class="keyword">else</span>
+0280                             <span class="keyword">if</span> deepUpdate
+0281                                 <span class="comment">%node{2}.setService(jobclass{class_hostdemand}, Exp(demandRate));</span>
+0282                                 node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
+0283                             <span class="keyword">end</span>
+0284                             qn.rates(2,jobclass{class_hostdemand}.index) = destEntryRate;
+0285                             [demandMu,demandPhi] = Cox.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
+0286                             qn.mu{2,jobclass{class_hostdemand}.index} = demandMu;
+0287                             qn.phi{2,jobclass{class_hostdemand}.index} = demandPhi;
+0288                         <span class="keyword">end</span>
+0289                         stationlast = 2; <span class="comment">% store that we last visited the server</span>
+0290                         classlast = class_hostdemand; <span class="comment">% store class for return path</span>
+0291                     <span class="keyword">end</span>
+0292                 <span class="keyword">else</span>
+0293                     <span class="comment">% if the processor of this client is in another submodel</span>
+0294                     <span class="comment">% spend time in the delay equivalent to response time</span>
+0295                     <span class="comment">% of this activity</span>
+0296                     <span class="keyword">if</span> isBoundToEntry
+0297                         myP{classlast, class_hostdemand}(stationlast,1) = 1; <span class="comment">% visit first the activity bound to entry</span>
+0298                     <span class="keyword">end</span>
+0299                     destEntryW = self.param.Nodes.RespT(self.getNodeIndex(activities{a}));
+0300                     destEntryRate = 1/destEntryW;
+0301                     entryRT = Exp(destEntryRate);
+0302                     <span class="keyword">if</span> isBuild
+0303                         node{1}.setService(jobclass{class_hostdemand}, entryRT);
+0304                     <span class="keyword">else</span>
+0305                         <span class="keyword">if</span> deepUpdate
+0306                             node{1}.setService(jobclass{class_hostdemand}, entryRT);
+0307                         <span class="keyword">end</span>
+0308                         qn.rates(1,jobclass{class_hostdemand}.index) = destEntryRate;
+0309                         qn.mu{1,jobclass{class_hostdemand}.index} = destEntryRate;
+0310                     <span class="keyword">end</span>
+0311                     <span class="keyword">if</span> isBuild <span class="comment">% if we are building the model for the first time</span>
+0312                         node{2}.setService(jobclass{class_hostdemand}, Disabled());
+0313                         stationlast = 1; <span class="comment">% store that we last visited the server</span>
+0314                         classlast = class_hostdemand; <span class="comment">% store class for return path</span>
+0315                     <span class="keyword">end</span>
+0316                 <span class="keyword">end</span>
+0317                 
+0318                 <span class="comment">%% check if this is the last activity in the entry</span>
+0319                 successors = lqnGraph.successors(self.getNodeIndex(activities{a}))';
+0320                 isReplyActivity = true;
+0321                 <span class="keyword">if</span> ~isempty(successors) <span class="comment">% if the activity has successors</span>
+0322                     <span class="comment">% check if the successors are remote entries, if not</span>
+0323                     <span class="comment">% it's a leaf</span>
+0324                     <span class="keyword">for</span> actnext = successors
+0325                         <span class="keyword">if</span> ~strcmpi(self.getNodeType(actnext),<span class="string">'E'</span>) <span class="comment">% skip successors that are remote entry calls</span>
+0326                             isReplyActivity = false;
+0327                         <span class="keyword">end</span>
+0328                     <span class="keyword">end</span>
+0329                 <span class="keyword">end</span>
+0330                 
+0331                 selfLoopProb = 0; skipProb = 0;
+0332                 <span class="comment">%% setup the synchronous calls</span>
+0333                 <span class="keyword">for</span> d=1:length(actobj.synchCallDests)
+0334                     <span class="comment">% first return to the delay in the appropriate class</span>
+0335                     destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.synchCallDests{d})};
+0336                     <span class="keyword">if</span> self.edgeWeight(self.findEdgeIndex(activities{a},destEntry)) &gt;= 1
+0337                         skipProb = 0;
+0338                     <span class="keyword">else</span> <span class="comment">% call-mean &lt; 1</span>
+0339                         skipProb = 1-self.edgeWeight(self.findEdgeIndex(activities{a},destEntry));
+0340                     <span class="keyword">end</span>
+0341                     className = [activities{a},<span class="string">'=&gt;'</span>,destEntry];
+0342                     
+0343                     class_synchcall = cellfun(@(c) strcmpi(c.name,className),jobclass);
+0344                     
+0345                     <span class="comment">% now check if the dest entry's task is server in this submodel</span>
+0346                     isDestTaskInSubmodel = strcmpi(serverName,self.getNodeTask(destEntry));
+0347                     
+0348                     <span class="keyword">if</span> isDestTaskInSubmodel
+0349                         <span class="comment">% set service time at server for this entry</span>
+0350                         <span class="keyword">if</span> isBuild <span class="comment">% if we are building the model for the first time</span>
+0351                             node{1}.setService(jobclass{class_synchcall}, Disabled());
+0352                         <span class="keyword">end</span>
+0353                         destEntryW = (1-skipProb)*self.param.Nodes.RespT(self.getNodeIndex(destEntry)); <span class="comment">% this has to add the contribution of the other W not in this model</span>
+0354                         destEntryRate = 1/destEntryW;
+0355                         entryRT = Exp(destEntryRate);
+0356                         <span class="keyword">if</span> isBuild
+0357                             node{2}.setService(jobclass{class_synchcall}, entryRT);
+0358                         <span class="keyword">else</span>
+0359                             <span class="keyword">if</span> deepUpdate
+0360                                 node{2}.setService(jobclass{class_synchcall}, entryRT);
+0361                             <span class="keyword">end</span>
+0362                             qn.rates(2,jobclass{class_synchcall}.index) = destEntryRate;
+0363                             qn.mu{2,jobclass{class_synchcall}.index} = destEntryRate;
+0364                         <span class="keyword">end</span>
+0365                         <span class="keyword">if</span> isBuild <span class="comment">% if we are building the model for the first time</span>
+0366                             <span class="comment">% Here we are taking the assumption that if the</span>
+0367                             <span class="comment">% destination is FCFS and there are two calls in a row</span>
+0368                             <span class="comment">% to the same destination then the second call queues</span>
+0369                             <span class="comment">% again</span>
+0370                             myP{classlast, classlast}(stationlast,stationlast)=selfLoopProb;
+0371                             myP{classlast, class_synchcall}(stationlast,2)=1-selfLoopProb;
+0372                             stationlast = 2;
+0373                             classlast = class_synchcall;
+0374                         <span class="keyword">end</span>
+0375                     <span class="keyword">else</span>
+0376                         <span class="keyword">if</span> isProcessorInSubmodel <span class="comment">% if host of source is in the model</span>
+0377                             <span class="comment">% set as the service time, the response time of this call</span>
+0378                             <span class="keyword">if</span> isBuild
+0379                                 entryRT = Exp(Distrib.InfRate); <span class="comment">% sync-call A=&gt;B has no intrinsic demand at its processor</span>
+0380                                 node{2}.setService(jobclass{class_synchcall}, entryRT);
+0381                             <span class="keyword">end</span>
+0382                             myP{classlast, classlast}(stationlast,stationlast)=selfLoopProb;
+0383                             myP{classlast, class_synchcall}(stationlast,1)=1-selfLoopProb;
+0384                             edgeidx = self.findEdgeIndex(activities{a},destEntry);
+0385                             destEntryIdx = self.getNodeIndex(destEntry);
+0386                             destEntryW = (1-skipProb)*self.param.Edges.RespT(edgeidx);
+0387                             <span class="comment">%destEntryW = (1-skipProb)*self.param.Nodes.RespT(destEntryIdx);</span>
+0388                             destEntryRate = 1/destEntryW;
+0389                             <span class="keyword">if</span> isBuild
+0390                                 node{1}.setService(jobclass{class_synchcall}, Exp(destEntryRate));
+0391                             <span class="keyword">else</span>
+0392                                 <span class="keyword">if</span> deepUpdate
+0393                                     node{1}.setService(jobclass{class_synchcall}, Exp(destEntryRate));
+0394                                 <span class="keyword">end</span>
+0395                                 qn.rates(1,jobclass{class_synchcall}.index) = destEntryRate;
+0396                                 qn.mu{1,jobclass{class_synchcall}.index} = destEntryRate;
+0397                             <span class="keyword">end</span>
+0398                             stationlast = 1;
+0399                             classlast = class_synchcall;
+0400                         <span class="keyword">else</span>
+0401                             <span class="comment">%                             otherEdgesToSameEntry = findstring(G.Edges.EndNodes(:,1),activities{a});</span>
+0402                             <span class="comment">%                             otherEdgesToSameEntry = setdiff(otherEdgesToSameEntry, self.findEdgeIndex(activities{a},destEntryName)); % remove current</span>
+0403                             <span class="comment">%                             destEntryW = destEntryW + sum(G.Edges.RespT(otherEdgesToSameEntry) .* G.Edges.Weight(otherEdgesToSameEntry));</span>
+0404                             edgeidx = self.findEdgeIndex(activities{a},destEntry);
+0405                             destEntryIdx = self.getNodeIndex(destEntry);
+0406                             destEntryW = (1-skipProb)*self.param.Edges.RespT(edgeidx);
+0407                             <span class="comment">%destEntryW = (1-skipProb)*self.param.Nodes.RespT(destEntryIdx);</span>
+0408                             destEntryRate = 1/destEntryW;
+0409                             entryRT = Exp(destEntryRate);
+0410                             <span class="comment">% set think time at clients for this entry</span>
+0411                             <span class="keyword">if</span> isBuild
+0412                                 node{1}.setService(jobclass{class_synchcall}, entryRT);
+0413                             <span class="keyword">else</span>
+0414                                 <span class="keyword">if</span> deepUpdate
+0415                                     node{1}.setService(jobclass{class_synchcall}, entryRT);
+0416                                 <span class="keyword">end</span>
+0417                                 qn.rates(1,jobclass{class_synchcall}.index) = destEntryRate;
+0418                                 qn.mu{1,jobclass{class_synchcall}.index} = destEntryRate;
+0419                             <span class="keyword">end</span>
+0420                             <span class="keyword">if</span> isBuild <span class="comment">% if we are building the model for the first time</span>
+0421                                 <span class="comment">%                                node{2}.setService(jobclass{class_synchcall}, Disabled());</span>
+0422                                 node{2}.setService(jobclass{class_synchcall}, Exp(Distrib.InfRate));
+0423                                 myP{classlast, classlast}(stationlast,stationlast)=selfLoopProb;
+0424                                 myP{classlast, class_synchcall}(stationlast,1)=1-selfLoopProb;
+0425                                 stationlast = 1;
+0426                                 classlast = class_synchcall;
+0427                             <span class="keyword">end</span>
+0428                         <span class="keyword">end</span>
+0429                     <span class="keyword">end</span>
+0430                     <span class="keyword">if</span> isBuild <span class="comment">% if we are building the model for the first time</span>
+0431                         <span class="keyword">if</span> self.edgeWeight(self.findEdgeIndex(activities{a},destEntry)) &gt;= 1
+0432                             selfLoopProb = 1-1/self.edgeWeight(self.findEdgeIndex(activities{a},destEntry));
+0433                             <span class="comment">%                        skipProb = 0;</span>
+0434                         <span class="keyword">else</span> <span class="comment">% call-mean &lt; 1</span>
+0435                             selfLoopProb = 0;
+0436                             <span class="comment">%                        skipProb = 1-G.Edges.Weight(self.findEdgeIndex(activities{a},destEntryName));</span>
+0437                         <span class="keyword">end</span>
+0438                     <span class="keyword">end</span>
+0439                 <span class="keyword">end</span>
+0440                 
+0441                 <span class="comment">%% setup the asynchronous calls</span>
+0442                 <span class="keyword">for</span> d=1:length(actobj.asynchCallDests)
+0443                     <span class="comment">% first return to the delay in the appropriate class</span>
+0444                     destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asynchCallDests{d})};
+0445                     className = [activities{a},<span class="string">'-&gt;'</span>,destEntry];
+0446                     class_asynchcall = cellfun(@(c) strcmpi(c.name,className),jobclass);
+0447                     destEntryRate = 1/self.param.Edges.RespT(self.findEdgeIndex(activities{a},destEntry));
+0448                     <span class="comment">% ... to finish</span>
+0449                 <span class="keyword">end</span>
+0450                 
+0451                 <span class="comment">%% handle case this is a reply (leaf node) in the activity graph</span>
+0452                 
+0453                 <span class="keyword">if</span> isReplyActivity
+0454                     <span class="comment">% loop back to entry</span>
+0455                     <span class="keyword">if</span> isBuild
+0456                         myP{classlast,classlast}(stationlast,stationlast)=selfLoopProb;
+0457                         myP{classlast,class_entry}(stationlast,1)=1-selfLoopProb;
+0458                         jobclass{classlast}.completes = true;
+0459                     <span class="keyword">end</span>
+0460                 <span class="keyword">else</span>
+0461                     <span class="keyword">for</span> actnext = successors
+0462                         <span class="keyword">if</span> ~strcmpi(self.getNodeType(actnext),<span class="string">'E'</span>) <span class="comment">% skip successors that are remote entry calls</span>
+0463                             act_name = self.getNodeName(actnext);
+0464                             classnext = cellfun(@(c) strcmpi(c.name,act_name), jobclass);
+0465                             edge_a_as = self.findEdgeIndex(self.getNodeIndex(activities{a}),actnext);
+0466                             <span class="keyword">if</span> isProcessorInSubmodel
+0467                                 <span class="comment">%                                myP{classlast,classlast}(stationlast, stationlast)= 1-1/G.Edges.Weight(edge_a_as);</span>
+0468                                 <span class="comment">%                                myP{classlast,classnext}(stationlast, 2)= 1/G.Edges.Weight(edge_a_as);</span>
+0469                                 myP{classlast,classlast}(stationlast, stationlast)= selfLoopProb;
+0470                                 myP{classlast,classnext}(stationlast, 2)= 1-selfLoopProb;
+0471                                 stationlast = 2;
+0472                                 classlast = classnext;
+0473                             <span class="keyword">else</span>
+0474                                 <span class="comment">%                                myP{classlast,classlast}(stationlast, stationlast)= 1-1/G.Edges.Weight(edge_a_as);</span>
+0475                                 <span class="comment">%                                myP{classlast,classnext}(stationlast, 1)= 1/G.Edges.Weight(edge_a_as);</span>
+0476                                 myP{classlast,classlast}(stationlast, stationlast)= selfLoopProb;
+0477                                 myP{classlast,classnext}(stationlast, 1)= 1-selfLoopProb;
+0478                                 stationlast = 1;
+0479                                 classlast = classnext;
+0480                             <span class="keyword">end</span>
+0481                         <span class="keyword">end</span>
+0482                     <span class="keyword">end</span>
+0483                 <span class="keyword">end</span>
+0484             <span class="keyword">end</span>
+0485         <span class="keyword">end</span>
+0486     <span class="keyword">end</span>
+0487     <span class="keyword">if</span> isBuild <span class="comment">% if we are building the model for the first time</span>
+0488         ensemble{net}.link(myP);
+0489     <span class="keyword">else</span>
+0490         ensemble{net}.qn = qn;
+0491     <span class="keyword">end</span>
+0492 <span class="keyword">end</span>
+0493 self.setGraph(lqnGraph, taskGraph);
+0494 self.setEnsemble(ensemble);
+0495 <span class="keyword">return</span>
+0496 <span class="keyword">end</span>
+0497 
+0498 <a name="_sub1" href="#_subfunctions" class="code">function myP = initclass(myP,M,R)</a>
+0499 P0 = zeros(M);
+0500 myP{R+1,R+1} = P0;
+0501 <span class="keyword">for</span> c=1:R
+0502     myP{c,R+1} = P0;
+0503     myP{R+1,c} = P0;
+0504 <span class="keyword">end</span>
+0505 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

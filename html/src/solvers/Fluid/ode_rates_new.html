@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ode_rates_new</title>
+  <meta name="keywords" content="ode_rates_new">
+  <meta name="description" content="rates = zeros(size(rateBase));">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">Fluid</a> &gt; ode_rates_new.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\Fluid&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>ode_rates_new
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>rates = zeros(size(rateBase));</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function rates = ode_rates_new(x, M, K, q_indices, Kic, S, w, strategy, rateBase, eventIdx) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">rates = zeros(size(rateBase));
+        rates = zeros(nx,1);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_fluid_odes.html" class="code" title="function [ode_h,q_indices] = solver_fluid_odes(N, Mu, Phi, P, S, sched, schedparam)">solver_fluid_odes</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function rates = ode_rates_new(x, M, K, q_indices, Kic, S, w, strategy, rateBase, eventIdx)</a>
+0002 <span class="comment">%rates = zeros(size(rateBase));</span>
+0003 <span class="comment">%        rates = zeros(nx,1);</span>
+0004 rates = x;
+0005 <span class="comment">% build variable rate vector</span>
+0006 <span class="keyword">for</span> i = 1:M
+0007     <span class="keyword">switch</span> strategy(i) <span class="comment">% source</span>
+0008         <span class="keyword">case</span> 0  <span class="comment">%EXT</span>
+0009             <span class="keyword">for</span> k=1:K
+0010                 idxIni = q_indices(i,k);
+0011                 idxEnd = q_indices(i,k) + Kic(i,k) - 1;
+0012                 <span class="comment">%                        rates(idxIni:idxEnd) = [1-sum(x(idxIni+1:idxEnd)),x(idxIni+1:idxEnd)];</span>
+0013                 rates(idxIni) = 1-sum(x(idxIni+1:idxEnd)); <span class="comment">% not needed for idxIni+1:idxEnd as rates is initiliazed equal to x</span>
+0014             <span class="keyword">end</span>
+0015         <span class="keyword">case</span> 1  <span class="comment">%INF</span>
+0016             idxIni = q_indices(i,1);
+0017             idxEnd = q_indices(i,K) + Kic(i,K) - 1;
+0018             <span class="comment">%rates(idxIni:idxEnd) = x(idxIni:idxEnd); % not needed as rates is initiliazed equal to x</span>
+0019         <span class="keyword">case</span> 2  <span class="comment">%PS</span>
+0020             idxIni = q_indices(i,1);
+0021             idxEnd = q_indices(i,K) + Kic(i,K) - 1;
+0022             ni = sum( x(idxIni:idxEnd) );
+0023             <span class="keyword">if</span> ni &gt; 0 &amp;&amp; min(ni,S(i)) == S(i) <span class="comment">% otherwise simplifies</span>
+0024                 <span class="comment">%                        rates(idxIni:idxEnd) = x(idxIni:idxEnd)/n * min(n,S(i));</span>
+0025                 rates(idxIni:idxEnd) = x(idxIni:idxEnd)/ni * S(i);
+0026             <span class="keyword">end</span>
+0027         <span class="keyword">case</span> 3  <span class="comment">%DPS</span>
+0028             w(i,:) = w(i,:)/sum(w(i,:));
+0029             <span class="comment">%ni = 1e-2;</span>
+0030             ni = mean(w(i,:));
+0031             <span class="keyword">for</span> k=1:K
+0032                 idxIni = q_indices(i,k);
+0033                 idxEnd = q_indices(i,k) + Kic(i,k) - 1;
+0034                 ni = ni + sum( w(i,k)*x(idxIni:idxEnd) );
+0035             <span class="keyword">end</span>
+0036             <span class="keyword">for</span> k=1:K
+0037                 idxIni = q_indices(i,k);
+0038                 idxEnd = q_indices(i,k) + Kic(i,k) - 1;
+0039                 rates(idxIni:idxEnd) = w(i,k)*x(idxIni:idxEnd)/ni * S(i); <span class="comment">% not needed for idxIni+1:idxEnd as rates is initiliazed equal to x</span>
+0040             <span class="keyword">end</span>
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 rates = rates(eventIdx);
+0044 <span class="comment">%build effective rate vector</span>
+0045 rates = rateBase.*rates;
+0046 <span class="keyword">end</span> <span class="comment">% ode_rate_new</span>
+0047 
+0048 <span class="comment">% THIS PART TO BE KEPT AS IT ALLOWS TO MAKE RATES STATE-DEPENDENT</span>
+0049 <span class="comment">% function xj = get_index(j,k)</span>
+0050 <span class="comment">%     % n is the state vector</span>
+0051 <span class="comment">%     % j is the queue station index</span>
+0052 <span class="comment">%     % k is the class index</span>
+0053 <span class="comment">%     % RETURNS THE INDEX of the queue-length element xi! % in the state description</span>
+0054 <span class="comment">%     xj = 1;</span>
+0055 <span class="comment">%     for z = 1 : (j-1)</span>
+0056 <span class="comment">%         for y = 1:K</span>
+0057 <span class="comment">%             xj = xj + Kic(z,y);</span>
+0058 <span class="comment">%         end</span>
+0059 <span class="comment">%     end</span>
+0060 <span class="comment">%     for y = 1:k-1</span>
+0061 <span class="comment">%         xj = xj + Kic(j,y);</span>
+0062 <span class="comment">%     end</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">% end</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">% function rates = ode_rates(x)</span>
+0067 <span class="comment">%     rates = [];</span>
+0068 <span class="comment">%     n = zeros(1,M); % total number of jobs in each station</span>
+0069 <span class="comment">%     for i = 1:M</span>
+0070 <span class="comment">%         for c = 1:K</span>
+0071 <span class="comment">%             xic = q_indices(i,c);</span>
+0072 <span class="comment">%             n(i) = n(i) + sum( x(xic:xic+Kic(i,c)-1 ) );</span>
+0073 <span class="comment">%         end</span>
+0074 <span class="comment">%         if S(i) == sum(N)</span>
+0075 <span class="comment">%             n(i) = 1;</span>
+0076 <span class="comment">%         end</span>
+0077 <span class="comment">%     end</span>
+0078 <span class="comment">%</span>
+0079 <span class="comment">%</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">%     for i = 1 : M           %transition rates for departures from any station to any other station</span>
+0082 <span class="comment">%         for c = 1:K         %considers only transitions from the first service phase (enough for exp servers)</span>
+0083 <span class="comment">%             if match(i,c)&gt;0</span>
+0084 <span class="comment">%             xic = q_indices(i,c);</span>
+0085 <span class="comment">%             for j = 1 : M</span>
+0086 <span class="comment">%                 for l = 1:K</span>
+0087 <span class="comment">%                     if P((i-1)*K+c,(j-1)*K+l) &gt; 0</span>
+0088 <span class="comment">%                     for k = 1:Kic(i,c)</span>
+0089 <span class="comment">%                         %pure ps + fcfs correction</span>
+0090 <span class="comment">%                         if x(xic+k-1) &gt; 0 &amp;&amp; n(i) &gt; S(i)</span>
+0091 <span class="comment">%                             rates = [rates; Phi{i,c}(k) * P((i-1)*K+c,(j-1)*K+l) * Mu{i,c}(k) * x(xic+k-1)/n(i) * S(i);]; % f_k^{dep}</span>
+0092 <span class="comment">%                         elseif x(xic+k-1) &gt; 0</span>
+0093 <span class="comment">%                             rates = [rates; Phi{i,c}(k) * P((i-1)*K+c,(j-1)*K+l) * Mu{i,c}(k) * x(xic+k-1);]; % f_k^{dep}</span>
+0094 <span class="comment">%                         else</span>
+0095 <span class="comment">%                             rates = [rates; 0;]; % f_k^{dep}</span>
+0096 <span class="comment">%                         end</span>
+0097 <span class="comment">%                     end</span>
+0098 <span class="comment">%                     end</span>
+0099 <span class="comment">%                 end</span>
+0100 <span class="comment">%             end</span>
+0101 <span class="comment">%             end</span>
+0102 <span class="comment">%         end</span>
+0103 <span class="comment">%     end</span>
+0104 <span class="comment">%</span>
+0105 <span class="comment">%     for i = 1 : M           %transition rates for &quot;next service phase&quot; (phases 2...)</span>
+0106 <span class="comment">%         for c = 1:K</span>
+0107 <span class="comment">%             if match(i,c)&gt;0</span>
+0108 <span class="comment">%             xic = q_indices(i,c);</span>
+0109 <span class="comment">%             for k = 1 : (Kic(i,c) - 1)</span>
+0110 <span class="comment">%                 if x(xic+k-1) &gt; 0</span>
+0111 <span class="comment">%                     rates = [rates; (1-Phi{i,c}(k))*Mu{i,c}(k)*x(xic+k-1)/n(i)];</span>
+0112 <span class="comment">%                 else</span>
+0113 <span class="comment">%                     rates = [rates; 0 ]</span>
+0114 <span class="comment">%                 end</span>
+0115 <span class="comment">%             end</span>
+0116 <span class="comment">%             end</span>
+0117 <span class="comment">%         end</span>
+0118 <span class="comment">%     end</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">% end</span>
+0121 <span class="comment">%</span>
+0122 <span class="comment">% function d = ode_jumps(x)</span>
+0123 <span class="comment">%     d = [];         %returns state changes triggered by all the events</span>
+0124 <span class="comment">%     for i = 1 : M   %state changes from departures in service phases 2...</span>
+0125 <span class="comment">%         for c = 1:K</span>
+0126 <span class="comment">%             if match(i,c)&gt;0</span>
+0127 <span class="comment">%             xic = q_indices(i,c);</span>
+0128 <span class="comment">%             for j = 1 : M</span>
+0129 <span class="comment">%                 for l = 1:K</span>
+0130 <span class="comment">%                     if P((i-1)*K+c,(j-1)*K+l) &gt; 0</span>
+0131 <span class="comment">%                     xjl = q_indices(j,l);</span>
+0132 <span class="comment">%                     for k = 1 : Kic(i,c)</span>
+0133 <span class="comment">%                         jump = zeros(length(x),1);</span>
+0134 <span class="comment">%                         jump(xic) = jump(xic) - 1; %type c in stat i completes service</span>
+0135 <span class="comment">%                         jump(xjl) = jump(xjl) + 1; %type c job starts in stat j</span>
+0136 <span class="comment">%                         d = [d jump;];</span>
+0137 <span class="comment">%                     end</span>
+0138 <span class="comment">%                     end</span>
+0139 <span class="comment">%                 end</span>
+0140 <span class="comment">%             end</span>
+0141 <span class="comment">%             end</span>
+0142 <span class="comment">%         end</span>
+0143 <span class="comment">%     end</span>
+0144 <span class="comment">%</span>
+0145 <span class="comment">%     for i = 1 : M   %state changes from &quot;next service phase&quot; transition in phases 2...</span>
+0146 <span class="comment">%         for c = 1:K</span>
+0147 <span class="comment">%             if match(i,c)&gt;0</span>
+0148 <span class="comment">%             xic = q_indices(i,c);</span>
+0149 <span class="comment">%             for k = 1 : (Kic(i,c) - 1)</span>
+0150 <span class="comment">%                 jump = zeros(length(x),1);</span>
+0151 <span class="comment">%                 jump(xic+k-1) = jump(xic+k-1) - 1;</span>
+0152 <span class="comment">%                 jump(xic+k) = jump(xic+k) + 1;</span>
+0153 <span class="comment">%                 d = [d jump;];</span>
+0154 <span class="comment">%             end</span>
+0155 <span class="comment">%             end</span>
+0156 <span class="comment">%         end</span>
+0157 <span class="comment">%     end</span>
+0158 <span class="comment">% end</span>
+0159</pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

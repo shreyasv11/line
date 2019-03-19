@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pfqn_lap</title>
+  <meta name="keywords" content="pfqn_lap">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../../index.html">solvers</a> &gt; <a href="../index.html">NC</a> &gt; <a href="index.html">lib</a> &gt; pfqn_lap.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\NC\lib&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>pfqn_lap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [logI] = pfqn_lap(L,N,Z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [logI] = pfqn_lap(L,N,Z)</a>
+0002 Ntot = sum(N);
+0003 <span class="comment">% f = @(x) 1-x + sum((N+x*L)./(Z+x*L));</span>
+0004 <span class="comment">% expv0 = fzero(f,1);</span>
+0005 <span class="comment">% logIv = log(Ntot) - sum(factln(N)); % coeff</span>
+0006 <span class="comment">% logIv = logIv -  + sum(N.*log(Z+L.*expv0)); % f(u0)</span>
+0007 <span class="comment">% logIv = logIv + 0.5*log(2*pi) - 0.5*log(sum((N./Ntot)./(Z./(Ntot.*L)+u0).^2)) ; % f''(u0)</span>
+0008 <span class="comment">% logIv = logIv - 0.5*log(Ntot);</span>
+0009 
+0010 Ntot = sum(N);
+0011 f = @(x) 1-sum(N.*L./(Z+Ntot*L.*x));
+0012 u0 = fzero(f,1,optimset(<span class="string">'Display'</span>,<span class="string">'off'</span>));
+0013 <span class="keyword">if</span> u0&lt;0
+0014     logI = NaN;
+0015     <span class="keyword">return</span>
+0016 <span class="keyword">end</span>
+0017 <span class="comment">%    f2 = sum((N./Ntot)./(Z./(Ntot.*L)+u0).^2);</span>
+0018 <span class="comment">%    logI = log(1-normcdf(0,u0,f2));</span>
+0019 <span class="comment">%    return</span>
+0020 <span class="comment">%end</span>
+0021 <span class="keyword">if</span> ~isfinite(u0)
+0022     initSign = f(0.001)/abs(f(0.001));
+0023     <span class="keyword">for</span> u0 = 1e-4:1e-4:10
+0024         fu0 = f(u0);
+0025         <span class="keyword">if</span> fu0/abs(fu0) ~= initSign
+0026             <span class="keyword">break</span>;
+0027         <span class="keyword">end</span>
+0028     <span class="keyword">end</span>
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> u0&lt;0
+0031     logI = NaN;
+0032     <span class="keyword">return</span>
+0033 <span class="keyword">end</span>
+0034 logI = log(Ntot) - sum(factln(N)); <span class="comment">% coeff</span>
+0035 logI = logI - Ntot*u0 + sum(N.*log(Z+L.*u0*Ntot)); <span class="comment">% f(u0)</span>
+0036 logI = logI + 0.5*log(2*pi) - 0.5*log(sum((N./Ntot)./(Z./(Ntot.*L)+u0).^2)) ; <span class="comment">% f''(u0)</span>
+0037 logI = logI - 0.5*log(Ntot);
+0038 
+0039 <span class="comment">% absf2 = sum((N./Ntot)./(Z./(Ntot.*L)+u0).^2); % |f''(u0)|</span>
+0040 <span class="comment">% f2 =  sum((N./Ntot)./(Z./(Ntot.*L)+u0).^2);</span>
+0041 <span class="comment">% f3 = -2 * sum((N./Ntot)./(Z./(Ntot.*L)+u0).^3);</span>
+0042 <span class="comment">% f4 = 6 * sum((N./Ntot)./(Z./(Ntot.*L)+u0).^4);</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">% logI3 = log(Ntot) - sum(factln(N)); % coeff</span>
+0045 <span class="comment">% logI3 = logI3 - Ntot*u0 + sum(N.*log(Z+L.*u0*Ntot)); % f(u0)</span>
+0046 <span class="comment">% logI3 = logI3 + (1/2)*log(2*pi/absf2) - (3/2)*log(Ntot);</span>
+0047 <span class="comment">% logI3 = logI3 + log(f4/(8*f2^2) - 5*f3^2/(24*f2^3));</span>
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

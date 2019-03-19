@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of LayeredNetworkSolver</title>
+  <meta name="keywords" content="LayeredNetworkSolver">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">@LayeredNetworkSolver</a> &gt; LayeredNetworkSolver.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\@LayeredNetworkSolver&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>LayeredNetworkSolver
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetworkSolver.html" class="code" title="">LayeredNetworkSolver</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetworkSolver.html" class="code" title="">LayeredNetworkSolver</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = LayeredNetworkSolver(model, name, options)</a></li><li><a href="#_sub2" class="code">function bool = supports(self, model)</a></li><li><a href="#_sub3" class="code">function [QN,UN,RN,TN] = getAvg(self)</a></li><li><a href="#_sub4" class="code">function [AvgTable,QT,UT,RT,TT] = getAvgTable(self, wantLQNSnaming)</a></li><li><a href="#_sub5" class="code">function options = defaultOptions()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="LayeredNetworkSolver.html" class="code" title="">LayeredNetworkSolver</a> &lt; Solver
+0002     <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006     <span class="keyword">end</span>
+0007     
+0008     methods (Hidden)
+0009         <a name="_sub0" href="#_subfunctions" class="code">function self = LayeredNetworkSolver(model, name, options)</a>
+0010             self = self@Solver(model,name);
+0011             <span class="keyword">if</span> exist(<span class="string">'options'</span>,<span class="string">'var'</span>), self.setOptions(options); <span class="keyword">end</span>
+0012             <span class="keyword">if</span> ~isa(model,<span class="string">'LayeredNetwork'</span>)
+0013                 error(<span class="string">'Model is not a LayeredNetwork.'</span>);
+0014             <span class="keyword">end</span>
+0015         <span class="keyword">end</span>
+0016     <span class="keyword">end</span>
+0017     
+0018     methods <span class="comment">%(Abstract) % implemented with errors for Octave compatibility</span>
+0019         <a name="_sub1" href="#_subfunctions" class="code">function bool = supports(self, model) </a><span class="comment">% true if model is supported by the solver</span>
+0020             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0021         <span class="keyword">end</span>
+0022         <a name="_sub2" href="#_subfunctions" class="code">function [QN,UN,RN,TN] = getAvg(self)</a>
+0023             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0024         <span class="keyword">end</span>
+0025     <span class="keyword">end</span>
+0026     
+0027     methods
+0028         <a name="_sub3" href="#_subfunctions" class="code">function [AvgTable,QT,UT,RT,TT] = getAvgTable(self, wantLQNSnaming)</a>
+0029             <span class="keyword">if</span> ~exist(<span class="string">'wantLQNSnaming'</span>,<span class="string">'var'</span>)
+0030                 wantLQNSnaming = false;
+0031             <span class="keyword">end</span>
+0032             [QN,UN,RN,TN] = self.getAvg();
+0033             Node = self.model.getGraph.Nodes.Node;
+0034             Objects = self.model.getGraph.Nodes.Object;
+0035             O = length(Objects);
+0036             NodeType = cell(O,1);
+0037             <span class="keyword">for</span> o=1:O
+0038                 NodeType{o,1} = class(Objects{o});
+0039             <span class="keyword">end</span>
+0040             <span class="keyword">if</span> wantLQNSnaming
+0041                 utilization = QN;
+0042                 QT = Table(Node,utilization);
+0043                 procUtilization = UN;
+0044                 UT = Table(Node,procUtilization);
+0045                 phase1ServiceTime = RN;
+0046                 RT = Table(Node,phase1ServiceTime);
+0047                 throughput = TN;
+0048                 TT = Table(Node,throughput);
+0049                 AvgTable = Table(Node, NodeType, utilization, procUtilization, phase1ServiceTime, throughput);
+0050             <span class="keyword">else</span>
+0051                 QLen = QN;
+0052                 QT = Table(Node,QLen);
+0053                 Util = UN;
+0054                 UT = Table(Node,Util);
+0055                 RespT = RN;
+0056                 RT = Table(Node,RespT);
+0057                 Tput = TN;
+0058                 TT = Table(Node,Tput);
+0059                 AvgTable = Table(Node, NodeType, QLen, Util, RespT, Tput);
+0060             <span class="keyword">end</span>
+0061         <span class="keyword">end</span>
+0062     <span class="keyword">end</span>
+0063     
+0064     methods (Static)
+0065         <span class="comment">% ensemble solver options</span>
+0066         <a name="_sub4" href="#_subfunctions" class="code">function options = defaultOptions()</a>
+0067             options = struct();
+0068             options.method = <span class="string">'default'</span>;
+0069             options.init_sol = [];
+0070             options.iter_max = 100;
+0071             options.iter_tol = 1e-4;
+0072             options.tol = 1e-4;
+0073             options.verbose = 0;
+0074         <span class="keyword">end</span>
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

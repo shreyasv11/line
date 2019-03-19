@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Distrib</title>
+  <meta name="keywords" content="Distrib">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">distributions</a> &gt; Distrib.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\distributions&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Distrib
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Distrib.html" class="code" title="">Distrib</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ContinuousDistrib.html" class="code" title="">ContinuousDistrib</a>	</li><li><a href="Det.html" class="code" title="">Det</a>	</li><li><a href="Disabled.html" class="code" title="">Disabled</a>	</li><li><a href="DiscreteDistrib.html" class="code" title="">DiscreteDistrib</a>	</li><li><a href="Distrib.html" class="code" title="">Distrib</a>	</li><li><a href="Immediate.html" class="code" title="">Immediate</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function X = sample(self)</a></li><li><a href="#_sub2" class="code">function ex = getMean(self)</a></li><li><a href="#_sub3" class="code">function SCV = getSCV(self)</a></li><li><a href="#_sub4" class="code">function Ft = evalCDF(self,t)</a></li><li><a href="#_sub5" class="code">function self = Distrib(name, numParam, support)</a></li><li><a href="#_sub6" class="code">function bool = isContinuous(self)</a></li><li><a href="#_sub7" class="code">function bool = isDiscrete(self)</a></li><li><a href="#_sub8" class="code">function self = setContinuous(self, iscontinuous)</a></li><li><a href="#_sub9" class="code">function nParam = getNumParams(self)</a></li><li><a href="#_sub10" class="code">function setParam(self, id, name, value,typeClass)</a></li><li><a href="#_sub11" class="code">function bool = isDisabled(self)</a></li><li><a href="#_sub12" class="code">function bool = isImmediate(self)</a></li><li><a href="#_sub13" class="code">function param = getParam(self,id)</a></li><li><a href="#_sub14" class="code">function bool = isPhaseType(self)</a></li><li><a href="#_sub15" class="code">function delta = evalCDFInterval(self,t0,t1)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Distrib.html" class="code" title="">Distrib</a> &lt; Copyable
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         name
+0007         params
+0008         javaClass
+0009         javaParClass
+0010         support; <span class="comment">% support interval</span>
+0011     <span class="keyword">end</span>
+0012     
+0013     properties (Constant)
+0014         Tol = 1e-3;
+0015         InfTime = 1e10;
+0016         InfRate = 1e10;
+0017         InfItems = 1e10;
+0018     <span class="keyword">end</span>
+0019     
+0020     methods <span class="comment">%(Abstract) % implemented with errors for Octave compatibility</span>
+0021         <a name="_sub0" href="#_subfunctions" class="code">function X = sample(self)</a>
+0022             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0023         <span class="keyword">end</span>
+0024         <a name="_sub1" href="#_subfunctions" class="code">function ex = getMean(self)</a>
+0025             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0026         <span class="keyword">end</span>
+0027         <a name="_sub2" href="#_subfunctions" class="code">function SCV = getSCV(self)</a>
+0028             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0029         <span class="keyword">end</span>
+0030         <a name="_sub3" href="#_subfunctions" class="code">function Ft = evalCDF(self,t)</a>
+0031             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0032         <span class="keyword">end</span>
+0033     <span class="keyword">end</span>
+0034     
+0035     methods (Hidden)
+0036         <span class="comment">%Constructor</span>
+0037         <a name="_sub4" href="#_subfunctions" class="code">function self = Distrib(name, numParam, support)</a>
+0038             self.name = name;
+0039             self.params = cell(1,numParam);
+0040             self.support = support;
+0041             <span class="keyword">for</span> i=1:numParam
+0042                 self.params{i}=struct(<span class="string">'paramName'</span>,<span class="string">''</span>,<span class="string">'paramValue'</span>,NaN,<span class="string">'paramClass'</span>,<span class="string">''</span>);
+0043             <span class="keyword">end</span>
+0044         <span class="keyword">end</span>
+0045         
+0046         <a name="_sub5" href="#_subfunctions" class="code">function bool = isContinuous(self)</a>
+0047             bool = any(~isfinite(self.support));
+0048         <span class="keyword">end</span>
+0049         
+0050         <a name="_sub6" href="#_subfunctions" class="code">function bool = isDiscrete(self)</a>
+0051             bool = all(isfinite(self.support));
+0052         <span class="keyword">end</span>
+0053         
+0054         <a name="_sub7" href="#_subfunctions" class="code">function self = setContinuous(self, iscontinuous)</a>
+0055             self.continuous = iscontinuous;
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub8" href="#_subfunctions" class="code">function nParam = getNumParams(self)</a>
+0059             nParam = length(self.params);
+0060         <span class="keyword">end</span>
+0061         
+0062         <a name="_sub9" href="#_subfunctions" class="code">function setParam(self, id, name, value,typeClass)</a>
+0063             self.params{id}.paramName=name;
+0064             self.params{id}.paramValue=value;
+0065             self.params{id}.paramClass=typeClass;
+0066         <span class="keyword">end</span>
+0067         
+0068         <a name="_sub10" href="#_subfunctions" class="code">function bool = isDisabled(self)</a>
+0069             bool = any(cellfun(@(c) isnan(c.paramValue), self.params));
+0070         <span class="keyword">end</span>
+0071         
+0072         <a name="_sub11" href="#_subfunctions" class="code">function bool = isImmediate(self)</a>
+0073             bool = self.getMean() == 0;
+0074         <span class="keyword">end</span>
+0075         
+0076         <a name="_sub12" href="#_subfunctions" class="code">function param = getParam(self,id)</a>
+0077             param = self.params{id};
+0078         <span class="keyword">end</span>
+0079         
+0080         <a name="_sub13" href="#_subfunctions" class="code">function bool = isPhaseType(self)</a>
+0081             bool = isa(self,<span class="string">'PhaseType'</span>);
+0082         <span class="keyword">end</span>
+0083     <span class="keyword">end</span>
+0084     
+0085     methods
+0086         <a name="_sub14" href="#_subfunctions" class="code">function delta = evalCDFInterval(self,t0,t1)</a>
+0087             <span class="keyword">if</span> t1&gt;=t0
+0088                 Ft1 = self.evalCDF(t1);
+0089                 Ft0 = self.evalCDF(t0);
+0090                 delta = Ft1 - Ft0;
+0091             <span class="keyword">else</span>
+0092                 error(<span class="string">'CDF interval incorrectly specified (t1&lt;t0)'</span>);
+0093             <span class="keyword">end</span>
+0094         <span class="keyword">end</span>
+0095     <span class="keyword">end</span>
+0096 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

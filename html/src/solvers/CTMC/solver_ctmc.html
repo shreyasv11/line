@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_ctmc</title>
+  <meta name="keywords" content="solver_ctmc">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">CTMC</a> &gt; solver_ctmc.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\CTMC&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_ctmc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_ctmc_analysis.html" class="code" title="function [QN,UN,RN,TN,CN,XN,runtime,fname] = solver_ctmc_analysis(qn, options)">solver_ctmc_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="solver_ctmc_joint.html" class="code" title="function [Pnir,runtime,fname] = solver_ctmc_joint(qn, options)">solver_ctmc_joint</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="solver_ctmc_marg.html" class="code" title="function [Pnir,runtime,fname] = solver_ctmc_marg(qn, options)">solver_ctmc_marg</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="solver_ctmc_transient_analysis.html" class="code" title="function [t,QNt,UNt,RNt,TNt,CNt,XNt,runtime,fname] = solver_ctmc_transient_analysis(qn, options)">solver_ctmc_transient_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 <span class="keyword">global</span> InfGen;
+0005 <span class="keyword">global</span> EventFilt;
+0006 <span class="keyword">global</span> StateSpace;
+0007 <span class="keyword">global</span> StateSpace_njobs;
+0008 
+0009 <span class="comment">%% generate state space</span>
+0010 <span class="comment">%nnodes = qn.nnodes;</span>
+0011 nstateful = qn.nstateful;
+0012 nclasses = qn.nclasses;
+0013 sync = qn.sync;
+0014 csmask = qn.csmask;
+0015 <span class="keyword">if</span> isoctave
+0016   warning off;
+0017 <span class="keyword">end</span>
+0018 [SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);
+0019 qn.space = qnc.space;
+0020 <span class="keyword">if</span> options.verbose 
+0021     fprintf(1,<span class="string">'State space size: %d states.\n'</span>,size(SS,1));
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="comment">%size(SS)</span>
+0025 <span class="comment">%%</span>
+0026 Q = sparse(eye(size(SSh,1))); <span class="comment">% the diagonal elements will be removed later</span>
+0027 A = length(sync);
+0028 <span class="keyword">for</span> a=1:A
+0029     D{a} = 0*Q;
+0030 <span class="keyword">end</span>
+0031 local = qn.nnodes+1; <span class="comment">% passive action</span>
+0032 arvRates = zeros(size(SSh,1),nstateful,nclasses);
+0033 depRates = zeros(size(SSh,1),nstateful,nclasses);
+0034 SSq = zeros(size(SSh));
+0035 
+0036 <span class="comment">% for all synchronizations</span>
+0037 <span class="keyword">for</span> a=1:A
+0038     stateCell = cell(nstateful,1);
+0039     <span class="keyword">for</span> s=1:size(SSh,1)
+0040         state = SSh(s,:);
+0041         <span class="comment">% update state cell array and SSq</span>
+0042         <span class="keyword">for</span> ind = 1:qn.nnodes
+0043             <span class="keyword">if</span> qn.isstateful(ind)
+0044                 isf = qn.nodeToStateful(ind);
+0045                 stateCell{isf} = qn.space{isf}(state(isf),:);
+0046                 <span class="keyword">if</span> qn.isstation(ind)
+0047                     ist = qn.nodeToStation(ind);
+0048                     [~,nir] = State.toMarginal(qn,ind,stateCell{isf});
+0049                     SSq(s,((ist-1)*nclasses+1):ist*nclasses) = nir;
+0050                 <span class="keyword">end</span>
+0051             <span class="keyword">end</span>
+0052         <span class="keyword">end</span>
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">%% for all synchronizations</span>
+0057 <span class="keyword">for</span> a=1:A
+0058     stateCell = cell(nstateful,1);
+0059     <span class="comment">%qn.sync{a}.active{1}.print</span>
+0060     <span class="keyword">for</span> s=1:size(SSh,1)
+0061         <span class="comment">%[a,s]</span>
+0062         state = SSh(s,:);
+0063         <span class="comment">% update state cell array and SSq</span>
+0064             <span class="keyword">for</span> ind = 1:qn.nnodes
+0065             <span class="keyword">if</span> qn.isstateful(ind)
+0066                 isf = qn.nodeToStateful(ind);
+0067                 stateCell{isf} = qn.space{isf}(state(isf),:);
+0068                 <span class="keyword">if</span> qn.isstation(ind)
+0069                     ist = qn.nodeToStation(ind);
+0070                     [~,nir] = State.toMarginal(qn,ind,stateCell{isf});
+0071                 <span class="keyword">end</span>
+0072             <span class="keyword">end</span>
+0073         <span class="keyword">end</span>
+0074         node_a = sync{a}.active{1}.node;
+0075         state_a = state(qn.nodeToStateful(node_a));
+0076         class_a = sync{a}.active{1}.class;
+0077         event_a = sync{a}.active{1}.event;
+0078         [new_state_a, rate_a] = State.afterEventHashed( qn, node_a, state_a, event_a, class_a);
+0079         <span class="keyword">if</span> new_state_a == -1 <span class="comment">% hash not found</span>
+0080             <span class="keyword">continue</span>
+0081         <span class="keyword">end</span>
+0082         <span class="keyword">for</span> ia=1:length(new_state_a)
+0083             <span class="keyword">if</span> rate_a(ia)&gt;0
+0084                 node_p = sync{a}.passive{1}.node;
+0085                 <span class="keyword">if</span> node_p ~= local
+0086                     state_p = state(qn.nodeToStateful(node_p));
+0087                     class_p = sync{a}.passive{1}.class;
+0088                     event_p = sync{a}.passive{1}.event;
+0089                     <span class="comment">%prob_sync_p = sync{a}.passive{1}.prob(state_a, state_p)</span>
+0090                     <span class="comment">%if prob_sync_p &gt; 0</span>
+0091                     <span class="keyword">if</span> node_p == node_a <span class="comment">%self-loop</span>
+0092                         [new_state_p, ~] = State.afterEventHashed( qn, node_p, new_state_a(ia), event_p, class_p);
+0093                     <span class="keyword">else</span> <span class="comment">% departure</span>
+0094                         [new_state_p, ~] = State.afterEventHashed( qn, node_p, state_p, event_p, class_p);
+0095                     <span class="keyword">end</span>
+0096                     <span class="keyword">if</span> new_state_p ~= -1
+0097                         <span class="keyword">if</span> qn.isstatedep(node_a,3)
+0098                             newStateCell = stateCell;
+0099                             newStateCell{qn.nodeToStateful(node_a)} = qn.space{qn.nodeToStateful(node_a)}(new_state_a(ia),:);
+0100                             newStateCell{qn.nodeToStateful(node_p)} = qn.space{qn.nodeToStateful(node_p)}(new_state_p,:);
+0101                             prob_sync_p = sync{a}.passive{1}.prob(stateCell, newStateCell); <span class="comment">%state-dependent</span>
+0102                         <span class="keyword">else</span>
+0103                             prob_sync_p = sync{a}.passive{1}.prob;
+0104                         <span class="keyword">end</span>
+0105                     <span class="keyword">else</span>
+0106                         prob_sync_p = 0;
+0107                     <span class="keyword">end</span>
+0108                     <span class="comment">%end</span>
+0109                 <span class="keyword">end</span>
+0110                 <span class="keyword">if</span> ~isempty(new_state_a(ia))
+0111                     <span class="keyword">if</span> node_p == local
+0112                         new_state = state;
+0113                         new_state(qn.nodeToStateful(node_a)) = new_state_a(ia);
+0114                         prob_sync_p = 1;
+0115                     <span class="keyword">elseif</span> ~isempty(new_state_p)
+0116                         new_state = state;
+0117                         new_state(qn.nodeToStateful(node_a)) = new_state_a(ia);
+0118                         new_state(qn.nodeToStateful(node_p)) = new_state_p;
+0119                     <span class="keyword">end</span>
+0120                     ns = matchrow(SSh, new_state);
+0121                     <span class="keyword">if</span> ns&gt;0
+0122                         <span class="keyword">if</span> ~isnan(rate_a)
+0123                             <span class="keyword">if</span> event_a == Event.DEP
+0124                                 node_a_sf = qn.nodeToStateful(node_a);
+0125                                 node_p_sf = qn.nodeToStateful(node_p);
+0126                             <span class="keyword">end</span>
+0127                             <span class="keyword">if</span> node_p &lt; local &amp;&amp; ~csmask(class_a, class_p) &amp;&amp; rate_a(ia) * prob_sync_p &gt;0 &amp;&amp; (qn.nodetype(node_p)~=NodeType.Source)
+0128                                 error(<span class="string">'Error: state-dependent routing at node %d violates class switching mask (node %d -&gt; node %d, class %d -&gt; class %d).'</span>, node_a, node_a, node_p, class_a, class_p);
+0129                             <span class="keyword">end</span>
+0130                             <span class="keyword">if</span> size(D{a}) &gt;= [s,ns] <span class="comment">% needed for sparse matrix</span>
+0131                                 D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;
+0132                             <span class="keyword">else</span>
+0133                                 D{a}(s,ns) = rate_a(ia) * prob_sync_p;
+0134                             <span class="keyword">end</span>
+0135                         <span class="keyword">end</span>
+0136                     <span class="keyword">end</span>
+0137                 <span class="keyword">end</span>
+0138             <span class="keyword">end</span>
+0139         <span class="keyword">end</span>
+0140     <span class="keyword">end</span>
+0141 <span class="keyword">end</span>
+0142 
+0143 <span class="comment">%%</span>
+0144 <span class="keyword">for</span> a=1:A
+0145     Q = Q + D{a};
+0146     <span class="comment">% active</span>
+0147     node_a = sync{a}.active{1}.node;
+0148     class_a = sync{a}.active{1}.class;
+0149     event_a = sync{a}.active{1}.event;
+0150     <span class="comment">% passive</span>
+0151     node_p = sync{a}.passive{1}.node;
+0152     class_p = sync{a}.passive{1}.class;
+0153     <span class="keyword">if</span> event_a == Event.DEP
+0154         node_a_sf = qn.nodeToStateful(node_a);
+0155         node_p_sf = qn.nodeToStateful(node_p);
+0156         <span class="keyword">for</span> s=1:size(SSh,1)
+0157             depRates(s,node_a_sf,class_a) = depRates(s,node_a_sf,class_a) + sum(D{a}(s,:));
+0158             arvRates(s,node_p_sf,class_p) = arvRates(s,node_p_sf,class_p) + sum(D{a}(s,:));
+0159         <span class="keyword">end</span>
+0160     <span class="keyword">end</span>
+0161 <span class="keyword">end</span>
+0162 zero_row = find(sum(Q,2)==0);
+0163 zero_col = find(sum(Q,1)==0);
+0164 
+0165 <span class="comment">%%</span>
+0166 <span class="comment">% in case the last column of Q represent a state for a transient class, it</span>
+0167 <span class="comment">% is possible that no transitions go back to it, although it is valid for</span>
+0168 <span class="comment">% the system to be initialized in that state. So we need to fill-in the</span>
+0169 <span class="comment">% zeros at the end.</span>
+0170 Q(:,end+1:end+(size(Q,1)-size(Q,2)))=0;
+0171 Q(zero_row,zero_row) = -eye(length(zero_row)); <span class="comment">% can this be replaced by []?</span>
+0172 Q(zero_col,zero_col) = -eye(length(zero_col));
+0173 <span class="keyword">for</span> a=1:A
+0174     D{a}(:,end+1:end+(size(D{a},1)-size(D{a},2)))=0;
+0175 <span class="keyword">end</span>
+0176 <span class="keyword">if</span> options.verbose == 2
+0177     <span class="keyword">for</span> s1=1:size(SS,1)
+0178         <span class="keyword">for</span> s2=1:size(SS,1)
+0179             <span class="keyword">if</span> Q(s1,s2)&gt;0 &amp;&amp; SS(s1,end-1)==0
+0180                 fprintf(1,<span class="string">'%s -&gt; %s : %d\n'</span>,mat2str(SS(s1,4:end)),mat2str(SS(s2,4:end)),full(Q(s1,s2)));
+0181             <span class="keyword">end</span>
+0182         <span class="keyword">end</span>
+0183     <span class="keyword">end</span>
+0184 <span class="keyword">end</span>
+0185 Q = ctmc_makeinfgen(Q);
+0186 
+0187 <span class="comment">%SolverCTMC.printInfGen(Q,SS)</span>
+0188 <span class="comment">%% now remove immediate transitions</span>
+0189 <span class="comment">% we first determine states in stateful nodes where three is an immediate</span>
+0190 <span class="comment">% job in the node</span>
+0191 <span class="keyword">if</span> true
+0192     statefuls = find(qn.isstateful-qn.isstation);
+0193     imm=[];
+0194     <span class="keyword">for</span> st = statefuls(:)'
+0195         imm_st = find(sum(qn.space{st}(:,1:nclasses),2)&gt;0);
+0196         imm = [imm; find(arrayfun(@(a) any(a==imm_st),SSh(:,st)))];
+0197     <span class="keyword">end</span>
+0198     imm= unique(imm);
+0199     nonimm = setdiff(1:size(Q,1),imm);
+0200     SS(imm,:) = [];
+0201     SSq(imm,:) = [];
+0202     arvRates(imm,:,:) = [];
+0203     depRates(imm,:,:) = [];
+0204     [Q,~,~,~,~,T] = ctmc_stochcomp(Q, nonimm);
+0205     <span class="keyword">for</span> a=1:A
+0206         D{a} = D{a}(nonimm,nonimm)+T;
+0207     <span class="keyword">end</span>
+0208 <span class="keyword">end</span>
+0209 <span class="comment">%%</span>
+0210 <span class="keyword">if</span> options.keep
+0211     InfGen = Q;
+0212     EventFilt = D;
+0213     StateSpace = SS;
+0214     StateSpace_njobs = SSq;
+0215 <span class="keyword">end</span>
+0216 <span class="comment">%%</span>
+0217 Q = ctmc_makeinfgen(Q);
+0218 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

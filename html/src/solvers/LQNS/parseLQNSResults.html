@@ -1,0 +1,297 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parseLQNSResults</title>
+  <meta name="keywords" content="parseLQNSResults">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">LQNS</a> &gt; parseLQNSResults.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\LQNS&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>parseLQNSResults
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Gres, iterations] =parseLQNSResults(G, filename, filename_sim, verbose) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [Gres, iterations] = aux_results(G, filename, verbose)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Gres, iterations] =parseLQNSResults(G, filename, filename_sim, verbose)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 [Gres, iterations] = <a href="#_sub1" class="code" title="subfunction [Gres, iterations] = aux_results(G, filename, verbose)">aux_results</a>(G, filename, verbose);
+0006 Gres.Nodes = movevars(Gres.Nodes,<span class="string">'Wlqns'</span>,<span class="string">'Before'</span>,<span class="string">'U'</span>);
+0007 Gres.Nodes = movevars(Gres.Nodes,<span class="string">'Ulqns'</span>,<span class="string">'Before'</span>,<span class="string">'T'</span>);
+0008 Gres.Nodes = movevars(Gres.Nodes,<span class="string">'Tlqns'</span>,<span class="string">'Before'</span>,<span class="string">'Q'</span>);
+0009 Gres.Nodes.RespT(Gres.Nodes.RespT&lt;1e-4)=0;
+0010 Gres.Nodes.Util(Gres.Nodes.Util&lt;1e-4)=0;
+0011 Gres.Nodes.Tput(Gres.Nodes.Tput&lt;1e-4)=0;
+0012 Gres.Nodes.QLen(Gres.Nodes.QLen&lt;1e-4)=0;
+0013 Gres.Nodes.Name = [];
+0014 
+0015 Gsim = <a href="#_sub1" class="code" title="subfunction [Gres, iterations] = aux_results(G, filename, verbose)">aux_results</a>(G, filename_sim, false);
+0016 Gsim.Nodes = movevars(Gsim.Nodes,<span class="string">'Wlqns'</span>,<span class="string">'Before'</span>,<span class="string">'U'</span>);
+0017 Gsim.Nodes = movevars(Gsim.Nodes,<span class="string">'Ulqns'</span>,<span class="string">'Before'</span>,<span class="string">'T'</span>);
+0018 Gsim.Nodes = movevars(Gsim.Nodes,<span class="string">'Tlqns'</span>,<span class="string">'Before'</span>,<span class="string">'Q'</span>);
+0019 Gsim.Nodes.RespT(Gsim.Nodes.RespT&lt;1e-4)=0;
+0020 Gsim.Nodes.Util(Gsim.Nodes.Util&lt;1e-4)=0;
+0021 Gsim.Nodes.Tput(Gsim.Nodes.Tput&lt;1e-4)=0;
+0022 Gsim.Nodes.QLen(Gsim.Nodes.QLen&lt;1e-4)=0;
+0023 Gsim.Nodes.Name = [];
+0024 Gres.Nodes.RespTsim = Gsim.Nodes.RespTlqns;
+0025 Gres.Nodes.Utilsim = Gsim.Nodes.Utillqns;
+0026 Gres.Nodes.Tputsim = Gsim.Nodes.Tputlqns;
+0027 Gres.Nodes.QLensim = Gsim.Nodes.QLenlqns;
+0028 Gres.Nodes = movevars(Gres.Nodes,<span class="string">'Wsim'</span>,<span class="string">'Before'</span>,<span class="string">'U'</span>);
+0029 Gres.Nodes = movevars(Gres.Nodes,<span class="string">'Usim'</span>,<span class="string">'Before'</span>,<span class="string">'T'</span>);
+0030 Gres.Nodes = movevars(Gres.Nodes,<span class="string">'Tsim'</span>,<span class="string">'Before'</span>,<span class="string">'Q'</span>);
+0031 <span class="keyword">end</span>
+0032 
+0033 <a name="_sub1" href="#_subfunctions" class="code">function [Gres, iterations] = aux_results(G, filename, verbose)</a>
+0034 import javax.xml.parsers.DocumentBuilderFactory;
+0035 import javax.xml.parsers.DocumentBuilder;
+0036 import org.w3c.dom.Document;
+0037 import org.w3c.dom.NodeList;
+0038 import org.w3c.dom.Node;
+0039 import org.w3c.dom.Element;
+0040 import java.io.File;
+0041 
+0042 import LayeredNetwork.*;
+0043 
+0044 Gres = G;
+0045 Gres.Nodes.Type = [];
+0046 Gres.Nodes.Proc = [];
+0047 Gres.Nodes.Task = [];
+0048 Gres.Nodes.Entry = [];
+0049 Gres.Nodes.D = [];
+0050 Gres.Nodes.Object = [];
+0051 <span class="comment">%Gres.Nodes.Node = [];</span>
+0052 Gres.Nodes.MaxJobs = [];
+0053 Gres.Nodes.Mult = [];
+0054 Gres.Nodes.RespTlqns(:) = 0;
+0055 Gres.Nodes.Utillqns(:) = 0;
+0056 Gres.Nodes.Tputlqns(:) = 0;
+0057 Gres.Nodes.QLenlqns(:) = 0;
+0058 
+0059 <span class="comment">% LQN</span>
+0060 myLN = LayeredNetwork(filename);
+0061 
+0062 <span class="keyword">if</span> nargin == 1
+0063     verbose = 0;
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% init Java XML parser and load file</span>
+0067 dbFactory = DocumentBuilderFactory.newInstance();
+0068 dBuilder = dbFactory.newDocumentBuilder();
+0069 <span class="keyword">try</span>
+0070     doc = dBuilder.parse(filename);
+0071 <span class="keyword">catch</span> exception <span class="comment">%java.io.FileNotFoundException</span>
+0072     <span class="keyword">if</span> ~exist(filename, <span class="string">'file'</span>)
+0073         disp([<span class="string">'Error: Input XML file '</span>, filename, <span class="string">' not found'</span>]);
+0074         processors = [];
+0075         tasks = [];
+0076         entries = [];
+0077         requesters = [];
+0078         <span class="comment">%providers = [];</span>
+0079         myLN.processors = processors;
+0080         <span class="comment">%myLN.tasks = tasks;</span>
+0081         <span class="comment">%myLN.entries = entries;</span>
+0082         
+0083         <span class="keyword">return</span>;
+0084     <span class="keyword">else</span>
+0085         rethrow(exception);
+0086     <span class="keyword">end</span>
+0087 <span class="keyword">end</span>
+0088 
+0089 doc.getDocumentElement().normalize();
+0090 <span class="keyword">if</span> verbose &gt; 0
+0091     disp([<span class="string">'Parsing LQN file: '</span>, filename] );
+0092     disp([<span class="string">'Root element :'</span>, char(doc.getDocumentElement().getNodeName()) ] );
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">%NodeList</span>
+0096 solverPara = doc.getElementsByTagName(<span class="string">'solver-params'</span>);
+0097 <span class="keyword">for</span> i = 0:solverPara.getLength()-1
+0098     procNode = solverPara.item(i);
+0099     result = procNode.getElementsByTagName(<span class="string">'result-general'</span>);
+0100     iterations = str2num(result.item(0).getAttribute(<span class="string">'iterations'</span>));
+0101 <span class="keyword">end</span>
+0102 
+0103 procList = doc.getElementsByTagName(<span class="string">'processor'</span>);
+0104 processors = [];
+0105 <span class="comment">%providers = cell(0); % list of entries that provide services - Entry, Task, Proc</span>
+0106 requesters = cell(0); <span class="comment">% list of activities that request services - Act, Task, Proc</span>
+0107 tasks = cell(0); <span class="comment">%list of tasks - Task, task ID, Proc, ProcID - Row Index as task ID</span>
+0108 entries = cell(0); <span class="comment">%list of entries - Entry, Task ID</span>
+0109 taskID = 1;
+0110 physical = cell(0); <span class="comment">%list of actual processors, those thata receive demand for resources</span>
+0111 <span class="comment">%demand is always indicated in an entry activity</span>
+0112 procID = 1;
+0113 
+0114 clients = []; <span class="comment">% list of tasks that act as pure clients (think time)</span>
+0115 <span class="keyword">for</span> i = 0:procList.getLength()-1
+0116     <span class="comment">%Node - Processor</span>
+0117     procNode = procList.item(i);
+0118     
+0119     <span class="keyword">if</span> procNode.getNodeType() == Node.ELEMENT_NODE
+0120         
+0121         <span class="comment">%Element</span>
+0122         procElement = procNode;
+0123         name = char(procElement.getAttribute(<span class="string">'name'</span>));
+0124         result = procNode.getElementsByTagName(<span class="string">'result-processor'</span>);
+0125         Gres.Nodes.Tputlqns(findstring(G.Nodes.Node,name)) = 0;
+0126         utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0127         Gres.Nodes.Utillqns(findstring(G.Nodes.Node,name)) = utilizationRes;
+0128         
+0129         taskList = procNode.getElementsByTagName(<span class="string">'task'</span>);
+0130         <span class="keyword">for</span> j = 0:taskList.getLength()-1
+0131             <span class="comment">%Node - Task</span>
+0132             taskNode = taskList.item(j);
+0133             <span class="keyword">if</span> taskNode.getNodeType() == Node.ELEMENT_NODE
+0134                 <span class="comment">%Element</span>
+0135                 taskElement = taskNode;
+0136                 name = char(taskElement.getAttribute(<span class="string">'name'</span>));
+0137                 result = taskNode.getElementsByTagName(<span class="string">'result-task'</span>);
+0138                 utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'proc-utilization'</span>));
+0139                 Gres.Nodes.Utillqns(findstring(G.Nodes.Node,name)) = utilizationRes;
+0140                 qlenRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0141                 Gres.Nodes.QLenlqns(findstring(G.Nodes.Node,name)) = qlenRes;
+0142                 tputRes = str2num(result.item(0).getAttribute(<span class="string">'throughput'</span>));
+0143                 Gres.Nodes.Tputlqns(findstring(G.Nodes.Node,name)) = tputRes;
+0144                 entryList = taskNode.getElementsByTagName(<span class="string">'entry'</span>);
+0145                 <span class="keyword">for</span> k = 0:entryList.getLength()-1
+0146                     <span class="comment">%Node - Task</span>
+0147                     entryNode = entryList.item(k);
+0148                     <span class="keyword">if</span> entryNode.getNodeType() == Node.ELEMENT_NODE
+0149                         <span class="comment">%Element</span>
+0150                         entryElement = entryNode;
+0151                         name = char(entryElement.getAttribute(<span class="string">'name'</span>));
+0152                         result = entryNode.getElementsByTagName(<span class="string">'result-entry'</span>);
+0153                         utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'proc-utilization'</span>));
+0154                         Gres.Nodes.Utillqns(findstring(G.Nodes.Node,name)) = utilizationRes*NaN; <span class="comment">% ignore as this different in LINE</span>
+0155                         qlenRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0156                         Gres.Nodes.QLenlqns(findstring(G.Nodes.Node,name)) = qlenRes;
+0157                         tputRes = str2num(result.item(0).getAttribute(<span class="string">'throughput'</span>));
+0158                         Gres.Nodes.Tputlqns(findstring(G.Nodes.Node,name)) = tputRes;
+0159                         rtRes = str2num(result.item(0).getAttribute(<span class="string">'phase1-service-time'</span>));
+0160                         <span class="keyword">if</span> ~isempty(rtRes)
+0161                             Gres.Nodes.RespTlqns(findstring(G.Nodes.Node,name)) = rtRes;
+0162                         <span class="keyword">end</span>
+0163                     <span class="keyword">end</span>
+0164                 <span class="keyword">end</span>
+0165                 
+0166                 <span class="comment">%% task-activities</span>
+0167                 <span class="keyword">if</span> taskElement.getElementsByTagName(<span class="string">'task-activities'</span>).getLength &gt; 0
+0168                     <span class="comment">%actNames = cell(0); iterActNames = 1;</span>
+0169                     <span class="comment">%actCalls = cell(0);</span>
+0170                     actList = taskElement.getElementsByTagName(<span class="string">'task-activities'</span>).item(0).getElementsByTagName(<span class="string">'activity'</span>);
+0171                     <span class="keyword">for</span> l = 0:actList.getLength()-1
+0172                         <span class="comment">%Node - Task</span>
+0173                         actNode = actList.item(l);
+0174                         <span class="keyword">if</span> actNode.getNodeType() == Node.ELEMENT_NODE &amp;&amp; strcmp(char(actNode.getParentNode().getNodeName()),<span class="string">'task-activities'</span>)
+0175                             <span class="comment">%Element</span>
+0176                             actElement = actNode;
+0177                             name = char(actElement.getAttribute(<span class="string">'name'</span>));
+0178                             
+0179                             result = actNode.getElementsByTagName(<span class="string">'result-activity'</span>);
+0180                             rtRes = str2num(result.item(0).getAttribute(<span class="string">'service-time'</span>));
+0181                             Gres.Nodes.RespTlqns(findstring(G.Nodes.Node,name)) = rtRes;
+0182                             utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'proc-utilization'</span>));
+0183                             Gres.Nodes.Utillqns(findstring(G.Nodes.Node,name)) = utilizationRes;
+0184                             qlenRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0185                             Gres.Nodes.QLenlqns(findstring(G.Nodes.Node,name)) = qlenRes;
+0186                             tputRes = str2num(result.item(0).getAttribute(<span class="string">'throughput'</span>));
+0187                             Gres.Nodes.Tputlqns(findstring(G.Nodes.Node,name)) = tputRes;
+0188                             
+0189                             <span class="comment">%                             synchCalls = actElement.getElementsByTagName('synch-call');</span>
+0190                             <span class="comment">%                             asynchCalls = actElement.getElementsByTagName('asynch-call');</span>
+0191                             <span class="comment">%                             %add synch calls if any</span>
+0192                             <span class="comment">%                             if synchCalls.getLength() &gt; 0</span>
+0193                             <span class="comment">%                                 for m = 0:synchCalls.getLength()-1</span>
+0194                             <span class="comment">%                                     callElement = synchCalls.item(m);</span>
+0195                             <span class="comment">%                                     dest = char(callElement.getAttribute('dest'));</span>
+0196                             <span class="comment">%                                     mean = str2double(char(callElement.getAttribute('calls-mean')));</span>
+0197                             <span class="comment">%                                     tempAct = tempAct.synchCall(dest,mean);</span>
+0198                             <span class="comment">%                                     actCalls{iterActNames,1} = dest;</span>
+0199                             <span class="comment">%                                     requesters{size(requesters,1)+1,1} = tempAct.name;</span>
+0200                             <span class="comment">%                                     requesters{size(requesters,1),2} = taskID;</span>
+0201                             <span class="comment">%                                     requesters{size(requesters,1),3} = tempProc.name;</span>
+0202                             <span class="comment">%                                     requesters{size(requesters,1),4} = dest;</span>
+0203                             <span class="comment">%                                     requesters{size(requesters,1),5} = procID;</span>
+0204                             <span class="comment">%                                     %requesters:</span>
+0205                             <span class="comment">%                                     % activity - task - processor - dest (entry) - procID</span>
+0206                             <span class="comment">%                                 end</span>
+0207                             <span class="comment">%                                 %else</span>
+0208                             <span class="comment">%                                 %    actCalls{iterActNames,1} = [];</span>
+0209                             <span class="comment">%                                 %end</span>
+0210                             <span class="comment">%                                 %iterActNames = iterActNames + 1;</span>
+0211                             <span class="comment">%                                 %add asynch calls if any</span>
+0212                             <span class="comment">%                             elseif asynchCalls.getLength() &gt; 0</span>
+0213                             <span class="comment">%                                 for m = 0:asynchCalls.getLength()-1</span>
+0214                             <span class="comment">%                                     callElement = asynchCalls.item(m);</span>
+0215                             <span class="comment">%                                     dest = char(callElement.getAttribute('dest'));</span>
+0216                             <span class="comment">%                                     mean = str2double(char(callElement.getAttribute('calls-mean')));</span>
+0217                             <span class="comment">%                                     tempAct = tempAct.asynchCall(dest,mean);</span>
+0218                             <span class="comment">%                                     actCalls{iterActNames,1} = dest;</span>
+0219                             <span class="comment">%                                     requesters{size(requesters,1)+1,1} = tempAct.name;</span>
+0220                             <span class="comment">%                                     requesters{size(requesters,1),2} = taskID;</span>
+0221                             <span class="comment">%                                     requesters{size(requesters,1),3} = tempProc.name;</span>
+0222                             <span class="comment">%                                     requesters{size(requesters,1),4} = dest;</span>
+0223                             <span class="comment">%                                     requesters{size(requesters,1),5} = procID;</span>
+0224                             <span class="comment">%                                 end</span>
+0225                             <span class="comment">%                             else</span>
+0226                             <span class="comment">%                                 actCalls{iterActNames,1} = [];</span>
+0227                             <span class="comment">%                             end</span>
+0228                             <span class="comment">%iterActNames = iterActNames + 1;</span>
+0229                         <span class="keyword">end</span>
+0230                     <span class="keyword">end</span>
+0231                 <span class="keyword">end</span>
+0232             <span class="keyword">end</span>
+0233         <span class="keyword">end</span>
+0234     <span class="keyword">end</span>
+0235 <span class="keyword">end</span>
+0236 <span class="keyword">for</span> edge=1:height(G.Edges)
+0237     <span class="keyword">if</span> G.Edges.Type(edge) == 1 <span class="comment">% add contribution of sync-calls</span>
+0238         syncSource = G.Edges.EndNodes{edge,1};
+0239         aidx = findstring(Gres.Nodes.Name,syncSource);
+0240         <span class="keyword">if</span> G.Edges.Weight(edge) &gt;= 1
+0241             Gres.Nodes.RespT(aidx) = Gres.Nodes.RespT(aidx) +  G.Edges.RespT(edge) * G.Edges.Weight(edge);
+0242         <span class="keyword">else</span>
+0243             Gres.Nodes.RespT(aidx) = Gres.Nodes.RespT(aidx) +  G.Edges.RespT(edge);
+0244         <span class="keyword">end</span>
+0245     <span class="keyword">end</span>
+0246 <span class="keyword">end</span>
+0247 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

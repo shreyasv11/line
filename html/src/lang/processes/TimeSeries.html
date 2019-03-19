@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of TimeSeries</title>
+  <meta name="keywords" content="TimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">processes</a> &gt; TimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\processes&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>TimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PointProcess.html" class="code" title="">PointProcess</a>	</li><li><a href="TimeSeries.html" class="code" title="">TimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Replayer.html" class="code" title="">Replayer</a>	</li><li><a href="TimeSeries.html" class="code" title="">TimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = TimeSeries(className, numPar)</a></li><li><a href="#_sub2" class="code">function transform(self, filterType, filterParam)</a></li><li><a href="#_sub3" class="code">function summary(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="TimeSeries.html" class="code" title="">TimeSeries</a> &lt; <a href="PointProcess.html" class="code" title="">PointProcess</a>
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods (Hidden)
+0006         <a name="_sub0" href="#_subfunctions" class="code">function self = TimeSeries(className, numPar)</a>
+0007             self = self@<a href="PointProcess.html" class="code" title="">PointProcess</a>(className,numPar);
+0008         <span class="keyword">end</span>
+0009     <span class="keyword">end</span>
+0010     
+0011     methods
+0012         <a name="_sub1" href="#_subfunctions" class="code">function transform(self, filterType, filterParam)</a>
+0013             <span class="keyword">if</span> isempty(self.data)
+0014                 self.load();
+0015             <span class="keyword">end</span>
+0016             I = length(self.data);
+0017             <span class="keyword">switch</span> filterType
+0018                 <span class="keyword">case</span> ProcessFilter.Shuffle
+0019                     self.data=self.data(randperm(I));
+0020                 <span class="keyword">case</span> ProcessFilter.MovingAvg
+0021                     wndsz = filterParam;
+0022                     inData = [self.data; zeros(wndsz-1,1)];
+0023                     <span class="keyword">for</span> i=1:I
+0024                         self.data(i) = mean(inData(i:(i+wndsz-1)));
+0025                     <span class="keyword">end</span>
+0026             <span class="keyword">end</span>
+0027         <span class="keyword">end</span>
+0028         
+0029         <a name="_sub2" href="#_subfunctions" class="code">function summary(self)</a>
+0030             <span class="keyword">if</span> isempty(self.data)
+0031                 self.load();
+0032             <span class="keyword">end</span>
+0033             MEAN = self.getMean;
+0034             MED = median(self.data);
+0035             SCV = self.getSCV;
+0036             SKEW = skewness(self.data);
+0037             QUART = [prctile(self.data,25),prctile(self.data,50),prctile(self.data,75)];
+0038             TAILS1PERC = [prctile(self.data,95),prctile(self.data,(1-1e-6)*100)];
+0039             MINMAX = [min(self.data),max(self.data)];
+0040             MAD = mad(self.data,1); <span class="comment">%median based mad</span>
+0041             fprintf(1,<span class="string">'Replayer: length=%d NaNs=%d\nMoments: mean=%f scv=%f cv=%f skew=%f\nPercentiles: p25=%f p50=%f p75=%f p95=%f\nOrder: min=%f max=%f median=%f mad=%f\n'</span>,length(self.data),sum(isnan(self.data)),MEAN,SCV,sqrt(SCV),SKEW,QUART(1),QUART(2),QUART(3),TAILS1PERC(1),MINMAX(1),MINMAX(2),MED,MAD);
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

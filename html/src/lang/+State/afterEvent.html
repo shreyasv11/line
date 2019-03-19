@@ -1,0 +1,606 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of afterEvent</title>
+  <meta name="keywords" content="afterEvent">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">+State</a> &gt; afterEvent.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\+State&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>afterEvent
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [outspace, outrate, outprob] =  afterEvent(qn, ind, inspace, event, class, isSimulation) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.
+if ~exist('isSimulation','var')
+    isSimulation = false;
+end</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function pos = cpos(i,j)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [outspace, outrate, outprob] =  afterEvent(qn, ind, inspace, event, class, isSimulation)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 <span class="comment">%if ~exist('isSimulation','var')</span>
+0005 <span class="comment">%    isSimulation = false;</span>
+0006 <span class="comment">%end</span>
+0007 M = qn.nstations;
+0008 R = qn.nclasses;
+0009 S = qn.nservers;
+0010 phasessz = qn.phasessz;
+0011 phaseshift = qn.phaseshift;
+0012 outspace = [];
+0013 outrate = [];
+0014 outprob = 1;
+0015 
+0016 <span class="comment">% ind: node index</span>
+0017 isf = qn.nodeToStateful(ind);
+0018 
+0019 hasOnlyExp = false; <span class="comment">% true if all service processes are exponential</span>
+0020 <span class="keyword">if</span> qn.isstation(ind)
+0021     ist = qn.nodeToStation(ind);
+0022     K = phasessz(ist,:);
+0023     Ks = phaseshift(ist,:);
+0024     <span class="keyword">if</span> max(K)==1
+0025         hasOnlyExp = true;
+0026     <span class="keyword">end</span>
+0027     mu = qn.mu;
+0028     phi = qn.phi;
+0029     capacity = qn.cap;
+0030     classcap = qn.classcap;
+0031     <span class="keyword">if</span> K(class) == 0 <span class="comment">% if this class is not accepted at the resource</span>
+0032         <span class="keyword">return</span>
+0033     <span class="keyword">end</span>
+0034     V = sum(qn.nvars(ind,:));
+0035     space_var = inspace(:,(end-V+1):end); <span class="comment">% local state variables</span>
+0036     space_srv = inspace(:,(end-sum(K)-V+1):(end-V)); <span class="comment">% server state</span>
+0037     space_buf = inspace(:,1:(end-sum(K)-V)); <span class="comment">% buffer state</span>
+0038 <span class="keyword">elseif</span> qn.isstateful(ind)
+0039     V = sum(qn.nvars(ind,:));
+0040     <span class="comment">% in this case service is always immediate so sum(K)=1</span>
+0041     space_var = inspace(:,(end-V+1):end); <span class="comment">% local state variables</span>
+0042     space_srv = inspace(:,(end-R-V+1):(end-V)); <span class="comment">% server state</span>
+0043     space_buf = []; <span class="comment">% buffer state</span>
+0044 <span class="keyword">else</span> <span class="comment">% stateless node</span>
+0045     space_var = [];
+0046     space_srv = [];
+0047     space_buf = [];
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">%switch qn.nodetype(ind)</span>
+0051 <span class="comment">%    case {NodeType.Queue, NodeType.Delay, NodeType.Source}</span>
+0052 <span class="keyword">if</span> qn.isstation(ind)
+0053     <span class="keyword">switch</span> event
+0054         <span class="keyword">case</span> Event.ARV
+0055             <span class="comment">% return if there is no space to accept the arrival</span>
+0056             [ni,nir] = State.toMarginalAggr(qn,ind,inspace,K,Ks,space_buf,space_srv,space_var);
+0057             <span class="comment">% otherwise check scheduling strategy</span>
+0058             <span class="keyword">switch</span> qn.schedid(ist)
+0059                 <span class="keyword">case</span> SchedStrategy.ID_EXT <span class="comment">% source, can receive any &quot;virtual&quot; arrival from the sink as long as it is from an open class</span>
+0060                     <span class="keyword">if</span> isinf(qn.njobs(class))
+0061                         outspace = inspace;
+0062                         outrate = -1*zeros(size(outspace,1)); <span class="comment">% passive action, rate is unspecified</span>
+0063                         <span class="keyword">return</span>
+0064                     <span class="keyword">end</span>
+0065                 <span class="keyword">case</span> {SchedStrategy.ID_PS, SchedStrategy.ID_INF, SchedStrategy.ID_DPS, SchedStrategy.ID_GPS}
+0066                     <span class="comment">% job enters service immediately</span>
+0067                     space_srv(:,Ks(class)+1) = space_srv(:,Ks(class)+1) + 1;
+0068 
+0069                 <span class="keyword">case</span> {SchedStrategy.ID_RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
+0070                     <span class="keyword">if</span> ni&lt;S(ist)
+0071                         space_srv(:,Ks(class)+1) = space_srv(:,Ks(class)+1) + 1;
+0072                     <span class="keyword">else</span>
+0073                         space_buf(:,class) = space_buf(:,class) + 1;
+0074                     <span class="keyword">end</span>
+0075                     
+0076                 <span class="keyword">case</span> {SchedStrategy.ID_FCFS, SchedStrategy.ID_HOL, SchedStrategy.ID_LCFS}
+0077                     <span class="comment">% find states with all servers busy - this</span>
+0078                     <span class="comment">% needs not to be moved</span>
+0079                     all_busy_srv = find(sum(space_srv,2) &gt;= S(ist));
+0080                     
+0081                     <span class="comment">% find and modify states with an idle server</span>
+0082                     idle_srv = sum(space_srv,2) &lt; S(ist);
+0083                     space_srv(idle_srv, end-sum(K)+Ks(class)+1) = space_srv(idle_srv,end-sum(K)+Ks(class)+1) + 1; <span class="comment">% job enters service</span>
+0084                     
+0085                     <span class="keyword">if</span> isSimulation
+0086                         <span class="keyword">if</span> ni &lt; capacity(ist) &amp;&amp; nir(class) &lt; classcap(ist,class) <span class="comment">% if there is room</span>
+0087                             <span class="keyword">if</span> ~any(space_buf(:)==0) <span class="comment">% but the buffer has no empty slots</span>
+0088                                 <span class="comment">% append job slot</span>
+0089                                 space_buf = [zeros(size(space_buf,1),1),space_buf];
+0090                             <span class="keyword">end</span>
+0091                         <span class="keyword">end</span>
+0092                     <span class="keyword">end</span>
+0093                     <span class="comment">%get position of first empty slot</span>
+0094                     empty_slots = -1*ones(all_busy_srv,1);
+0095                     <span class="keyword">if</span> size(space_buf,2) == 0
+0096                         empty_slots(all_busy_srv) = false;
+0097                     <span class="keyword">elseif</span> size(space_buf,2) == 1
+0098                         empty_slots(all_busy_srv) = space_buf(all_busy_srv,:)==0;
+0099                     <span class="keyword">else</span>
+0100                         empty_slots(all_busy_srv) = max(bsxfun(@times, space_buf(all_busy_srv,:)==0, [1:size(space_buf,2)]),[],2);
+0101                     <span class="keyword">end</span>
+0102                     
+0103                     <span class="comment">% ignore states where the buffer has no empty slots</span>
+0104                     wbuf_empty = empty_slots&gt;0;
+0105                     <span class="keyword">if</span> any(wbuf_empty)
+0106                         space_srv = space_srv(wbuf_empty,:);
+0107                         space_buf = space_buf(wbuf_empty,:);
+0108                         empty_slots = empty_slots(wbuf_empty);
+0109                         space_buf(sub2ind(size(space_buf),1:size(space_buf,1),empty_slots')) = class;
+0110                         outspace(all_busy_srv(wbuf_empty),:) = [space_buf, space_srv, space_var];
+0111                     <span class="keyword">end</span>
+0112                     
+0113             <span class="keyword">end</span>
+0114             outspace = [space_buf, space_srv, space_var];
+0115             <span class="comment">% remove states where new arrival violates capacity constraints</span>
+0116             en = classcap(ist,class)&gt; nir(:,class) | capacity(ist)*ones(size(ni,1),1) &gt; ni;
+0117             outspace = outspace(en,:);
+0118             outrate = -1*ones(size(outspace,1)); <span class="comment">% passive action, rate is unspecified</span>
+0119         <span class="keyword">case</span> Event.DEP
+0120             <span class="keyword">if</span> any(any(space_srv(:,(Ks(class)+1):(Ks(class)+K(class))))) <span class="comment">% something is busy</span>
+0121                 <span class="keyword">if</span> hasOnlyExp &amp;&amp; (qn.schedid(ist) == SchedStrategy.ID_PS || qn.schedid(ist) == SchedStrategy.ID_DPS || qn.schedid(ist) == SchedStrategy.ID_GPS || qn.schedid(ist) == SchedStrategy.ID_INF)
+0122                     nir = space_srv;
+0123                     ni = sum(nir,2);
+0124                     sir = nir;
+0125                     kir = sir;
+0126                 <span class="keyword">else</span>
+0127                     [ni,nir,sir,kir] = State.toMarginal(qn,ind,inspace,K,Ks,space_buf,space_srv,space_var);
+0128                 <span class="keyword">end</span>
+0129                 <span class="keyword">switch</span> qn.routing(ind)
+0130                     <span class="keyword">case</span> RoutingStrategy.ID_RR
+0131                         idx = find(space_var(end) == qn.varsparam{ind}.outlinks);
+0132                         <span class="keyword">if</span> idx &lt; length(qn.varsparam{ind}.outlinks)
+0133                             space_var = qn.varsparam{ind}.outlinks(idx+1);
+0134                         <span class="keyword">else</span>
+0135                             space_var = qn.varsparam{ind}.outlinks(1);
+0136                         <span class="keyword">end</span>
+0137                 <span class="keyword">end</span>
+0138                 <span class="keyword">if</span> sir(class)&gt;0 <span class="comment">% is a job of class is in service</span>
+0139                     <span class="keyword">for</span> k=1:K(class)
+0140                         space_srv = inspace(:,(end-sum(K)-V+1):(end-V)); <span class="comment">% server state</span>
+0141                         space_buf = inspace(:,1:(end-sum(K)-V)); <span class="comment">% buffer state</span>
+0142                         rate = zeros(size(space_srv,1),1);
+0143                         en =  space_srv(:,Ks(class)+k) &gt; 0;
+0144                         <span class="keyword">if</span> any(en)
+0145                             <span class="keyword">switch</span> qn.schedid(ist)
+0146                                 <span class="keyword">case</span> SchedStrategy.ID_EXT <span class="comment">% source, can produce an arrival from phase-k as long as it is from an open class</span>
+0147                                     <span class="keyword">if</span> isinf(qn.njobs(class))
+0148                                         space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0149                                         space_srv(en,Ks(class)+1) = space_srv(en,Ks(class)+1) + 1; <span class="comment">% record departure</span>
+0150                                         outspace = [space_buf, space_srv, space_var];
+0151                                         outrate = mu{ist,class}(k)*phi{ist,class}(k)*ones(size(inspace,1),1);
+0152                                     <span class="keyword">end</span>
+0153                                 <span class="keyword">case</span> SchedStrategy.ID_INF <span class="comment">% move first job in service</span>
+0154                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0155                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(en,class,k); <span class="comment">% assume active</span>
+0156                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0157                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(<span class="keyword">end</span>,:)];
+0158                                     outrate = [outrate; rate(en,:)];
+0159                                 <span class="keyword">case</span> SchedStrategy.ID_PS <span class="comment">% move first job in service</span>
+0160                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0161                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(en,class,k)./ni(en).*min(ni(en),S(ist)); <span class="comment">% assume active</span>
+0162                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0163                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0164                                     outrate = [outrate; rate(en,:)];
+0165                                 <span class="keyword">case</span> SchedStrategy.ID_DPS
+0166                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0167                                     <span class="keyword">if</span> S(ist) &gt; 1
+0168                                         error(<span class="string">'Multi-server DPS not supported yet'</span>);
+0169                                     <span class="keyword">end</span>
+0170                                     <span class="comment">% in GPS, the scheduling parameter are the weights</span>
+0171                                     w_i = qn.schedparam(ist,:);
+0172                                     w_i = w_i / sum(w_i);
+0173                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k))*kir(en,class,k)*w_i(class)./(sum(repmat(w_i,sum(en),1)*nir',2));
+0174                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0175                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0176                                     outrate = [outrate; rate(en,:)];
+0177                                 <span class="keyword">case</span> SchedStrategy.ID_GPS
+0178                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0179                                     <span class="keyword">if</span> S(ist) &gt; 1
+0180                                         error(<span class="string">'Multi-server DPS not supported yet'</span>);
+0181                                     <span class="keyword">end</span>
+0182                                     <span class="comment">% in GPS, the scheduling parameter are the weights</span>
+0183                                     w_i = qn.schedparam(ist,:); w_i = w_i / sum(w_i);
+0184                                     cir = min(nir,ones(size(nir)));
+0185                                     rate = mu{ist,class}(k)*(phi{ist,class}(k))*kir(:,class,k)/nir(class)*w_i(class)/(w_i*cir(:)); <span class="comment">% assume active</span>
+0186                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0187                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0188                                     outrate = [outrate; rate(en,:)];
+0189                                 <span class="keyword">case</span> SchedStrategy.ID_FCFS <span class="comment">% move first job in service</span>
+0190                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0191                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(en,class,k); <span class="comment">% assume active</span>
+0192                                     en_wbuf = en &amp; ni&gt;S(ist); <span class="comment">%states with jobs in buffer</span>
+0193                                     <span class="keyword">if</span> any(en_wbuf)
+0194                                         start_svc_class = space_buf(en_wbuf,end);
+0195                                         <span class="keyword">if</span> start_svc_class &gt; 0
+0196                                             space_srv(en_wbuf,Ks(start_svc_class)+1) = space_srv(en_wbuf,Ks(start_svc_class)+1) + 1;
+0197                                             space_buf(en_wbuf,:) = [zeros(sum(en_wbuf),1),space_buf(en_wbuf,1:end-1)];
+0198                                         <span class="keyword">end</span>
+0199                                     <span class="keyword">end</span>
+0200                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0201                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0202                                     outrate = [outrate; rate(en,:)];
+0203                                 <span class="keyword">case</span> SchedStrategy.ID_HOL <span class="comment">% FCFS priority</span>
+0204                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); <span class="comment">% assume active</span>
+0205                                     en_wbuf = en &amp; ni&gt;S(ist); <span class="comment">%states with jobs in buffer</span>
+0206                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0207                                     priogroup = [0,qn.classprio];
+0208                                     space_buf_groupg = arrayfun(@(x) priogroup(1+x), space_buf);
+0209                                     start_classprio = max(space_buf_groupg(en_wbuf,:),[],2);
+0210                                     isrowmax = space_buf_groupg == repmat(start_classprio, 1, size(space_buf_groupg,2));
+0211                                     [~,rightmostMaxPosFlipped]=max(fliplr(isrowmax),[],2);
+0212                                     rightmostMaxPos = size(isrowmax,2) - rightmostMaxPosFlipped + 1;
+0213                                     start_svc_class = space_buf(en_wbuf, rightmostMaxPos);
+0214                                     <span class="keyword">if</span> start_svc_class &gt; 0
+0215                                         space_srv(en_wbuf,Ks(start_svc_class)+1) = space_srv(en_wbuf,Ks(start_svc_class)+1) + 1;
+0216                                         <span class="keyword">for</span> j=find(en_wbuf)'
+0217                                             space_buf(j,:) = [0, space_buf(j,1:rightmostMaxPos(j)-1), space_buf(j,(rightmostMaxPos(j)+1):end)];
+0218                                         <span class="keyword">end</span>
+0219                                     <span class="keyword">end</span>
+0220                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0221                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0222                                     outrate = [outrate; rate(en,:)];
+0223                                 <span class="keyword">case</span> SchedStrategy.ID_LCFS <span class="comment">% move last job in service</span>
+0224                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0225                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); <span class="comment">% assume active</span>
+0226                                     en_wbuf = en &amp; ni&gt;S(ist); <span class="comment">%states with jobs in buffer</span>
+0227                                     [~, colfirstnnz] = max( space_buf(en_wbuf,:) ~=0, [], 2 ); <span class="comment">% find first nnz column</span>
+0228                                     start_svc_class = space_buf(en_wbuf,colfirstnnz); <span class="comment">% job entering service</span>
+0229                                     space_srv(en_wbuf,Ks(start_svc_class)+1) = space_srv(en_wbuf,Ks(start_svc_class)+1) + 1;
+0230                                     space_buf(en_wbuf,colfirstnnz)=0;
+0231                                     <span class="comment">% if state is unchanged, still add with rate 0</span>
+0232                                     outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0233                                     outrate = [outrate; rate(en,:)];
+0234                                 <span class="keyword">case</span> SchedStrategy.ID_RAND
+0235                                     rate = zeros(size(space_srv,1),1);
+0236                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); <span class="comment">% this is for states not in en_buf</span>
+0237                                     space_srv = inspace(:,end-sum(K)+1:end); <span class="comment">% server state</span>
+0238                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0239                                     <span class="comment">% first record departure in states where the buffer is empty</span>
+0240                                     en_wobuf = en &amp; sum(space_buf(en,:),2) == 0;
+0241                                     outspace = [outspace; space_buf(en_wobuf,:), space_srv(en_wobuf,:), space_var(en_wobuf,:)];
+0242                                     outrate = [outrate; rate(en_wobuf,:)];
+0243                                     <span class="comment">% let's go now to states where the buffer is non-empty</span>
+0244                                     <span class="keyword">for</span> r=1:R <span class="comment">% pick a job of a random class</span>
+0245                                         space_buf = inspace(:,1:(end-sum(K))); <span class="comment">% buffer state</span>
+0246                                         en_wbuf = en &amp; space_buf(en,r) &gt; 0; <span class="comment">% states where the buffer is non-empty</span>
+0247                                         space_buf(en_wbuf,r) = space_buf(en_wbuf,r) - 1; <span class="comment">% remove from buffer</span>
+0248                                         space_srv_r = space_srv;
+0249                                         space_srv_r(en_wbuf,Ks(r)+1) = space_srv_r(en_wbuf,Ks(r)+1) + 1; <span class="comment">% bring job in service</span>
+0250                                         pick_prob = (nir(r)-sir(r)) / (ni-sum(sir));
+0251                                         <span class="keyword">if</span> pick_prob &gt;= 0
+0252                                             rate(en_wbuf) = rate(en_wbuf) * pick_prob;
+0253                                         <span class="keyword">end</span>
+0254                                         outspace = [outspace; space_buf(en_wbuf,:), space_srv_r(en_wbuf,:), space_var(en_wbuf,:)];
+0255                                         outrate = [outrate; rate(en_wbuf,:)];
+0256                                     <span class="keyword">end</span>
+0257                                 <span class="keyword">case</span> {SchedStrategy.ID_SEPT,SchedStrategy.ID_LEPT} <span class="comment">% move last job in service</span>
+0258                                     rate = zeros(size(space_srv,1),1);
+0259                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); <span class="comment">% this is for states not in en_buf</span>
+0260                                     space_srv = inspace(:,end-sum(K)+1:end); <span class="comment">% server state</span>
+0261                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; <span class="comment">% record departure</span>
+0262                                     space_buf = inspace(:,1:(end-sum(K))); <span class="comment">% buffer state</span>
+0263                                     <span class="comment">% in SEPT, the scheduling parameter is the priority order of the class means</span>
+0264                                     <span class="comment">% en_wbuf: states where the buffer is non-empty</span>
+0265                                     <span class="comment">% sept_class: class to pick in service</span>
+0266                                     [en_wbuf, first_row_nnz] = max(space_buf(:,qn.schedparam(ist,:))~=0, [], 2);
+0267                                     sept_class = qn.schedparam(ist,first_row_nnz);
+0268                                     space_buf(en_wbuf,sept_class) = space_buf(en_wbuf,sept_class) - 1; <span class="comment">% remove from buffer</span>
+0269                                     space_srv(en_wbuf,Ks(sept_class)+1) = space_srv(en_wbuf,Ks(sept_class)+1) + 1; <span class="comment">% bring job in service</span>
+0270                                     <span class="keyword">if</span> isSimulation
+0271                                         <span class="comment">% break the tie</span>
+0272                                         outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0273                                         outrate = [outrate; rate(en,:)];
+0274                                     <span class="keyword">else</span>
+0275                                         outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
+0276                                         outrate = [outrate; rate(en,:)];
+0277                                     <span class="keyword">end</span>
+0278                                 <span class="keyword">otherwise</span>
+0279                                     error(<span class="string">'Scheduling strategy %s is not supported.'</span>, qn.sched{ist});
+0280                             <span class="keyword">end</span>
+0281                         <span class="keyword">end</span>
+0282                     <span class="keyword">end</span>
+0283                     <span class="keyword">if</span> isSimulation
+0284                         <span class="keyword">if</span> size(outspace,1) &gt; 1
+0285                             tot_rate = sum(outrate);
+0286                             cum_rate = cumsum(outrate) / tot_rate;
+0287                             firing_ctr = 1 + max([0,find( rand &gt; cum_rate' )]); <span class="comment">% select action</span>
+0288                             outspace = outspace(firing_ctr,:);
+0289                             outrate = sum(outrate);
+0290                         <span class="keyword">end</span>
+0291                     <span class="keyword">end</span>
+0292                 <span class="keyword">end</span>
+0293             <span class="keyword">end</span>
+0294         <span class="keyword">case</span> Event.PHASE
+0295             outspace = [];
+0296             outrate = [];
+0297             [ni,nir,~,kir] = State.toMarginal(qn,ind,inspace,K,Ks,space_buf,space_srv,space_var);
+0298             <span class="keyword">if</span> nir(class)&gt;0
+0299                 <span class="keyword">for</span> k=1:(K(class)-1)
+0300                     en = space_srv(:,Ks(class)+k) &gt; 0;
+0301                     <span class="keyword">if</span> any(en)
+0302                         space_srv_k = space_srv(en,:);
+0303                         space_buf_k = space_buf(en,:);
+0304                         space_var_k = space_var(en,:);
+0305                         space_srv_k(:,Ks(class)+k) = space_srv_k(:,Ks(class)+k) - 1;
+0306                         space_srv_k(:,Ks(class)+k+1) = space_srv_k(:,Ks(class)+k+1) + 1;
+0307                         <span class="keyword">switch</span> qn.schedid(ist)
+0308                             <span class="keyword">case</span> SchedStrategy.ID_EXT
+0309                                 rate = mu{ist,class}(k)*(1-phi{ist,class}(k)); <span class="comment">% move next job forward</span>
+0310                             <span class="keyword">case</span> SchedStrategy.ID_INF
+0311                                 rate = mu{ist,class}(k)*(1-phi{ist,class}(k))*kir(:,class,k); <span class="comment">% assume active</span>
+0312                             <span class="keyword">case</span> SchedStrategy.ID_PS
+0313                                 rate = mu{ist,class}(k)*(1-phi{ist,class}(k))*kir(:,class,k)./ni(:).*min(ni(:),S(ist)); <span class="comment">% assume active</span>
+0314                             <span class="keyword">case</span> SchedStrategy.ID_DPS
+0315                                 <span class="keyword">if</span> S(ist) &gt; 1
+0316                                     error(<span class="string">'Multi-server DPS not supported yet'</span>);
+0317                                 <span class="keyword">end</span>
+0318                                 w_i = qn.schedparam(ist,:);
+0319                                 w_i = w_i / sum(w_i);
+0320                                 rate = mu{ist,class}(k)*(1-phi{ist,class}(k))*kir(:,class,k)*w_i(class)./(sum(repmat(w_i,size(nir,1),1)*nir',2)); <span class="comment">% assume active</span>
+0321                             <span class="keyword">case</span> SchedStrategy.ID_GPS
+0322                                 <span class="keyword">if</span> S(ist) &gt; 1
+0323                                     error(<span class="string">'Multi-server GPS not supported yet'</span>);
+0324                                 <span class="keyword">end</span>
+0325                                 cir = min(nir,ones(size(nir)));
+0326                                 w_i = qn.schedparam(ist,:); w_i = w_i / sum(w_i);
+0327                                 rate = mu{ist,class}(k)*(1-phi{ist,class}(k))*kir(:,class,k)/nir(class)*w_i(class)/(w_i*cir(:)); <span class="comment">% assume active</span>
+0328                                 
+0329                             <span class="keyword">case</span> {SchedStrategy.ID_FCFS, SchedStrategy.ID_HOL, SchedStrategy.ID_LCFS, SchedStrategy.ID_RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
+0330                                 rate = mu{ist,class}(k)*(1-phi{ist,class}(k))*kir(:,class,k); <span class="comment">% assume active</span>
+0331                         <span class="keyword">end</span>
+0332                         <span class="comment">% if the class cannot be served locally,</span>
+0333                         <span class="comment">% then rate = NaN since mu{i,class}=NaN</span>
+0334                         outrate = [outrate; rate(en,:)];
+0335                         outspace = [outspace; space_buf_k, space_srv_k, space_var_k];
+0336                     <span class="keyword">end</span>
+0337                 <span class="keyword">end</span>
+0338                 <span class="keyword">if</span> isSimulation
+0339                     <span class="keyword">if</span> size(outspace,1) &gt; 1
+0340                         tot_rate = sum(outrate);
+0341                         cum_rate = cumsum(outrate) / tot_rate;
+0342                         firing_ctr = 1 + max([0,find( rand &gt; cum_rate' )]); <span class="comment">% select action</span>
+0343                         outspace = outspace(firing_ctr,:);
+0344                         outrate = sum(outrate);
+0345                     <span class="keyword">end</span>
+0346                 <span class="keyword">end</span>
+0347             <span class="keyword">end</span>
+0348     <span class="keyword">end</span>
+0349 <span class="keyword">elseif</span> qn.isstateful(ind)
+0350     <span class="keyword">switch</span> qn.nodetype(ind)
+0351         <span class="keyword">case</span> NodeType.Cache
+0352             <span class="comment">% job arrives in class, then reads and moves into hit or miss</span>
+0353             <span class="comment">% class, then departs</span>
+0354             <span class="keyword">switch</span> event
+0355                 <span class="keyword">case</span> Event.ARV
+0356                     space_srv(:,class) = space_srv(:,class) + 1;
+0357                     outspace = [space_srv, space_var]; <span class="comment">% buf is empty</span>
+0358                     outrate = -1*ones(size(outspace,1)); <span class="comment">% passive action, rate is unspecified</span>
+0359                 <span class="keyword">case</span> Event.DEP
+0360                     <span class="keyword">if</span> space_srv(class)&gt;0
+0361                         space_srv(:,class) = space_srv(:,class) - 1;
+0362                         outspace = [space_srv, space_var]; <span class="comment">% buf is empty</span>
+0363                         outrate = Distrib.InfRate*ones(size(outspace,1)); <span class="comment">% passive action, rate is unspecified</span>
+0364                     <span class="keyword">end</span>
+0365                 <span class="keyword">case</span> Event.READ
+0366                     n = qn.varsparam{ind}.nitems; <span class="comment">% n items</span>
+0367                     m = qn.varsparam{ind}.cap; <span class="comment">% capacity</span>
+0368                     ac = qn.varsparam{ind}.accost; <span class="comment">% access cost</span>
+0369                     hitclass = qn.varsparam{ind}.hitclass;
+0370                     missclass = qn.varsparam{ind}.missclass;
+0371                     h = length(m);
+0372                     rpolicy_id = qn.varsparam{ind}.rpolicy;
+0373                     <span class="keyword">if</span> space_srv(class)&gt;0 &amp;&amp; sum(space_srv)==1 <span class="comment">% is a job of class is in</span>
+0374                         p = qn.varsparam{ind}.pref{class};
+0375                         en =  space_srv(:,class) &gt; 0;
+0376                         space_srv_k = [];
+0377                         space_var_k = [];
+0378                         outrate = [];
+0379                         <span class="keyword">if</span> any(en)
+0380                             <span class="keyword">for</span> e=find(en)'
+0381                                 <span class="keyword">if</span> isSimulation
+0382                                     <span class="comment">% pick one</span>
+0383                                     kset = 1 + max([0,find( rand &gt; cumsum(p) )]);
+0384                                     outprob = p(kset);
+0385                                 <span class="keyword">else</span>
+0386                                     kset = 1:n;
+0387                                 <span class="keyword">end</span>
+0388                                 <span class="keyword">for</span> k=kset <span class="comment">% request to item k</span>
+0389                                     space_srv_e = space_srv(e,:);
+0390                                     space_srv_e(class) = space_srv_e(class) - 1;
+0391                                     var = space_var(e,:);
+0392                                     posk = find(k==var);
+0393                                     
+0394                                     <span class="keyword">if</span> isempty(posk) <span class="comment">% CACHE MISS, add to list 1</span>
+0395                                         space_srv_e(missclass(class)) = space_srv_e(missclass(class)) + 1;
+0396                                         <span class="keyword">switch</span> rpolicy_id
+0397                                             <span class="keyword">case</span> {ReplacementPolicy.ID_FIFO, ReplacementPolicy.ID_LRU, ReplacementPolicy.ID_SFIFO}
+0398                                                 varp = var;
+0399                                                 varp(2:m(1)) = var(1:(m(1)-1));
+0400                                                 varp(1) = k;
+0401                                                 space_srv_k = [space_srv_k; space_srv_e];
+0402                                                 space_var_k = [space_var_k; varp];
+0403                                                 <span class="keyword">if</span> isSimulation
+0404                                                     <span class="comment">%% no p(k) weighting since htat goes in the outprob vec</span>
+0405                                                     outrate(end+1,1) = Distrib.InfRate;
+0406                                                 <span class="keyword">else</span>
+0407                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
+0408                                                 <span class="keyword">end</span>
+0409                                             <span class="keyword">case</span> ReplacementPolicy.ID_RAND
+0410                                                 <span class="keyword">if</span> isSimulation
+0411                                                     varp = var;
+0412                                                     r = randi(m(1),1,1);
+0413                                                     varp(r) = k;
+0414                                                     space_srv_k = [space_srv_k; space_srv_e];
+0415                                                     space_var_k = [space_var_k; (varp)];
+0416                                                     outrate(end+1,1) = Distrib.InfRate;
+0417                                                 <span class="keyword">else</span>
+0418                                                     <span class="keyword">for</span> r=1:m(1) <span class="comment">% random position in list 1</span>
+0419                                                         varp = var;
+0420                                                         varp(r) = k;
+0421                                                         space_srv_k = [space_srv_k; space_srv_e];
+0422                                                         space_var_k = [space_var_k; (varp)];
+0423                                                         outrate(end+1,1) = p(k)/m(1) * Distrib.InfRate;
+0424                                                     <span class="keyword">end</span>
+0425                                                 <span class="keyword">end</span>
+0426                                         <span class="keyword">end</span>
+0427                                     <span class="keyword">elseif</span> posk &lt;= sum(m(1:h-1)) <span class="comment">% CACHE HIT in list i &lt; h, move to list i+1</span>
+0428                                         space_srv_e(hitclass(class)) = space_srv_e(hitclass(class)) + 1;
+0429                                         i = min(find(posk &lt;= cumsum(m)));
+0430                                         j = posk - sum(m(1:i-1));
+0431                                         <span class="keyword">switch</span> rpolicy_id
+0432                                             <span class="keyword">case</span> ReplacementPolicy.ID_FIFO
+0433                                                 <span class="keyword">if</span> isSimulation
+0434                                                     varp = var;
+0435                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)); <span class="comment">% can choose i</span>
+0436                                                     <span class="keyword">if</span> inew~=i
+0437                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)));
+0438                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew))) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)-1));
+0439                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1)) = k;
+0440                                                     <span class="keyword">end</span>
+0441                                                     <span class="comment">%varp(cpos(i,j)) = var(cpos(i+1,m(i+1)));</span>
+0442                                                     <span class="comment">%varp(cpos(i+1,2):cpos(i+1,m(i+1))) = var(cpos(i+1,1):cpos(i+1,m(i+1)-1));</span>
+0443                                                     <span class="comment">%varp(cpos(i+1,1)) = k;</span>
+0444                                                     
+0445                                                     
+0446                                                     space_srv_k = [space_srv_k; space_srv_e];
+0447                                                     space_var_k = [space_var_k; varp];
+0448                                                     outrate(end+1,1) = Distrib.InfRate;
+0449                                                 <span class="keyword">else</span>
+0450                                                     <span class="keyword">for</span> inew = i:h
+0451                                                         varp = var;
+0452                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)));
+0453                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew))) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)-1));
+0454                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1)) = k;
+0455                                                         space_srv_k = [space_srv_k; space_srv_e];
+0456                                                         space_var_k = [space_var_k; varp];
+0457                                                         outrate(end+1,1) = ac{class,k}(i,inew) * p(k) * Distrib.InfRate;
+0458                                                     <span class="keyword">end</span>
+0459                                                 <span class="keyword">end</span>
+0460                                             <span class="keyword">case</span> ReplacementPolicy.ID_RAND
+0461                                                 <span class="keyword">if</span> isSimulation
+0462                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)); <span class="comment">% can choose i</span>
+0463                                                     varp = var;
+0464                                                     r = randi(m(inew),1,1);
+0465                                                     varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,r));
+0466                                                     varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,r)) = k;
+0467                                                     outprob = outprob * ac{class,k}(i,inew);
+0468                                                     space_srv_k = [space_srv_k; space_srv_e];
+0469                                                     space_var_k = [space_var_k; varp];
+0470                                                     outrate(end+1,1) = Distrib.InfRate;
+0471                                                 <span class="keyword">else</span>
+0472                                                     <span class="keyword">for</span> inew = i:h
+0473                                                         <span class="keyword">for</span> r=1:m(inew) <span class="comment">% random position in new list</span>
+0474                                                             varp = var;
+0475                                                             varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,r));
+0476                                                             varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,r)) = k;
+0477                                                             space_srv_k = [space_srv_k; space_srv_e];
+0478                                                             space_var_k = [space_var_k; varp];
+0479                                                             outrate(end+1,1) = ac{class,k}(i,inew) * p(k)/m(inew) * Distrib.InfRate;
+0480                                                         <span class="keyword">end</span>
+0481                                                     <span class="keyword">end</span>
+0482                                                 <span class="keyword">end</span>
+0483                                             <span class="keyword">case</span> {ReplacementPolicy.ID_LRU, ReplacementPolicy.ID_SFIFO}
+0484                                                 <span class="keyword">if</span> isSimulation
+0485                                                     varp = var;
+0486                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)); <span class="comment">% can choose i</span>
+0487                                                     varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j-1));
+0488                                                     varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,1)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)));
+0489                                                     varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew))) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)-1));
+0490                                                     varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1)) = k;
+0491                                                     space_srv_k = [space_srv_k; space_srv_e];
+0492                                                     space_var_k = [space_var_k; varp];
+0493                                                     outrate(end+1,1) = Distrib.InfRate;
+0494                                                 <span class="keyword">else</span>
+0495                                                     <span class="keyword">for</span> inew = i:h
+0496                                                         varp = var;
+0497                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,j-1));
+0498                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(i,1)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)));
+0499                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew))) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,m(inew)-1));
+0500                                                         varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(inew,1)) = k;
+0501                                                         space_srv_k = [space_srv_k; space_srv_e];
+0502                                                         space_var_k = [space_var_k; varp];
+0503                                                         outrate(end+1,1) = ac{class,k}(i,inew) * p(k) * Distrib.InfRate;
+0504                                                     <span class="keyword">end</span>
+0505                                                 <span class="keyword">end</span>
+0506                                         <span class="keyword">end</span>
+0507                                     <span class="keyword">else</span> <span class="comment">% CACHE HIT in list h</span>
+0508                                         space_srv_e(hitclass(class)) = space_srv_e(hitclass(class)) + 1;
+0509                                         i=h;
+0510                                         j = posk - sum(m(1:i-1));
+0511                                         <span class="keyword">switch</span> rpolicy_id
+0512                                             <span class="keyword">case</span> ReplacementPolicy.ID_RAND
+0513                                                 space_srv_k = [space_srv_k; space_srv_e];
+0514                                                 space_var_k = [space_var_k; (var)];
+0515                                                 <span class="keyword">if</span> isSimulation
+0516                                                     outrate(end+1,1) = Distrib.InfRate;
+0517                                                 <span class="keyword">else</span>
+0518                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
+0519                                                 <span class="keyword">end</span>
+0520                                             <span class="keyword">case</span> {ReplacementPolicy.ID_FIFO, ReplacementPolicy.ID_SFIFO}
+0521                                                 space_srv_k = [space_srv_k; space_srv_e];
+0522                                                 space_var_k = [space_var_k; var];
+0523                                                 <span class="keyword">if</span> isSimulation
+0524                                                     outrate(end+1,1) = Distrib.InfRate;
+0525                                                 <span class="keyword">else</span>
+0526                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
+0527                                                 <span class="keyword">end</span>
+0528                                             <span class="keyword">case</span> ReplacementPolicy.ID_LRU
+0529                                                 varp = var;
+0530                                                 varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(h,2):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(h,j)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(h,1):<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(h,j-1));
+0531                                                 varp(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(h,1)) = var(<a href="#_sub1" class="code" title="subfunction pos = cpos(i,j)">cpos</a>(h,j));
+0532                                                 space_srv_k = [space_srv_k; space_srv_e];
+0533                                                 space_var_k = [space_var_k; varp];
+0534                                                 <span class="keyword">if</span> isSimulation
+0535                                                     outrate(end+1,1) = Distrib.InfRate;
+0536                                                 <span class="keyword">else</span>
+0537                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
+0538                                                 <span class="keyword">end</span>
+0539                                         <span class="keyword">end</span>
+0540                                     <span class="keyword">end</span>
+0541                                 <span class="keyword">end</span>
+0542                             <span class="keyword">end</span>
+0543                             <span class="comment">% if state is unchanged, still add with rate 0</span>
+0544                             outspace = [space_srv_k, space_var_k];
+0545                         <span class="keyword">end</span>
+0546                     <span class="keyword">end</span>
+0547             <span class="keyword">end</span>
+0548     <span class="keyword">end</span> <span class="comment">% switch nodeType</span>
+0549 <span class="keyword">end</span>
+0550     <a name="_sub1" href="#_subfunctions" class="code">function pos = cpos(i,j)</a>
+0551         pos = sum(m(1:i-1)) + j;
+0552     <span class="keyword">end</span>
+0553 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

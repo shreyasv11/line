@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PointProcess</title>
+  <meta name="keywords" content="PointProcess">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">processes</a> &gt; PointProcess.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\processes&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>PointProcess
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PointProcess.html" class="code" title="">PointProcess</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MarkovModulated.html" class="code" title="">MarkovModulated</a>	</li><li><a href="PointProcess.html" class="code" title="">PointProcess</a>	</li><li><a href="RenewalProcess.html" class="code" title="">RenewalProcess</a>	</li><li><a href="TimeSeries.html" class="code" title="">TimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function X = sample(self);</a></li><li><a href="#_sub2" class="code">function ex = getMean(self);</a></li><li><a href="#_sub3" class="code">function SCV = getSCV(self);</a></li><li><a href="#_sub4" class="code">function ID = getID(self);</a></li><li><a href="#_sub5" class="code">function lambda = getRate(self);</a></li><li><a href="#_sub6" class="code">function vart = getVarT(self,t);</a></li><li><a href="#_sub7" class="code">function self = PointProcess(name, numParam)</a></li><li><a href="#_sub8" class="code">function nParam = getNumParams(self)</a></li><li><a href="#_sub9" class="code">function setParam(self, id, name, value,typeClass)</a></li><li><a href="#_sub10" class="code">function bool = isDisabled(self)</a></li><li><a href="#_sub11" class="code">function bool = isImmediate(self)</a></li><li><a href="#_sub12" class="code">function param = getParam(self,id)</a></li><li><a href="#_sub13" class="code">function bool = isPhaseType(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="PointProcess.html" class="code" title="">PointProcess</a> &lt; Copyable
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         name
+0007         params
+0008         javaClass
+0009         javaParClass
+0010     <span class="keyword">end</span>
+0011     
+0012     methods <span class="comment">%(Abstract) % implemented with errors for Octave compatibility</span>
+0013         <a name="_sub0" href="#_subfunctions" class="code">function X = sample(self); </a><span class="comment">% inter-arrival time</span>
+0014             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0015         <span class="keyword">end</span>
+0016         <a name="_sub1" href="#_subfunctions" class="code">function ex = getMean(self); </a><span class="comment">% inter-arrival time</span>
+0017             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0018         <span class="keyword">end</span>
+0019         <a name="_sub2" href="#_subfunctions" class="code">function SCV = getSCV(self); </a><span class="comment">% inter-arrival time</span>
+0020             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0021         <span class="keyword">end</span>
+0022         <a name="_sub3" href="#_subfunctions" class="code">function ID = getID(self); </a><span class="comment">% asymptotic index of dispersion</span>
+0023             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0024         <span class="keyword">end</span>
+0025         <a name="_sub4" href="#_subfunctions" class="code">function lambda = getRate(self);</a>
+0026             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0027         <span class="keyword">end</span>
+0028         <a name="_sub5" href="#_subfunctions" class="code">function vart = getVarT(self,t);</a>
+0029             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0030         <span class="keyword">end</span>
+0031     <span class="keyword">end</span>
+0032     
+0033     methods (Hidden)
+0034         <span class="comment">%Constructor</span>
+0035         <a name="_sub6" href="#_subfunctions" class="code">function self = PointProcess(name, numParam)</a>
+0036             self.name = name;
+0037             self.params = cell(1,numParam);
+0038             <span class="keyword">for</span> i=1:numParam
+0039                 self.params{i}=struct(<span class="string">'paramName'</span>,<span class="string">''</span>,<span class="string">'paramValue'</span>,-1,<span class="string">'paramClass'</span>,<span class="string">''</span>);
+0040             <span class="keyword">end</span>
+0041         <span class="keyword">end</span>
+0042         
+0043         <a name="_sub7" href="#_subfunctions" class="code">function nParam = getNumParams(self)</a>
+0044             nParam = length(self.params);
+0045         <span class="keyword">end</span>
+0046         
+0047         <a name="_sub8" href="#_subfunctions" class="code">function setParam(self, id, name, value,typeClass)</a>
+0048             self.params{id}.paramName=name;
+0049             self.params{id}.paramValue=value;
+0050             self.params{id}.paramClass=typeClass;
+0051         <span class="keyword">end</span>
+0052         
+0053         <a name="_sub9" href="#_subfunctions" class="code">function bool = isDisabled(self)</a>
+0054             bool = any(cellfun(@(c) ifthenelse(isstruct(c),false,isnan(c.paramValue)), self.params));
+0055         <span class="keyword">end</span>
+0056         
+0057         <a name="_sub10" href="#_subfunctions" class="code">function bool = isImmediate(self)</a>
+0058             bool = self.getMean() == 0;
+0059         <span class="keyword">end</span>
+0060         
+0061         <a name="_sub11" href="#_subfunctions" class="code">function param = getParam(self,id)</a>
+0062             param = self.params{id};
+0063         <span class="keyword">end</span>
+0064         
+0065         <a name="_sub12" href="#_subfunctions" class="code">function bool = isPhaseType(self)</a>
+0066             bool = isa(self,<span class="string">'MarkovModulated'</span>);
+0067         <span class="keyword">end</span>
+0068     <span class="keyword">end</span>
+0069     
+0070 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

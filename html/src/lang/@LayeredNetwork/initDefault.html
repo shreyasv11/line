@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of initDefault</title>
+  <meta name="keywords" content="initDefault">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@LayeredNetwork</a> &gt; initDefault.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@LayeredNetwork&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>initDefault
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function self = initDefault(self) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function self = initDefault(self)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 self.lqnGraph.Edges.Weight=log(self.lqnGraph.Edges.Weight); <span class="comment">% use log-weights</span>
+0005 V=self.lqnGraph.distances; V=exp(V); V(isinf(V))=0; <span class="comment">% mean number of calls to the node from ref task</span>
+0006 D=self.lqnGraph.Nodes.D;
+0007 D(~isfinite(D))=0;
+0008 D(isnan(D))=0;
+0009 respTime = V*D; <span class="comment">% this is for entries activities with calls</span>
+0010 self.param.Nodes.RespT = respTime; <span class="comment">% response time for one visit</span>
+0011 self.param.Nodes.Util = (self.lqnGraph.Nodes.D)./respTime;
+0012 self.param.Nodes.Tput = 1./respTime;
+0013 QLen = self.param.Nodes.Tput .* self.param.Nodes.RespT;
+0014 self.param.Nodes.Util(findstring(self.lqnGraph.Nodes.Type,<span class="string">'E'</span>)) = QLen(findstring(self.lqnGraph.Nodes.Type,<span class="string">'E'</span>));
+0015 self.lqnGraph.Edges.Weight=exp(self.lqnGraph.Edges.Weight); <span class="comment">% restore initial weights</span>
+0016 self.param.Edges.RespT(:)=0; <span class="comment">% restore initial weights</span>
+0017 <span class="keyword">for</span> e=find(self.lqnGraph.Edges.Type==1)' <span class="comment">% initialize resp time of sync calls to demand values</span>
+0018     self.param.Edges.RespT(e) = self.param.Nodes.RespT(self.getNodeIndex(self.lqnGraph.Edges.EndNodes{e,2}));
+0019     self.param.Edges.Tput(e) = self.param.Nodes.Tput(self.getNodeIndex(self.lqnGraph.Edges.EndNodes{e,2}));
+0020 <span class="keyword">end</span>
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

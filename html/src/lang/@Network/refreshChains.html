@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of refreshChains</title>
+  <meta name="keywords" content="refreshChains">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@Network</a> &gt; refreshChains.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@Network&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>refreshChains
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [chains, visits, rt] = refreshChains(self, rates, wantVisits) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Network.html" class="code" title="">Network</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [chains, visits, rt] = refreshChains(self, rates, wantVisits)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">if</span> ~exist(<span class="string">'wantVisits'</span>,<span class="string">'var'</span>)
+0006     wantVisits = true;
+0007 <span class="keyword">end</span>
+0008 
+0009 <span class="keyword">if</span> nargin == 1
+0010     <span class="keyword">if</span> isempty(self.qn)
+0011         error(<span class="string">'refreshRoutingMatrix cannot retrieve station rates, please pass them as an input parameters.'</span>);
+0012     <span class="keyword">else</span>
+0013         rates = self.qn.rates;
+0014     <span class="keyword">end</span>
+0015 <span class="keyword">end</span>
+0016 
+0017 I = self.getNumberOfNodes();
+0018 M = self.getNumberOfStations();
+0019 K = self.getNumberOfClasses();
+0020 refstat = self.getReferenceStations();
+0021 [rt,~,csmask, rtnodes] = self.refreshRoutingMatrix(rates);
+0022 <span class="comment">% getChains</span>
+0023 [C,inChain] = weaklyconncomp(csmask+csmask');
+0024 <span class="comment">%[C,inChain] = weaklyconncomp(rt+rt')</span>
+0025 
+0026 chainCandidates = cell(1,C);
+0027 <span class="keyword">for</span> c=1:C
+0028     chainCandidates{c} = find(inChain==c);
+0029 <span class="keyword">end</span>
+0030 
+0031 chains = [];
+0032 <span class="keyword">for</span> t=1:length(chainCandidates)
+0033 <span class="comment">%    if length(chainCandidates{t})&gt;1</span>
+0034 <span class="comment">%        chains(end+1,unique(mod(chainCandidates{t}-1,K)+1)) = true;</span>
+0035         chains(end+1,chainCandidates{t}) = true;
+0036 <span class="comment">%    end</span>
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">try</span>
+0040     chains = sortrows(chains,<span class="string">'descend'</span>);
+0041 <span class="keyword">catch</span>
+0042     chains = sortrows(chains);
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">for</span> c=1:size(chains,1)
+0046     inchain = find(chains(c,:));
+0047     <span class="keyword">if</span> sum(refstat(inchain) == refstat(inchain(1))) ~= length(inchain)
+0048         refstat(inchain) = refstat(inchain(1));
+0049         <span class="comment">%        error(sprintf('Classes in chain %d have different reference stations. Chain %d classes: %s', c, c, int2str(inchain)));</span>
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 visits = cell(size(chains,1),1); <span class="comment">% visits{c}(i,j) is the number of visits that a chain-c job pays at node i in class j</span>
+0054 <span class="keyword">if</span> wantVisits
+0055     <span class="keyword">for</span> c=1:size(chains,1)
+0056         inchain = find(chains(c,:));
+0057         
+0058         <span class="comment">%% stations</span>
+0059         cols = [];
+0060         <span class="keyword">for</span> i=1:M
+0061             <span class="keyword">for</span> k=inchain(:)'
+0062                 cols(end+1) = (i-1)*K+k;
+0063             <span class="keyword">end</span>
+0064         <span class="keyword">end</span>
+0065         Pchain = rt(cols,cols); <span class="comment">% routing probability of the chain</span>
+0066         visited = sum(Pchain,2) &gt; 0;        
+0067         <span class="comment">%                Pchain(visited,visited)</span>
+0068         <span class="comment">%                if ~dtmc_isfeasible(Pchain(visited,visited))</span>
+0069         <span class="comment">%                    error(sprintf('The routing matrix in chain %d is not stochastic. Chain %d classes: %s',c, c, int2str(inchain)));</span>
+0070         <span class="comment">%                end</span>
+0071         alpha_visited = dtmc_solve(Pchain(visited,visited));
+0072         alpha = zeros(1,M); alpha(visited) = alpha_visited;
+0073         <span class="keyword">if</span> max(alpha)&gt;=1-1e-10
+0074             error(<span class="string">'Line:ChainAbsorbingState'</span>,<span class="string">'One chain has an absorbing state.'</span>);
+0075         <span class="keyword">end</span>
+0076         visits{c} = zeros(M,K);
+0077         <span class="keyword">for</span> i=1:M
+0078             <span class="keyword">for</span> k=1:length(inchain)
+0079                 visits{c}(i,inchain(k)) = alpha((i-1)*length(inchain)+k);
+0080             <span class="keyword">end</span>
+0081         <span class="keyword">end</span>
+0082         visits{c} = visits{c} / sum(visits{c}(refstat(inchain(1)),inchain));
+0083         visits{c} = abs(visits{c});
+0084         
+0085         <span class="comment">%% nodes</span>
+0086         nodes_cols = [];
+0087         <span class="keyword">for</span> i=1:I
+0088             <span class="keyword">for</span> k=inchain(:)'
+0089                 nodes_cols(end+1) = (i-1)*K+k;
+0090             <span class="keyword">end</span>
+0091         <span class="keyword">end</span>
+0092         nodes_Pchain = rtnodes(nodes_cols,nodes_cols); <span class="comment">% routing probability of the chain</span>
+0093         nodes_visited = sum(nodes_Pchain,2) &gt; 0;
+0094         
+0095         <span class="comment">%                Pchain(visited,visited)</span>
+0096         <span class="comment">%                if ~dtmc_isfeasible(Pchain(visited,visited))</span>
+0097         <span class="comment">%                    error(sprintf('The routing matrix in chain %d is not stochastic. Chain %d classes: %s',c, c, int2str(inchain)));</span>
+0098         <span class="comment">%                end</span>
+0099         nodes_alpha_visited = dtmc_solve(nodes_Pchain(nodes_visited,nodes_visited));
+0100         nodes_alpha = zeros(1,I); nodes_alpha(nodes_visited) = nodes_alpha_visited;
+0101         <span class="keyword">if</span> max(nodes_alpha)&gt;=1-1e-10
+0102             error(<span class="string">'Line:ChainAbsorbingState'</span>,<span class="string">'One chain has an absorbing state.'</span>);
+0103         <span class="keyword">end</span>
+0104         nodevisits{c} = zeros(I,K);
+0105         <span class="keyword">for</span> i=1:I
+0106             <span class="keyword">for</span> k=1:length(inchain)
+0107                 nodevisits{c}(i,inchain(k)) = nodes_alpha((i-1)*length(inchain)+k);
+0108             <span class="keyword">end</span>
+0109         <span class="keyword">end</span>
+0110         nodevisits{c} = nodevisits{c} / sum(nodevisits{c}(refstat(inchain(1)),inchain));
+0111         nodevisits{c} = abs(nodevisits{c});
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 <span class="keyword">if</span> ~isempty(self.qn) <span class="comment">%&amp;&amp; isprop(self.qn,'chains')</span>
+0115     self.qn.setChains(chains, visits, rt ,nodevisits);
+0116 <span class="keyword">end</span>
+0117 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of toMarginal</title>
+  <meta name="keywords" content="toMarginal">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">+State</a> &gt; toMarginal.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\+State&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>toMarginal
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ni, nir, sir, kir] = toMarginal(qn, ind, state_i, K, Ks, space_buf, space_srv, space_var) %#ok<INUSD> </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ni, nir, sir, kir] = toMarginal(qn, ind, state_i, K, Ks, space_buf, space_srv, space_var) </a><span class="comment">%#ok&lt;INUSD&gt;</span>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">if</span> ~isa(qn,<span class="string">'NetworkStruct'</span>) <span class="comment">% the input can be a Network object too</span>
+0006     qn=qn.getStruct();
+0007 <span class="keyword">end</span>
+0008 
+0009 <span class="comment">% ind: node index</span>
+0010 <span class="keyword">if</span> ~qn.isstation(ind) &amp;&amp; qn.isstateful(ind) <span class="comment">% if stateful node</span>
+0011     ni = sum(state_i(1:(end-sum(qn.nvars(ind,:)))));
+0012     nir = state_i(1:(end-sum(qn.nvars(ind,:))));
+0013     sir = nir;
+0014     kir = sir;
+0015     <span class="keyword">return</span>
+0016 <span class="keyword">end</span>
+0017 
+0018 R = qn.nclasses;
+0019 ist = qn.nodeToStation(ind);
+0020 <span class="comment">%isf = qn.nodeToStateful(ind);</span>
+0021 
+0022 <span class="keyword">if</span> nargin &lt; 5
+0023     K = qn.phasessz(ist,:);
+0024     Ks = qn.phaseshift(ist,:);
+0025 <span class="keyword">end</span>
+0026 
+0027 isExponential = false;
+0028 <span class="keyword">if</span> max(K)==1
+0029     isExponential = true;
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="keyword">if</span> nargin &lt; 8
+0033     space_var = state_i(:,(end-sum(qn.nvars(ind,:))+1):end); <span class="comment">% server state</span>
+0034     space_srv = state_i(:,(end-sum(K)-sum(qn.nvars(ind,:))+1):(end-sum(qn.nvars(ind,:))));
+0035     space_buf = state_i(:,1:(end-sum(K)-sum(qn.nvars(ind,:))));
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="keyword">if</span> isExponential
+0039     sir = space_srv;
+0040     kir = space_srv;
+0041 <span class="keyword">else</span>
+0042     nir = zeros(size(state_i,1),R);
+0043     sir = zeros(size(state_i,1),R); <span class="comment">% class-r jobs in service</span>
+0044     kir = zeros(size(state_i,1),R,max(K)); <span class="comment">% class-r jobs in service in phase k</span>
+0045     <span class="keyword">for</span> r=1:R
+0046         <span class="keyword">for</span> k=1:K(r)
+0047             kir(:,r,k) = space_srv(:,Ks(r)+k);
+0048             sir(:,r) = sir(:,r) + kir(:,r,k);
+0049         <span class="keyword">end</span>
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 <span class="keyword">switch</span> qn.schedid(ist)
+0053     <span class="keyword">case</span> SchedStrategy.ID_INF
+0054         <span class="keyword">for</span> r=1:R
+0055             nir(:,r) = sir(:,r); <span class="comment">% class-r jobs in station</span>
+0056         <span class="keyword">end</span>
+0057     <span class="keyword">case</span> SchedStrategy.ID_PS
+0058         <span class="keyword">for</span> r=1:R
+0059             nir(:,r) = sir(:,r) ; <span class="comment">% class-r jobs in station</span>
+0060         <span class="keyword">end</span>
+0061     <span class="keyword">case</span> SchedStrategy.ID_EXT
+0062         <span class="keyword">for</span> r=1:R
+0063             nir(:,r) = Inf;
+0064         <span class="keyword">end</span>        
+0065     <span class="keyword">case</span> SchedStrategy.ID_FCFS
+0066         <span class="keyword">for</span> r=1:R
+0067             nir(:,r) = sir(:,r) + sum(space_buf==r,2); <span class="comment">% class-r jobs in station</span>
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">case</span> SchedStrategy.ID_DPS
+0070         <span class="keyword">for</span> r=1:R
+0071             nir(:,r) = sir(:,r) ; <span class="comment">% class-r jobs in station</span>
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">case</span> SchedStrategy.ID_GPS
+0074         <span class="keyword">for</span> r=1:R
+0075             nir(:,r) = sir(:,r) ; <span class="comment">% class-r jobs in station</span>
+0076         <span class="keyword">end</span>
+0077     <span class="keyword">case</span> SchedStrategy.ID_HOL
+0078         <span class="keyword">for</span> r=1:R
+0079             nir(:,r) = sir(:,r) + sum(space_buf==r,2); <span class="comment">% class-r jobs in station</span>
+0080         <span class="keyword">end</span>
+0081     <span class="keyword">case</span> SchedStrategy.ID_LCFS
+0082         <span class="keyword">for</span> r=1:R
+0083             nir(:,r) = sir(:,r) + sum(space_buf==r,2); <span class="comment">% class-r jobs in station</span>
+0084         <span class="keyword">end</span>
+0085     <span class="keyword">case</span> SchedStrategy.ID_RAND
+0086         <span class="keyword">for</span> r=1:R
+0087             nir(:,r) = sir(:,r) + space_buf(:,r); <span class="comment">% class-r jobs in station</span>
+0088         <span class="keyword">end</span>
+0089     <span class="keyword">case</span> SchedStrategy.ID_SEPT
+0090         <span class="keyword">for</span> r=1:R
+0091             nir(:,r) = sir(:,r) + space_buf(:,r); <span class="comment">% class-r jobs in station</span>
+0092         <span class="keyword">end</span>
+0093     <span class="keyword">case</span> SchedStrategy.ID_LEPT
+0094         <span class="keyword">for</span> r=1:R
+0095             nir(:,r) = sir(:,r) + space_buf(:,r); <span class="comment">% class-r jobs in station</span>
+0096         <span class="keyword">end</span>
+0097     <span class="keyword">otherwise</span> <span class="comment">% possibly other stateful nodes</span>
+0098         <span class="keyword">for</span> r=1:R
+0099             nir(:,r) = sir(:,r) ; <span class="comment">% class-r jobs in station</span>
+0100         <span class="keyword">end</span>
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="keyword">for</span> r=1:R
+0104     <span class="keyword">if</span> isnan(qn.rates(ist,r)) <span class="comment">% if disabled</span>
+0105         nir(:,r) = 0;
+0106         <span class="keyword">for</span> k=1:K(r)
+0107             kir(:,r,k) = 0;
+0108         <span class="keyword">end</span>
+0109         sir(:,r)=0;
+0110     <span class="keyword">end</span>
+0111 <span class="keyword">end</span>
+0112 
+0113 ni = sum(nir,2); <span class="comment">% total jobs in station</span>
+0114 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

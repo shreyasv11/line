@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_ctmc_marg</title>
+  <meta name="keywords" content="solver_ctmc_marg">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">CTMC</a> &gt; solver_ctmc_marg.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\CTMC&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_ctmc_marg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Pnir,runtime,fname] = solver_ctmc_marg(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_ctmc.html" class="code" title="function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)">solver_ctmc</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverCTMC.html" class="code" title="">SolverCTMC</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Pnir,runtime,fname] = solver_ctmc_marg(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 
+0006 M = qn.nstations;    <span class="comment">%number of stations</span>
+0007 K = qn.nclasses;    <span class="comment">%number of classes</span>
+0008 state = qn.state;
+0009 fname = <span class="string">''</span>;
+0010 rt = qn.rt;
+0011 mu = qn.mu;
+0012 phi = qn.phi;
+0013 S = qn.nservers;
+0014 NK = qn.njobs';  <span class="comment">% initial population per class</span>
+0015 sched = qn.sched;
+0016 
+0017 Tstart = tic;
+0018 
+0019 PH=cell(qn.nstations,qn.nclasses);
+0020 <span class="keyword">for</span> ist=1:qn.nstations
+0021     <span class="keyword">for</span> k=1:K
+0022         <span class="keyword">if</span> isempty(mu{ist,k})
+0023             PH{ist,k} = [];
+0024         <span class="keyword">elseif</span> length(mu{ist,k})==1
+0025             PH{ist,k} = map_exponential(1/mu{ist,k});
+0026         <span class="keyword">else</span>
+0027             D0 = diag(-mu{ist,k})+diag(mu{ist,k}(1:end-1).*(1-phi{ist,k}(1:end-1)),1);
+0028             D1 = zeros(size(D0));
+0029             D1(:,1)=(phi{ist,k}.*mu{ist,k});
+0030             PH{ist,k} = map_normalize({D0,D1});
+0031         <span class="keyword">end</span>
+0032     <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034 
+0035 myP = cell(K,K);
+0036 <span class="keyword">for</span> k = 1:K
+0037     <span class="keyword">for</span> c = 1:K
+0038         myP{k,c} = zeros(qn.nstations);
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="keyword">for</span> ist=1:qn.nstations
+0043     <span class="keyword">for</span> jst=1:qn.nstations
+0044         <span class="keyword">for</span> k = 1:K
+0045             <span class="keyword">for</span> c = 1:K
+0046                 <span class="comment">% routing table for each class</span>
+0047                 myP{k,c}(ist,jst) = rt((ist-1)*K+k,(jst-1)*K+c);
+0048             <span class="keyword">end</span>
+0049         <span class="keyword">end</span>
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 [Q,SS,SSq,~,~,qn] = <a href="solver_ctmc.html" class="code" title="function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)">solver_ctmc</a>(qn, options);
+0054 <span class="keyword">if</span> options.keep
+0055     fname = tempname;
+0056     save([fname,<span class="string">'.mat'</span>],<span class="string">'Q'</span>,<span class="string">'SSq'</span>)
+0057     fprintf(1,<span class="string">'CTMC generator and state space saved in: '</span>);
+0058     disp([fname, <span class="string">'.mat'</span>])
+0059 <span class="keyword">end</span>
+0060 pi = ctmc_solve(Q);
+0061 pi(pi&lt;1e-14)=0;
+0062 
+0063 statesz = [];
+0064 <span class="keyword">for</span> ind=1:qn.nnodes
+0065     <span class="keyword">if</span> qn.isstateful(ind)
+0066         isf = qn.nodeToStateful(ind);
+0067         statesz(isf) = size(qn.space{isf},2);
+0068     <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070 cstatesz = [0,cumsum(statesz)];
+0071 <span class="keyword">for</span> ind=1:qn.nnodes
+0072     <span class="keyword">if</span> qn.isstateful(ind)
+0073         isf = qn.nodeToStateful(ind);
+0074         ist = qn.nodeToStation(ind);
+0075         state_i = [zeros(1,size(qn.space{isf},2)-length(state{isf})),state{isf}];
+0076         Pnir(ist) = sum(pi(findrows(SS(:,(cstatesz(isf)+1):(cstatesz(isf)+length(state_i))), state_i)));
+0077     <span class="keyword">end</span>
+0078 <span class="keyword">end</span>
+0079 
+0080 runtime = toc(Tstart);
+0081 
+0082 <span class="keyword">if</span> options.verbose &gt; 0
+0083     fprintf(1,<span class="string">'CTMC analysis completed in %f sec\n'</span>,runtime);
+0084 <span class="keyword">end</span>
+0085 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

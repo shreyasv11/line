@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveXMLHeader</title>
+  <meta name="keywords" content="saveXMLHeader">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../../index.html">solvers</a> &gt; <a href="../index.html">JMT</a> &gt; <a href="index.html">@SolverJMT</a> &gt; saveXMLHeader.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\JMT\@SolverJMT&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>saveXMLHeader
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [simElem,simDoc] = saveXMLHeader(self, logPath) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="SolverJMT.html" class="code" title="">SolverJMT</a>	</li><li><a href="writeJSIM.html" class="code" title="function fname = writeJSIM(self)">writeJSIM</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [simElem,simDoc] = saveXMLHeader(self, logPath)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 <span class="keyword">if</span> isoctave
+0005     <span class="keyword">try</span>
+0006     simDoc = javaObject(<span class="string">'org.apache.xerces.dom.DocumentImpl'</span>);
+0007     simElem = simDoc.createElement(<span class="string">'sim'</span>);
+0008     simDoc.appendChild(simElem);
+0009     <span class="keyword">catch</span>
+0010 javaaddpath(which(<span class="string">'xercesImpl-2.11.0.jar'</span>));
+0011 javaaddpath(which(<span class="string">'xml-apis-2.11.0.jar'</span>));
+0012 pkg load io;
+0013     simDoc = javaObject(<span class="string">'org.apache.xerces.dom.DocumentImpl'</span>);
+0014     simElem = simDoc.createElement(<span class="string">'sim'</span>);
+0015     simDoc.appendChild(simElem);
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">else</span>
+0018     simDoc = com.mathworks.xml.XMLUtils.createDocument(<span class="string">'sim'</span>);
+0019     simElem = simDoc.getDocumentElement;
+0020 <span class="keyword">end</span>
+0021 simElem.setAttribute(<span class="string">'xmlns:xsi'</span>, self.xmlnsXsi);
+0022 simElem.setAttribute(<span class="string">'disableStatisticStop'</span>, <span class="string">'true'</span>);
+0023 simElem.setAttribute(<span class="string">'logDecimalSeparator'</span>, <span class="string">'.'</span>);
+0024 simElem.setAttribute(<span class="string">'logDelimiter'</span>, <span class="string">';'</span>);
+0025 simElem.setAttribute(<span class="string">'logPath'</span>, logPath);
+0026 simElem.setAttribute(<span class="string">'logReplaceMode'</span>, <span class="string">'0'</span>);
+0027 simElem.setAttribute(<span class="string">'maxSamples'</span>, int2str(self.maxSamples));
+0028 fname = [self.getFileName(), [<span class="string">'.'</span>, <span class="string">'jsimg'</span>]];
+0029 simElem.setAttribute(<span class="string">'name'</span>, fname);
+0030 simElem.setAttribute(<span class="string">'polling'</span>, <span class="string">'1.0'</span>);
+0031 simElem.setAttribute(<span class="string">'seed'</span>, int2str(self.options.seed));
+0032 simElem.setAttribute(<span class="string">'xsi:noNamespaceSchemaLocation'</span>, <span class="string">'SIMmodeldefinition.xsd'</span>);
+0033 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

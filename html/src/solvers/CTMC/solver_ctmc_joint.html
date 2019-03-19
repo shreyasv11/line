@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_ctmc_joint</title>
+  <meta name="keywords" content="solver_ctmc_joint">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">CTMC</a> &gt; solver_ctmc_joint.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\CTMC&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_ctmc_joint
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Pnir,runtime,fname] = solver_ctmc_joint(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_ctmc.html" class="code" title="function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)">solver_ctmc</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverCTMC.html" class="code" title="">SolverCTMC</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Pnir,runtime,fname] = solver_ctmc_joint(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 K = qn.nclasses;    <span class="comment">%number of classes</span>
+0006 fname = <span class="string">''</span>;
+0007 rt = qn.rt;
+0008 mu = qn.mu;
+0009 phi = qn.phi;
+0010 
+0011 Tstart = tic;
+0012 
+0013 PH=cell(qn.nstations,K);
+0014 <span class="keyword">for</span> i=1:qn.nstations
+0015     <span class="keyword">for</span> k=1:K
+0016         <span class="keyword">if</span> isempty(mu{i,k})
+0017             PH{i,k} = [];
+0018         <span class="keyword">elseif</span> length(mu{i,k})==1
+0019             PH{i,k} = map_exponential(1/mu{i,k});
+0020         <span class="keyword">else</span>
+0021             D0 = diag(-mu{i,k})+diag(mu{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
+0022             D1 = zeros(size(D0));
+0023             D1(:,1)=(phi{i,k}.*mu{i,k});
+0024             PH{i,k} = map_normalize({D0,D1});
+0025         <span class="keyword">end</span>
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 myP = cell(K,K);
+0030 <span class="keyword">for</span> k = 1:K
+0031     <span class="keyword">for</span> c = 1:K
+0032         myP{k,c} = zeros(qn.nstations);
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="keyword">for</span> i=1:qn.nstations
+0037     <span class="keyword">for</span> j=1:qn.nstations
+0038         <span class="keyword">for</span> k = 1:K
+0039             <span class="keyword">for</span> c = 1:K
+0040                 <span class="comment">% routing table for each class</span>
+0041                 myP{k,c}(i,j) = rt((i-1)*K+k,(j-1)*K+c);
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 
+0047 [Q,SS,~,~,~,qn] = <a href="solver_ctmc.html" class="code" title="function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)">solver_ctmc</a>(qn, options);
+0048 <span class="keyword">if</span> options.keep
+0049     fname = tempname;
+0050     save([fname,<span class="string">'.mat'</span>],<span class="string">'Q'</span>,<span class="string">'SSq'</span>)
+0051     fprintf(1,<span class="string">'CTMC generator and state space saved in: '</span>);
+0052     disp([fname, <span class="string">'.mat'</span>])
+0053 <span class="keyword">end</span>
+0054 pi = ctmc_solve(Q);
+0055 pi(pi&lt;1e-14)=0;
+0056 
+0057 statevec = [];
+0058 state = qn.state;
+0059 <span class="keyword">for</span> i=1:qn.nstations
+0060     <span class="keyword">if</span> qn.isstateful(i)
+0061         isf = qn.nodeToStateful(i);
+0062         state_i = [zeros(1,size(qn.space{isf},2)-length(state{isf})),state{isf}];
+0063         statevec = [statevec, state_i];
+0064     <span class="keyword">end</span>
+0065 <span class="keyword">end</span>
+0066 Pnir = pi(findrows(SS, statevec));
+0067 
+0068 runtime = toc(Tstart);
+0069 
+0070 <span class="keyword">if</span> options.verbose &gt; 0
+0071     fprintf(1,<span class="string">'CTMC analysis completed in %f sec\n'</span>,runtime);
+0072 <span class="keyword">end</span>
+0073 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

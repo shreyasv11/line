@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Entry</title>
+  <meta name="keywords" content="Entry">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; Entry.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>Entry
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Entry.html" class="code" title="">Entry</a>	</li><li><a href="LayeredNetworkElement.html" class="code" title="">LayeredNetworkElement</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Entry.html" class="code" title="">Entry</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = Entry(model, name, type)</a></li><li><a href="#_sub2" class="code">function obj = on(obj, parent)</a></li><li><a href="#_sub3" class="code">function obj = addActivity(obj, newActivity)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Entry.html" class="code" title="">Entry</a> &lt; <a href="LayeredNetworkElement.html" class="code" title="">LayeredNetworkElement</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         type;
+0007         parent;
+0008         activities = [];
+0009         replyActivity = {};
+0010     <span class="keyword">end</span>
+0011     
+0012     methods
+0013         <span class="comment">%public methods, including constructor</span>
+0014         
+0015         <span class="comment">%constructor</span>
+0016         <a name="_sub0" href="#_subfunctions" class="code">function obj = Entry(model, name, type)</a>
+0017             <span class="keyword">if</span> ~exist(<span class="string">'name'</span>,<span class="string">'var'</span>)
+0018                 error(<span class="string">'Constructor requires to specify at least a name.'</span>);
+0019             <span class="keyword">end</span>
+0020             obj@<a href="LayeredNetworkElement.html" class="code" title="">LayeredNetworkElement</a>(name);
+0021             <span class="keyword">if</span> ~exist(<span class="string">'type'</span>,<span class="string">'var'</span>)
+0022                 type = <span class="string">'Graph'</span>;
+0023             <span class="keyword">end</span>
+0024             obj.type = type;
+0025             model.objects.entries{end+1} = obj;
+0026         <span class="keyword">end</span>
+0027         
+0028         <a name="_sub1" href="#_subfunctions" class="code">function obj = on(obj, parent)</a>
+0029             parent.addEntry(obj);
+0030             obj.parent = parent;
+0031         <span class="keyword">end</span>
+0032         
+0033         <span class="comment">%addActivity</span>
+0034         <a name="_sub2" href="#_subfunctions" class="code">function obj = addActivity(obj, newActivity)</a>
+0035             <span class="keyword">if</span>(nargin &gt; 1)
+0036                 newActivity.setParent(obj.name);
+0037                 obj.activities = [obj.activities; newActivity];
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">end</span>
+0040         
+0041     <span class="keyword">end</span>
+0042     
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_lib</title>
+  <meta name="keywords" content="solver_lib">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">NetworkSolverLibrary</a> &gt; solver_lib.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\NetworkSolverLibrary&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_lib
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Q,U,R,T,C,X] = solver_lib(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_lib_analysis.html" class="code" title="function [QN,UN,RN,TN,CN,XN,runtime] = solver_lib_analysis(qn, options)">solver_lib_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Q,U,R,T,C,X] = solver_lib(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="comment">%% generate local state spaces</span>
+0006 M = qn.nstations;
+0007 K = qn.nclasses;
+0008 N = qn.njobs';
+0009 rt = qn.rt;
+0010 V = qn.visits;
+0011 
+0012 Q = zeros(M,K);
+0013 U = zeros(M,K);
+0014 R = zeros(M,K);
+0015 T = zeros(M,K);
+0016 C = zeros(1,K);
+0017 X = zeros(1,K);
+0018 
+0019 <span class="keyword">if</span> M==2 &amp;&amp; K==1 &amp;&amp; qn.nclosedjobs == 0
+0020     source_ist = qn.nodeToStation(qn.nodetype == NodeType.Source);
+0021     queue_ist = qn.nodeToStation(qn.nodetype == NodeType.Queue);
+0022     lambda = qn.rates(source_ist)*qn.visits{1}(queue_ist);
+0023     mu = qn.rates(queue_ist);  
+0024     ca = sqrt(qn.scv(source_ist));
+0025     cs = sqrt(qn.scv(queue_ist));      
+0026     <span class="keyword">switch</span> options.method
+0027         <span class="keyword">case</span> <span class="string">'mm1'</span>
+0028             W=qsys_mm1(lambda,mu);
+0029         <span class="keyword">case</span> <span class="string">'mg1'</span>  <span class="comment">% verified</span>
+0030             W=qsys_mg1(lambda,mu,cs);
+0031         <span class="keyword">case</span> {<span class="string">'gig1'</span>,<span class="string">'gig1.kingman'</span>}  <span class="comment">% verified</span>
+0032             W=qsys_gig1_ubnd_kingman(lambda,mu,ca,cs);
+0033 <span class="comment">%         case 'gig1.gelenbe'</span>
+0034 <span class="comment">%             W=qsys_gig1_approx_gelenbe(lambda,mu,ca,cs);</span>
+0035          <span class="keyword">case</span> <span class="string">'gig1.heyman'</span>
+0036              W=qsys_gig1_approx_heyman(lambda,mu,ca,cs);
+0037 <span class="comment">%        case 'gig1.kimura'</span>
+0038 <span class="comment">%            W=qsys_gig1_approx_kimura(sigma,mu,ca,cs);</span>
+0039          <span class="keyword">case</span> <span class="string">'gig1.allen'</span>
+0040              W=qsys_gig1_approx_allencunneen(lambda,mu,ca,cs);
+0041          <span class="keyword">case</span> <span class="string">'gig1.kobayashi'</span>
+0042              W=qsys_gig1_approx_kobayashi(lambda,mu,ca,cs);
+0043          <span class="keyword">case</span> <span class="string">'gig1.klb'</span>
+0044              W=qsys_gig1_approx_klb(lambda,mu,ca,cs);
+0045          <span class="keyword">case</span> <span class="string">'gig1.marchal'</span> <span class="comment">% verified</span>
+0046              W=qsys_gig1_approx_marchal(lambda,mu,ca,cs);
+0047 <span class="comment">%         case 'gig1.myskja'</span>
+0048 <span class="comment">%             % qa = third relative moment E[X^3]/6/E[X]^3, X=inter-arrival time r.v.</span>
+0049 <span class="comment">%             % q0 = lowest value of the relative third moment for a given mean and SCV</span>
+0050 <span class="comment">%             W=qsys_gig1_approx_myskja(lambda,mu,ca,cs,q0,qa);</span>
+0051 <span class="comment">%         case 'gig1.myskja.b'</span>
+0052 <span class="comment">%             % qa = third relative moment E[X^3]/6/E[X]^3, X=inter-arrival time r.v.</span>
+0053 <span class="comment">%             % q0 = lowest value of the relative third moment for a given mean and SCV</span>
+0054 <span class="comment">%             W=qsys_gig1_approx_myskja2(lambda,mu,ca,cs,q0,qa);</span>
+0055 <span class="comment">%         case 'gm1'</span>
+0056 <span class="comment">%             % sigma = Load at arrival instants (Laplace transform of the arrival process)</span>
+0057 <span class="comment">%             W=qsys_gm1(sigma,mu);</span>
+0058         <span class="keyword">case</span> <span class="string">'default'</span>
+0059             error(<span class="string">'Line:UnsupportedMethod'</span>,<span class="string">'This solver does not have a default solution method. Used the method option to choose a solution technique.'</span>);
+0060         <span class="keyword">otherwise</span>
+0061             error(<span class="string">'Line:UnsupportedMethod'</span>,<span class="string">'Unsupported method for a model with 1 station and 1 class.'</span>);
+0062     <span class="keyword">end</span>
+0063     R(queue_ist,1) = W *qn.visits{1}(queue_ist);
+0064     C(queue_ist,1) = R(1,1);
+0065     X(queue_ist,1) = lambda;
+0066     U(queue_ist,1) = lambda/mu;
+0067     T(queue_ist,1) = lambda;
+0068     Q(queue_ist,1) = X(queue_ist,1) * R(queue_ist,1);
+0069 <span class="keyword">end</span>
+0070 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of isValid</title>
+  <meta name="keywords" content="isValid">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">+State</a> &gt; isValid.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\+State&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>isValid
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function isValid = isValid(qn, n, s, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function isValid = isValid(qn, n, s, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="comment">% n(r): number of jobs at the station in class r</span>
+0006 <span class="comment">% s(r): jobs of class r that are running</span>
+0007 
+0008 <span class="keyword">if</span> nargin==3
+0009     options = Solver.defaultOptions;
+0010 <span class="keyword">end</span>
+0011 <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = true;
+0012 <span class="keyword">if</span> isa(qn,<span class="string">'Network'</span>)
+0013     qn=qn.getStruct();
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="keyword">if</span> isempty(n) &amp; ~isempty(s)
+0017     <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = false;
+0018     <span class="keyword">return</span>
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="keyword">if</span> iscell(n) <span class="comment">%then n is a cell array of states</span>
+0022     ncell = n;
+0023     n = [];
+0024     <span class="keyword">for</span> isf=1:length(ncell)
+0025         ist = qn.statefulToStation(isf);
+0026         ind = qn.statefulToNode(isf);
+0027         [~, n(ist,:), s(ist,:), ~] = State.toMarginal(qn, ind, ncell{isf}, options);
+0028     <span class="keyword">end</span>
+0029 <span class="keyword">end</span>
+0030 
+0031 R = qn.nclasses;
+0032 K = zeros(1,R);
+0033 <span class="keyword">for</span> ist=1:qn.nstations
+0034     <span class="keyword">for</span> r=1:R
+0035         K(r) = length(qn.mu{ist,r});
+0036         <span class="keyword">if</span> isnan(qn.mu{ist,r}) &amp; n(ist,r)&gt;0 <span class="comment">% if disabled</span>
+0037             <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = false;
+0038 <span class="comment">%            error('Chain %d is initialized with an incorrect number of jobs: %f instead of %d.', nc, statejobs_chain, njobs_chain);</span>
+0039             <span class="keyword">return</span>
+0040         <span class="keyword">end</span>
+0041     <span class="keyword">end</span>
+0042     <span class="keyword">if</span> any(n(ist,:)&gt;qn.classcap(ist,:))
+0043         <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = false;
+0044         <span class="keyword">return</span>
+0045     <span class="keyword">end</span>
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~isempty(s)
+0049     <span class="keyword">for</span> ist=1:qn.nstations
+0050         <span class="keyword">if</span> qn.nservers(ist)&gt;0
+0051             <span class="comment">% if more running jobs than servers</span>
+0052             <span class="keyword">if</span> sum(s(ist,:)) &gt; qn.nservers(ist)
+0053                 <span class="keyword">switch</span> qn.sched{ist} <span class="comment">% don't flag invalid if ps</span>
+0054                     <span class="keyword">case</span> {SchedStrategy.FCFS,SchedStrategy.RAND,SchedStrategy.LCFS,SchedStrategy.HOL}
+0055                         <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = false;
+0056                         <span class="keyword">return</span>
+0057                 <span class="keyword">end</span>
+0058             <span class="keyword">end</span>
+0059             <span class="comment">% if more running jobs than jobs at the node</span>
+0060             <span class="keyword">if</span> any(n&lt;s)
+0061                 <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = false;
+0062                 <span class="keyword">return</span>
+0063             <span class="keyword">end</span>
+0064             <span class="comment">% non-idling condition</span>
+0065             <span class="keyword">if</span> sum(s(ist,:)) ~= min(sum(n(ist,:)), qn.nservers(ist))
+0066                 <span class="comment">% commented because in ps queues s are in service as well</span>
+0067                 <span class="comment">% isValid = false;</span>
+0068                 <span class="comment">%return</span>
+0069             <span class="keyword">end</span>
+0070         <span class="keyword">end</span>
+0071     <span class="keyword">end</span>
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="keyword">for</span> nc=1:qn.nchains
+0075     njobs_chain = sum(qn.njobs(find(qn.chains(nc,:))));
+0076     <span class="keyword">if</span> ~isinf(njobs_chain)
+0077         statejobs_chain = sum(sum(n(:,find(qn.chains(nc,:))),2),1);
+0078         <span class="comment">%if ~options.force &amp;&amp; abs(1-njobs_chain/statejobs_chain) &gt; options.iter_tol</span>
+0079         <span class="keyword">if</span> abs(1-njobs_chain/statejobs_chain) &gt; 1e-4
+0080             <a href="isValid.html" class="code" title="function isValid = isValid(qn, n, s, options)">isValid</a> = false;
+0081             error(<span class="string">'Chain %d is initialized with an incorrect number of jobs: %f instead of %d.'</span>, nc, statejobs_chain, njobs_chain);
+0082             <span class="keyword">return</span>
+0083         <span class="keyword">end</span>
+0084         <span class="comment">%end</span>
+0085     <span class="keyword">end</span>
+0086 <span class="keyword">end</span>
+0087 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

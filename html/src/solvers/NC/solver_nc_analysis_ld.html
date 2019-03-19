@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_nc_analysis_ld</title>
+  <meta name="keywords" content="solver_nc_analysis_ld">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">NC</a> &gt; solver_nc_analysis_ld.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\NC&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_nc_analysis_ld
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Q,U,R,T,C,X,runtime] = solver_nc_analysis_ld(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Q,U,R,T,C,X,runtime] = solver_nc_analysis_ld(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 M = qn.nstations;    <span class="comment">%number of stations</span>
+0006 K = qn.nclasses;    <span class="comment">%number of classes</span>
+0007 mu_chain = qn.mu;
+0008 phi = qn.phi;
+0009 S = qn.nservers;
+0010 NK = qn.njobs';  <span class="comment">% initial population per class</span>
+0011 C = qn.nchains;
+0012 
+0013 PH=cell(M,K);
+0014 <span class="keyword">for</span> i=1:M
+0015     <span class="keyword">for</span> k=1:K
+0016         <span class="keyword">if</span> length(mu_chain{i,k})==1
+0017             PH{i,k} = map_exponential(1/mu_chain{i,k});
+0018         <span class="keyword">else</span>
+0019             D0 = diag(-mu_chain{i,k})+diag(mu_chain{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
+0020             D1 = zeros(size(D0));
+0021             D1(:,1)=(phi{i,k}.*mu_chain{i,k});
+0022             PH{i,k} = map_normalize({D0,D1});
+0023         <span class="keyword">end</span>
+0024     <span class="keyword">end</span>
+0025 <span class="keyword">end</span>
+0026 <span class="comment">%% initialization</span>
+0027 <span class="comment">% queue-dependent functions to capture multi-server and delay stations</span>
+0028 
+0029 <span class="comment">% determine service times</span>
+0030 ST = zeros(M,K);
+0031 <span class="keyword">for</span> k = 1:K
+0032     <span class="keyword">for</span> i=1:M
+0033         ST(i,k) = 1 ./ map_lambda(PH{i,k});
+0034     <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036 ST(isnan(ST))=0;
+0037 
+0038 alpha = zeros(qn.nstations,qn.nclasses);
+0039 Vchain = zeros(qn.nstations,qn.nchains);
+0040 <span class="keyword">for</span> c=1:qn.nchains
+0041     inchain = find(qn.chains(c,:));
+0042     <span class="keyword">for</span> i=1:qn.nstations
+0043         Vchain(i,c) = sum(qn.visits{c}(i,inchain)) / sum(qn.visits{c}(qn.refstat(inchain(1)),inchain));
+0044         <span class="keyword">for</span> k=inchain
+0045             alpha(i,k) = alpha(i,k) + qn.visits{c}(i,k) / sum(qn.visits{c}(i,inchain)); <span class="comment">% isn't alpha(i,j) always zero when entering here?</span>
+0046         <span class="keyword">end</span>
+0047     <span class="keyword">end</span>
+0048 <span class="keyword">end</span>
+0049 
+0050 Vchain(~isfinite(Vchain))=0;
+0051 alpha(~isfinite(alpha))=0;
+0052 
+0053 Lchain = zeros(M,C);
+0054 STchain = zeros(M,C);
+0055 
+0056 Nchain = zeros(1,C);
+0057 refstatchain = zeros(C,1);
+0058 <span class="keyword">for</span> c=1:qn.nchains
+0059     inchain = find(qn.chains(c,:));
+0060     isOpenChain = any(isinf(qn.njobs(inchain)));
+0061     <span class="keyword">for</span> i=1:qn.nstations
+0062         <span class="comment">% we assume that the visits in L(i,inchain) are equal to 1</span>
+0063         STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
+0064         <span class="keyword">if</span> isOpenChain &amp;&amp; i == qn.refstat(inchain(1)) <span class="comment">% if this is a source ST = 1 / arrival rates</span>
+0065             STchain(i,c) = 1 / sumfinite(qn.rates(i,inchain)); <span class="comment">% ignore degenerate classes with zero arrival rates</span>
+0066         <span class="keyword">else</span>
+0067             STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
+0068         <span class="keyword">end</span>
+0069         Lchain(i,c) = Vchain(i,c) * ST(i,inchain) * alpha(i,inchain)';
+0070     <span class="keyword">end</span>
+0071     Nchain(c) = sum(NK(inchain));
+0072     refstatchain(c) = qn.refstat(inchain(1));
+0073     <span class="keyword">if</span> any((qn.refstat(inchain(1))-refstatchain(c))~=0)
+0074         error(sprintf(<span class="string">'Classes in chain %d have different reference station.'</span>,c));
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">end</span>
+0077 STchain(~isfinite(STchain))=0;
+0078 Lchain(~isfinite(Lchain))=0;
+0079 Tstart = tic;
+0080 
+0081 [M,K]=size(STchain);
+0082 
+0083 Lchain = zeros(M,K);
+0084 mu_chain = ones(M,sum(Nchain));
+0085 <span class="keyword">for</span> i=1:M
+0086     Lchain(i,:) = STchain(i,:) .* Vchain(i,:);
+0087     <span class="keyword">if</span> isinf(S(i)) <span class="comment">% infinite server</span>
+0088         mu_chain(i,1:sum(Nchain)) = 1:sum(Nchain);
+0089     <span class="keyword">else</span>
+0090         mu_chain(i,1:sum(Nchain)) = min(1:sum(Nchain), S(i)*ones(1,sum(Nchain)));
+0091     <span class="keyword">end</span>
+0092 <span class="keyword">end</span>
+0093 
+0094 [Xchain,Qchain]=pfqn_mvald(L,N,Z,mu);
+0095 
+0096 <span class="comment">%     Rchain = Qchain ./ repmat(Xchain,M,1) ./ Vchain;</span>
+0097 <span class="comment">%     Rchain(infServers,:) = Lchain(infServers,:) ./ Vchain(infServers,:);</span>
+0098 <span class="comment">%     Tchain = repmat(Xchain,M,1) .* Vchain;</span>
+0099 <span class="comment">%     Uchain = Tchain .* Lchain;</span>
+0100 <span class="comment">%     Cchain = Nchain ./ Xchain - Z;</span>
+0101 <span class="comment">%</span>
+0102 <span class="comment">%     Xchain(~isfinite(Xchain))=0;</span>
+0103 <span class="comment">%     Uchain(~isfinite(Uchain))=0;</span>
+0104 <span class="comment">%     Qchain(~isfinite(Qchain))=0;</span>
+0105 <span class="comment">%     Rchain(~isfinite(Rchain))=0;</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">%     Xchain(Nchain==0)=0;</span>
+0108 <span class="comment">%     Uchain(:,Nchain==0)=0;</span>
+0109 <span class="comment">%     Qchain(:,Nchain==0)=0;</span>
+0110 <span class="comment">%     Rchain(:,Nchain==0)=0;</span>
+0111 <span class="comment">%     Tchain(:,Nchain==0)=0;</span>
+0112 <span class="comment">%</span>
+0113 <span class="comment">%</span>
+0114 <span class="comment">%     for c=1:qn.nchains</span>
+0115 <span class="comment">%         inchain = find(qn.chains(c,:));</span>
+0116 <span class="comment">%         for k=inchain(:)'</span>
+0117 <span class="comment">%             X(k) = Xchain(c) * alpha(qn.refstat(k),k);</span>
+0118 <span class="comment">%             for i=1:qn.nstations</span>
+0119 <span class="comment">%                 if S(i) == -1</span>
+0120 <span class="comment">%                     U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);</span>
+0121 <span class="comment">%                 else</span>
+0122 <span class="comment">%                     U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);</span>
+0123 <span class="comment">%                 end</span>
+0124 <span class="comment">%                 if Lchain(i,c) &gt; 0</span>
+0125 <span class="comment">%                     Q(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);</span>
+0126 <span class="comment">%                     T(i,k) = Tchain(i,c) * alpha(i,k);</span>
+0127 <span class="comment">%                     R(i,k) = Q(i,k) / T(i,k);</span>
+0128 <span class="comment">%                     %                R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');</span>
+0129 <span class="comment">%                 else</span>
+0130 <span class="comment">%                     T(i,k) = 0;</span>
+0131 <span class="comment">%</span>
+0132 <span class="comment">%                     R(i,k)=0;</span>
+0133 <span class="comment">%                     Q(i,k)=0;</span>
+0134 <span class="comment">%                 end</span>
+0135 <span class="comment">%             end</span>
+0136 <span class="comment">%             C(k) = qn.njobs(k) / X(k);</span>
+0137 <span class="comment">%         end</span>
+0138 <span class="comment">%     end</span>
+0139 
+0140 <span class="comment">% [G,lG] = pfqn_gmvald(Lchain, Nchain, mu_chain);</span>
+0141 <span class="comment">% for r=1:C</span>
+0142 <span class="comment">%     [Gr,lGr] = pfqn_gmvald(Lchain, oner(Nchain,r), mu_chain);</span>
+0143 <span class="comment">%     Xchain(r) = exp(lGr - lG);</span>
+0144 <span class="comment">%     for i=1:M</span>
+0145 <span class="comment">%         if Lchain(i,r)&gt;0</span>
+0146 <span class="comment">%             if S(i) == -1 || isinf(S(i)) % infinite server</span>
+0147 <span class="comment">%                 Qchain(i,r) = Lchain(i,r) * Xchain(r);</span>
+0148 <span class="comment">%             else</span>
+0149 <span class="comment">%                 Qchain(i,r) = Zcorr(i,r) * Xchain(r) + Lcorr(i,r) * exp(pfqn_nc([Lcorr; Lcorr(i,:)],oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options) - lG);</span>
+0150 <span class="comment">%             end</span>
+0151 <span class="comment">%         end</span>
+0152 <span class="comment">%     end</span>
+0153 <span class="comment">% end</span>
+0154 <span class="keyword">if</span> isnan(Xchain)
+0155     error(<span class="string">'Normalizing constant computation produced floating-point range exception. Model is too large.'</span>);
+0156 <span class="keyword">end</span>
+0157 
+0158 runtime = toc(Tstart);
+0159 
+0160 <span class="keyword">if</span> options.verbose &gt; 0
+0161     fprintf(1,<span class="string">'Normalizing constant (NC) analysis completed in %f sec\n'</span>,runtime);
+0162 <span class="keyword">end</span>
+0163 <span class="keyword">return</span>
+0164 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

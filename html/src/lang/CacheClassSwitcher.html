@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CacheClassSwitcher</title>
+  <meta name="keywords" content="CacheClassSwitcher">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; CacheClassSwitcher.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>CacheClassSwitcher
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="CacheClassSwitcher.html" class="code" title="">CacheClassSwitcher</a>	</li><li><a href="StatefulClassSwitcher.html" class="code" title="">StatefulClassSwitcher</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Cache.html" class="code" title="">Cache</a>	</li><li><a href="CacheClassSwitcher.html" class="code" title="">CacheClassSwitcher</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = CacheClassSwitcher(classes, items, capacity, levels)</a></li><li><a href="#_sub2" class="code">function prob = simpleHitMiss(self, r, s, state, statep)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="CacheClassSwitcher.html" class="code" title="">CacheClassSwitcher</a> &lt; <a href="StatefulClassSwitcher.html" class="code" title="">StatefulClassSwitcher</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         items;
+0007         cap;
+0008         levels;
+0009         inputJobClasses;
+0010         hitClass;
+0011         missClass;
+0012     <span class="keyword">end</span>
+0013     
+0014     methods
+0015         <a name="_sub0" href="#_subfunctions" class="code">function self = CacheClassSwitcher(classes, items, capacity, levels)</a>
+0016             <span class="keyword">if</span> ~exist(<span class="string">'levels'</span>,<span class="string">'var'</span>)
+0017                 levels = 1;
+0018             <span class="keyword">end</span>
+0019             self = self@<a href="StatefulClassSwitcher.html" class="code" title="">StatefulClassSwitcher</a>(classes, <span class="string">'Cache'</span>);
+0020             self.classes = classes;
+0021             self.items = items;
+0022             self.cap = capacity;
+0023             self.levels = levels;
+0024             self.csFun = @(r, s, state, statep) self.simpleHitMiss(r, s, state, statep); <span class="comment">% do nothing by default</span>
+0025             self.hitClass = sparse([]);
+0026             self.missClass = sparse([]);
+0027         <span class="keyword">end</span>
+0028     <span class="keyword">end</span>
+0029     
+0030     methods
+0031         <a name="_sub1" href="#_subfunctions" class="code">function prob = simpleHitMiss(self, r, s, state, statep)</a>
+0032             <span class="keyword">if</span> nargin &lt;= 3
+0033                 state = []; <span class="comment">%local server state</span>
+0034                 statep = []; <span class="comment">%local server state</span>
+0035             <span class="keyword">end</span>
+0036             <span class="keyword">if</span> isempty(state) <span class="comment">% get csMask</span>
+0037                 <span class="keyword">if</span> (r==s  <span class="keyword">...</span><span class="comment"> % hit and miss in the cache can depart in the same class</span>
+0038                     || ((r &lt;= length(self.hitClass) &amp;&amp; r &lt;= length(self.missClass)) <span class="keyword">...</span><span class="comment"> % since hitClass and missClass are sparse, check entry for r exists</span>
+0039                         &amp;&amp; (s == self.hitClass(r) || s == self.missClass(r)))) <span class="keyword">...</span><span class="comment"> % route out hit or miss classes</span>
+0040                         &amp;&amp; (~isempty(find(r == self.hitClass)) || ~isempty(find(r == self.missClass))) <span class="comment">% don't route out classes that are not hit or miss</span>
+0041                     prob = 1;
+0042                 <span class="keyword">else</span>
+0043                     prob = 0;
+0044                 <span class="keyword">end</span>
+0045             <span class="keyword">else</span>
+0046                  <span class="comment">% un-comment to restore class-switching in routing</span>
+0047 <span class="comment">%                 if sum(state) == sum(statep)+1 % hit</span>
+0048 <span class="comment">%                     if (r &lt;= length(self.hitClass)) &amp;&amp; s == self.hitClass(r)</span>
+0049 <span class="comment">%                         prob = 1;</span>
+0050 <span class="comment">%                     else</span>
+0051 <span class="comment">%                         prob = 0;</span>
+0052 <span class="comment">%                     end</span>
+0053 <span class="comment">%                 else % miss</span>
+0054 <span class="comment">%                     if (r &lt;= length(self.missClass)) &amp;&amp; s == self.missClass(r)</span>
+0055 <span class="comment">%                         prob = 1;</span>
+0056 <span class="comment">%                     else</span>
+0057 <span class="comment">%                         prob = 0;</span>
+0058 <span class="comment">%                     end</span>
+0059 <span class="comment">%                 end</span>
+0060             <span class="keyword">end</span>
+0061         <span class="keyword">end</span>
+0062     <span class="keyword">end</span>
+0063     
+0064 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

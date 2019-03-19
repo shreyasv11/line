@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MarkovModulated</title>
+  <meta name="keywords" content="MarkovModulated">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">processes</a> &gt; MarkovModulated.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\processes&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MarkovModulated
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MarkovModulated.html" class="code" title="">MarkovModulated</a>	</li><li><a href="PointProcess.html" class="code" title="">PointProcess</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MMPP2.html" class="code" title="">MMPP2</a>	</li><li><a href="MarkovModulated.html" class="code" title="">MarkovModulated</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = MarkovModulated(name, numParam)</a></li><li><a href="#_sub2" class="code">function X = sample(self, n)</a></li><li><a href="#_sub3" class="code">function phases = getNumberOfPhases(self)</a></li><li><a href="#_sub4" class="code">function MAP = getRenewalProcess(self)</a></li><li><a href="#_sub5" class="code">function cx = fit(MEAN, SCV)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MarkovModulated.html" class="code" title="">MarkovModulated</a> &lt; <a href="PointProcess.html" class="code" title="">PointProcess</a>
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods (Hidden)
+0006         <span class="comment">%Constructor</span>
+0007         <a name="_sub0" href="#_subfunctions" class="code">function self = MarkovModulated(name, numParam)</a>
+0008             self@<a href="PointProcess.html" class="code" title="">PointProcess</a>(name, numParam);
+0009         <span class="keyword">end</span>
+0010     <span class="keyword">end</span>
+0011     
+0012     methods        
+0013         <a name="_sub1" href="#_subfunctions" class="code">function X = sample(self, n)</a>
+0014             <span class="keyword">if</span> ~exist(<span class="string">'n'</span>,<span class="string">'var'</span>), n = 1; <span class="keyword">end</span>
+0015             X = map_sample(self.getRenewalProcess,n);
+0016         <span class="keyword">end</span>
+0017     <span class="keyword">end</span>
+0018     
+0019     methods <span class="comment">%(Abstract) % implemented with errors for Octave compatibility</span>
+0020         <a name="_sub2" href="#_subfunctions" class="code">function phases = getNumberOfPhases(self)</a>
+0021             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0022         <span class="keyword">end</span>
+0023         <a name="_sub3" href="#_subfunctions" class="code">function MAP = getRenewalProcess(self)</a>
+0024             error(<span class="string">'An abstract method was invoked. The function needs to be overridden by a subclass.'</span>);
+0025         <span class="keyword">end</span>
+0026     <span class="keyword">end</span>
+0027     
+0028     methods (Static)
+0029         <a name="_sub4" href="#_subfunctions" class="code">function cx = fit(MEAN, SCV)</a>
+0030             cx = Cox2.fitMeanAndSCV(MEAN,SCV);
+0031         <span class="keyword">end</span>
+0032     <span class="keyword">end</span>
+0033     
+0034 <span class="keyword">end</span>
+0035</pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_mam</title>
+  <meta name="keywords" content="solver_mam">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">MAM</a> &gt; solver_mam.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\MAM&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_mam
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Q,U,R,T,C,X] = solver_mam(qn, PH, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_mam_analysis.html" class="code" title="function [QN,UN,RN,TN,CN,XN,runtime] = solver_mam_analysis(qn, options)">solver_mam_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Q,U,R,T,C,X] = solver_mam(qn, PH, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">global</span> BuToolsVerbose;
+0006 <span class="keyword">global</span> BuToolsCheckInput;
+0007 <span class="keyword">global</span> BuToolsCheckPrecision;
+0008 <span class="comment">%% generate local state spaces</span>
+0009 M = qn.nstations;
+0010 K = qn.nclasses;
+0011 N = qn.njobs';
+0012 rt = qn.rt;
+0013 V = qn.visits;
+0014 
+0015 Q = zeros(M,K);
+0016 U = zeros(M,K);
+0017 R = zeros(M,K);
+0018 T = zeros(M,K);
+0019 C = zeros(1,K);
+0020 X = zeros(1,K);
+0021 
+0022 <span class="keyword">if</span> M==2 &amp;&amp; K==1 &amp;&amp; all(isinf(N))
+0023     <span class="comment">% single-class open queueing system (one node is the external world)</span>
+0024     idx = -1;
+0025     <span class="keyword">for</span> i=1:M
+0026         <span class="keyword">switch</span> qn.sched{i}
+0027             <span class="keyword">case</span> SchedStrategy.EXT
+0028                 A = PH{i,1}; A{1} = V{1}(i) * A{1}; A{2} = V{1}(i) * A{2};
+0029             <span class="keyword">case</span> SchedStrategy.FCFS
+0030                 PHs = PH{i,1}; PHs{1} = V{1}(i) * PHs{1}; PHs{2} = V{1}(i) * PHs{2};
+0031                 idx = i;
+0032             <span class="keyword">otherwise</span>
+0033                 error(<span class="string">'Unsupported scheduling strategy'</span>);
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036     [X, q, u, pqueue, Rmat, eta] = qbd_mapmap1(A,PHs);
+0037     T(idx,1) = X;
+0038     Q(idx,1) = q;
+0039     U(idx,1) = u;
+0040     R(idx,1) = Q(idx,1) / X;
+0041     C = R;
+0042 <span class="keyword">elseif</span> M==2 &amp;&amp; K&gt;1 &amp;&amp; all(isinf(N))
+0043     <span class="comment">% multi-class open queueing system (one node is the external world)</span>
+0044     BuToolsVerbose = false;
+0045     BuToolsCheckInput = true;
+0046     BuToolsCheckPrecision = 1e-12;
+0047     pie = {};
+0048     S = {};
+0049     <span class="keyword">for</span> i=1:M
+0050         <span class="keyword">switch</span> qn.sched{i}
+0051             <span class="keyword">case</span> SchedStrategy.EXT
+0052                 na = cellfun(@(x) length(x{1}),{PH{i,:}});
+0053                 A = {PH{i,1}{1},PH{i,1}{2},PH{i,1}{2}};
+0054                 <span class="keyword">for</span> k=2:K
+0055                     A = mmap_super(A,{PH{i,k}{1},PH{i,k}{2},PH{i,k}{2}});
+0056                 <span class="keyword">end</span>
+0057                 idx_arv = i;
+0058             <span class="keyword">case</span> {SchedStrategy.FCFS, SchedStrategy.HOL}
+0059                 row = size(S,1) + 1;
+0060                 <span class="keyword">for</span> k=1:K
+0061                     PH{i,k} = map_scale(PH{i,k}, map_mean(PH{i,k})/qn.nservers(i));
+0062                     pie{k} = map_pie(PH{i,k});
+0063                     S{k} = PH{i,k}{1};
+0064                 <span class="keyword">end</span>
+0065                 idx_q = i;
+0066             <span class="keyword">otherwise</span>
+0067                 error(<span class="string">'Unsupported scheduling strategy'</span>);
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070     
+0071     <span class="keyword">if</span> any(qn.classprio ~= qn.classprio(1)) <span class="comment">% if priorities are not identical</span>
+0072         [uK,iK] = unique(qn.classprio);
+0073         <span class="keyword">if</span> length(uK) == length(qn.classprio) <span class="comment">% if all priorities are different</span>
+0074             [Qret{iK}] = MMAPPH1NPPR({A{[1;2+iK]}}, {pie{iK}}, {S{iK}}, <span class="string">'ncMoms'</span>, 1);
+0075         <span class="keyword">else</span>
+0076             error(<span class="string">'Solver MAM requires either identical priorities or all distinct priorities'</span>);
+0077         <span class="keyword">end</span>
+0078     <span class="keyword">else</span>
+0079         [Qret{1:K}] = MMAPPH1FCFS({A{[1,3:end]}}, {pie{:}}, {S{:}}, <span class="string">'ncMoms'</span>, 1);
+0080     <span class="keyword">end</span>
+0081     Q(idx_q,:) = cell2mat(Qret);
+0082     T(idx_arv,:) = mmap_count_lambda(A);
+0083     T(idx_q,:) = T(idx_arv,:);
+0084     R(idx_q,:) = Q(idx_q,:) ./ T(idx_q,:);
+0085     <span class="keyword">for</span> k=1:K
+0086         U(idx_q,k) = T(idx_q,k) / map_lambda(PH{i,k});
+0087     <span class="keyword">end</span>
+0088     C = R;
+0089 <span class="keyword">end</span>
+0090 
+0091 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

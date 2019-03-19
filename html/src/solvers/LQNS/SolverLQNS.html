@@ -1,0 +1,349 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SolverLQNS</title>
+  <meta name="keywords" content="SolverLQNS">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">LQNS</a> &gt; SolverLQNS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\LQNS&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SolverLQNS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverLQNS.html" class="code" title="">SolverLQNS</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverLQNS.html" class="code" title="">SolverLQNS</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = SolverLQNS(model, varargin)</a></li><li><a href="#_sub2" class="code">function runtime = run(self)</a></li><li><a href="#_sub3" class="code">function reset(self)</a></li><li><a href="#_sub4" class="code">function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)</a></li><li><a href="#_sub5" class="code">function [result, iterations] = parseXMLResults(self, filename)</a></li><li><a href="#_sub6" class="code">function [bool, featSupported] = supports(model)</a></li><li><a href="#_sub7" class="code">function options = defaultOptions(self)</a></li><li><a href="#_sub8" class="code">function bool = isAvailable()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SolverLQNS.html" class="code" title="">SolverLQNS</a> &lt; LayeredNetworkSolver
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods
+0006         <a name="_sub0" href="#_subfunctions" class="code">function self = SolverLQNS(model, varargin)</a>
+0007             self = self@LayeredNetworkSolver(model, mfilename);
+0008             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
+0009             <span class="keyword">if</span> ~SolverLQNS.isAvailable()
+0010                 error(<span class="string">'SolverLQNS requires the lqns and lqsim commands to be available on the system path.'</span>);
+0011             <span class="keyword">end</span>
+0012         <span class="keyword">end</span>        
+0013         
+0014         <a name="_sub1" href="#_subfunctions" class="code">function runtime = run(self)</a>
+0015             tic;
+0016             options = self.getOptions;
+0017             filename = [tempname,<span class="string">'.lqnx'</span>];
+0018             self.model.writeXML(filename);
+0019             <span class="keyword">switch</span> options.method
+0020                 <span class="keyword">case</span> {<span class="string">'default'</span>,<span class="string">'lqns'</span>}
+0021                     system([<span class="string">'lqns -i'</span>,num2str(options.iter_max),<span class="string">' -x '</span>,filename]);
+0022                 <span class="keyword">case</span> <span class="string">'exact'</span>
+0023                     system([<span class="string">'lqns -Playering=srvn -i'</span>,num2str(options.iter_max),<span class="string">' -Pmva=exact -x '</span>,filename]);
+0024                 <span class="keyword">case</span> {<span class="string">'srvn'</span>}
+0025                     system([<span class="string">'lqns -Playering=srvn -i'</span>,num2str(options.iter_max),<span class="string">' -x '</span>,filename]);
+0026                 <span class="keyword">case</span> <span class="string">'srvnexact'</span>
+0027                     system([<span class="string">'lqns -Playering=srvn -i'</span>,num2str(options.iter_max),<span class="string">' -Pmva=exact -x '</span>,filename]);
+0028                 <span class="keyword">case</span> {<span class="string">'sim'</span>,<span class="string">'lqsim'</span>}
+0029                     system([<span class="string">'lqsim -A '</span>,num2str(options.samples),<span class="string">',0.95 -x '</span>,filename]);
+0030                 <span class="keyword">case</span> {<span class="string">'lqnsdefault'</span>}
+0031                     system([<span class="string">'lqns -x '</span>,filename]);
+0032                 <span class="keyword">otherwise</span>
+0033                     system([<span class="string">'lqns -Playering=srvn -i'</span>,num2str(options.iter_max),<span class="string">' -x '</span>,filename]);
+0034             <span class="keyword">end</span>
+0035             self.parseXMLResults(filename);
+0036             <span class="keyword">if</span> ~options.keep
+0037                 delete(filename)
+0038             <span class="keyword">end</span>
+0039             runtime = toc;
+0040         <span class="keyword">end</span>
+0041         
+0042         <a name="_sub2" href="#_subfunctions" class="code">function reset(self)</a>
+0043             model.reset;
+0044         <span class="keyword">end</span>
+0045         
+0046         <a name="_sub3" href="#_subfunctions" class="code">function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)</a>
+0047             self.run();
+0048             QN = self.result.Avg.QLen;
+0049             UN = self.result.Avg.Util;
+0050             RN = self.result.Avg.RespT;
+0051             TN = self.result.Avg.Tput;
+0052         <span class="keyword">end</span>
+0053         
+0054         <a name="_sub4" href="#_subfunctions" class="code">function [result, iterations] = parseXMLResults(self, filename)</a>
+0055             import javax.xml.parsers.*;
+0056             import org.w3c.dom.*;
+0057             import java.io.*;
+0058             
+0059             model = self.model;
+0060             Avg = struct();
+0061             Avg.Nodes.RespT = [];
+0062             Avg.Nodes.Tput = [];
+0063             Avg.Nodes.Util = [];
+0064             Avg.Nodes.QLen = [];
+0065             Avg.Edges.RespT = [];
+0066             Avg.Edges.Tput = [];
+0067             Avg.Edges.QLen = [];
+0068             lqnGraph = model.getGraph;
+0069             verbose = self.options.verbose;
+0070             
+0071             <span class="keyword">if</span> nargin == 1
+0072                 verbose = 0;
+0073             <span class="keyword">end</span>
+0074             
+0075             <span class="comment">% init Java XML parser and load file</span>
+0076             dbFactory = DocumentBuilderFactory.newInstance();
+0077             dBuilder = dbFactory.newDocumentBuilder();
+0078             <span class="keyword">try</span>
+0079                 [fpath,fname,fext] = fileparts(filename);
+0080                 resultFilename = [fpath,filesep,fname,<span class="string">'.lqxo'</span>];
+0081                 <span class="keyword">if</span> verbose &gt; 0
+0082                     w = warning(<span class="string">'query'</span>);
+0083                     warning off;
+0084                     fprintf(1,<span class="string">'Parsing LQNS result file: %s\n'</span>, resultFilename);
+0085                     warning(w);
+0086                 <span class="keyword">end</span>
+0087                 doc = dBuilder.parse(resultFilename);
+0088             <span class="keyword">catch</span> exception <span class="comment">%java.io.FileNotFoundException</span>
+0089                 <span class="keyword">if</span> ~exist(filename, <span class="string">'file'</span>)
+0090                     disp([<span class="string">'Error: Input XML file '</span>, filename, <span class="string">' not found'</span>]);
+0091                     <span class="keyword">return</span>;
+0092                 <span class="keyword">else</span>
+0093                     rethrow(exception);
+0094                 <span class="keyword">end</span>
+0095             <span class="keyword">end</span>
+0096             
+0097             doc.getDocumentElement().normalize();
+0098             
+0099             <span class="comment">%NodeList</span>
+0100             solverPara = doc.getElementsByTagName(<span class="string">'solver-params'</span>);
+0101             <span class="keyword">for</span> i = 0:solverPara.getLength()-1
+0102                 procNode = solverPara.item(i);
+0103                 result = procNode.getElementsByTagName(<span class="string">'result-general'</span>);
+0104                 iterations = str2num(result.item(0).getAttribute(<span class="string">'iterations'</span>));
+0105             <span class="keyword">end</span>
+0106             
+0107             procList = doc.getElementsByTagName(<span class="string">'processor'</span>);
+0108             <span class="keyword">for</span> i = 0:procList.getLength()-1
+0109                 <span class="comment">%Node - Processor</span>
+0110                 procNode = procList.item(i);
+0111                 
+0112                 <span class="keyword">if</span> procNode.getNodeType() == Node.ELEMENT_NODE
+0113                     
+0114                     <span class="comment">%Element</span>
+0115                     procElement = procNode;
+0116                     name = char(procElement.getAttribute(<span class="string">'name'</span>));
+0117                     procPos = findstring(lqnGraph.Nodes.Node,name);
+0118                     result = procNode.getElementsByTagName(<span class="string">'result-processor'</span>);
+0119                     utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0120                     Avg.Nodes.Util(procPos) = utilizationRes;
+0121                     Avg.Nodes.QLen(procPos) = NaN;
+0122                     Avg.Nodes.RespT(procPos) = NaN;
+0123                     Avg.Nodes.Tput(procPos) = NaN;
+0124                     
+0125                     taskList = procNode.getElementsByTagName(<span class="string">'task'</span>);
+0126                     <span class="keyword">for</span> j = 0:taskList.getLength()-1
+0127                         <span class="comment">%Node - Task</span>
+0128                         taskNode = taskList.item(j);
+0129                         <span class="keyword">if</span> taskNode.getNodeType() == Node.ELEMENT_NODE
+0130                             taskElement = taskNode;
+0131                             name = char(taskElement.getAttribute(<span class="string">'name'</span>));
+0132                             result = taskNode.getElementsByTagName(<span class="string">'result-task'</span>);
+0133                             Avg.Nodes.Util(findstring(lqnGraph.Nodes.Node,name)) = str2num(result.item(0).getAttribute(<span class="string">'proc-utilization'</span>));
+0134                             Avg.Nodes.QLen(findstring(lqnGraph.Nodes.Node,name)) = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0135                             Avg.Nodes.RespT(findstring(lqnGraph.Nodes.Node,name)) = NaN;
+0136                             Avg.Nodes.Tput(findstring(lqnGraph.Nodes.Node,name)) = str2num(result.item(0).getAttribute(<span class="string">'throughput'</span>));
+0137                             entryList = taskNode.getElementsByTagName(<span class="string">'entry'</span>);
+0138                             <span class="keyword">for</span> k = 0:entryList.getLength()-1
+0139                                 <span class="comment">%Node - Task</span>
+0140                                 entryNode = entryList.item(k);
+0141                                 <span class="keyword">if</span> entryNode.getNodeType() == Node.ELEMENT_NODE
+0142                                     <span class="comment">%Element</span>
+0143                                     entryElement = entryNode;
+0144                                     name = char(entryElement.getAttribute(<span class="string">'name'</span>));
+0145                                     result = entryNode.getElementsByTagName(<span class="string">'result-entry'</span>);
+0146                                     utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'proc-utilization'</span>));
+0147                                     Avg.Nodes.Util(findstring(lqnGraph.Nodes.Node,name)) = utilizationRes;
+0148                                     qlenRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0149                                     Avg.Nodes.QLen(findstring(lqnGraph.Nodes.Node,name)) = qlenRes;
+0150                                     tputRes = str2num(result.item(0).getAttribute(<span class="string">'throughput'</span>));
+0151                                     Avg.Nodes.Tput(findstring(lqnGraph.Nodes.Node,name)) = tputRes;
+0152                                     rtRes = str2num(result.item(0).getAttribute(<span class="string">'phase1-service-time'</span>));
+0153                                     <span class="keyword">if</span> ~isempty(rtRes)
+0154                                         Avg.Nodes.RespT(findstring(lqnGraph.Nodes.Node,name)) = rtRes;
+0155                                     <span class="keyword">end</span>
+0156                                 <span class="keyword">end</span>
+0157                             <span class="keyword">end</span>
+0158                             
+0159                             <span class="comment">%% task-activities</span>
+0160                             <span class="keyword">if</span> taskElement.getElementsByTagName(<span class="string">'task-activities'</span>).getLength &gt; 0
+0161                                 <span class="comment">%actNames = cell(0); iterActNames = 1;</span>
+0162                                 <span class="comment">%actCalls = cell(0);</span>
+0163                                 actList = taskElement.getElementsByTagName(<span class="string">'task-activities'</span>).item(0).getElementsByTagName(<span class="string">'activity'</span>);
+0164                                 <span class="keyword">for</span> l = 0:actList.getLength()-1
+0165                                     <span class="comment">%Node - Task</span>
+0166                                     actNode = actList.item(l);
+0167                                     <span class="keyword">if</span> actNode.getNodeType() == Node.ELEMENT_NODE &amp;&amp; strcmp(char(actNode.getParentNode().getNodeName()),<span class="string">'task-activities'</span>)
+0168                                         <span class="comment">%Element</span>
+0169                                         actElement = actNode;
+0170                                         name = char(actElement.getAttribute(<span class="string">'name'</span>));
+0171                                         
+0172                                         result = actNode.getElementsByTagName(<span class="string">'result-activity'</span>);
+0173                                         rtRes = str2num(result.item(0).getAttribute(<span class="string">'service-time'</span>));
+0174                                         Avg.Nodes.RespT(findstring(lqnGraph.Nodes.Node,name)) = rtRes;
+0175                                         utilizationRes = str2num(result.item(0).getAttribute(<span class="string">'proc-utilization'</span>));
+0176                                         Avg.Nodes.Util(findstring(lqnGraph.Nodes.Node,name)) = utilizationRes;
+0177                                         qlenRes = str2num(result.item(0).getAttribute(<span class="string">'utilization'</span>));
+0178                                         Avg.Nodes.QLen(findstring(lqnGraph.Nodes.Node,name)) = qlenRes;
+0179                                         tputRes = str2num(result.item(0).getAttribute(<span class="string">'throughput'</span>));
+0180                                         Avg.Nodes.Tput(findstring(lqnGraph.Nodes.Node,name)) = tputRes;
+0181                                         
+0182                                         <span class="comment">%                             synchCalls = actElement.getElementsByTagName('synch-call');</span>
+0183                                         <span class="comment">%                             asynchCalls = actElement.getElementsByTagName('asynch-call');</span>
+0184                                         <span class="comment">%                             %add synch calls if any</span>
+0185                                         <span class="comment">%                             if synchCalls.getLength() &gt; 0</span>
+0186                                         <span class="comment">%                                 for m = 0:synchCalls.getLength()-1</span>
+0187                                         <span class="comment">%                                     callElement = synchCalls.item(m);</span>
+0188                                         <span class="comment">%                                     dest = char(callElement.getAttribute('dest'));</span>
+0189                                         <span class="comment">%                                     mean = str2double(char(callElement.getAttribute('calls-mean')));</span>
+0190                                         <span class="comment">%                                     tempAct = tempAct.synchCall(dest,mean);</span>
+0191                                         <span class="comment">%                                     actCalls{iterActNames,1} = dest;</span>
+0192                                         <span class="comment">%                                     requesters{size(requesters,1)+1,1} = tempAct.name;</span>
+0193                                         <span class="comment">%                                     requesters{size(requesters,1),2} = taskID;</span>
+0194                                         <span class="comment">%                                     requesters{size(requesters,1),3} = tempProc.name;</span>
+0195                                         <span class="comment">%                                     requesters{size(requesters,1),4} = dest;</span>
+0196                                         <span class="comment">%                                     requesters{size(requesters,1),5} = procID;</span>
+0197                                         <span class="comment">%                                     %requesters:</span>
+0198                                         <span class="comment">%                                     % activity - task - processor - dest (entry) - procID</span>
+0199                                         <span class="comment">%                                 end</span>
+0200                                         <span class="comment">%                                 %else</span>
+0201                                         <span class="comment">%                                 %    actCalls{iterActNames,1} = [];</span>
+0202                                         <span class="comment">%                                 %end</span>
+0203                                         <span class="comment">%                                 %iterActNames = iterActNames + 1;</span>
+0204                                         <span class="comment">%                                 %add asynch calls if any</span>
+0205                                         <span class="comment">%                             elseif asynchCalls.getLength() &gt; 0</span>
+0206                                         <span class="comment">%                                 for m = 0:asynchCalls.getLength()-1</span>
+0207                                         <span class="comment">%                                     callElement = asynchCalls.item(m);</span>
+0208                                         <span class="comment">%                                     dest = char(callElement.getAttribute('dest'));</span>
+0209                                         <span class="comment">%                                     mean = str2double(char(callElement.getAttribute('calls-mean')));</span>
+0210                                         <span class="comment">%                                     tempAct = tempAct.asynchCall(dest,mean);</span>
+0211                                         <span class="comment">%                                     actCalls{iterActNames,1} = dest;</span>
+0212                                         <span class="comment">%                                     requesters{size(requesters,1)+1,1} = tempAct.name;</span>
+0213                                         <span class="comment">%                                     requesters{size(requesters,1),2} = taskID;</span>
+0214                                         <span class="comment">%                                     requesters{size(requesters,1),3} = tempProc.name;</span>
+0215                                         <span class="comment">%                                     requesters{size(requesters,1),4} = dest;</span>
+0216                                         <span class="comment">%                                     requesters{size(requesters,1),5} = procID;</span>
+0217                                         <span class="comment">%                                 end</span>
+0218                                         <span class="comment">%                             else</span>
+0219                                         <span class="comment">%                                 actCalls{iterActNames,1} = [];</span>
+0220                                         <span class="comment">%                             end</span>
+0221                                         <span class="comment">%iterActNames = iterActNames + 1;</span>
+0222                                     <span class="keyword">end</span>
+0223                                 <span class="keyword">end</span>
+0224                             <span class="keyword">end</span>
+0225                         <span class="keyword">end</span>
+0226                     <span class="keyword">end</span>
+0227                 <span class="keyword">end</span>
+0228             <span class="keyword">end</span>
+0229             
+0230             <span class="comment">%             for edge=1:height(lqnGraph.Edges)</span>
+0231             <span class="comment">%                 if lqnGraph.Edges.Type(edge) == 1 % add contribution of sync-calls</span>
+0232             <span class="comment">%                     syncSource = lqnGraph.Edges.EndNodes{edge,1};</span>
+0233             <span class="comment">%                     aidx = findstring(lqnGraph.Nodes.Name,syncSource);</span>
+0234             <span class="comment">%                     if lqnGraph.Edges.Weight(edge) &gt;= 1</span>
+0235             <span class="comment">%                         Avg.Nodes.RespT(aidx) = Avg.Nodes.RespT(aidx) +  Avg.Edges.RespT(edge) * lqnGraph.Edges.Weight(edge);</span>
+0236             <span class="comment">%                     else</span>
+0237             <span class="comment">%                         Avg.Nodes.RespT(aidx) = Avg.Nodes.RespT(aidx) +  Avg.Edges.RespT(edge);</span>
+0238             <span class="comment">%                     end</span>
+0239             <span class="comment">%                 end</span>
+0240             <span class="comment">%             end</span>
+0241             
+0242             self.result = struct();
+0243             self.result.Avg = struct();
+0244             self.result.Avg.Graph = lqnGraph;
+0245             self.result.Avg.QLen = Avg.Nodes.QLen(:);
+0246             self.result.Avg.Util = Avg.Nodes.Util(:);
+0247             self.result.Avg.RespT = Avg.Nodes.RespT(:);
+0248             self.result.Avg.Tput = Avg.Nodes.Tput(:);
+0249             result = self.result;
+0250         <span class="keyword">end</span>
+0251         
+0252     <span class="keyword">end</span>
+0253     
+0254     methods (Static)
+0255         <a name="_sub5" href="#_subfunctions" class="code">function [bool, featSupported] = supports(model)</a>
+0256             featUsed = model.getUsedLangFeatures();
+0257             featSupported = SolverFeatureSet;
+0258             featSupported.setTrue({<span class="string">'Sink'</span>,<span class="string">'Source'</span>,<span class="string">'Queue'</span>,<span class="keyword">...</span>
+0259                 <span class="string">'Cox2'</span>,<span class="string">'Erlang'</span>,<span class="string">'Exponential'</span>,<span class="string">'HyperExp'</span>,<span class="keyword">...</span>
+0260                 <span class="string">'Buffer'</span>,<span class="string">'Server'</span>,<span class="string">'JobSink'</span>,<span class="string">'RandomSource'</span>,<span class="string">'ServiceTunnel'</span>,<span class="keyword">...</span>
+0261                 <span class="string">'SchedStrategy_PS'</span>,<span class="string">'SchedStrategy_FCFS'</span>,<span class="string">'ClosedClass'</span>});
+0262             bool = true;
+0263             <span class="keyword">for</span> e=1:model.getNumberOfLayers()
+0264                 bool = bool &amp;&amp; SolverFeatureSet.supports(featSupported, featUsed{e});
+0265             <span class="keyword">end</span>
+0266         <span class="keyword">end</span>
+0267         
+0268         <a name="_sub6" href="#_subfunctions" class="code">function options = defaultOptions(self)</a>
+0269             options = EnsembleSolver.defaultOptions();
+0270             options.timespan = [Inf,Inf];
+0271             options.keep = false;
+0272         <span class="keyword">end</span>
+0273         
+0274         <a name="_sub7" href="#_subfunctions" class="code">function bool = isAvailable()</a>
+0275             bool = true;
+0276             <span class="keyword">if</span> ispc <span class="comment">% windows</span>
+0277                 [~,ret] = dos(<span class="string">'lqns -h'</span>); 
+0278                 <span class="keyword">if</span> contains(ret,<span class="string">'not recognized'</span>)
+0279                     bool = false;
+0280                 <span class="keyword">end</span>
+0281             <span class="keyword">else</span> <span class="comment">%linux</span>
+0282                 [~,ret] = unix(<span class="string">'lqns -h'</span>); 
+0283                 <span class="keyword">if</span> contains(ret,<span class="string">'command not found'</span>)                             
+0284                     bool = false;
+0285                 <span class="keyword">end</span>
+0286             <span class="keyword">end</span>
+0287             <span class="keyword">if</span> ispc <span class="comment">% windows</span>
+0288                 [~,ret] = dos(<span class="string">'lqsim -h'</span>); 
+0289                 <span class="keyword">if</span> contains(ret,<span class="string">'not recognized'</span>)
+0290                     bool = false;
+0291                 <span class="keyword">end</span>
+0292             <span class="keyword">else</span> <span class="comment">%linux</span>
+0293                 [~,ret] = unix(<span class="string">'lqsim -h'</span>); 
+0294                 <span class="keyword">if</span> contains(ret,<span class="string">'command not found'</span>)                             
+0295                     bool = false;
+0296                 <span class="keyword">end</span>
+0297             <span class="keyword">end</span>
+0298         <span class="keyword">end</span>
+0299     <span class="keyword">end</span>
+0300 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

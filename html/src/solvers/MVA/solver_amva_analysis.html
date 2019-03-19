@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_amva_analysis</title>
+  <meta name="keywords" content="solver_amva_analysis">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">MVA</a> &gt; solver_amva_analysis.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\MVA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_amva_analysis
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Q,U,R,T,C,X,runtime] = solver_amva_analysis(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_amva.html" class="code" title="function [Q,U,R,T,C,X] = solver_amva(ST,V,N,S,SCV,options,sched,schedparam,refstat)">solver_amva</a>	Copyright (c) 2012-2019, Imperial College London</li><li><a href="solver_mva.html" class="code" title="function [Q,U,R,T,C,X] = solver_mva(ST,V,N,S,options,sched,refstat)">solver_mva</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverMVA.html" class="code" title="">SolverMVA</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Q,U,R,T,C,X,runtime] = solver_amva_analysis(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 M = qn.nstations;    <span class="comment">%number of stations</span>
+0006 S = qn.nservers;
+0007 NK = qn.njobs';  <span class="comment">% initial population per class</span>
+0008 C = qn.nchains;
+0009 SCV = qn.scv;
+0010 
+0011 <span class="comment">%% initialization</span>
+0012 
+0013 <span class="comment">% determine service times</span>
+0014 ST = 1./qn.rates;
+0015 ST(isnan(qn.rates))=0;
+0016 SCV(isnan(SCV))=1;
+0017 
+0018 alpha = zeros(qn.nstations,qn.nclasses);
+0019 Vchain = zeros(qn.nstations,qn.nchains);
+0020 <span class="keyword">for</span> c=1:qn.nchains
+0021     inchain = find(qn.chains(c,:));
+0022     <span class="keyword">for</span> i=1:qn.nstations
+0023         Vchain(i,c) = sum(qn.visits{c}(i,inchain)) / sum(qn.visits{c}(qn.refstat(inchain(1)),inchain));
+0024         <span class="keyword">for</span> k=inchain
+0025             alpha(i,k) = alpha(i,k) + qn.visits{c}(i,k) / sum(qn.visits{c}(i,inchain));
+0026         <span class="keyword">end</span>
+0027     <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029 Vchain(~isfinite(Vchain))=0;
+0030 alpha(~isfinite(alpha))=0;
+0031 alpha(alpha&lt;1e-12)=0;
+0032 
+0033 Lchain = zeros(M,C);
+0034 STchain = zeros(M,C);
+0035 
+0036 SCVchain = zeros(M,C);
+0037 Nchain = zeros(1,C);
+0038 refstatchain = zeros(C,1);
+0039 <span class="keyword">for</span> c=1:qn.nchains
+0040     inchain = find(qn.chains(c,:));
+0041     isOpenChain = any(isinf(qn.njobs(inchain)));
+0042     <span class="keyword">for</span> i=1:qn.nstations
+0043         <span class="comment">% we assume that the visits in L(i,inchain) are equal to 1</span>
+0044         Lchain(i,c) = Vchain(i,c) * ST(i,inchain) * alpha(i,inchain)';
+0045         STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
+0046         <span class="keyword">if</span> isOpenChain &amp;&amp; i == qn.refstat(inchain(1)) <span class="comment">% if this is a source ST = 1 / arrival rates</span>
+0047             STchain(i,c) = 1 / sumfinite(qn.rates(i,inchain)); <span class="comment">% ignore degenerate classes with zero arrival rates</span>
+0048         <span class="keyword">else</span>
+0049             STchain(i,c) = ST(i,inchain) * alpha(i,inchain)';
+0050         <span class="keyword">end</span>
+0051         SCVchain(i,c) = SCV(i,inchain) * alpha(i,inchain)';
+0052     <span class="keyword">end</span>
+0053     Nchain(c) = sum(NK(inchain));
+0054     refstatchain(c) = qn.refstat(inchain(1));
+0055     <span class="keyword">if</span> any((qn.refstat(inchain(1))-refstatchain(c))~=0)
+0056         error(sprintf(<span class="string">'Classes in chain %d have different reference station.'</span>,c));
+0057     <span class="keyword">end</span>
+0058 <span class="keyword">end</span>
+0059 STchain(~isfinite(STchain))=0;
+0060 Lchain(~isfinite(Lchain))=0;
+0061 Tstart = tic;
+0062 
+0063 <span class="keyword">switch</span> options.method
+0064     <span class="keyword">case</span> {<span class="string">'exact'</span>,<span class="string">'mva'</span>}
+0065         [~,~,Rchain,Tchain,~, Xchain] = <a href="solver_mva.html" class="code" title="function [Q,U,R,T,C,X] = solver_mva(ST,V,N,S,options,sched,refstat)">solver_mva</a>(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+0066     <span class="keyword">case</span> {<span class="string">'default'</span>,<span class="string">'amva'</span>}
+0067         [~,~,Rchain,Tchain,~, Xchain] = <a href="solver_amva.html" class="code" title="function [Q,U,R,T,C,X] = solver_amva(ST,V,N,S,SCV,options,sched,schedparam,refstat)">solver_amva</a>(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+0068     <span class="keyword">otherwise</span>
+0069         error(<span class="string">'Unsupported SolverMVA method.'</span>);
+0070 <span class="keyword">end</span>
+0071 
+0072 <span class="keyword">for</span> c=1:qn.nchains
+0073     inchain = find(qn.chains(c,:));
+0074     <span class="keyword">for</span> k=inchain(:)'
+0075         X(k) = Xchain(c) * alpha(qn.refstat(k),k);
+0076         <span class="keyword">for</span> i=1:qn.nstations
+0077             <span class="keyword">if</span> isinf(S(i))
+0078                 U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);
+0079             <span class="keyword">else</span>
+0080                 U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);
+0081             <span class="keyword">end</span>
+0082             <span class="keyword">if</span> Lchain(i,c) &gt; 0
+0083                 Q(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
+0084                 T(i,k) = Tchain(i,c) * alpha(i,k);
+0085                 R(i,k) = Q(i,k) / T(i,k);
+0086                 <span class="comment">%R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');</span>
+0087             <span class="keyword">else</span>
+0088                 T(i,k) = 0;
+0089                 R(i,k)=0;
+0090                 Q(i,k)=0;
+0091             <span class="keyword">end</span>
+0092         <span class="keyword">end</span>
+0093         C(k) = qn.njobs(k) / X(k);
+0094     <span class="keyword">end</span>
+0095 <span class="keyword">end</span>
+0096 runtime = toc(Tstart);
+0097 
+0098 Q=abs(Q); R=abs(R); X=abs(X); U=abs(U); T=abs(T); C=abs(C);
+0099 T(~isfinite(T))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0; X(~isfinite(X))=0; C(~isfinite(C))=0;
+0100 <span class="keyword">if</span> options.verbose &gt; 0
+0101     fprintf(1,<span class="string">'MVA analysis completed in %f sec\n'</span>,runtime);
+0102 <span class="keyword">end</span>
+0103 <span class="keyword">return</span>
+0104 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

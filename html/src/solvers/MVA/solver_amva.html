@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_amva</title>
+  <meta name="keywords" content="solver_amva">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">MVA</a> &gt; solver_amva.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\MVA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_amva
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Q,U,R,T,C,X] = solver_amva(ST,V,N,S,SCV,options,sched,schedparam,refstat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="QN_amva_multicore.html" class="code" title="function r = QN_amva_multicore(n,c)">QN_amva_multicore</a>	Copyright (c) 2018-Present, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_amva_analysis.html" class="code" title="function [Q,U,R,T,C,X,runtime] = solver_amva_analysis(qn, options)">solver_amva_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Q,U,R,T,C,X] = solver_amva(ST,V,N,S,SCV,options,sched,schedparam,refstat)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 [M,K]=size(ST);
+0005 <span class="comment">% queue-dependent functions to capture multi-server and delay stations</span>
+0006 ga = @(n) <a href="QN_amva_multicore.html" class="code" title="function r = QN_amva_multicore(n,c)">QN_amva_multicore</a>(n,S);
+0007 Q0 = options.init_sol;
+0008 tol = options.iter_tol;
+0009 <span class="keyword">if</span> nargin &lt; 5 || isempty(Q0)
+0010     <span class="comment">% balanced initialization</span>
+0011     Q = ones(M,K);
+0012     Q = Q ./ repmat(sum(Q,1),size(Q,1),1) .* repmat(N,size(Q,1),1);
+0013     Q(isinf(Q))=0; <span class="comment">% open classes</span>
+0014     Q(refstat(isinf(N)))=Inf; 
+0015 <span class="keyword">else</span>
+0016     Q=Q0;
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">if</span> ~exist(<span class="string">'sched'</span>,<span class="string">'var'</span>)
+0020     sched = cell(M,1);
+0021     <span class="keyword">for</span> i=1:M
+0022         <span class="keyword">if</span> isinf(S(i))
+0023             sched{i} = SchedStrategy.INF;
+0024         <span class="keyword">else</span>
+0025             sched{i} = SchedStrategy.PS; <span class="comment">% default for non-inf servers is PS</span>
+0026         <span class="keyword">end</span>
+0027     <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029 
+0030 extSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.EXT),sched));
+0031 infSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.INF),sched));
+0032 dpsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.DPS),sched));
+0033 fcfsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.FCFS),sched));
+0034 pfSET = union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.RAND),sched)));
+0035 
+0036 <span class="keyword">if</span> ~exist(<span class="string">'tol'</span>,<span class="string">'var'</span>)
+0037     tol = 1e-6;
+0038 <span class="keyword">end</span>
+0039 Nt = sum(N(isfinite(N)));
+0040 delta  = (Nt - 1) / Nt;
+0041 deltar = (N - 1) ./ N;
+0042 deltar(isinf(N)) = 1;
+0043 
+0044 Q_1 = ones(M,K,1)*Inf;
+0045 U = zeros(M,K);
+0046 T = zeros(M,K);
+0047 C = zeros(1,K);
+0048 W = zeros(M,K);
+0049 Uhi = zeros(M,K);
+0050 X = 1./sum(ST,1);
+0051 ocl = [];
+0052 <span class="keyword">if</span> any(isinf(N))
+0053     ocl = find(isinf(N));
+0054     <span class="keyword">for</span> r=ocl <span class="comment">% open classes</span>
+0055         X(r) = 1 ./ ST(refstat(r),r);
+0056         deltar(r) = 1;
+0057     <span class="keyword">end</span>
+0058 <span class="keyword">end</span>
+0059 rset = setdiff(1:K,find(N==0));
+0060 
+0061 <span class="comment">%% inner iteration</span>
+0062 <span class="keyword">while</span> max(max(abs(Q-Q_1))) &gt; tol
+0063     Q_1 = Q;
+0064     <span class="keyword">for</span> k=1:M
+0065         <span class="keyword">for</span> r=rset
+0066             Ak{r}(k) = 1 + delta * sum(Q(k,:));
+0067             Akr(k,r) = 1 + deltar(r) * Q(k,r);
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070     
+0071     <span class="comment">%    b = be(Akr);</span>
+0072     <span class="keyword">for</span> r=rset
+0073         g = ga(Ak{r});
+0074         sd = setdiff(rset,r); <span class="comment">% change here to add class priorities</span>
+0075         
+0076         <span class="keyword">for</span> k=infSET(:)'
+0077             W(k,r) = ST(k,r);
+0078         <span class="keyword">end</span>
+0079         
+0080         <span class="keyword">for</span> k=pfSET(:)'
+0081             <span class="comment">% C(k,r) = L(k,r) * g(k) * b(k,r) * (1 + delta * sum(Q(k,:))); % old - class-dependence</span>
+0082             <span class="keyword">if</span> S(k)&gt;1
+0083                 <span class="keyword">if</span> ismember(r,ocl)
+0084                     W(k,r) = ST(k,r) * g(k) * (1 + (Q(k,r)+sum(Q(k,sd))));
+0085                 <span class="keyword">else</span>
+0086                     W(k,r) = ST(k,r) * g(k) * (1 + delta * (Q(k,r)+sum(Q(k,sd))));
+0087                 <span class="keyword">end</span>
+0088             <span class="keyword">else</span>
+0089                 W(k,r) = ST(k,r) * (1 + deltar(r) * Q(k,r) + sum(Q(k,sd)));
+0090             <span class="keyword">end</span>
+0091         <span class="keyword">end</span>
+0092         
+0093         <span class="keyword">for</span> k=dpsSET(:)'
+0094             <span class="keyword">if</span> S(k)&gt;1
+0095                 error(<span class="string">'Multi-server DPS not supported yet in AMVA solver.'</span>)
+0096             <span class="keyword">else</span>
+0097                 tss=Inf; <span class="comment">% time-scale separation threshold, was 5 now unused</span>
+0098                 Uhi(k,r) = sum(U(k,schedparam(k,:)&gt;tss*schedparam(k,r)));
+0099                 W(k,r) = ST(k,r) / (1-Uhi(k,r)) * (1 + deltar(r) * Q(k,r));
+0100                 <span class="keyword">for</span> s=setdiff(sd,r)
+0101                     <span class="keyword">if</span> schedparam(k,s)==schedparam(k,r)
+0102                         W(k,r) = W(k,r) + ST(k,r) / (1-Uhi(k,r)) * Q(k,s);
+0103                     <span class="keyword">elseif</span> schedparam(k,s)/schedparam(k,r)&lt;tss
+0104                         W(k,r) = W(k,r) + ST(k,r) / (1-Uhi(k,r)) * Q(k,s)*schedparam(k,s)/schedparam(k,r);
+0105                     <span class="keyword">elseif</span> schedparam(k,s)/schedparam(k,r)&gt;tss
+0106                         <span class="comment">% if there is time-scale separation, do nothing</span>
+0107                         <span class="comment">% all is accounted for by 1/(1-Uhi)</span>
+0108                     <span class="keyword">end</span>
+0109                 <span class="keyword">end</span>
+0110             <span class="keyword">end</span>
+0111         <span class="keyword">end</span>
+0112         
+0113         <span class="keyword">for</span> k=fcfsSET(:)'            
+0114             <span class="keyword">if</span> ST(k,r) == 0
+0115                 W(k,r) = 0;
+0116             <span class="keyword">else</span>
+0117                 <span class="keyword">if</span> range(ST(k,:))==0 <span class="comment">% product-form, same as PS</span>
+0118                     <span class="keyword">if</span> S(k)&gt;1
+0119                         W(k,r) = ST(k,r) * g(k) * (1 + delta * (Q(k,r)+sum(Q(k,sd))));
+0120                     <span class="keyword">else</span>
+0121                         W(k,r) = ST(k,r) * (1 + deltar(r) * Q(k,r) + sum(Q(k,sd)));
+0122                     <span class="keyword">end</span>
+0123                 <span class="keyword">else</span>
+0124                     <span class="keyword">if</span> S(k)&gt;1
+0125                         <span class="comment">% Somewhat similar to Rolia-Sevcik -  method of layers - Sec IV.</span>
+0126                         B = ((deltar .* X .* V(k,:) .* ST(k,:)) / S(k)); <span class="comment">% note: this is in 0-1 as a utilization</span>
+0127                         W(k,r) = ST(k,r)*(S(k)-1)/S(k) + (1/S(k)) * (ST(k,r)/2 * (1 + SCV(k,r)) + ST(k,r) * deltar(r) * Q(k,r)*B(r) + (ST(k,sd).*B(sd))*Q(k,sd)');
+0128                     <span class="keyword">else</span>
+0129                         W(k,r) = ST(k,r)/2 * (1 + SCV(k,r)) + ST(k,r) * deltar(r) * Q(k,r) + ST(k,sd)*Q(k,sd)';
+0130                     <span class="keyword">end</span>
+0131                 <span class="keyword">end</span>
+0132             <span class="keyword">end</span>
+0133         <span class="keyword">end</span>
+0134         
+0135         <span class="keyword">if</span> sum(W(:,r)) == 0
+0136             X(r) = 0;
+0137         <span class="keyword">else</span>
+0138             <span class="keyword">if</span> isinf(N(r))
+0139                 C(r) = V(:,r)'*W(:,r);
+0140                 <span class="comment">% X(r) remains constant</span>
+0141             <span class="keyword">elseif</span> N(r)==0
+0142                 X(r) = 0;
+0143                 C(r) = 0;
+0144             <span class="keyword">else</span>
+0145                 C(r) = V(:,r)'*W(:,r);
+0146                 X(r) = N(r) / C(r);
+0147             <span class="keyword">end</span>
+0148         <span class="keyword">end</span>
+0149         
+0150         <span class="keyword">for</span> k=1:M
+0151             Q(k,r) = X(r) * V(k,r) * W(k,r);
+0152             T(k,r) = X(r) * V(k,r);
+0153         <span class="keyword">end</span>
+0154         
+0155         <span class="keyword">for</span> k=1:M
+0156             <span class="keyword">for</span> r=rset
+0157                 <span class="keyword">if</span> isinf(S(k)) <span class="comment">% infinite server</span>
+0158                     U(k,r) = V(k,r)*ST(k,r)*X(r);
+0159                 <span class="keyword">else</span>
+0160                     U(k,r) = V(k,r)*ST(k,r)*X(r)/S(k);
+0161                 <span class="keyword">end</span>
+0162             <span class="keyword">end</span>
+0163         <span class="keyword">end</span>
+0164     <span class="keyword">end</span>
+0165 <span class="keyword">end</span>
+0166 
+0167 <span class="keyword">for</span> k=1:M
+0168     <span class="keyword">for</span> r=1:K
+0169         <span class="keyword">if</span> V(k,r)*ST(k,r)&gt;0
+0170             <span class="keyword">switch</span> sched{k}
+0171                 <span class="keyword">case</span> {SchedStrategy.FCFS,SchedStrategy.PS,SchedStrategy.DPS}
+0172                     <span class="keyword">if</span> sum(U(k,:))&gt;1
+0173                         U(k,r) = min(1,sum(U(k,:))) * V(k,r)*ST(k,r)*X(r) / ((V(k,:).*ST(k,:))*X(:));
+0174                     <span class="keyword">end</span>
+0175             <span class="keyword">end</span>
+0176         <span class="keyword">end</span>
+0177     <span class="keyword">end</span>
+0178 <span class="keyword">end</span>
+0179 
+0180 R = Q./T;
+0181 X(~isfinite(X))=0;
+0182 U(~isfinite(U))=0;
+0183 Q(~isfinite(Q))=0;
+0184 R(~isfinite(R))=0;
+0185 
+0186 X(N==0)=0;
+0187 U(:,N==0)=0;
+0188 Q(:,N==0)=0;
+0189 R(:,N==0)=0;
+0190 T(:,N==0)=0;
+0191 W(:,N==0)=0;
+0192 
+0193 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

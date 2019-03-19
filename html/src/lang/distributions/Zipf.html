@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Zipf</title>
+  <meta name="keywords" content="Zipf">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">distributions</a> &gt; Zipf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\distributions&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Zipf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="DiscreteDistrib.html" class="code" title="">DiscreteDistrib</a>	</li><li><a href="Zipf.html" class="code" title="">Zipf</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Zipf.html" class="code" title="">Zipf</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = Zipf(s, n)</a></li><li><a href="#_sub2" class="code">function ex = getMean(self)</a></li><li><a href="#_sub3" class="code">function SCV = getSCV(self)</a></li><li><a href="#_sub4" class="code">function X = sample(self, n)</a></li><li><a href="#_sub5" class="code">function Ft = evalCDF(self,k)</a></li><li><a href="#_sub6" class="code">function p = getPmf(self, k)</a></li><li><a href="#_sub7" class="code">function Hnm = genharmonic(n,m)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Zipf.html" class="code" title="">Zipf</a> &lt; <a href="DiscreteDistrib.html" class="code" title="">DiscreteDistrib</a>
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006     <span class="keyword">end</span>
+0007     
+0008     methods
+0009         <span class="comment">%Constructor</span>
+0010         <a name="_sub0" href="#_subfunctions" class="code">function self = Zipf(s, n)</a>
+0011             <span class="keyword">if</span> ~exist(<span class="string">'n'</span>,<span class="string">'var'</span>)
+0012                 n = Distrib.InfItems;
+0013             <span class="keyword">end</span>
+0014             self = self@<a href="DiscreteDistrib.html" class="code" title="">DiscreteDistrib</a>(1./((1:n).^s)/Zipf.genharmonic(n,s),1:n);
+0015             setParam(self, 3, <span class="string">'s'</span>, s, <span class="string">'java.lang.Double'</span>);
+0016             setParam(self, 4, <span class="string">'n'</span>, n, <span class="string">'java.lang.Integer'</span>);
+0017             self.javaClass = <span class="string">''</span>;
+0018             self.javaParClass = <span class="string">''</span>;
+0019         <span class="keyword">end</span>
+0020         
+0021         <a name="_sub1" href="#_subfunctions" class="code">function ex = getMean(self)</a>
+0022             s = self.getParam(3).paramValue;
+0023             n = self.getParam(4).paramValue;
+0024             ex = self.genharmonic(n,s-1) / self.genharmonic(n,s);
+0025         <span class="keyword">end</span>
+0026         
+0027         <a name="_sub2" href="#_subfunctions" class="code">function SCV = getSCV(self)</a>
+0028             s = self.getParam(3).paramValue;
+0029             n = self.getParam(4).paramValue;
+0030             ex = self.getMean();
+0031             var = self.genharmonic(n,s-2) / self.genharmonic(n,s) - ex^2;
+0032             SCV = var / ex^2;
+0033         <span class="keyword">end</span>
+0034         
+0035         <a name="_sub3" href="#_subfunctions" class="code">function X = sample(self, n)</a>
+0036             X = self.getParam(3).paramValue * ones(n,1);
+0037         <span class="keyword">end</span>
+0038         
+0039         <a name="_sub4" href="#_subfunctions" class="code">function Ft = evalCDF(self,k)</a>
+0040             s = self.getParam(3).paramValue;
+0041             n = self.getParam(4).paramValue;
+0042             Ft = self.genharmonic(k,s) / self.genharmonic(n,s); 
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub5" href="#_subfunctions" class="code">function p = getPmf(self, k)</a>
+0046             s = self.getParam(3).paramValue;
+0047             n = self.getParam(4).paramValue;
+0048             <span class="keyword">if</span> ~exist(<span class="string">'k'</span>,<span class="string">'var'</span>)
+0049                 k = 1:n;
+0050             <span class="keyword">end</span>
+0051             Hns = Zipf.genharmonic(n,s);
+0052             p = 1./(k.^s)/Hns;
+0053         <span class="keyword">end</span>
+0054     <span class="keyword">end</span>
+0055     
+0056     methods (Static)
+0057         <a name="_sub6" href="#_subfunctions" class="code">function Hnm = genharmonic(n,m)</a>
+0058             Hnm = 0;
+0059             <span class="keyword">for</span> k=1:n
+0060                 Hnm = Hnm + 1/k^m;
+0061             <span class="keyword">end</span>
+0062         <span class="keyword">end</span>
+0063     <span class="keyword">end</span>
+0064     
+0065 <span class="keyword">end</span>
+0066</pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

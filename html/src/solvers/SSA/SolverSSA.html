@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SolverSSA</title>
+  <meta name="keywords" content="SolverSSA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">SSA</a> &gt; SolverSSA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\SSA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SolverSSA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverSSA.html" class="code" title="">SolverSSA</a>	</li><li><a href="solver_ssa_analysis.html" class="code" title="function [QN,UN,RN,TN,CN,XN,runtime] = solver_ssa_analysis(qn, options)">solver_ssa_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverSSA.html" class="code" title="">SolverSSA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = SolverSSA(model,varargin)</a></li><li><a href="#_sub2" class="code">function supported = getSupported(self,supported)</a></li><li><a href="#_sub3" class="code">function runtime = run(self)</a></li><li><a href="#_sub4" class="code">function featSupported = getFeatureSet()</a></li><li><a href="#_sub5" class="code">function [bool, featSupported] = supports(model)</a></li><li><a href="#_sub6" class="code">function options = defaultOptions(self)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SolverSSA.html" class="code" title="">SolverSSA</a> &lt; NetworkSolver
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods
+0006         <a name="_sub0" href="#_subfunctions" class="code">function self = SolverSSA(model,varargin)</a>
+0007             self = self@NetworkSolver(model, mfilename);
+0008             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
+0009         <span class="keyword">end</span>
+0010         
+0011         <a name="_sub1" href="#_subfunctions" class="code">function supported = getSupported(self,supported)</a>
+0012             <span class="keyword">if</span> ~exist(<span class="string">'supported'</span>,<span class="string">'var'</span>)
+0013                 supported=struct();
+0014             <span class="keyword">end</span>
+0015         <span class="keyword">end</span>
+0016         
+0017         <a name="_sub2" href="#_subfunctions" class="code">function runtime = run(self)</a>
+0018             T0=tic;
+0019             
+0020             options = self.getOptions;
+0021             
+0022             <span class="keyword">if</span> ~self.supports(self.model)
+0023 <span class="comment">%                if options.verbose</span>
+0024                     error(<span class="string">'Line:FeatureNotSupportedBySolver'</span>,<span class="string">'This model contains features not supported by the %s solver.'</span>,mfilename);
+0025 <span class="comment">%                end</span>
+0026 <span class="comment">%                runtime = toc(T0);</span>
+0027 <span class="comment">%                return</span>
+0028             <span class="keyword">end</span>            
+0029             
+0030             rand(<span class="string">'seed'</span>,options.seed);
+0031             
+0032             qn = self.model.getStruct();
+0033             
+0034             <span class="comment">% TODO: add priors on initial state</span>
+0035             qn.state = self.model.getState; <span class="comment">% not used internally by SSA</span>
+0036             qn.space = qn.state; <span class="comment">% SSA progressively grows this cell array into the simulated state space</span>
+0037             
+0038             [Q,U,R,T,C,X] = <a href="solver_ssa_analysis.html" class="code" title="function [QN,UN,RN,TN,CN,XN,runtime] = solver_ssa_analysis(qn, options)">solver_ssa_analysis</a>(qn, options);
+0039             
+0040             runtime=toc(T0);
+0041             self.setAvgResults(Q,U,R,T,C,X,runtime);
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044     
+0045     methods (Static)
+0046 <span class="comment">%                'Fork','Join','Forker','Joiner',...</span>
+0047         <a name="_sub3" href="#_subfunctions" class="code">function featSupported = getFeatureSet()</a>
+0048             featSupported = SolverFeatureSet;
+0049             featSupported.setTrue({<span class="string">'Sink'</span>,<span class="string">'Source'</span>,<span class="string">'Router'</span>,<span class="keyword">...</span>
+0050                 <span class="string">'ClassSwitch'</span>,<span class="string">'DelayStation'</span>,<span class="string">'Queue'</span>,<span class="keyword">...</span>
+0051                 <span class="string">'Cox2'</span>,<span class="string">'Erlang'</span>,<span class="string">'Exponential'</span>,<span class="string">'HyperExp'</span>,<span class="keyword">...</span><span class="comment">                                                </span>
+0052                 <span class="string">'StatelessClassSwitcher'</span>,<span class="string">'InfiniteServer'</span>,<span class="string">'SharedServer'</span>,<span class="string">'Buffer'</span>,<span class="string">'Dispatcher'</span>,<span class="keyword">...</span>
+0053                 <span class="string">'Server'</span>,<span class="string">'JobSink'</span>,<span class="string">'RandomSource'</span>,<span class="string">'ServiceTunnel'</span>,<span class="keyword">...</span>
+0054                 <span class="string">'SchedStrategy_INF'</span>,<span class="string">'SchedStrategy_PS'</span>,<span class="keyword">...</span>
+0055                 <span class="string">'SchedStrategy_DPS'</span>,<span class="string">'SchedStrategy_FCFS'</span>,<span class="keyword">...</span>
+0056                 <span class="string">'SchedStrategy_GPS'</span>,<span class="string">'SchedStrategy_RAND'</span>,<span class="keyword">...</span>
+0057                 <span class="string">'SchedStrategy_HOL'</span>,<span class="string">'SchedStrategy_LCFS'</span>,<span class="keyword">...</span>
+0058                 <span class="string">'SchedStrategy_SEPT'</span>,<span class="string">'SchedStrategy_LEPT'</span>,<span class="keyword">...</span>
+0059                 <span class="string">'RoutingStrategy_PROB'</span>,<span class="string">'RoutingStrategy_RAND'</span>,<span class="keyword">...</span><span class="comment">                </span>
+0060                 <span class="string">'SchedStrategy_EXT'</span>,<span class="string">'ClosedClass'</span>,<span class="string">'OpenClass'</span>});
+0061         <span class="keyword">end</span>        
+0062         
+0063         <a name="_sub4" href="#_subfunctions" class="code">function [bool, featSupported] = supports(model)</a>
+0064             featUsed = model.getUsedLangFeatures();    
+0065             featSupported = SolverSSA.getFeatureSet();
+0066             bool = SolverFeatureSet.supports(featSupported, featUsed);
+0067         <span class="keyword">end</span>
+0068     <span class="keyword">end</span>
+0069     
+0070     methods (Static)
+0071         <a name="_sub5" href="#_subfunctions" class="code">function options = defaultOptions(self)</a>
+0072             options = Solver.defaultOptions();
+0073             options.timespan = [0,Inf];
+0074             options.verbose = true;
+0075         <span class="keyword">end</span>
+0076     <span class="keyword">end</span>
+0077 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

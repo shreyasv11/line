@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of run</title>
+  <meta name="keywords" content="run">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../../index.html">solvers</a> &gt; <a href="../index.html">JMT</a> &gt; <a href="index.html">@SolverJMT</a> &gt; run.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\JMT\@SolverJMT&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>run
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function Tsim = run(self) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="SolverJMT.html" class="code" title="">SolverJMT</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Tsim = run(self)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 T0=tic;
+0006 options = self.getOptions;
+0007 
+0008 <span class="keyword">if</span> ~isfield(options,<span class="string">'verbose'</span>)
+0009     options.verbose = 0;
+0010 <span class="keyword">end</span>
+0011 
+0012 <span class="keyword">if</span> ~isfield(options,<span class="string">'force'</span>)
+0013     options.force = false;
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="keyword">if</span> ~isfield(options,<span class="string">'keep'</span>)
+0017     options.keep = false;
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="keyword">if</span> ~self.supports(self.model)
+0021 <span class="comment">%    if options.verbose</span>
+0022         error(<span class="string">'Line:FeatureNotSupportedBySolver'</span>,<span class="string">'This model contains features not supported by the %s solver.'</span>,mfilename);
+0023 <span class="comment">%    end</span>
+0024 <span class="comment">%    runtime = toc(T0);</span>
+0025 <span class="comment">%    return</span>
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="keyword">if</span> ~isfield(options,<span class="string">'samples'</span>)
+0029     options.samples = 1e4; <span class="comment">% default: this is the samples / measure, not the total number of simulation events, which can be much larger.</span>
+0030 <span class="keyword">elseif</span> options.samples &lt; 5e3
+0031     <span class="keyword">if</span> ~strcmpi(options.method,<span class="string">'jmva.ls'</span>)
+0032         warning(<span class="string">'JMT requires at least 5000 samples for each metric, current value is %d. Setting the samples to 5000.'</span>, options.samples);
+0033     <span class="keyword">end</span>
+0034     options.samples = 5e3;
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> ~isfield(options,<span class="string">'verbose'</span>)
+0038     options.verbose = 0;
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> ~isfield(options,<span class="string">'keep'</span>)
+0042     options.verbose = false;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">if</span> ~isfield(options,<span class="string">'seed'</span>)
+0046     options.seed = randi([1,1e6]);
+0047 <span class="keyword">end</span>
+0048 self.seed = options.seed;
+0049 
+0050 <span class="keyword">if</span> ~isfield(options,<span class="string">'timespan'</span>)
+0051     options.timespan = [0,Inf];
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="keyword">if</span> ~self.model.hasInitState
+0055     self.model.initDefault;
+0056 <span class="keyword">end</span>
+0057 
+0058 self.maxSamples = options.samples;
+0059 
+0060 <span class="keyword">switch</span> options.method
+0061         <span class="keyword">case</span> {<span class="string">'jsim'</span>,<span class="string">'default'</span>}
+0062         self.writeJSIM;
+0063         cmd = [<span class="string">'java -cp &quot;'</span>,self.getJMTJarPath(),filesep,<span class="string">'JMT.jar&quot; jmt.commandline.Jmt sim &quot;'</span>,self.getFilePath(),<span class="string">'jsimg'</span>,filesep, self.getFileName(), <span class="string">'.jsimg&quot; -seed '</span>,num2str(options.seed), <span class="string">' --illegal-access=permit'</span>];
+0064         <span class="keyword">if</span> options.verbose
+0065             fprintf(1,<span class="string">'JMT Model: %s\n'</span>,[self.getFilePath(),<span class="string">'jsimg'</span>,filesep, self.getFileName(), <span class="string">'.jsimg'</span>]);
+0066             fprintf(1,<span class="string">'JMT Command: %s\n'</span>,cmd);
+0067         <span class="keyword">end</span>
+0068     <span class="keyword">otherwise</span>
+0069         fname = self.writeJMVA([self.getFilePath(),<span class="string">'jmva'</span>,filesep, self.getFileName(),<span class="string">'.jmva'</span>]);
+0070         cmd = [<span class="string">'java -cp &quot;'</span>,self.getJMTJarPath(),filesep,<span class="string">'JMT.jar&quot; jmt.commandline.Jmt mva &quot;'</span>,fname,<span class="string">'&quot; -seed '</span>,num2str(options.seed), <span class="string">' --illegal-access=permit'</span>];
+0071         <span class="keyword">if</span> options.verbose
+0072             fprintf(1,<span class="string">'JMT Model: %s\n'</span>,[self.getFilePath(),<span class="string">'jmva'</span>,filesep, self.getFileName(), <span class="string">'.jmva'</span>]);
+0073             fprintf(1,<span class="string">'JMT Command: %s\n'</span>,cmd);
+0074         <span class="keyword">end</span>
+0075 <span class="keyword">end</span>
+0076 [~, result] = system(cmd);
+0077 Tsim = toc(T0);
+0078 
+0079 <span class="keyword">if</span> options.verbose
+0080     fprintf(1,sprintf(<span class="string">'JMT analysis completed in %.6f sec \n'</span>,Tsim));
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="keyword">if</span> ~options.keep
+0084     <span class="keyword">switch</span> options.method
+0085         <span class="keyword">case</span> {<span class="string">'jsim'</span>,<span class="string">'default'</span>}
+0086             delete([self.getFilePath(),<span class="string">'jsimg'</span>,filesep, self.getFileName(), <span class="string">'.jsimg'</span>]);
+0087         <span class="keyword">otherwise</span> <span class="comment">% covers all JMVA submethods</span>
+0088             delete([self.getFilePath(),<span class="string">'jmva'</span>,filesep, self.getFileName(), <span class="string">'.jmva'</span>]);
+0089     <span class="keyword">end</span>
+0090 <span class="keyword">end</span>
+0091 
+0092 self.getResults;
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_mam_analysis</title>
+  <meta name="keywords" content="solver_mam_analysis">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">MAM</a> &gt; solver_mam_analysis.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\MAM&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_mam_analysis
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [QN,UN,RN,TN,CN,XN,runtime] = solver_mam_analysis(qn, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="solver_mam.html" class="code" title="function [Q,U,R,T,C,X] = solver_mam(qn, PH, options)">solver_mam</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverMAM.html" class="code" title="">SolverMAM</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [QN,UN,RN,TN,CN,XN,runtime] = solver_mam_analysis(qn, options)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 M = qn.nstations;    <span class="comment">%number of stations</span>
+0006 K = qn.nclasses;    <span class="comment">%number of classes</span>
+0007 
+0008 mu = qn.mu;
+0009 phi = qn.phi;
+0010 
+0011 Tstart = tic;
+0012 
+0013 PH=cell(M,K);
+0014 <span class="keyword">for</span> i=1:M
+0015     <span class="keyword">for</span> k=1:K
+0016         <span class="keyword">if</span> isempty(mu{i,k})
+0017             PH{i,k} = [];
+0018         <span class="keyword">elseif</span> length(mu{i,k})==1
+0019             PH{i,k} = map_exponential(1/mu{i,k});
+0020         <span class="keyword">else</span>
+0021             D0 = diag(-mu{i,k})+diag(mu{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
+0022             D1 = zeros(size(D0));
+0023             D1(:,1)=(phi{i,k}.*mu{i,k});
+0024             PH{i,k} = map_normalize({D0,D1});
+0025         <span class="keyword">end</span>
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 [QN,UN,RN,TN,CN,XN] = <a href="solver_mam.html" class="code" title="function [Q,U,R,T,C,X] = solver_mam(qn, PH, options)">solver_mam</a>(qn, PH, options);
+0030 
+0031 QN(isnan(QN))=0;
+0032 CN(isnan(CN))=0;
+0033 RN(isnan(RN))=0;
+0034 UN(isnan(UN))=0;
+0035 XN(isnan(XN))=0;
+0036 TN(isnan(TN))=0;
+0037 
+0038 runtime = toc(Tstart);
+0039 
+0040 <span class="keyword">if</span> options.verbose &gt; 0
+0041     fprintf(1,<span class="string">'MAM analysis completed in %f sec\n'</span>,runtime);
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

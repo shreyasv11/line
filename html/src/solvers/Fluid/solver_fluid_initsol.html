@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solver_fluid_initsol</title>
+  <meta name="keywords" content="solver_fluid_initsol">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">solvers</a> &gt; <a href="index.html">Fluid</a> &gt; solver_fluid_initsol.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\solvers\Fluid&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>solver_fluid_initsol
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [init_sol, state] = solver_fluid_initsol(qn, options) %#ok<INUSD> </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SolverFluid.html" class="code" title="">SolverFluid</a>	</li><li><a href="solver_fluid_analysis.html" class="code" title="function [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSolution] = solver_fluid_analysis(qn, options)">solver_fluid_analysis</a>	Copyright (c) 2012-2019, Imperial College London</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [init_sol, state] = solver_fluid_initsol(qn, options) </a><span class="comment">%#ok&lt;INUSD&gt;</span>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 <span class="keyword">if</span> ~exist(<span class="string">'options'</span>,<span class="string">'var'</span>)
+0006     options = Solver.defaultOptions; <span class="comment">%#ok&lt;NASGU&gt;</span>
+0007 <span class="keyword">end</span>
+0008 
+0009 init_sol = [];
+0010 <span class="keyword">for</span> ind=1:qn.nnodes
+0011     <span class="keyword">if</span> qn.isstateful(ind)
+0012         isf = qn.nodeToStateful(ind);
+0013         ist = qn.nodeToStation(ind);
+0014         state_i = [];
+0015         init_sol_i = [];  <span class="comment">% compared to state_i, this does not track disabled classes and removes Inf entries in the Sources</span>
+0016         [~, nir, ~, kir_i] = State.toMarginal(qn, ind, qn.state{isf});
+0017         <span class="keyword">switch</span> qn.sched{ist}
+0018             <span class="keyword">case</span> {SchedStrategy.EXT}
+0019                 state_i(:,1) = Inf; <span class="comment">% fluid does not model infinite buffer?</span>
+0020                 <span class="keyword">for</span> r=1:size(kir_i,2)
+0021                     <span class="keyword">for</span> k=1:length(qn.mu{ist,r})
+0022                         state_i(:,end+1) = kir_i(:,r,k);
+0023                         <span class="keyword">if</span> ~isnan(qn.rates(ist,r))
+0024                             init_sol_i(:,end+1) = kir_i(:,r,k);
+0025                         <span class="keyword">end</span>
+0026                     <span class="keyword">end</span>
+0027                 <span class="keyword">end</span>
+0028             <span class="keyword">case</span> {SchedStrategy.FCFS, SchedStrategy.PS, SchedStrategy.INF, SchedStrategy.DPS}
+0029                 <span class="keyword">for</span> r=1:size(kir_i,2)
+0030                     <span class="keyword">for</span> k=1:length(qn.mu{ist,r})
+0031                         <span class="keyword">if</span> k==1
+0032                             state_i(:,end+1) = nir(:,r) - sum(kir_i(:,r,2:end),3); <span class="comment">% jobs in waiting buffer are re-started phase 1</span>
+0033                             <span class="keyword">if</span> ~isnan(qn.rates(ist,r))
+0034                                 init_sol_i(:,end+1) = nir(:,r) - sum(kir_i(:,r,2:end),3); <span class="comment">% jobs in waiting buffer are re-started phase 1</span>
+0035                             <span class="keyword">end</span>
+0036                         <span class="keyword">else</span>
+0037                             state_i(:,end+1) = kir_i(:,r,k);
+0038                             <span class="keyword">if</span> ~isnan(qn.rates(ist,r))
+0039                                 init_sol_i(:,end+1) = kir_i(:,r,k);
+0040                             <span class="keyword">end</span>
+0041                         <span class="keyword">end</span>
+0042                     <span class="keyword">end</span>
+0043                 <span class="keyword">end</span>
+0044             <span class="keyword">otherwise</span>
+0045                 error(<span class="string">'Unsupported scheduling policy at station %d'</span>,ist);
+0046                 <span class="keyword">return</span>
+0047         <span class="keyword">end</span>
+0048         init_sol = [init_sol, init_sol_i];
+0049         state{isf} = state_i;
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

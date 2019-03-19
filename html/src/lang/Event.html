@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Event</title>
+  <meta name="keywords" content="Event">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; Event.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>Event
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Event.html" class="code" title="">Event</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Event.html" class="code" title="">Event</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = Event(event, node, class, prob, state)</a></li><li><a href="#_sub2" class="code">function print(self)</a></li><li><a href="#_sub3" class="code">function text = toText(type)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Event.html" class="code" title="">Event</a> &lt; Copyable
+0002     <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     <span class="comment">% event major classification</span>
+0006     properties (Constant)
+0007         LOCAL = 0;
+0008         ARV = 1; <span class="comment">% job arrival</span>
+0009         DEP = 2; <span class="comment">% job departure</span>
+0010         PHASE = 3; <span class="comment">% service advances to next phase, without departure</span>
+0011         READ = 4; <span class="comment">% read cache item</span>
+0012     <span class="keyword">end</span>
+0013     
+0014     properties
+0015         node;
+0016         event;
+0017         class;
+0018         prob;
+0019         state;
+0020     <span class="keyword">end</span>
+0021     
+0022     methods
+0023         <a name="_sub0" href="#_subfunctions" class="code">function self = Event(event, node, class, prob, state)</a>
+0024             self.node = node;
+0025             self.event = event;
+0026             self.class = class;
+0027             <span class="keyword">if</span> ~exist(<span class="string">'prob'</span>,<span class="string">'var'</span>)
+0028                 prob = NaN;
+0029             <span class="keyword">end</span>
+0030             self.prob = prob;
+0031             <span class="keyword">if</span> ~exist(<span class="string">'state'</span>,<span class="string">'var'</span>)
+0032                 state = []; <span class="comment">% local state of the node</span>
+0033             <span class="keyword">end</span>
+0034             self.state = state;
+0035         <span class="keyword">end</span>
+0036         
+0037         <a name="_sub1" href="#_subfunctions" class="code">function print(self)</a>
+0038             fprintf(1,<span class="string">'(%s: %d,%d)\n'</span>,Event.toText(self.event),self.node,self.class);
+0039         <span class="keyword">end</span>
+0040     <span class="keyword">end</span>
+0041     
+0042     methods(Static)
+0043         <a name="_sub2" href="#_subfunctions" class="code">function text = toText(type)</a>
+0044             <span class="keyword">switch</span> type
+0045                 <span class="keyword">case</span> Event.ARV
+0046                     text = <span class="string">'arv'</span>;
+0047                 <span class="keyword">case</span> Event.DEP
+0048                     text = <span class="string">'dep'</span>;
+0049                 <span class="keyword">case</span> Event.PHASE
+0050                     text = <span class="string">'phase'</span>;
+0051                 <span class="keyword">case</span> Event.READ
+0052                     text = <span class="string">'read'</span>;
+0053             <span class="keyword">end</span>
+0054         <span class="keyword">end</span>
+0055     <span class="keyword">end</span>
+0056     
+0057 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

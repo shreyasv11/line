@@ -1,0 +1,352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of generateGraph</title>
+  <meta name="keywords" content="generateGraph">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@LayeredNetwork</a> &gt; generateGraph.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@LayeredNetwork&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>generateGraph
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function self = generateGraph(self) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function self = generateGraph(self)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 
+0005 wantCalls = true;
+0006 wantProcs = true;
+0007 self.lqnGraph = digraph();
+0008 <span class="comment">% add processors</span>
+0009 self.nodeDep = [];
+0010 fullname = {};
+0011 name = {};
+0012 type = {};
+0013 object = {};
+0014 EndNodes = [];
+0015 Weight = [];
+0016 Object = [];
+0017 demand = [];
+0018 multiplicity = [];
+0019 <span class="comment">%boundToEntry = [];</span>
+0020 host_proc = {};
+0021 host_task = {};
+0022 host_entry = {};
+0023 maxjobs = [];
+0024 nodeDep = [];
+0025 ctrp = 0; ctrt = 0; ctre = 0; ctrap = 0; ctras = 0;
+0026 <span class="keyword">for</span> p=1:length(self.processors)
+0027     ctrp = ctrp + 1;
+0028     fullname{end+1} = self.processors(p).name;
+0029     type{end+1} = <span class="string">'P'</span>;
+0030     hostname = sprintf(<span class="string">'P%d'</span>,ctrp);
+0031     name{end+1} = sprintf(<span class="string">'P%d'</span>,ctrp);
+0032     pidx = length(name);
+0033     object{end+1} = self.processors(p);
+0034     demand(end+1)= 0.0;
+0035     multiplicity(end+1)= object{end}.multiplicity;
+0036     <span class="comment">%    boundToEntry(end+1)=false;</span>
+0037     host_proc{end+1}= <span class="string">''</span>;
+0038     host_task{end+1}= <span class="string">''</span>;
+0039     host_entry{end+1}= <span class="string">''</span>;
+0040     nodeDep(end+1,1:3) = [NaN,NaN,NaN];
+0041     <span class="keyword">for</span> t=1:length(self.processors(p).tasks)
+0042         ctrt = ctrt + 1;
+0043         fullname{end+1} = self.processors(p).tasks(t).name;
+0044         name{end+1} = sprintf(<span class="string">'T%d'</span>,ctrt);
+0045         tidx = length(name);
+0046         taskname = name{end};
+0047         demand(end+1)= self.processors(p).tasks(t).thinkTimeMean;
+0048         object{end+1} = self.processors(p).tasks(t);
+0049         multiplicity(end+1)= object{end}.multiplicity;
+0050         <span class="comment">%        boundToEntry(end+1)=false;</span>
+0051         host_proc{end+1}= hostname;
+0052         host_task{end+1}= <span class="string">''</span>;
+0053         host_entry{end+1}= <span class="string">''</span>;
+0054         nodeDep(end+1,1:3) = [pidx,NaN,NaN];
+0055         <span class="keyword">switch</span> self.processors(p).tasks(t).scheduling
+0056             <span class="keyword">case</span> <span class="string">'ref'</span>
+0057                 type{end+1} = <span class="string">'R'</span>; <span class="comment">% reference task</span>
+0058                 maxjobs(:,end+1) =  multiplicity(end);
+0059             <span class="keyword">otherwise</span>
+0060                 type{end+1} = <span class="string">'T'</span>;
+0061         <span class="keyword">end</span>
+0062         <span class="keyword">for</span> e=1:length(self.processors(p).tasks(t).entries)
+0063             ctre = ctre + 1;
+0064             fullname{end+1} = self.processors(p).tasks(t).entries(e).name;
+0065             name{end+1} = sprintf(<span class="string">'E%d'</span>,ctre);
+0066             eidx = length(name);            
+0067             entryname = name{end};
+0068             type{end+1} = <span class="string">'E'</span>;
+0069             demand(end+1)= 0.0;
+0070             object{end+1} = self.processors(p).tasks(t).entries(e);
+0071             multiplicity(end+1)= NaN;
+0072             <span class="comment">%            boundToEntry(end+1)=false;</span>
+0073             host_proc{end+1}= hostname;
+0074             host_task{end+1}= taskname;
+0075             host_entry{end+1}= <span class="string">''</span>;
+0076             nodeDep(end+1,1:3) = [pidx,tidx,NaN];
+0077             <span class="keyword">for</span> a=1:length(self.processors(p).tasks(t).entries(e).activities)
+0078                 ctrap = ctrap + 1;
+0079                 fullname{end+1} = self.processors(p).tasks(t).entries(e).activities(a).name;
+0080                 demand(end+1)= self.processors(p).tasks(t).entries(e).activities(a).hostDemandMean;
+0081                 <span class="comment">%                name{end+1} = sprintf('AH%d(%.3f)',ctrap,demand(end));</span>
+0082                 name{end+1} = sprintf(<span class="string">'AH%d'</span>,ctrap);
+0083                 nodeDep(end+1,1:3) = [pidx,tidx,eidx];
+0084                 type{end+1} = <span class="string">'AH'</span>;
+0085                 object{end+1} = self.processors(p).tasks(t).entries(e).activities(a);
+0086                 multiplicity(end+1)= NaN;
+0087                 <span class="comment">%                boundToEntry(end+1)=false;</span>
+0088                 <span class="comment">%                if ~isempty(object{end}.boundToEntry)</span>
+0089                 <span class="comment">%                    boundToEntry(end)=true;</span>
+0090                 <span class="comment">%                end</span>
+0091                 host_proc{end+1}= hostname;
+0092                 host_task{end+1}= taskname;
+0093                 host_entry{end+1}= entryname;
+0094             <span class="keyword">end</span>
+0095         <span class="keyword">end</span>
+0096         <span class="keyword">for</span> a=1:length(self.processors(p).tasks(t).activities)
+0097             ctras = ctras + 1;
+0098             fullname{end+1} = self.processors(p).tasks(t).activities(a).name;
+0099             demand(end+1)= self.processors(p).tasks(t).activities(a).hostDemandMean;
+0100             <span class="comment">%            name{end+1} = sprintf('AS%d(%.3f)',ctras,demand(end));</span>
+0101             name{end+1} = sprintf(<span class="string">'AS%d'</span>,ctras);
+0102             type{end+1} = <span class="string">'AS'</span>;
+0103             object{end+1} = self.processors(p).tasks(t).activities(a);
+0104             multiplicity(end+1)= NaN;
+0105             <span class="comment">%            boundToEntry(end+1)=false;</span>
+0106             <span class="comment">%            if ~isempty(object{end}.boundToEntry)</span>
+0107             <span class="comment">%                boundToEntry(end)=true;</span>
+0108             <span class="comment">%            end</span>
+0109             host_proc{end+1}= hostname;
+0110             host_task{end+1}= taskname;
+0111             host_entry{end+1}= <span class="string">'NaN'</span>;
+0112             <span class="keyword">if</span> ~isempty(object{end}.boundToEntry)
+0113                 host_entry{end}= name{findstring(fullname,object{end}.boundToEntry)};
+0114                 eidx = findstring(name,host_entry{end});
+0115                 nodeDep(end+1,1:3) = [pidx,tidx,eidx];
+0116             <span class="keyword">else</span>
+0117                 nodeDep(end+1,1:3) = [pidx,tidx,NaN];
+0118             <span class="keyword">end</span>
+0119         <span class="keyword">end</span>
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">end</span>
+0122 
+0123 myTable = Table();<span class="comment">%'RowNames',name(:));</span>
+0124 myTable.Name = name(:);
+0125 self.nodeNames = name(:);
+0126 myTable.Type = type(:);
+0127 myTable.Proc = host_proc(:);
+0128 myTable.Task = host_task(:);
+0129 myTable.Entry = host_entry(:);
+0130 myTable.D = demand(:);
+0131 myTable.Mult = multiplicity(:);
+0132 <span class="comment">%myTable.BtoE = boundToEntry(:);</span>
+0133 myTable.MaxJobs = repmat(maxjobs,height(myTable),1);
+0134 myTable.Node = fullname(:);
+0135 myTable.Object = object(:);
+0136 self.lqnGraph = self.lqnGraph.addnode(myTable);
+0137 self.nodeDep = nodeDep;
+0138 proc = self.processors;
+0139 EndNodes = [];
+0140 Weight = [];
+0141 EdgeType = [];
+0142 PostType = [];
+0143 PreType = [];
+0144 <span class="keyword">for</span> p=1:length(proc)
+0145     tasks_p = proc(p).tasks;
+0146     <span class="keyword">for</span> t=1:length(tasks_p)        
+0147         <span class="keyword">if</span> wantProcs
+0148             EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,proc(p).tasks(t).name);
+0149             EndNodes(<span class="keyword">end</span>,2) = findstring(self.lqnGraph.Nodes.Node,proc(p).name);
+0150             Weight(end+1,1) = 1.0;
+0151             EdgeType(end+1,1) = 0; <span class="comment">% within task</span>
+0152             PreType(end+1,1) = 0; <span class="comment">% single</span>
+0153             PostType(end+1,1) = 0; <span class="comment">% single</span>
+0154         <span class="keyword">end</span>
+0155         entries_tp = tasks_p(t).entries;
+0156         <span class="keyword">for</span> e=1:length(entries_tp)
+0157             EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,tasks_p(t).name);
+0158             EndNodes(<span class="keyword">end</span>,2) = findstring(self.lqnGraph.Nodes.Node,entries_tp(e).name);
+0159             Weight(end+1,1) = 1.0;
+0160             EdgeType(end+1,1) = 0; <span class="comment">% within task</span>
+0161             PreType(end+1,1) = 0; <span class="comment">% single</span>
+0162             PostType(end+1,1) = 0; <span class="comment">% single</span>
+0163             
+0164             hw_act_etp = entries_tp(e).activities; <span class="comment">% hw activities</span>
+0165             <span class="keyword">for</span> a=1:length(hw_act_etp)
+0166                 EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,entries_tp(e).name);
+0167                 EndNodes(<span class="keyword">end</span>,2) = findstring(self.lqnGraph.Nodes.Node,hw_act_etp(a).name);
+0168                 Weight(end+1,1) = 1.0;
+0169                 EdgeType(end+1,1) = 0; <span class="comment">% within task</span>
+0170                 PreType(end+1,1) = 0; <span class="comment">% single</span>
+0171                 PostType(end+1,1) = 0; <span class="comment">% single</span>
+0172             <span class="keyword">end</span>
+0173         <span class="keyword">end</span>
+0174         
+0175         sw_act_tp = tasks_p(t).activities; <span class="comment">% sw activities</span>
+0176         <span class="keyword">for</span> a=1:length(sw_act_tp)
+0177             <span class="keyword">if</span> ~isempty(sw_act_tp(a).boundToEntry)
+0178                 EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).boundToEntry);
+0179                 EndNodes(<span class="keyword">end</span>,2) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
+0180                 Weight(end+1,1) = 1.0;
+0181                 EdgeType(end+1,1) = 0; <span class="comment">% within task</span>
+0182                 PreType(end+1,1) = 0; <span class="comment">% single</span>
+0183                 PostType(end+1,1) = 0; <span class="comment">% single</span>
+0184             <span class="keyword">end</span>
+0185             
+0186             <span class="keyword">for</span> d=1:length(tasks_p(t).precedences)
+0187                 <span class="keyword">if</span> strcmp(tasks_p(t).precedences(d).pres{1},sw_act_tp(a).name)
+0188                     <span class="keyword">switch</span> tasks_p(t).precedences(d).preType
+0189                         <span class="keyword">case</span> <span class="string">'single'</span>
+0190                             <span class="keyword">switch</span> tasks_p(t).precedences(d).postType
+0191                                 <span class="keyword">case</span> <span class="string">'single'</span>
+0192                                     EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, tasks_p(t).precedences(d).pres{1});
+0193                                     EndNodes(<span class="keyword">end</span>,2) = findstring(self.lqnGraph.Nodes.Node, tasks_p(t).precedences(d).posts{1});
+0194                                     Weight(end+1,1) = 1.0;
+0195                                     EdgeType(end+1,1) = 0; <span class="comment">% within task</span>
+0196                                     PreType(end+1,1) = 0; <span class="comment">% single</span>
+0197                                     PostType(end+1,1) = 0; <span class="comment">% single</span>
+0198                                 <span class="keyword">otherwise</span>
+0199                                     error(<span class="string">'Precedence is not supported yet.'</span>);
+0200                             <span class="keyword">end</span>
+0201                         <span class="keyword">otherwise</span>
+0202                             error(<span class="string">'Precedence is not supported yet.'</span>);
+0203                     <span class="keyword">end</span>
+0204                 <span class="keyword">end</span>
+0205             <span class="keyword">end</span>
+0206             
+0207             <span class="keyword">if</span> wantCalls
+0208                 synchCallDests = sw_act_tp(a).synchCallDests;
+0209                 <span class="keyword">for</span> sd=1:length(synchCallDests)
+0210                     EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
+0211                     EndNodes(<span class="keyword">end</span>,2) = findstring(self.lqnGraph.Nodes.Node,synchCallDests{sd});
+0212                     Weight(end+1,1) = sw_act_tp(a).synchCallMeans(sd);
+0213                     EdgeType(end+1,1) = 1; <span class="comment">% sync</span>
+0214                     PreType(end+1,1) = 0; <span class="comment">% single</span>
+0215                     PostType(end+1,1) = 0; <span class="comment">% single</span>
+0216                 <span class="keyword">end</span>
+0217                 
+0218                 asynchCallDests = sw_act_tp(a).asynchCallDests;
+0219                 <span class="keyword">for</span> asd=1:length(asynchCallDests)
+0220                     EndNodes(end+1,1) = sw_act_tp(a).name;
+0221                     EndNodes(<span class="keyword">end</span>,2) = asynchCallDests{sd};
+0222                     Weight(end+1,1) = sw_act_tp(a).asynchCallMeans(sd);
+0223                     EdgeType(end+1,1) = 2; <span class="comment">% async</span>
+0224                     PreType(end+1,1) = 0; <span class="comment">% single</span>
+0225                     PostType(end+1,1) = 0; <span class="comment">% single</span>
+0226                 <span class="keyword">end</span>
+0227                 
+0228                 <span class="comment">%                 fwdCallDests = sw_act_tp(a).fwdCallDests;</span>
+0229                 <span class="comment">%                 for asd=1:length(fwdCallDests)</span>
+0230                 <span class="comment">%                     EndNodes(end+1,1) = sw_act_tp(a).name;</span>
+0231                 <span class="comment">%                     EndNodes(end,2) = fwdCallDests{sd};</span>
+0232                 <span class="comment">%                     Weight(end+1,1) = sw_act_tp(a).fwdCallMeans;</span>
+0233                 <span class="comment">%                     Type(end+1,1) = 3; % forwarding</span>
+0234                 <span class="comment">%                 end</span>
+0235             <span class="keyword">end</span>
+0236         <span class="keyword">end</span>
+0237     <span class="keyword">end</span>
+0238 <span class="keyword">end</span>
+0239 
+0240 <span class="keyword">for</span> e=1:size(EndNodes,1)
+0241     source = EndNodes(e,1);
+0242     target = EndNodes(e,2);
+0243     self.lqnGraph = self.lqnGraph.addedge(name{source},name{target},Weight(e,1));
+0244 <span class="keyword">end</span>
+0245 
+0246 <span class="keyword">for</span> e=1:size(EndNodes,1) <span class="comment">% do not merge with previous as addedge does mess</span>
+0247     source = EndNodes(e,1);
+0248     target = EndNodes(e,2);
+0249     eid = self.lqnGraph.findedge(name{source},name{target});
+0250     self.endNodes(eid,1) = EndNodes(e,1); <span class="comment">% someone addedge does not preserve the order</span>
+0251     self.endNodes(eid,2) = EndNodes(e,2);
+0252     self.lqnGraph.Edges.Type(eid)=EdgeType(e,1);
+0253     self.lqnGraph.Edges.Pre(eid)=PreType(e,1);
+0254     self.lqnGraph.Edges.Post(eid)=PostType(e,1);
+0255 <span class="keyword">end</span>
+0256 
+0257 <span class="comment">% fix all activities</span>
+0258 <span class="keyword">for</span> j=find(cellfun(@(c) strcmpi(c,<span class="string">'NaN'</span>),self.lqnGraph.Nodes.Entry))'    
+0259     self.lqnGraph.Nodes.Entry{j} = self.findEntryOfActivity(self.lqnGraph.Nodes.Name{j});
+0260 <span class="keyword">end</span>
+0261 <span class="comment">% for i=1:numnodes(G)</span>
+0262 <span class="comment">%     if isempty(successors(G,i))</span>
+0263 <span class="comment">%         if ~strcmpi(G.Nodes.Type{i},'AH')</span>
+0264 <span class="comment">%             %G.Nodes.Type{i}='X';</span>
+0265 <span class="comment">%         end</span>
+0266 <span class="comment">%     end</span>
+0267 <span class="comment">% end</span>
+0268 
+0269 <span class="comment">% put processors as target of hosted task</span>
+0270 keep = ([findstring(self.lqnGraph.Nodes.Type,<span class="string">'P'</span>); findstring(self.lqnGraph.Nodes.Type,<span class="string">'R'</span>); findstring(self.lqnGraph.Nodes.Type,<span class="string">'T'</span>)]);
+0271 taskGraph = self.lqnGraph.subgraph(keep(keep&gt;0)); <span class="comment">% ignore missing types</span>
+0272 <span class="comment">% now H contains all tasks and edges to the processors they run on</span>
+0273 <span class="comment">% we add external calls</span>
+0274 
+0275 actset = [findstring(self.lqnGraph.Nodes.Type,<span class="string">'AS'</span>)]';
+0276 entryset = [findstring(self.lqnGraph.Nodes.Type,<span class="string">'E'</span>)]';
+0277 <span class="keyword">for</span> s = actset(actset&gt;0)
+0278     source_activity = self.getNodeName(s);
+0279     source_task = self.getNodeTask(source_activity);
+0280     entryset = self.lqnGraph.successors(s)';
+0281     <span class="keyword">for</span> t = entryset(entryset&gt;0)
+0282         <span class="keyword">if</span> strcmpi(self.getNodeType(t),<span class="string">'E'</span>)
+0283             target_task = self.getNodeTask(t);
+0284             edge = self.findEdgeIndex(s, t);
+0285             <span class="keyword">if</span> edge
+0286                 weight = exp(self.lqnGraph.Edges.Weight(edge));
+0287                 <span class="keyword">try</span>
+0288                     taskGraph=taskGraph.addedge(source_task, target_task, weight);
+0289                 <span class="keyword">end</span>
+0290             <span class="keyword">end</span>
+0291         <span class="keyword">end</span>
+0292     <span class="keyword">end</span>
+0293 <span class="keyword">end</span>
+0294 
+0295 self.param.Nodes.RespT=zeros(height(self.lqnGraph.Nodes),1);
+0296 self.param.Nodes.Util=zeros(height(self.lqnGraph.Nodes),1);
+0297 self.param.Nodes.Tput=zeros(height(self.lqnGraph.Nodes),1);
+0298 
+0299 self.param.Edges.RespT=zeros(height(self.lqnGraph.Edges),1);
+0300 self.param.Edges.Tput=zeros(height(self.lqnGraph.Edges),1);
+0301 
+0302 self.lqnGraph = self.lqnGraph;
+0303 self.taskGraph = taskGraph;
+0304 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of HyperExp</title>
+  <meta name="keywords" content="HyperExp">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">distributions</a> &gt; HyperExp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\distributions&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>HyperExp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="HyperExp.html" class="code" title="">HyperExp</a>	</li><li><a href="PhaseType.html" class="code" title="">PhaseType</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="HyperExp.html" class="code" title="">HyperExp</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = HyperExp(p, lambda1, lambda2)</a></li><li><a href="#_sub2" class="code">function phases = getNumberOfPhases(self)</a></li><li><a href="#_sub3" class="code">function ex = getMean(self)</a></li><li><a href="#_sub4" class="code">function SCV = getSCV(self)</a></li><li><a href="#_sub5" class="code">function Ft = evalCDF(self,t)</a></li><li><a href="#_sub6" class="code">function PH = getRenewalProcess(self)</a></li><li><a href="#_sub7" class="code">function he = fit(MEAN,SCV)</a></li><li><a href="#_sub8" class="code">function he = fitMeanAndSCV(MEAN, SCV)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="HyperExp.html" class="code" title="">HyperExp</a> &lt; <a href="PhaseType.html" class="code" title="">PhaseType</a>
+0002     <span class="comment">% Copyright (c) 2018-Present, Imperial College London</span>
+0003     <span class="comment">% All rights reserved.</span>
+0004     
+0005     methods
+0006         <span class="comment">%Constructor</span>
+0007         <a name="_sub0" href="#_subfunctions" class="code">function self = HyperExp(p, lambda1, lambda2)</a>
+0008             self = self@<a href="PhaseType.html" class="code" title="">PhaseType</a>(<span class="string">'HyperExp'</span>,3);
+0009             setParam(self, 1, <span class="string">'p'</span>, p, <span class="string">'java.lang.Double'</span>);
+0010             setParam(self, 2, <span class="string">'lambda1'</span>, lambda1, <span class="string">'java.lang.Double'</span>);
+0011             setParam(self, 3, <span class="string">'lambda2'</span>, lambda2, <span class="string">'java.lang.Double'</span>);
+0012             self.javaClass = <span class="string">'jmt.engine.random.HyperExp'</span>;
+0013             self.javaParClass = <span class="string">'jmt.engine.random.HyperExpPar'</span>;
+0014         <span class="keyword">end</span>
+0015         
+0016         <a name="_sub1" href="#_subfunctions" class="code">function phases = getNumberOfPhases(self)</a>
+0017             phases  = 2; <span class="comment">%r</span>
+0018         <span class="keyword">end</span>        
+0019         
+0020         <a name="_sub2" href="#_subfunctions" class="code">function ex = getMean(self)</a>
+0021             p = self.getParam(1).paramValue;
+0022             mu1 = self.getParam(2).paramValue;
+0023             mu2 = self.getParam(3).paramValue;
+0024             ex = p/mu1 + (1-p)/mu2;
+0025         <span class="keyword">end</span>
+0026         
+0027         <a name="_sub3" href="#_subfunctions" class="code">function SCV = getSCV(self)</a>
+0028             p = self.getParam(1).paramValue;
+0029             mu1 = self.getParam(2).paramValue;
+0030             mu2 = self.getParam(3).paramValue;
+0031             SCV = (2*(p/mu1^2 + (1-p)/mu2^2) - (p/mu1 + (1-p)/mu2)^2)/(p/mu1 + (1-p)/mu2)^2;
+0032         <span class="keyword">end</span>
+0033                 
+0034         <a name="_sub4" href="#_subfunctions" class="code">function Ft = evalCDF(self,t)</a>
+0035             p = self.getParam(1).paramValue;
+0036             mu1 = self.getParam(2).paramValue;
+0037             mu2 = self.getParam(3).paramValue;
+0038             Ft = p*(1-exp(-mu1*t))+(1-p)*(1-exp(-mu2*t));
+0039         <span class="keyword">end</span>
+0040         
+0041         <a name="_sub5" href="#_subfunctions" class="code">function PH = getRenewalProcess(self)</a>
+0042             p = self.getParam(1).paramValue;
+0043             mu1 = self.getParam(2).paramValue;
+0044             mu2 = self.getParam(3).paramValue;
+0045             PH={[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
+0046         <span class="keyword">end</span>
+0047         
+0048     <span class="keyword">end</span>
+0049     
+0050     methods(Static)
+0051         <a name="_sub6" href="#_subfunctions" class="code">function he = fit(MEAN,SCV)</a>
+0052             he = HyperExp.fitMeanAndSCV(MEAN,SCV);
+0053         <span class="keyword">end</span>
+0054         
+0055         <a name="_sub7" href="#_subfunctions" class="code">function he = fitMeanAndSCV(MEAN, SCV)</a>
+0056             [~,mu1,mu2,p]=map_hyperexp(MEAN,SCV);
+0057             he = <a href="HyperExp.html" class="code" title="">HyperExp</a>(p, mu1, mu2);
+0058         <span class="keyword">end</span>
+0059         
+0060     <span class="keyword">end</span>
+0061     
+0062 <span class="keyword">end</span>
+0063</pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

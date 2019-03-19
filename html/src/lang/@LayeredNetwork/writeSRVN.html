@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writeSRVN</title>
+  <meta name="keywords" content="writeSRVN">
+  <meta name="description" content="Copyright (c) 2012-2019, Imperial College London">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="../index.html">lang</a> &gt; <a href="index.html">@LayeredNetwork</a> &gt; writeSRVN.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang\@LayeredNetwork&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>writeSRVN
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Copyright (c) 2012-2019, Imperial College London</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function writeSRVN(self, filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Copyright (c) 2012-2019, Imperial College London
+ All rights reserved.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LayeredNetwork.html" class="code" title="">LayeredNetwork</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writeSRVN(self, filename)</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004 fid = fopen(filename,<span class="string">'w+'</span>);
+0005 <span class="comment">%fid = 1;</span>
+0006 fprintf(fid,<span class="string">'G\n'</span>);
+0007 fprintf(fid,[<span class="string">'&quot;'</span>,self.name,<span class="string">'&quot;\n'</span>]);
+0008 fprintf(fid,[num2str(Solver.defaultOptions.iter_tol),<span class="string">'\n'</span>]);
+0009 fprintf(fid,[num2str(Solver.defaultOptions.iter_max),<span class="string">'\n'</span>]);
+0010 fprintf(fid,[<span class="string">'-1\n\n'</span>]);
+0011 
+0012 fprintf(fid,<span class="string">'#Processor block\n'</span>);
+0013 fprintf(fid,[<span class="string">'P '</span>,num2str(length(self.processors)),<span class="string">'\n'</span>]);
+0014 <span class="keyword">for</span> p = 1:length(self.processors)
+0015     curProc = self.processors(p);
+0016     <span class="keyword">switch</span> curProc.scheduling
+0017         <span class="keyword">case</span> SchedStrategy.FCFS
+0018             fprintf(fid,[<span class="string">'p '</span>,curProc.name,<span class="string">' f m '</span>,num2str(curProc.multiplicity),<span class="string">'\n'</span>]);
+0019         <span class="keyword">case</span> SchedStrategy.HOL
+0020             fprintf(fid,[<span class="string">'p '</span>,curProc.name,<span class="string">' h m '</span>,num2str(curProc.multiplicity),<span class="string">'\n'</span>]);
+0021         <span class="keyword">case</span> SchedStrategy.INF
+0022             fprintf(fid,[<span class="string">'p '</span>,curProc.name,<span class="string">' i'</span>,<span class="string">'\n'</span>]);
+0023         <span class="keyword">case</span> SchedStrategy.PS
+0024             fprintf(fid,[<span class="string">'p '</span>,curProc.name,<span class="string">' s'</span>,<span class="string">'\n'</span>]);
+0025         <span class="keyword">case</span> SchedStrategy.RAND
+0026             fprintf(fid,[<span class="string">'p '</span>,curProc.name,<span class="string">' r m '</span>,num2str(curProc.multiplicity),<span class="string">'\n'</span>]);
+0027         <span class="keyword">otherwise</span>
+0028             error(<span class="string">'Unsupported scheduling policy.'</span>);
+0029     <span class="keyword">end</span>
+0030 <span class="keyword">end</span>
+0031 fprintf(fid,<span class="string">'-1\n\n#Task block\n'</span>);
+0032 numTasks = 0;
+0033 <span class="keyword">for</span> p = 1:length(self.processors)
+0034     curProc = self.processors(p);
+0035     numTasks = numTasks + length(curProc.tasks);
+0036 <span class="keyword">end</span>
+0037 fprintf(fid,[<span class="string">'T '</span>,num2str(numTasks),<span class="string">'\n'</span>]);
+0038 <span class="keyword">for</span> p = 1:length(self.processors)
+0039     curProc = self.processors(p);
+0040     <span class="keyword">for</span> t=1:length(curProc.tasks)
+0041         curTask = self.processors(p).tasks(t);
+0042         entryList = <span class="string">''</span>;
+0043         <span class="keyword">for</span> e=1:length(curTask.entries)
+0044             curEntry = self.processors(p).tasks(t).entries(e);
+0045             entryList = [entryList,<span class="string">' '</span>,curEntry.name];
+0046         <span class="keyword">end</span>
+0047         entryList=entryList(2:end);
+0048         <span class="keyword">switch</span> curTask.scheduling
+0049             <span class="keyword">case</span> SchedStrategy.REF
+0050                 fprintf(fid,[<span class="string">'t '</span>,curTask.name,<span class="string">' r '</span>,entryList,<span class="string">' -1 '</span>,curProc.name,<span class="string">' m '</span>,num2str(curTask.multiplicity),<span class="string">'\n'</span>]);<span class="comment">%,' z ',num2str(curTask.thinkTimeMean),'\n']);</span>
+0051             <span class="keyword">case</span> SchedStrategy.FCFS
+0052                 fprintf(fid,[<span class="string">'t '</span>,curTask.name,<span class="string">' f  '</span>,entryList,<span class="string">' -1 '</span>,curProc.name,<span class="string">' m '</span>,num2str(curTask.multiplicity),<span class="string">'\n'</span>]);
+0053             <span class="keyword">case</span> SchedStrategy.HOL
+0054                 fprintf(fid,[<span class="string">'t '</span>,curTask.name,<span class="string">' h  '</span>,entryList,<span class="string">' -1 '</span>,curProc.name,<span class="string">' m '</span>,num2str(curTask.multiplicity),<span class="string">'\n'</span>]);
+0055             <span class="keyword">case</span> {SchedStrategy.INF, SchedStrategy.PS, SchedStrategy.RAND, SchedStrategy.GPS, SchedStrategy.DPS}
+0056                 fprintf(fid,[<span class="string">'t '</span>,curTask.name,<span class="string">' n  '</span>,entryList,<span class="string">' -1 '</span>,curProc.name,<span class="string">' m '</span>,num2str(curTask.multiplicity),<span class="string">'\n'</span>]);
+0057             <span class="keyword">otherwise</span>
+0058                 error(<span class="string">'Unsupported scheduling policy.'</span>);
+0059         <span class="keyword">end</span>
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 fprintf(fid,<span class="string">'-1\n\n#Entry block\n'</span>);
+0063 
+0064 numEntry = 0;
+0065 <span class="keyword">for</span> p = 1:length(self.processors)
+0066     curProc = self.processors(p);
+0067     <span class="keyword">for</span> t=1:length(curProc.tasks)
+0068         curTask = self.processors(p).tasks(t);
+0069         numEntry = numEntry + length(curTask.entries);
+0070     <span class="keyword">end</span>
+0071 <span class="keyword">end</span>
+0072 
+0073 fprintf(fid,[<span class="string">'E '</span>,num2str(numEntry),<span class="string">'\n'</span>]);
+0074 <span class="keyword">for</span> p = 1:length(self.processors)
+0075     curProc = self.processors(p);
+0076     <span class="keyword">for</span> t=1:length(curProc.tasks)
+0077         curTask = self.processors(p).tasks(t);
+0078         <span class="keyword">for</span> e=1:length(curTask.entries)
+0079             curEntry = self.processors(p).tasks(t).entries(e);
+0080             <span class="comment">%fprintf(fid,['s ',curEntry.name,' 0.0 -1\n']);</span>
+0081             <span class="keyword">for</span> a=1:length(curTask.activities)
+0082                 curAct = self.processors(p).tasks(t).activities(a);
+0083                 <span class="keyword">if</span> strcmp(curAct.boundToEntry,curEntry.name)
+0084                     fprintf(fid,[<span class="string">'A '</span>,curEntry.name,<span class="string">' '</span>,curAct.name,<span class="string">'\n'</span>]);
+0085                 <span class="keyword">end</span>
+0086             <span class="keyword">end</span>
+0087         <span class="keyword">end</span>
+0088     <span class="keyword">end</span>
+0089 <span class="keyword">end</span>
+0090 
+0091 fprintf(fid,<span class="string">'-1\n\n#Activity blocks\n'</span>);
+0092 <span class="keyword">for</span> p = 1:length(self.processors)
+0093     curProc = self.processors(p);
+0094     <span class="keyword">for</span> t=1:length(curProc.tasks)
+0095         curTask = self.processors(p).tasks(t);
+0096         fprintf(fid,[<span class="string">'A '</span>,curTask.name,<span class="string">'\n'</span>]);
+0097         <span class="comment">% task activities</span>
+0098         <span class="keyword">for</span> a=1:length(curTask.activities)
+0099             curAct = self.processors(p).tasks(t).activities(a);
+0100             fprintf(fid,[<span class="string">'s '</span>,curAct.name,<span class="string">' '</span>,num2str(curAct.hostDemandMean),<span class="string">' \n'</span>]);
+0101             <span class="keyword">for</span> d=1:numel(curAct.synchCallDests)
+0102                 fprintf(fid,[<span class="string">'y '</span>,curAct.name,<span class="string">' '</span>,curAct.synchCallDests{d},<span class="string">' '</span>,num2str(curAct.synchCallMeans),<span class="string">' \n'</span>]);
+0103             <span class="keyword">end</span>
+0104         <span class="keyword">end</span>
+0105         <span class="keyword">if</span> ~strcmp(curTask.scheduling,<span class="string">'ref'</span>)
+0106             fprintf(fid,[<span class="string">':'</span>]);
+0107             <span class="keyword">for</span> a=1:length(curTask.activities)
+0108                 curAct = self.processors(p).tasks(t).activities(a);
+0109                 <span class="keyword">if</span> ~isempty(curAct.boundToEntry)
+0110                     <span class="keyword">if</span> a==length(curTask.activities)
+0111                         fprintf(fid,[<span class="string">'\n'</span>,curAct.name,<span class="string">' ['</span>,curAct.boundToEntry,<span class="string">']'</span>]);
+0112                     <span class="keyword">else</span>
+0113                         fprintf(fid,[<span class="string">'\n'</span>,curAct.name,<span class="string">' ['</span>,curAct.boundToEntry,<span class="string">'];'</span>]);
+0114                     <span class="keyword">end</span>
+0115                 <span class="keyword">end</span>
+0116             <span class="keyword">end</span>
+0117         <span class="keyword">end</span>
+0118         fprintf(fid,[<span class="string">'\n-1\n\n'</span>]);
+0119     <span class="keyword">end</span>
+0120 <span class="keyword">end</span>
+0121 <span class="keyword">if</span> fid~=1
+0122     fclose(fid);
+0123 <span class="keyword">end</span>
+0124 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

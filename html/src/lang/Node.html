@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Node</title>
+  <meta name="keywords" content="Node">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">src</a> &gt; <a href="index.html">lang</a> &gt; Node.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for src\lang&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>Node
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="NetworkElement.html" class="code" title="">NetworkElement</a>	</li><li><a href="Node.html" class="code" title="">Node</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ClassSwitch.html" class="code" title="">ClassSwitch</a>	</li><li><a href="Fork.html" class="code" title="">Fork</a>	</li><li><a href="JobClass.html" class="code" title="">JobClass</a>	</li><li><a href="Logger.html" class="code" title="">Logger</a>	</li><li><a href="Node.html" class="code" title="">Node</a>	</li><li><a href="Router.html" class="code" title="">Router</a>	</li><li><a href="Sink.html" class="code" title="">Sink</a>	</li><li><a href="StatefulNode.html" class="code" title="">StatefulNode</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function self = Node(name)</a></li><li><a href="#_sub2" class="code">function self = setModel(self, model)</a></li><li><a href="#_sub3" class="code">function self = link(self, nodeTo)</a></li><li><a href="#_sub4" class="code">function sections = getSections(self)</a></li><li><a href="#_sub5" class="code">function setProbRouting(self, class, destination, probability)</a></li><li><a href="#_sub6" class="code">function setScheduling(self, class, strategy)</a></li><li><a href="#_sub7" class="code">function setRouting(self, class, strategy, destination, probability)</a></li><li><a href="#_sub8" class="code">function bool = hasClassSwitch(self)</a></li><li><a href="#_sub9" class="code">function bool = isStateful(self)</a></li><li><a href="#_sub10" class="code">function bool = isStation(self)</a></li><li><a href="#_sub11" class="code">function clone = copyElement(self)</a></li><li><a href="#_sub12" class="code">function ind = subsindex(self)</a></li><li><a href="#_sub13" class="code">function V = horzcat(self, varargin)</a></li><li><a href="#_sub14" class="code">function V = vertcat(self, varargin)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Node.html" class="code" title="">Node</a> &lt; <a href="NetworkElement.html" class="code" title="">NetworkElement</a>
+0002 <span class="comment">% Copyright (c) 2012-2019, Imperial College London</span>
+0003 <span class="comment">% All rights reserved.</span>
+0004     
+0005     properties
+0006         model;
+0007         input;
+0008         server;
+0009         output;
+0010     <span class="keyword">end</span>
+0011         
+0012     methods(Hidden)
+0013         <span class="comment">%Constructor</span>
+0014         <a name="_sub0" href="#_subfunctions" class="code">function self = Node(name)</a>
+0015             self@<a href="NetworkElement.html" class="code" title="">NetworkElement</a>(name);
+0016         <span class="keyword">end</span>
+0017         
+0018         <a name="_sub1" href="#_subfunctions" class="code">function self = setModel(self, model)</a>
+0019             self.model = model;
+0020         <span class="keyword">end</span>
+0021         
+0022         <a name="_sub2" href="#_subfunctions" class="code">function self = link(self, nodeTo)</a>
+0023             self.model.addLink(self,nodeTo);
+0024         <span class="keyword">end</span>
+0025     <span class="keyword">end</span>
+0026     
+0027     methods
+0028         <a name="_sub3" href="#_subfunctions" class="code">function sections = getSections(self)</a>
+0029             sections = {self.input, self.server, self.output};
+0030         <span class="keyword">end</span>
+0031         
+0032         <a name="_sub4" href="#_subfunctions" class="code">function setProbRouting(self, class, destination, probability)</a>
+0033             self.setRouting(class, RoutingStrategy.PROB, destination, probability);
+0034         <span class="keyword">end</span>
+0035         
+0036         <a name="_sub5" href="#_subfunctions" class="code">function setScheduling(self, class, strategy)</a>
+0037             self.input.inputJobClasses{class.index}{2} = strategy;
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub6" href="#_subfunctions" class="code">function setRouting(self, class, strategy, destination, probability)</a>
+0041             <span class="keyword">switch</span> nargin
+0042                 <span class="keyword">case</span> 3
+0043                     self.output.outputStrategy{1, class.index}{2} = RoutingStrategy.toType(strategy);
+0044                 <span class="keyword">case</span> 5
+0045                     self.output.outputStrategy{1, class.index}{2} = RoutingStrategy.toType(strategy);
+0046                     <span class="keyword">if</span> length(self.output.outputStrategy{1, class.index})&lt;3
+0047                         self.output.outputStrategy{1, class.index}{3}{1} = {destination, probability};
+0048                     <span class="keyword">else</span>
+0049                         self.output.outputStrategy{1, class.index}{3}{end+1} = {destination, probability};
+0050                     <span class="keyword">end</span>
+0051             <span class="keyword">end</span>
+0052         <span class="keyword">end</span>
+0053 
+0054         <a name="_sub7" href="#_subfunctions" class="code">function bool = hasClassSwitch(self)</a>
+0055             bool = isa(self.server,<span class="string">'ClassSwitcher'</span>);
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub8" href="#_subfunctions" class="code">function bool = isStateful(self)</a>
+0059             bool = isa(self,<span class="string">'StatefulNode'</span>);
+0060         <span class="keyword">end</span>
+0061 
+0062         <a name="_sub9" href="#_subfunctions" class="code">function bool = isStation(self)</a>
+0063             bool = isa(self,<span class="string">'Station'</span>);
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066     
+0067     methods(Access = protected)
+0068         <span class="comment">% Override copyElement method:</span>
+0069         <a name="_sub10" href="#_subfunctions" class="code">function clone = copyElement(self)</a>
+0070             <span class="comment">% Make a shallow copy of all properties</span>
+0071             clone = <a href="#_sub11" class="code" title="subfunction clone = copyElement(self)">copyElement</a>@Copyable(self);
+0072             <span class="comment">% Make a deep copy of each object</span>
+0073             clone.input = self.input.copy;
+0074             clone.server = self.server.copy;
+0075             clone.output = self.output.copy;
+0076         <span class="keyword">end</span>        
+0077     <span class="keyword">end</span>
+0078     
+0079     methods (Access = public)
+0080         <a name="_sub11" href="#_subfunctions" class="code">function ind = subsindex(self)</a>
+0081             ind = double(self.model.getNodeIndex(self.name))-1; <span class="comment">% 0 based</span>
+0082         <span class="keyword">end</span>
+0083         
+0084         <a name="_sub12" href="#_subfunctions" class="code">function V = horzcat(self, varargin)</a>
+0085             V = zeros(1,length(varargin));
+0086             V(1) = 1+ self.subsindex;
+0087             <span class="keyword">for</span> v=1:length(varargin)
+0088                 V(1+v) = 1+varargin{v}.subsindex;
+0089             <span class="keyword">end</span>
+0090         <span class="keyword">end</span>
+0091         
+0092         <a name="_sub13" href="#_subfunctions" class="code">function V = vertcat(self, varargin)</a>
+0093             V = zeros(length(varargin),1);
+0094             V(1) = 1+ self.subsindex;
+0095             <span class="keyword">for</span> v=1:length(varargin)
+0096                 V(1+v) = 1+varargin{v}.subsindex;
+0097             <span class="keyword">end</span>
+0098         <span class="keyword">end</span>
+0099     <span class="keyword">end</span>
+0100 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
