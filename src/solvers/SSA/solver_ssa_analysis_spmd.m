@@ -10,12 +10,13 @@ sched = qn.sched;
 spmd
     laboptions.samples = ceil(laboptions.samples / numlabs);
     laboptions.verbose = false;
-    if strcmp(laboptions.method, 'para')
-        [pi,SSq,arvRates,depRates] = solver_ssa(qnc, laboptions);
-        qn.space = qnc.space;
-    elseif strcmp(laboptions.method, 'para.hash')
-        [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, laboptions);
-        qn.space = qnc.space;
+    switch laboptions.method
+        case {'para','parallel'}
+            [pi,SSq,arvRates,depRates] = solver_ssa(qnc, laboptions);
+            qn.space = qnc.space;
+        case {'para.hash','parallel.hash'}
+            [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, laboptions);
+            qn.space = qnc.space;
     end
     XN = NaN*zeros(1,K);
     UN = NaN*zeros(M,K);

@@ -125,7 +125,7 @@ switch options.method
         UN(isnan(UN))=0;
         XN(isnan(XN))=0;
         TN(isnan(TN))=0;
-    case {'para','parallel'}
+    case {'para','parallel','para.hash','parallel.hash'}
         if isoctave
             error('parallel SSA is available only under MATLAB.');
         end

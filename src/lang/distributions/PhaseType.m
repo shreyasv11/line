@@ -17,7 +17,14 @@ classdef PhaseType < ContinuousDistrib
     end
     
     methods %(Abstract) % implemented with errors for Octave compatibility
-        function phases = getNumberOfPhases()
+        function ex = fitMeanAndVar(self, MEAN, VAR)
+			SCV = VAR / MEAN^2;
+			ex = self.fitMeanAndSCV(MEAN,SCV);
+		end		
+        function ex = fitMeanAndSCV(self, MEAN, SCV)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+		end		
+        function phases = getNumberOfPhases(self)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function PH = getRenewalProcess(self)

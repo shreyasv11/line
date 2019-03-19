@@ -18,6 +18,6 @@ if isempty(outspace)
     outrate = 0;
     return
 else
-    [outhash, qn] = State.getHashOrAdd(qn, ind, outspace);
+    [outhash, qn] = State.hashOrAdd(qn, ind, outspace);
 end
 end

@@ -94,13 +94,13 @@ end
 
 function lG = sub_method(L,N,Z,options)
 switch options.method
-    case 'pnc2'
+    case {'mmint','pnc2'}
         if size(L,1)>1
-            error('The "pnc2" method requires a model with a delay and a queueing station.');
+            error('The %s method requires a model with a delay and a queueing station.',options.method);
         end
         lG = pfqn_pnc2(L,N,sum(Z,1));
-    case 'pnc'
-        [~,lG] = pfqn_pnc(L,N,sum(Z,1));
+    case {'pana','panacea','pnc'}
+        [~,lG] = pfqn_panacea(L,N,sum(Z,1));
     case 'le'
         [~,lG] = pfqn_le(L,N,sum(Z,1));
     case 'ls'

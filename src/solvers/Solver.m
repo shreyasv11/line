@@ -254,8 +254,13 @@ classdef Solver < handle
             end
         end
         
-        function solver = get(model, varargin)
+        function solver = get(chosenmethod, model, varargin)
+            solver = Solver.method(chosenmethod, model, varargin);
+        end
+        
+        function solver = method(chosenmethod, model, varargin)
             options = Solver.parseOptions(varargin, Solver.defaultOptions);
+            options.method = chosenmethod;
             switch options.method
                 case {'default','auto'}
                     if strcmp(options.method,'auto'), options.method='default'; end
@@ -268,7 +273,7 @@ classdef Solver < handle
                     if strcmp(options.method,'mva'), options.method='default'; end
                     options.method = erase(options.method,'mva.');
                     solver = SolverMVA(model, options);
-                case {'ssa','ssa.serial.hash','ssa.serial','ssa.para','ssa.parallel','serial.hash','serial','para','parallel'}
+                case {'ssa','ssa.serial.hash','ssa.para.hash','ssa.parallel.hash','ssa.serial','ssa.para','ssa.parallel','serial.hash','serial','para','parallel','para.hash','parallel.hash'}
                     if strcmp(options.method,'ssa'), options.method='default'; end
                     options.method = erase(options.method,'ssa.');
                     solver = SolverSSA(model, options);
@@ -281,6 +286,10 @@ classdef Solver < handle
                     if strcmp(options.method,'fluid'), options.method='default'; end
                     options.method = erase(options.method,'fluid.');
                     solver = SolverFluid(model, options);
+                case {'nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.mmint'}
+                    if strcmp(options.method,'nc'), options.method='default'; end
+                    options.method = erase(options.method,'nc.');
+                    solver = SolverNC(model, options);
                 case 'mam'
                     if strcmp(options.method,'mam'), options.method='default'; end
                     options.method = erase(options.method,'mam.');
