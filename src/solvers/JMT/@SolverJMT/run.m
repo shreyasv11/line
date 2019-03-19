@@ -76,9 +76,9 @@ end
 [~, result] = system(cmd);
 Tsim = toc(T0);
 
-if options.verbose
-    fprintf(1,sprintf('JMT analysis completed in %.6f sec \n',Tsim));
-end
+%if options.verbose
+%    fprintf(1,sprintf('JMT analysis completed in %.6f sec \n',Tsim));
+%end
 
 if ~options.keep
     switch options.method

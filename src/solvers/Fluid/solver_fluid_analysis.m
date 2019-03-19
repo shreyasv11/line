@@ -191,7 +191,7 @@ end
 
 lastSolution.odeStateVec = ymean{end};
 lastSolution.qn = qn;
-if options.verbose
-    fprintf(1,'Fluid analysis completed in %0.6f sec [%d iterations]\n',outer_runtime,outer_iters);
-end
+%if options.verbose
+%    fprintf(1,'Fluid analysis completed in %0.6f sec [%d iterations]\n',outer_runtime,outer_iters);
+%end
 end

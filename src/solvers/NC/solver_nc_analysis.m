@@ -228,8 +228,8 @@ runtime = toc(Tstart);
 Q=abs(Q); R=abs(R); X=abs(X); U=abs(U);
 
 X(~isfinite(X))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0;
-if options.verbose > 0
-    fprintf(1,'NC analysis completed in %f sec\n',runtime);
-end
+%if options.verbose > 0
+%    fprintf(1,'NC analysis completed in %f sec\n',runtime);
+%end
 return
 end

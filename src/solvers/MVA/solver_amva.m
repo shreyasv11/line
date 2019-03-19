@@ -59,7 +59,12 @@ end
 rset = setdiff(1:K,find(N==0));
 
 %% inner iteration
+iter = 0;
 while max(max(abs(Q-Q_1))) > tol
+    iter = iter + 1;
+    if iter > options.iter_max
+        break;
+    end
     Q_1 = Q;
     for k=1:M
         for r=rset

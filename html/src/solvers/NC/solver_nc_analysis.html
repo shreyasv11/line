@@ -273,11 +273,11 @@ This function is called by:
 0228 Q=abs(Q); R=abs(R); X=abs(X); U=abs(U);
 0229 
 0230 X(~isfinite(X))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0;
-0231 <span class="keyword">if</span> options.verbose &gt; 0
-0232     fprintf(1,<span class="string">'NC analysis completed in %f sec\n'</span>,runtime);
-0233 <span class="keyword">end</span>
+0231 <span class="comment">%if options.verbose &gt; 0</span>
+0232 <span class="comment">%    fprintf(1,'NC analysis completed in %f sec\n',runtime);</span>
+0233 <span class="comment">%end</span>
 0234 <span class="keyword">return</span>
 0235 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 19-Mar-2019 19:15:18 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

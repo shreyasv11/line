@@ -135,6 +135,7 @@ end
 
 runtime = toc(Tstart);
 
-if options.verbose > 0
-    fprintf(1,'SSA analysis completed in %f sec\n',runtime);
+%if options.verbose > 0
+%    fprintf(1,'SSA analysis completed in %f sec\n',runtime);
+%end
 end

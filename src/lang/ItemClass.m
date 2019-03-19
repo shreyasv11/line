@@ -1,5 +1,5 @@
 classdef ItemClass < NetworkElement
-    % Copyright (c) 2018-Present, Imperial College London
+    % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     
     properties

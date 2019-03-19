@@ -121,9 +121,9 @@ This function is called by:
 0076 [~, result] = system(cmd);
 0077 Tsim = toc(T0);
 0078 
-0079 <span class="keyword">if</span> options.verbose
-0080     fprintf(1,sprintf(<span class="string">'JMT analysis completed in %.6f sec \n'</span>,Tsim));
-0081 <span class="keyword">end</span>
+0079 <span class="comment">%if options.verbose</span>
+0080 <span class="comment">%    fprintf(1,sprintf('JMT analysis completed in %.6f sec \n',Tsim));</span>
+0081 <span class="comment">%end</span>
 0082 
 0083 <span class="keyword">if</span> ~options.keep
 0084     <span class="keyword">switch</span> options.method
@@ -136,6 +136,6 @@ This function is called by:
 0091 
 0092 self.getResults;
 0093 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 19-Mar-2019 19:15:18 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

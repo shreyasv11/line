@@ -37,8 +37,7 @@ classdef SolverMVA < NetworkSolver
             end            
             
             [Q,U,R,T,C,X] = solver_amva_analysis(qn, options);            
-            runtime = toc(T0);
-            
+            runtime = toc(T0);                        
             self.setAvgResults(Q,U,R,T,C,X,runtime);
         end
     end

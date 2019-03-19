@@ -83,41 +83,40 @@ This function is called by:
 0037             <span class="keyword">end</span>            
 0038             
 0039             [Q,U,R,T,C,X] = <a href="solver_amva_analysis.html" class="code" title="function [Q,U,R,T,C,X,runtime] = solver_amva_analysis(qn, options)">solver_amva_analysis</a>(qn, options);            
-0040             runtime = toc(T0);
-0041             
-0042             self.setAvgResults(Q,U,R,T,C,X,runtime);
-0043         <span class="keyword">end</span>
-0044     <span class="keyword">end</span>
-0045     
-0046     methods(Static)
-0047         <a name="_sub2" href="#_subfunctions" class="code">function featSupported = getFeatureSet()</a>
-0048             featSupported = SolverFeatureSet;
-0049             featSupported.setTrue({<span class="string">'Sink'</span>,<span class="string">'Source'</span>,<span class="keyword">...</span>
-0050                 <span class="string">'ClassSwitch'</span>,<span class="string">'DelayStation'</span>,<span class="string">'Queue'</span>,<span class="keyword">...</span>
-0051                 <span class="string">'Cox2'</span>,<span class="string">'Erlang'</span>,<span class="string">'Exponential'</span>,<span class="string">'HyperExp'</span>,<span class="keyword">...</span>
-0052                 <span class="string">'StatelessClassSwitcher'</span>,<span class="string">'InfiniteServer'</span>,<span class="string">'SharedServer'</span>,<span class="string">'Buffer'</span>,<span class="string">'Dispatcher'</span>,<span class="keyword">...</span>
-0053                 <span class="string">'Server'</span>,<span class="string">'JobSink'</span>,<span class="string">'RandomSource'</span>,<span class="string">'ServiceTunnel'</span>,<span class="keyword">...</span>
-0054                 <span class="string">'SchedStrategy_INF'</span>,<span class="string">'SchedStrategy_PS'</span>,<span class="keyword">...</span>
-0055                 <span class="string">'SchedStrategy_DPS'</span>,<span class="string">'SchedStrategy_FCFS'</span>,<span class="keyword">...</span>
-0056                 <span class="string">'RoutingStrategy_PROB'</span>,<span class="string">'RoutingStrategy_RAND'</span>,<span class="keyword">...</span><span class="comment">                </span>
-0057                 <span class="string">'ClosedClass'</span>,<span class="string">'OpenClass'</span>,<span class="string">'Replayer'</span>});            
-0058         <span class="keyword">end</span>        
-0059         
-0060         <a name="_sub3" href="#_subfunctions" class="code">function [bool, featSupported] = supports(model)</a>
-0061             featUsed = model.getUsedLangFeatures();    
-0062             featSupported = SolverMVA.getFeatureSet();
-0063             bool = SolverFeatureSet.supports(featSupported, featUsed);
-0064         <span class="keyword">end</span>
-0065     <span class="keyword">end</span>
-0066     
-0067     methods (Static)
-0068         <a name="_sub4" href="#_subfunctions" class="code">function options = defaultOptions(self)</a>
-0069             options = Solver.defaultOptions();
-0070             options.iter_max = 10^3;
-0071             options.iter_tol = 10^-6;
-0072         <span class="keyword">end</span>
-0073     <span class="keyword">end</span>
-0074 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 19-Mar-2019 14:07:48 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0040             runtime = toc(T0);                        
+0041             self.setAvgResults(Q,U,R,T,C,X,runtime);
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044     
+0045     methods(Static)
+0046         <a name="_sub2" href="#_subfunctions" class="code">function featSupported = getFeatureSet()</a>
+0047             featSupported = SolverFeatureSet;
+0048             featSupported.setTrue({<span class="string">'Sink'</span>,<span class="string">'Source'</span>,<span class="keyword">...</span>
+0049                 <span class="string">'ClassSwitch'</span>,<span class="string">'DelayStation'</span>,<span class="string">'Queue'</span>,<span class="keyword">...</span>
+0050                 <span class="string">'Cox2'</span>,<span class="string">'Erlang'</span>,<span class="string">'Exponential'</span>,<span class="string">'HyperExp'</span>,<span class="keyword">...</span>
+0051                 <span class="string">'StatelessClassSwitcher'</span>,<span class="string">'InfiniteServer'</span>,<span class="string">'SharedServer'</span>,<span class="string">'Buffer'</span>,<span class="string">'Dispatcher'</span>,<span class="keyword">...</span>
+0052                 <span class="string">'Server'</span>,<span class="string">'JobSink'</span>,<span class="string">'RandomSource'</span>,<span class="string">'ServiceTunnel'</span>,<span class="keyword">...</span>
+0053                 <span class="string">'SchedStrategy_INF'</span>,<span class="string">'SchedStrategy_PS'</span>,<span class="keyword">...</span>
+0054                 <span class="string">'SchedStrategy_DPS'</span>,<span class="string">'SchedStrategy_FCFS'</span>,<span class="keyword">...</span>
+0055                 <span class="string">'RoutingStrategy_PROB'</span>,<span class="string">'RoutingStrategy_RAND'</span>,<span class="keyword">...</span><span class="comment">                </span>
+0056                 <span class="string">'ClosedClass'</span>,<span class="string">'OpenClass'</span>,<span class="string">'Replayer'</span>});            
+0057         <span class="keyword">end</span>        
+0058         
+0059         <a name="_sub3" href="#_subfunctions" class="code">function [bool, featSupported] = supports(model)</a>
+0060             featUsed = model.getUsedLangFeatures();    
+0061             featSupported = SolverMVA.getFeatureSet();
+0062             bool = SolverFeatureSet.supports(featSupported, featUsed);
+0063         <span class="keyword">end</span>
+0064     <span class="keyword">end</span>
+0065     
+0066     methods (Static)
+0067         <a name="_sub4" href="#_subfunctions" class="code">function options = defaultOptions(self)</a>
+0068             options = Solver.defaultOptions();
+0069             options.iter_max = 10^3;
+0070             options.iter_tol = 10^-6;
+0071         <span class="keyword">end</span>
+0072     <span class="keyword">end</span>
+0073 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 19-Mar-2019 19:15:18 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

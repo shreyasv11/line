@@ -97,8 +97,5 @@ runtime = toc(Tstart);
 
 Q=abs(Q); R=abs(R); X=abs(X); U=abs(U); T=abs(T); C=abs(C);
 T(~isfinite(T))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0; X(~isfinite(X))=0; C(~isfinite(C))=0;
-if options.verbose > 0
-    fprintf(1,'MVA analysis completed in %f sec\n',runtime);
-end
 return
 end
