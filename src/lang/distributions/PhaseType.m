@@ -27,8 +27,17 @@ classdef PhaseType < ContinuousDistrib
         function phases = getNumberOfPhases(self)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
+        
         function PH = getRenewalProcess(self)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        
+        function L = getLaplaceTransform(self, s)
+            PH = self.getRenewalProcess;
+            pie = map_pie(PH);
+            A = PH{1};
+            e = ones(length(pie),1);
+            L = pie*inv(s*eye(size(A))-A)*(-A)*e;
         end
     end
     

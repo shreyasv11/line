@@ -1,6 +1,8 @@
-classdef Element < Copyable
+% Element is the parent class for all the elements that define a model.
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+classdef Element < Copyable
     
     properties
         name;

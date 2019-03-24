@@ -30,10 +30,10 @@ end
 
 chains = [];
 for t=1:length(chainCandidates)
-%    if length(chainCandidates{t})>1
-%        chains(end+1,unique(mod(chainCandidates{t}-1,K)+1)) = true;
-        chains(end+1,chainCandidates{t}) = true;
-%    end
+    %    if length(chainCandidates{t})>1
+    %        chains(end+1,unique(mod(chainCandidates{t}-1,K)+1)) = true;
+    chains(end+1,chainCandidates{t}) = true;
+    %    end
 end
 
 try
@@ -63,7 +63,7 @@ if wantVisits
             end
         end
         Pchain = rt(cols,cols); % routing probability of the chain
-        visited = sum(Pchain,2) > 0;        
+        visited = sum(Pchain,2) > 0;
         %                Pchain(visited,visited)
         %                if ~dtmc_isfeasible(Pchain(visited,visited))
         %                    error(sprintf('The routing matrix in chain %d is not stochastic. Chain %d classes: %s',c, c, int2str(inchain)));

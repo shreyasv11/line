@@ -1,6 +1,8 @@
-classdef Activity < LayeredNetworkElement
+% Activity defines a stage of service in a Task of a LayeredNetwork.
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+classdef Activity < LayeredNetworkElement
     
     properties
         phase = 1;                  %int

@@ -200,6 +200,9 @@ for i=1:length(statres)
                 s.('class') = qn.classnames{k};
                 s.('discardedSamples') = 0;
                 s.('meanValue') = classres(c).measure(m).ATTRIBUTE.meanValue;
+                if strcmp(s.meanValue,'NaN')
+                    s.meanValue = NaN;
+                end
                 s.('maxSamples') = Inf;
                 s.('measureType') = classres(c).measure(m).ATTRIBUTE.measureType;
                 switch classres(c).measure(m).ATTRIBUTE.measureType

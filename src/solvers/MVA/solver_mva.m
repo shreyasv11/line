@@ -39,7 +39,7 @@ rset = setdiff(1:K,find(N==0));
 
 %% inner iteration
 
-[X,Qpf,~] = pfqn_mva(ST(pfSET,:).*V(pfSET,:),N,ST(infSET,:).*V(infSET,:));
+[X,Qpf,~] = pfqn_mvams(ST(pfSET,:).*V(pfSET,:),N,ST(infSET,:).*V(infSET,:),ones(length(pfSET),1),S(pfSET));
 Q(pfSET,:) = Qpf;
 Q(infSET,:) = repmat(X,numel(infSET),1) .* ST(infSET,:) .* V(infSET,:);
 
@@ -49,7 +49,11 @@ for r=ccl
         if isinf(S(k)) % infinite server
             W(k,r) = ST(k,r);
         else
-            W(k,r) = Q(k,r) / (X(r) * V(k,r));
+            if V(k,r) == 0 || X(r) == 0
+                W(k,r) = 0;
+            else
+                W(k,r) = Q(k,r) / (X(r) * V(k,r));
+            end
         end
     end
 end

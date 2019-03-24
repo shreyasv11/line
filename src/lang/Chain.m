@@ -1,6 +1,8 @@
-classdef Chain < NetworkElement
+% Chain describes a routing chain, i.e., a collection of classes in which the job can switch its current class.
+% 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+classdef Chain < NetworkElement
     
     properties
         classes;

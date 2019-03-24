@@ -18,11 +18,11 @@ if ~isfield(options,'keep')
 end
 
 if ~self.supports(self.model)
-%    if options.verbose
-        error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%    end
-%    runtime = toc(T0);
-%    return
+    %    if options.verbose
+    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+    %    end
+    %    runtime = toc(T0);
+    %    return
 end
 
 if ~isfield(options,'samples')
@@ -58,7 +58,7 @@ end
 self.maxSamples = options.samples;
 
 switch options.method
-        case {'jsim','default'}
+    case {'jsim','default'}
         self.writeJSIM;
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
         if options.verbose

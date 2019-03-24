@@ -87,7 +87,7 @@ else % not a repairmen problem
     Nstar = (sum(Lnnzd)+sum(Znnzd,1))/max(Lnnzd);
     if strcmpi(options.method,'default') && sum(Nnnzd) > 5 * sum(Nstar)
         options.method = 'le';
-    end    
+    end
     lGn = sub_method(Lnnzd, Nnnzd, Znnzd, options);
 end
 end
@@ -96,9 +96,11 @@ function lG = sub_method(L,N,Z,options)
 switch options.method
     case {'mmint','pnc2'}
         if size(L,1)>1
-            error('The %s method requires a model with a delay and a queueing station.',options.method);
+            warning('The %s method requires a model with a delay and a queueing station. Switching to default.',options.method);
+            [~,lG] = pfqn_mci(L,N,sum(Z,1),options.samples,'imci'); % repairmen
+        else
+            lG = pfqn_pnc2(L,N,sum(Z,1));
         end
-        lG = pfqn_pnc2(L,N,sum(Z,1));
     case {'pana','panacea','pnc'}
         [~,lG] = pfqn_panacea(L,N,sum(Z,1));
     case 'le'

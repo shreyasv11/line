@@ -1,6 +1,8 @@
+% Metric defines an output metric, such as a performance index.
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
 classdef Metric < Copyable
-    % Copyright (c) 2012-2019, Imperial College London
-    % All rights reserved.
     
     properties (Constant)
         ResidT = 'Residence Time'; % Response Time * Visits

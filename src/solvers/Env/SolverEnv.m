@@ -65,7 +65,7 @@ classdef SolverEnv < EnsembleSolver
             options = self.options;
             
             if isfield(options,'seed')
-                rand('seed',options.seed);
+                Solver.resetRandomGeneratorSeed(options.seed);
             end
             
             E = self.getNumberOfModels;

@@ -41,7 +41,7 @@ QNclass = [];
 UNclass = [];
 RNclass = [];
 TNclass = [];
-ANclass = [];
+%ANclass = [];
 
 if ~isempty(Q)
     QNclass = zeros(M,K);

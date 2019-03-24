@@ -3,38 +3,33 @@ function [XN,QN,UN,CN,lGN] = pfqn_mva(L,N,Z,mi)
 if isoctave
   warning off;
 end
-XN=[];QN=[];UN=[];CN=[];
-% DEFAULTS
-INFSERV=1;
+XN=[];
+QN=[];
+UN=[];
+CN=[];
 lGN = 0;
-%COMMAND-LINE OPTIONS
+InfServ=1;
 if nargin == 2
-    INFSERV=0;
+    InfServ=0;
 end
-
-% CHECK PARAMETERS
-[M,R]=size(L);
+[M,R]=size(L); % M stations, R classes
 N=N(:)';
-
 if nargin<4
     mi=ones(1,M);
 end
-
 if (~any(N))
-    warning('ERROR: all populations empty (sum_r N_r =0)');
+    warning('ERROR: all populations are empty');
     return
 end
 NR=length(N);
 if (R~=NR)
-    error('ERROR: L and N have different number of classes');
-    return;
+    error('ERROR: demand matrix and population vector have different number of classes');
 end
 
-% INITIALIZATION
 XN=zeros(1,R);
 QN=zeros(M,R);
 CN=zeros(M,R);
-if INFSERV==1
+if InfServ==1
     Z=Z(:)';
 else
     Z=zeros(1,R);
@@ -45,24 +40,19 @@ for w=1:R-1
     prods(1,w) = prod(ones(1,R-(w+1)+1)+N(1,w+1:R));
 end
 
-%%%%%% selezione della prima popolazione
 firstnonempty=R;
 while (N(firstnonempty)==0)
     firstnonempty = firstnonempty-1;
 end
-n=zeros(1,R); %pop corrente
-n(1,firstnonempty)=1;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
-totpopolazioni=prod(N+1);
-ctr=totpopolazioni;
-Q=zeros(totpopolazioni,M);
+totpop=prod(N+1);
+ctr=totpop;
+Q=zeros(totpop,M);
 currentpop=2;
-n_1s=zeros(1,R);
-%%%%%%%%%%%%%
-doneupto=R+1; % popolazioni completate
-%%%%%%%%%%%%%
-while ctr % per ogni popolazione
+
+n=zeros(1,R);
+n(1,firstnonempty)=1;
+while ctr % for each population
     s=1;
     while s <= R
         pos_n_1s=0;
@@ -98,14 +88,13 @@ while ctr % per ogni popolazione
         s=s-1;
     end
     % now compute the normalizing constant
-    last_nnz = max(find(n>0));
-    if sum(n(1:last_nnz-1)) == sum(N(1:last_nnz-1)) & sum(n((last_nnz+1):R))==0
+    last_nnz = find(n>0, 1, 'last' );
+    if sum(n(1:last_nnz-1)) == sum(N(1:last_nnz-1)) && sum(n((last_nnz+1):R))==0
         logX = log(XN(last_nnz));
         if ~isempty(logX)
             lGN = lGN - logX;
         end
-    end
-    
+    end    
     if s==0
         break;
     end

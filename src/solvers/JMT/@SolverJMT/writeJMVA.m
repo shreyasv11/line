@@ -194,7 +194,12 @@ for i=1:qn.nstations
     for c=1:qn.nchains
         statVisitElem = mvaDoc.createElement('visit');
         statVisitElem.setAttribute('customerclass',sprintf('Chain%02d',c));
-        statVisitElem.appendChild(mvaDoc.createTextNode(num2str(Lchain(i,c) ./ STchain(i,c))));
+        if STchain(i,c) > 0
+            val = Lchain(i,c) ./ STchain(i,c); 
+        else
+            val = 0; 
+        end
+        statVisitElem.appendChild(mvaDoc.createTextNode(num2str(val)));
         visitsElem.appendChild(statVisitElem);
     end
     statElem.appendChild(visitsElem);

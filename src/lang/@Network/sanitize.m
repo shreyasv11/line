@@ -1,26 +1,15 @@
 function sanitize(self)
+% Preprocess model to ensure consistent parameterization.
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-
-stations = self.getIndexStations;
-statefuls = self.getIndexStatefulNodes;
-
-if any(stations) > length(stations)
-    % consolidate stations in the first positions
-end
-
-if any(statefuls) > length(statefuls)
-    % consolidate stateful nodes right after the stations
-end
 
 if isempty(self.qn)
     M = self.getNumberOfStations();
     K = self.getNumberOfClasses();
-    % sanitize model
     for i=1:self.getNumberOfNodes
         switch class(self.nodes{i})
             case {'Cache'}
-                %no-op
                 for k=1:K
                     if k > length(self.nodes{i}.popularity) || isempty(self.nodes{i}.popularity{k})
                         self.nodes{i}.popularity{k} = Disabled();
@@ -57,7 +46,7 @@ if isempty(self.qn)
                         self.nodes{i}.schedStrategyPar = zeros(1,K);
                         for k=1:K
                             self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
-                        end                        
+                        end
                     case SchedStrategy.LEPT
                         svcTime = zeros(1,K);
                         for k=1:K
@@ -67,7 +56,7 @@ if isempty(self.qn)
                         self.nodes{i}.schedStrategyPar = zeros(1,K);
                         for k=1:K
                             self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
-                        end                        
+                        end
                 end
             case 'Delay'
                 for k=1:K
@@ -86,8 +75,8 @@ if isempty(self.qn)
                         end
                         [~,self.nodes{i}.schedStrategyPar] = sort(svcTime);
                 end
-                %                    case 'Sink'
-                %                    type(i) = NodeType.Sink;
+            case 'Sink'
+                % no-op
             case 'Source'
                 for k=1:K
                     if k > length(self.nodes{i}.input.sourceClasses) || isempty(self.nodes{i}.input.sourceClasses{k})
@@ -96,7 +85,6 @@ if isempty(self.qn)
                 end
         end
     end
-        
     for i=1:M
         for r=1:K
             if isempty(self.getIndexSourceStation) || i ~= self.getIndexSourceStation
@@ -112,6 +100,6 @@ if isempty(self.qn)
                 end
             end
         end
-    end    
+    end
 end
 end

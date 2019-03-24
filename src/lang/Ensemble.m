@@ -1,6 +1,8 @@
-classdef Ensemble < Model
+% Ensemble is a class of models defined by a collection of sub-models.
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+classdef Ensemble < Model
     
     properties
         ensemble;

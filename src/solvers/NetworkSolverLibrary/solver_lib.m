@@ -52,8 +52,8 @@ if M==2 && K==1 && qn.nclosedjobs == 0
 %             % qa = third relative moment E[X^3]/6/E[X]^3, X=inter-arrival time r.v.
 %             % q0 = lowest value of the relative third moment for a given mean and SCV
 %             W=qsys_gig1_approx_myskja2(lambda,mu,ca,cs,q0,qa);
-%         case 'gm1'
-%             % sigma = Load at arrival instants (Laplace transform of the arrival process)
+         case 'gm1'
+             % sigma = Load at arrival instants (Laplace transform of the inter-arrival times)
 %             W=qsys_gm1(sigma,mu);
         case 'default'
             error('Line:UnsupportedMethod','This solver does not have a default solution method. Used the method option to choose a solution technique.');

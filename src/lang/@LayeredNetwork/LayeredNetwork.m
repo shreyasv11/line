@@ -1,7 +1,8 @@
-classdef LayeredNetwork < Model & Ensemble
+% LayeredNetwork defines a layered queueing network model.
+% 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-    
+classdef LayeredNetwork < Model & Ensemble
     properties
         objects = struct();    % cell arrays of objects
         processors = cell(0,4);      % list of processors                

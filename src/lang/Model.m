@@ -1,6 +1,8 @@
-classdef Model < Copyable
+% Model is the parent class for all models
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+classdef Model < Copyable
     
     properties
         name;

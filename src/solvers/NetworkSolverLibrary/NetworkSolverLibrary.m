@@ -23,7 +23,7 @@ classdef NetworkSolverLibrary < NetworkSolver
 %                return
             end
             
-            rand('seed',options.seed);
+            Solver.resetRandomGeneratorSeed(options.seed);
             
             [qn] = self.model.getStruct();
             

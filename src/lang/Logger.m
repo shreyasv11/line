@@ -1,6 +1,8 @@
-classdef Logger < Node
+% Logger instantiates a node where jobs are logged upon passage.
+% 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+classdef Logger < Node
     
     properties
         fileName;
@@ -8,9 +10,12 @@ classdef Logger < Node
         schedPolicy;
         schedStrategy;
         cap;
+    end
+    
+    properties (Access=private)
         wantExecTimestamp;
         wantLoggerName;
-        wantTimeStamp;
+        wantTimestamp;
         wantJobID;
         wantJobClass;
         wantTimeSameClass;
@@ -35,15 +40,93 @@ classdef Logger < Node
             self.schedPolicy = SchedPolicy.NP;
             self.schedStrategy = SchedStrategy.FCFS;
             self.server = LogTunnel();
-            self.wantExecTimestamp = 'false';
-            self.wantLoggerName = 'false';
-            self.wantTimeStamp = 'true';
-            self.wantJobID = 'true';
-            self.wantJobClass = 'true';
-            self.wantTimeSameClass = 'false';
-            self.wantTimeAnyClass = 'false';
+            self.setExecTimestamp(false);
+            self.setLoggerName(false);
+            self.setTimestamp(true);
+            self.setJobID(true);
+            self.setJobClass(true);
+            self.setTimeSameClass(false);
+            self.setTimeAnyClass(false);
             self.setModel(model);
             self.model.addNode(self);
+        end
+        
+        function ret = getExecTimestamp(self)
+            ret = self.wantExecTimestamp;
+        end
+        function ret = getLoggerName(self)
+            ret = self.wantLoggerName;
+        end
+        function ret = getTimestamp(self)
+            ret = self.wantTimestamp;
+        end
+        function ret = getJobID(self)
+            ret = self.wantJobID;
+        end
+        function ret = getJobClass(self)
+            ret = self.wantJobClass;
+        end
+        function ret = getTimeSameClass(self)
+            ret = self.wantTimeSameClass;
+        end
+        function ret = getTimeAnyClass(self)
+            ret = self.wantTimeAnyClass;
+        end
+        
+        function setExecTimestamp(self, bool)
+            if bool
+                self.wantExecTimestamp = 'true';
+            else
+                self.wantExecTimestamp = 'false';
+            end
+        end
+        
+        function setTimestamp(self, bool)
+            if bool
+                self.wantTimestamp = 'true';
+            else
+                self.wantTimestamp = 'false';
+            end
+        end
+        
+        function setLoggerName(self, bool)
+            if bool
+                self.wantLoggerName = 'true';
+            else
+                self.wantLoggerName = 'false';
+            end
+        end
+        
+        function setTimeSameClass(self, bool)
+            if bool
+                self.wantTimeSameClass = 'true';
+            else
+                self.wantTimeSameClass = 'false';
+            end
+        end
+        
+        function setTimeAnyClass(self, bool)
+            if bool
+                self.wantTimeAnyClass = 'true';
+            else
+                self.wantTimeAnyClass = 'false';
+            end
+        end
+        
+        function setJobID(self, bool)
+            if bool
+                self.wantJobID = 'true';
+            else
+                self.wantJobID = 'false';
+            end
+        end
+        
+        function setJobClass(self, bool)
+            if bool
+                self.wantJobClass = 'true';
+            else
+                self.wantJobClass = 'false';
+            end
         end
         
         function setProbRouting(self, class, destination, probability)

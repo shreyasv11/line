@@ -24,7 +24,7 @@ classdef SolverCTMC < NetworkSolver
                 options.timespan(2) = options.timespan(1) + options.tol;
             end
             
-            rand('seed',options.seed); 
+            Solver.resetRandomGeneratorSeed(options.seed);
             
             if ~self.supports(self.model)
 %                if options.verbose

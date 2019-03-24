@@ -52,9 +52,9 @@ end
 X=Xs(:,hashpop(N,N));
 XN=X';
 %pi=pi(:,:,hashpop(N,N));
-QN = WN./repmat(XN,M,1);
+QN = WN.*repmat(XN,M,1);
 UN = repmat(XN,M,1) .* L;
-CN = N./XN; % cycle time inclusive of think time
+CN = N./XN - Z; % cycle time exclusive of think time
 end
 
 function i=hashpop(n,N)

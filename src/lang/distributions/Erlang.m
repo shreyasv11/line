@@ -32,8 +32,8 @@ classdef Erlang < PhaseType
         end
                 
         function Ft = evalCDF(self,t)
-            alpha = self.getParam(1).paramValue;
-            r = self.getParam(2).paramValue;
+            alpha = self.getParam(1).paramValue; % rate
+            r = self.getParam(2).paramValue; % stages
             Ft = 1;
             for j=0:(r-1)
                 Ft = Ft - exp(-r*alpha*t).*(r*alpha*t).^j/factorial(j);
@@ -44,6 +44,12 @@ classdef Erlang < PhaseType
             r = self.getParam(2).paramValue;
             PH = map_erlang(self.getMean(),r);
         end
+        
+%        function L = getLaplaceTransform(self, s)
+%            alpha = self.getParam(1).paramValue; % rate
+%            r = self.getParam(2).paramValue; % stages
+%            L = (alpha / (alpha + s))^r;
+%        end
         
     end
     

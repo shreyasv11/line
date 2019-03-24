@@ -1,6 +1,8 @@
+% Network defines an extended queueing network model.
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
 classdef Network < Model
-    % Copyright (c) 2012-2019, Imperial College London
-    % All rights reserved.
     
     properties (GetAccess = 'private', SetAccess='private')
         usedFeatures; % structure of booleans listing the used classes

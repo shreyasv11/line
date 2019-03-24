@@ -35,6 +35,12 @@ classdef Gamma < ContinuousDistrib
             scale = self.getParam(2).paramValue;
             Ft = gamcdf(t,shape,scale);
         end
+        
+        function L = getLaplaceTransform(self, s)
+            shape = self.getParam(1).paramValue; % shape
+            lambda = 1 / self.getMean; % 
+            L = (lambda / (lambda + s))^shape;
+        end
     end
 
     methods(Static)

@@ -1,6 +1,8 @@
+% Event is a class to describe a generic event occurring in a model.
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
 classdef Event < Copyable
-    % Copyright (c) 2012-2019, Imperial College London
-    % All rights reserved.
     
     % event major classification
     properties (Constant)

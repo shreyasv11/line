@@ -1,7 +1,8 @@
-classdef Solver < handle
-    % Copyright (c) 2012-2019, Imperial College London
-    % All rights reserved.
-    
+% Solver is an abstract class for model solution algorithms and tools
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
+classdef Solver < handle    
     
     properties
         options;
@@ -40,6 +41,7 @@ classdef Solver < handle
         function options = getDefaultOptions(self)
             options = Solver.defaultOptions;
         end
+        
     end
     
     methods
@@ -82,6 +84,10 @@ classdef Solver < handle
     
     methods (Static)        
         
+        function resetRandomGeneratorSeed(seed)
+            rand('seed',seed); 
+        end
+        
         function bool = isAvailable()
             % to be over-ridden by classes depending on external solvers
             bool = true;
@@ -102,7 +108,7 @@ classdef Solver < handle
             end
         end
         
-        function fun = accurateStiffOdeSolver(self)
+        function fun = accurateStiffOdeSolver()
 			    if isoctave
 				    %fun = @ode15s;
             fun = @lsode;
@@ -111,7 +117,7 @@ classdef Solver < handle
 			    end
         end
         
-        function fun = accurateOdeSolver(self)
+        function fun = accurateOdeSolver()
 			    if isoctave
 				    %fun = @ode15s;
             fun = @lsode;
@@ -120,7 +126,7 @@ classdef Solver < handle
 			    end
         end
         
-        function fun = fastStiffOdeSolver(self)
+        function fun = fastStiffOdeSolver()
 			    if isoctave
 				    %fun = @ode15s;
             fun = @lsode;
@@ -129,7 +135,7 @@ classdef Solver < handle
 			    end
         end
         
-        function fun = fastOdeSolver(self)
+        function fun = fastOdeSolver()
 			    if isoctave
 				    %fun = @ode15s;
             fun = @lsode;
@@ -278,7 +284,7 @@ classdef Solver < handle
                     options.method = erase(options.method,'ssa.');
                     solver = SolverSSA(model, options);
                 case {'jmt','jsim','jmva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
-                        'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
+                        'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
                     if strcmp(options.method,'jmt'), options.method='default'; end
                     options.method = erase(options.method,'jmt.');
                     solver = SolverJMT(model, options);

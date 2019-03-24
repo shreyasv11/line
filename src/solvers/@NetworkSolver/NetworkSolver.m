@@ -196,7 +196,11 @@ classdef NetworkSolver < Solver
             self.result.Avg.C = C;
             self.result.Avg.runtime = runtime;
             if self.getOptions().verbose
-                solvername = erase(self.result.solver,'Solver');
+                try
+                    solvername = erase(self.result.solver,'Solver');
+                catch
+                    solvername = self.result.solver(7:end);
+                end                 
                 fprintf(1,'%s analysis (method: %s) completed in %f seconds.\n',solvername,self.result.Avg.method,runtime);
             end            
         end

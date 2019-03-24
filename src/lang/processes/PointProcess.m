@@ -1,6 +1,8 @@
+% PointProcess is an abstract class for stochastic point processes
+%
+% Copyright (c) 2012-Present, Imperial College London
+% All rights reserved.
 classdef PointProcess < Copyable
-    % Copyright (c) 2012-Present, Imperial College London
-    % All rights reserved.
     
     properties
         name

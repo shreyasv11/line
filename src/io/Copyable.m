@@ -1,5 +1,10 @@
-%classdef Copyable < matlab.mixin.Copyable
+% Copyable allows to perform deep-copy of objects via the copy() method. 
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
 classdef Copyable < handle
+%classdef Copyable < matlab.mixin.Copyable
+%The class is needed to ensure reproducible behavior in both MATLAB and Octave.
     
     methods
         function newObj = copy(obj)

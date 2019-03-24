@@ -20,7 +20,7 @@ classdef SolverMVA < NetworkSolver
             end
             
 %            if isoctave
-                rand('seed',options.seed);
+            Solver.resetRandomGeneratorSeed(options.seed);
 %            else
 %                rng(options.seed,'v4');
 %            end
@@ -31,12 +31,12 @@ classdef SolverMVA < NetworkSolver
                 error('The exact method requires the model to have a product-form solution.');
             end            
             
-            if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer
-                options.method = 'default';
-                warning('The exact method does not support yet multi-server stations. Switching to default method.');
-            end            
+%            if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer
+%                options.method = 'default';
+%                warning('The exact method does not support yet multi-server stations. Switching to default method.');
+%            end            
             
-            [Q,U,R,T,C,X] = solver_amva_analysis(qn, options);            
+            [Q,U,R,T,C,X] = solver_mva_analysis(qn, options);            
             runtime = toc(T0);                        
             self.setAvgResults(Q,U,R,T,C,X,runtime);
         end

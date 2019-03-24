@@ -13,6 +13,6 @@
 %	fromMarginalAndRunning	- generate states that have identical marginals and number of running jobs, irrespectively of the service phase in which they currently run
 %	fromMarginalAndStarted	- generate states that have identical marginals and number of running jobs, all assumed to be in service phase 1
 %	hash - hash a state vector according to the local state-space of the station
-% hashOrAdd
+% getHashOrAdd
 % isValid
 %	toMarginal - return marginal probabilities associated to given state

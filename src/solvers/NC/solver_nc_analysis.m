@@ -81,7 +81,8 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             Zcorr(i,:) = 0;
         else
             if strcmpi(options.method,'exact') && S(i)>1
-                warning('%s does not support exact multiserver yet. Switching to default method.', mfilename); 
+                options.method = 'default';
+                warning('%s does not support exact multiserver yet. Switching to approximate method.', mfilename); 
             end
             Lcorr(i,:) = Lchain(i,:) / S(i);
             Z(i,:) = 0;
@@ -130,7 +131,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
 %        lG
 %        lGr
 %        lGar
-        error('Normalizing constant computations produced a floating-point range exception. Model is likely too large.');
+        warning('Normalizing constant computations produced a floating-point range exception. Model is likely too large.');
     end
     
     Z = sum(Z(1:M,:),1);

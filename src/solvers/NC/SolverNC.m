@@ -18,7 +18,7 @@ classdef SolverNC < NetworkSolver
 %                runtime = toc(T0);
 %                return
             end
-            rand('seed',options.seed);
+            Solver.resetRandomGeneratorSeed(options.seed);
                         
             [qn] = self.model.getStruct();
             [Q,U,R,T,C,X,lG] = solver_nc_analysis(qn, options);

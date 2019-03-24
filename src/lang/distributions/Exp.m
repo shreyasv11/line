@@ -37,6 +37,11 @@ classdef Exp < PhaseType
             PH = map_exponential(self.getMean());
         end
         
+        function L = getLaplaceTransform(self, s)
+            lambda = self.getParam(1).paramValue;
+            L = lambda / (lambda + s);
+        end
+        
     end
     
     methods (Static)

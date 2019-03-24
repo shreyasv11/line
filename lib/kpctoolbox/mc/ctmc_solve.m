@@ -37,12 +37,13 @@ if exist('options','var')
     switch options.method
         case 'gpu'
             try
-                Qnnz = gpuArray(Qnnz);
-                bnnz = gpuArray(bnnz);
-                pGPU = Qnnz'\ bnnz;
-                p(nnzcol) = gather(pGPU); % transfer from GPU to local env
+                gQnnz = gpuArray(Qnnz');
+                gbnnz = gpuArray(bnnz);
+                pGPU = gQnnz \ gbnnz;
+                gathered_pGPU = gather(pGPU);
+                p(nnzcol) = gathered_pGPU; % transfer from GPU to local env                
             catch
-                warning('ctmc_solve: GPU execution failed');
+                warning('ctmc_solve: GPU either not available or execution failed. Switching to default method.');
                 p(nnzcol) = Qnnz'\ bnnz;
             end
         otherwise
