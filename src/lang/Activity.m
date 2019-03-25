@@ -1,8 +1,8 @@
-% Activity defines a stage of service in a Task of a LayeredNetwork.
-%
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
 classdef Activity < LayeredNetworkElement
+    % A stage of service in a Task of a LayeredNetwork.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         phase = 1;                  %int
@@ -75,14 +75,14 @@ classdef Activity < LayeredNetworkElement
                 entry.replyActivity{end+1} = obj.name;
             end
         end
-                
+        
         function obj = boundTo(obj, entry)
             if isa(entry,'Entry')
                 obj.boundToEntry = entry.name;
             elseif ischar(entry)
                 obj.boundToEntry = entry;
             else
-                    error('Wrong entry parameter for boundTo method.');
+                error('Wrong entry parameter for boundTo method.');
             end
         end
         

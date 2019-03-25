@@ -19,28 +19,8 @@ T = zeros(M,K);
 C = zeros(1,K);
 X = zeros(1,K);
 
-if M==2 && K==1 && all(isinf(N))
-    % single-class open queueing system (one node is the external world)
-    idx = -1;
-    for i=1:M
-        switch qn.sched{i}
-            case SchedStrategy.EXT
-                A = PH{i,1}; A{1} = V{1}(i) * A{1}; A{2} = V{1}(i) * A{2};
-            case SchedStrategy.FCFS
-                PHs = PH{i,1}; PHs{1} = V{1}(i) * PHs{1}; PHs{2} = V{1}(i) * PHs{2};
-                idx = i;
-            otherwise
-                error('Unsupported scheduling strategy');
-        end
-    end
-    [X, q, u, pqueue, Rmat, eta] = qbd_mapmap1(A,PHs);
-    T(idx,1) = X;
-    Q(idx,1) = q;
-    U(idx,1) = u;
-    R(idx,1) = Q(idx,1) / X;
-    C = R;
-elseif M==2 && K>1 && all(isinf(N))
-    % multi-class open queueing system (one node is the external world)
+if M==2 && all(isinf(N))
+    % open queueing system (one node is the external world)
     BuToolsVerbose = false;
     BuToolsCheckInput = true;
     BuToolsCheckPrecision = 1e-12;
@@ -86,6 +66,8 @@ elseif M==2 && K>1 && all(isinf(N))
         U(idx_q,k) = T(idx_q,k) / map_lambda(PH{i,k});
     end
     C = R;
+else
+    warning('This model is not supported by SolverMAM yet. Returning with no result.');
 end
 
 end

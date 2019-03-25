@@ -1,4 +1,6 @@
 classdef TimeSeries < PointProcess
+    % An abstract class for a point process realization (a time series)
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     
@@ -15,9 +17,9 @@ classdef TimeSeries < PointProcess
             end
             I = length(self.data);
             switch filterType
-                case ProcessFilter.Shuffle
+                case TimeSeriesFilter.Shuffle
                     self.data=self.data(randperm(I));
-                case ProcessFilter.MovingAvg
+                case TimeSeriesFilter.MovingAvg
                     wndsz = filterParam;
                     inData = [self.data; zeros(wndsz-1,1)];
                     for i=1:I

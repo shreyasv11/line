@@ -1,8 +1,8 @@
-% Element is the parent class for all the elements that define a model.
+classdef Element < Copyable
+% Abstract class for generic elements of a model.
 %
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-classdef Element < Copyable
     
     properties
         name;

@@ -1,4 +1,6 @@
 function [QNclass_t, UNclass_t, TNclass_t] = getTranAvg(self,Qt,Ut,Tt)
+% Return transient average station metrics
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

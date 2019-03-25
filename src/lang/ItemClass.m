@@ -1,4 +1,6 @@
 classdef ItemClass < NetworkElement
+    % A class of cacheable items
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

@@ -394,7 +394,7 @@ elseif qn.isstateful(ind)
                                     if isempty(posk) % CACHE MISS, add to list 1
                                         space_srv_e(missclass(class)) = space_srv_e(missclass(class)) + 1;
                                         switch rpolicy_id
-                                            case {ReplacementPolicy.ID_FIFO, ReplacementPolicy.ID_LRU, ReplacementPolicy.ID_SFIFO}
+                                            case {ReplacementStrategy.ID_FIFO, ReplacementStrategy.ID_LRU, ReplacementStrategy.ID_SFIFO}
                                                 varp = var;
                                                 varp(2:m(1)) = var(1:(m(1)-1));
                                                 varp(1) = k;
@@ -406,7 +406,7 @@ elseif qn.isstateful(ind)
                                                 else
                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
                                                 end
-                                            case ReplacementPolicy.ID_RAND
+                                            case ReplacementStrategy.ID_RAND
                                                 if isSimulation
                                                     varp = var;
                                                     r = randi(m(1),1,1);
@@ -429,7 +429,7 @@ elseif qn.isstateful(ind)
                                         i = min(find(posk <= cumsum(m)));
                                         j = posk - sum(m(1:i-1));
                                         switch rpolicy_id
-                                            case ReplacementPolicy.ID_FIFO
+                                            case ReplacementStrategy.ID_FIFO
                                                 if isSimulation
                                                     varp = var;
                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)); % can choose i
@@ -457,7 +457,7 @@ elseif qn.isstateful(ind)
                                                         outrate(end+1,1) = ac{class,k}(i,inew) * p(k) * Distrib.InfRate;
                                                     end
                                                 end
-                                            case ReplacementPolicy.ID_RAND
+                                            case ReplacementStrategy.ID_RAND
                                                 if isSimulation
                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)); % can choose i
                                                     varp = var;
@@ -480,7 +480,7 @@ elseif qn.isstateful(ind)
                                                         end
                                                     end
                                                 end
-                                            case {ReplacementPolicy.ID_LRU, ReplacementPolicy.ID_SFIFO}
+                                            case {ReplacementStrategy.ID_LRU, ReplacementStrategy.ID_SFIFO}
                                                 if isSimulation
                                                     varp = var;
                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)); % can choose i
@@ -509,7 +509,7 @@ elseif qn.isstateful(ind)
                                         i=h;
                                         j = posk - sum(m(1:i-1));
                                         switch rpolicy_id
-                                            case ReplacementPolicy.ID_RAND
+                                            case ReplacementStrategy.ID_RAND
                                                 space_srv_k = [space_srv_k; space_srv_e];
                                                 space_var_k = [space_var_k; (var)];
                                                 if isSimulation
@@ -517,7 +517,7 @@ elseif qn.isstateful(ind)
                                                 else
                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
                                                 end
-                                            case {ReplacementPolicy.ID_FIFO, ReplacementPolicy.ID_SFIFO}
+                                            case {ReplacementStrategy.ID_FIFO, ReplacementStrategy.ID_SFIFO}
                                                 space_srv_k = [space_srv_k; space_srv_e];
                                                 space_var_k = [space_var_k; var];
                                                 if isSimulation
@@ -525,7 +525,7 @@ elseif qn.isstateful(ind)
                                                 else
                                                     outrate(end+1,1) = p(k) * Distrib.InfRate;
                                                 end
-                                            case ReplacementPolicy.ID_LRU
+                                            case ReplacementStrategy.ID_LRU
                                                 varp = var;
                                                 varp(cpos(h,2):cpos(h,j)) = var(cpos(h,1):cpos(h,j-1));
                                                 varp(cpos(h,1)) = var(cpos(h,j));

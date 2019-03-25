@@ -1,4 +1,6 @@
 classdef Zipf < DiscreteDistrib
+    % A Zipf-like popularity distribution
+    %
     % Copyright (c) 2018-Present, Imperial College London
     % All rights reserved.
     

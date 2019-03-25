@@ -1,6 +1,8 @@
 classdef SolverLQNS < LayeredNetworkSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A solver that interfaces the LQNS to LINE.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     methods
         function self = SolverLQNS(model, varargin)
@@ -9,7 +11,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             if ~SolverLQNS.isAvailable()
                 error('SolverLQNS requires the lqns and lqsim commands to be available on the system path.');
             end
-        end        
+        end
         
         function runtime = run(self)
             tic;
@@ -274,24 +276,24 @@ classdef SolverLQNS < LayeredNetworkSolver
         function bool = isAvailable()
             bool = true;
             if ispc % windows
-                [~,ret] = dos('lqns -h'); 
+                [~,ret] = dos('lqns -h');
                 if contains(ret,'not recognized')
                     bool = false;
                 end
             else %linux
-                [~,ret] = unix('lqns -h'); 
-                if contains(ret,'command not found')                             
+                [~,ret] = unix('lqns -h');
+                if contains(ret,'command not found')
                     bool = false;
                 end
             end
             if ispc % windows
-                [~,ret] = dos('lqsim -h'); 
+                [~,ret] = dos('lqsim -h');
                 if contains(ret,'not recognized')
                     bool = false;
                 end
             else %linux
-                [~,ret] = unix('lqsim -h'); 
-                if contains(ret,'command not found')                             
+                [~,ret] = unix('lqsim -h');
+                if contains(ret,'command not found')
                     bool = false;
                 end
             end

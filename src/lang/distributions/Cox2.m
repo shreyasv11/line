@@ -1,11 +1,13 @@
 classdef Cox2 < PhaseType
+    % The two-phase coxian statistical distribution
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     
     methods
         %Constructor
         function self = Cox2(mu1, mu2, phi1)
-            self = self@PhaseType('Coxian',3);
+            self = self@PhaseType('Cox2',3);
             setParam(self, 1, 'lambda0', mu1, 'java.lang.Double');
             setParam(self, 2, 'lambda1', mu2, 'java.lang.Double');
             setParam(self, 3, 'phi0', phi1, 'java.lang.Double'); % completion probability in phase 1

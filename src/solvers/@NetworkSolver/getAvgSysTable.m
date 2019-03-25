@@ -1,4 +1,6 @@
 function [AvgSysChainTable, CT,XT] = getAvgSysTable(self,R,T)
+% Return table of average system metrics
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

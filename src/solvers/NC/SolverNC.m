@@ -1,6 +1,8 @@
 classdef SolverNC < NetworkSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A solver based on normalizing constant methods.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     methods
         function self = SolverNC(model,varargin)
@@ -12,14 +14,14 @@ classdef SolverNC < NetworkSolver
             T0=tic;
             options = self.getOptions;
             if ~self.supports(self.model)
-%                if options.verbose
-                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%                end
-%                runtime = toc(T0);
-%                return
+                %                if options.verbose
+                error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+                %                end
+                %                runtime = toc(T0);
+                %                return
             end
             Solver.resetRandomGeneratorSeed(options.seed);
-                        
+            
             [qn] = self.model.getStruct();
             [Q,U,R,T,C,X,lG] = solver_nc_analysis(qn, options);
             
@@ -56,10 +58,10 @@ classdef SolverNC < NetworkSolver
             self.result.runtime = runtime;
         end
         
-        function [lNormConst] = getProbNormConst(self)            
+        function [lNormConst] = getProbNormConst(self)
             self.run();
             lNormConst = self.result.Prob.logNormConst;
-        end        
+        end
     end
     
     methods (Static)
@@ -71,12 +73,12 @@ classdef SolverNC < NetworkSolver
                 'StatelessClassSwitcher','InfiniteServer','SharedServer','Buffer','Dispatcher',...
                 'Server','JobSink','RandomSource','ServiceTunnel',...
                 'SchedStrategy_INF','SchedStrategy_PS',...
-                'RoutingStrategy_PROB','RoutingStrategy_RAND',...                
+                'RoutingStrategy_PROB','RoutingStrategy_RAND',...
                 'SchedStrategy_FCFS','ClosedClass'});
-        end        
+        end
         
         function [bool, featSupported] = supports(model)
-            featUsed = model.getUsedLangFeatures();    
+            featUsed = model.getUsedLangFeatures();
             featSupported = SolverNC.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end

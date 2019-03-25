@@ -1,6 +1,8 @@
 classdef ActivityPrecedence
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % An auxiliary class to specify precedence among Activity elements.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         pres  = cell(0);        %string array

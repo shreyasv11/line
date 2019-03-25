@@ -1,6 +1,8 @@
 classdef Pareto < ContinuousDistrib
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % The Pareto statistical distribution
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     methods
         %Constructor
@@ -47,7 +49,7 @@ classdef Pareto < ContinuousDistrib
         end
     end
     
-    methods (Static)        
+    methods (Static)
         function pa = fitMeanAndSCV(MEAN, SCV)
             shape = (SCV*MEAN + MEAN*(SCV*(SCV + 1))^(1/2))/(SCV*MEAN);
             scale = MEAN + SCV*MEAN - MEAN*(SCV*(SCV + 1))^(1/2);

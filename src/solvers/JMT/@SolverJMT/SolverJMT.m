@@ -1,4 +1,6 @@
 classdef SolverJMT < NetworkSolver
+    % A solver that interfaces the Java Modelling Tools (JMT) to LINE.
+    %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     

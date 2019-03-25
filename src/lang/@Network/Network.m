@@ -1,8 +1,8 @@
-% Network defines an extended queueing network model.
-%
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
 classdef Network < Model
+    % An extended queueing network model.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties (GetAccess = 'private', SetAccess='private')
         usedFeatures; % structure of booleans listing the used classes
@@ -49,11 +49,11 @@ classdef Network < Model
         self = link(self, P)
         [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath)
         function self = linkNetwork(self, P) % obsolete - old name
-            self = link(self,  P); 
-        end 
+            self = link(self,  P);
+        end
         function [loggerBefore,loggerAfter] = linkNetworkAndLog(self, nodes, classes, P, wantLogger, logPath)% obsolete - old name
-            [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath); 
-        end 
+            [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath);
+        end
         
         [Q,U,R,T] = getAvgHandles(self)
         T = getAvgTputHandles(self);
@@ -227,7 +227,7 @@ classdef Network < Model
                 end
             end
         end
-
+        
         function rtTypes = getRoutingStrategies(self)
             rtTypes = zeros(self.getNumberOfNodes,self.getNumberOfClasses);
             for ind=1:self.getNumberOfNodes
@@ -364,7 +364,7 @@ classdef Network < Model
             end
             Dchain(~isfinite(Dchain))=0;
         end
-               
+        
         % setUsedFeatures : records that a certain language feature has been used
         function self = setUsedFeatures(self,className)
             self.usedFeatures.setTrue(className);
@@ -890,12 +890,12 @@ classdef Network < Model
         function addItemSet(self, itemSet)
             if sum(cellfun(@(x) strcmp(x.name, itemSet.name), self.items))>0
                 error('An item type with name %s already exists.\n', itemSet.name);
-            end            
+            end
             nItemSet = size(self.items,1);
             itemSet.index = nItemSet+1;
             self.items{end+1,1} = itemSet;
-            self.setUsedFeatures(class(itemSet)); 
-        end        
+            self.setUsedFeatures(class(itemSet));
+        end
     end
     
     methods (Static)
@@ -1048,7 +1048,7 @@ classdef Network < Model
             P = P ./ repmat(sum(P,2),1,length(P));
             P(isnan(P)) = 0;
         end
-
+        
         
     end
 end

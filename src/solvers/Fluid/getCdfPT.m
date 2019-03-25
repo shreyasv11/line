@@ -43,5 +43,5 @@ for i=1:qn.nstations
 end
 CDc = solver_fluid_RT(qn, self.result.solverSpecific.odeStateVec, options, completes);
 runtime = toc(T0);
-self.setCdfResults(CDc, runtime);
+self.setDistribResults(CDc, runtime);
 end

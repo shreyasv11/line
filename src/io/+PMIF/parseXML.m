@@ -1,4 +1,4 @@
-function qn = parseXML_PMIF(filename, verbose)
+function qn = parseXML(filename, verbose)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 import javax.xml.parsers.DocumentBuilderFactory;

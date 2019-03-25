@@ -1,43 +1,45 @@
 classdef SolverMVA < NetworkSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
-
+    % A solver implementing mean-value analysis (MVA) methods.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
+    
     methods
-        function self = SolverMVA(model,varargin)                        
+        function self = SolverMVA(model,varargin)
             self = self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
-                        
+        
         function runtime = run(self)
             T0=tic;
             options = self.getOptions;
             if ~self.supports(self.model)
-%                if options.verbose
-                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%                end
-%                runtime = toc(T0);
-%                return
+                %                if options.verbose
+                error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+                %                end
+                %                runtime = toc(T0);
+                %                return
             end
             
-%            if isoctave
+            %            if isoctave
             Solver.resetRandomGeneratorSeed(options.seed);
-%            else
-%                rng(options.seed,'v4');
-%            end
+            %            else
+            %                rng(options.seed,'v4');
+            %            end
             
             [qn] = self.model.getStruct();
             
             if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && ~self.model.hasProductFormSolution
                 error('The exact method requires the model to have a product-form solution.');
-            end            
+            end
             
-%            if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer
-%                options.method = 'default';
-%                warning('The exact method does not support yet multi-server stations. Switching to default method.');
-%            end            
+            %            if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer
+            %                options.method = 'default';
+            %                warning('The exact method does not support yet multi-server stations. Switching to default method.');
+            %            end
             
-            [Q,U,R,T,C,X] = solver_mva_analysis(qn, options);            
-            runtime = toc(T0);                        
+            [Q,U,R,T,C,X] = solver_mva_analysis(qn, options);
+            runtime = toc(T0);
             self.setAvgResults(Q,U,R,T,C,X,runtime);
         end
     end
@@ -52,12 +54,12 @@ classdef SolverMVA < NetworkSolver
                 'Server','JobSink','RandomSource','ServiceTunnel',...
                 'SchedStrategy_INF','SchedStrategy_PS',...
                 'SchedStrategy_DPS','SchedStrategy_FCFS',...
-                'RoutingStrategy_PROB','RoutingStrategy_RAND',...                
-                'ClosedClass','OpenClass','Replayer'});            
-        end        
+                'RoutingStrategy_PROB','RoutingStrategy_RAND',...
+                'ClosedClass','OpenClass','Replayer'});
+        end
         
         function [bool, featSupported] = supports(model)
-            featUsed = model.getUsedLangFeatures();    
+            featUsed = model.getUsedLangFeatures();
             featSupported = SolverMVA.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end

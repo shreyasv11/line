@@ -1,7 +1,9 @@
 classdef SolverFluid < NetworkSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
-
+    % A solver based on fluid and mean-field approximation methods.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
+    
     methods
         function self = SolverFluid(model,varargin)
             self = self@NetworkSolver(model, mfilename);
@@ -24,12 +26,12 @@ classdef SolverFluid < NetworkSolver
                     qn.state{isf} = s0{isf}(1,:); % assign initial state to network
                 end
             end
-			options = self.getOptions;
+            options = self.getOptions;
             [odeStateVec] = solver_fluid_initsol(qn, options);
-			options.init_sol = odeStateVec;
+            options.init_sol = odeStateVec;
             RD = solver_fluid_passage_time(qn, options);
             runtime = toc(T0);
-            self.setCdfResults(RD, runtime);
+            self.setDistribResults(RD, runtime);
         end
         
         function RD = getCdfRespT(self, R)
@@ -40,10 +42,10 @@ classdef SolverFluid < NetworkSolver
             qn = self.getStruct;
             self.getAvg; % get steady-state solution
             options = self.getOptions;
-			options.init_sol = self.result.solverSpecific.odeStateVec;
+            options.init_sol = self.result.solverSpecific.odeStateVec;
             RD = solver_fluid_passage_time(qn, options);
             runtime = toc(T0);
-            self.setCdfResults(RD, runtime);
+            self.setDistribResults(RD, runtime);
         end
         
         function supported = getSupported(self,supported)
@@ -71,11 +73,11 @@ classdef SolverFluid < NetworkSolver
             end
             
             if ~self.supports(self.model)
-%                if options.verbose
-                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%                end
-%                runtime = toc(T0);
-%                return
+                %                if options.verbose
+                error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+                %                end
+                %                runtime = toc(T0);
+                %                return
             end
             
             qn = self.model.getStruct();
@@ -184,13 +186,13 @@ classdef SolverFluid < NetworkSolver
                 'Server','RandomSource','ServiceTunnel',...
                 'SchedStrategy_INF','SchedStrategy_PS',...
                 'SchedStrategy_DPS','SchedStrategy_FCFS',...
-                'RoutingStrategy_PROB','RoutingStrategy_RAND',...                
+                'RoutingStrategy_PROB','RoutingStrategy_RAND',...
                 'ClosedClass','Replayer'});  %,'Sink','Source','OpenClass','JobSink'
-                %SolverFluid has very weak performance on open models
-        end        
+            %SolverFluid has very weak performance on open models
+        end
         
         function [bool, featSupported] = supports(model)
-            featUsed = model.getUsedLangFeatures();    
+            featUsed = model.getUsedLangFeatures();
             featSupported = SolverFluid.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end

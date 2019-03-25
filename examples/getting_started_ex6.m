@@ -3,7 +3,7 @@ model = Network('model');
 model = Network('model');
 % Block 1: nodes
 clientDelay = Delay(model, 'Client');
-cacheNode = Cache(model, 'Cache', 1000, 50, ReplacementPolicy.LRU);
+cacheNode = Cache(model, 'Cache', 1000, 50, ReplacementStrategy.LRU);
 cacheDelay = Delay(model, 'CacheDelay');
 % Block 2: classes
 clientClass = ClosedClass(model, 'ClientClass', 1, clientDelay, 0);

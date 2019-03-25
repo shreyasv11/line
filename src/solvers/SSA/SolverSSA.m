@@ -1,6 +1,8 @@
 classdef SolverSSA < NetworkSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A solver based on discrete-event stochastic simulation analysis.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     methods
         function self = SolverSSA(model,varargin)
@@ -20,15 +22,15 @@ classdef SolverSSA < NetworkSolver
             options = self.getOptions;
             
             if ~self.supports(self.model)
-%                if options.verbose
-                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%                end
-%                runtime = toc(T0);
-%                return
-            end            
+                %                if options.verbose
+                error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+                %                end
+                %                runtime = toc(T0);
+                %                return
+            end
             
             Solver.resetRandomGeneratorSeed(options.seed);
-
+            
             qn = self.model.getStruct();
             
             % TODO: add priors on initial state
@@ -43,12 +45,12 @@ classdef SolverSSA < NetworkSolver
     end
     
     methods (Static)
-%                'Fork','Join','Forker','Joiner',...
+        %                'Fork','Join','Forker','Joiner',...
         function featSupported = getFeatureSet()
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source','Router',...
                 'ClassSwitch','DelayStation','Queue',...
-                'Cox2','Erlang','Exponential','HyperExp',...                                                
+                'Cox2','Erlang','Exponential','HyperExp',...
                 'StatelessClassSwitcher','InfiniteServer','SharedServer','Buffer','Dispatcher',...
                 'Server','JobSink','RandomSource','ServiceTunnel',...
                 'SchedStrategy_INF','SchedStrategy_PS',...
@@ -56,12 +58,12 @@ classdef SolverSSA < NetworkSolver
                 'SchedStrategy_GPS','SchedStrategy_RAND',...
                 'SchedStrategy_HOL','SchedStrategy_LCFS',...
                 'SchedStrategy_SEPT','SchedStrategy_LEPT',...
-                'RoutingStrategy_PROB','RoutingStrategy_RAND',...                
+                'RoutingStrategy_PROB','RoutingStrategy_RAND',...
                 'SchedStrategy_EXT','ClosedClass','OpenClass'});
-        end        
+        end
         
         function [bool, featSupported] = supports(model)
-            featUsed = model.getUsedLangFeatures();    
+            featUsed = model.getUsedLangFeatures();
             featSupported = SolverSSA.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end
@@ -71,7 +73,7 @@ classdef SolverSSA < NetworkSolver
         function options = defaultOptions(self)
             options = Solver.defaultOptions();
             options.timespan = [0,Inf];
-			options.verbose = true;
+            options.verbose = true;
         end
     end
 end

@@ -1,4 +1,6 @@
 function [AvgTable,QT,UT,RT,TT] = getNodeAvgTable(self,Q,U,R,T,keepDisabled)
+% Return table of average node metrics
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('keepDisabled','var')

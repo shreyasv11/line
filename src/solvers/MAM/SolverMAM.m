@@ -1,4 +1,6 @@
 classdef SolverMAM < NetworkSolver
+    % A solver based on matrix-analytic methods.
+    %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     

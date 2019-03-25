@@ -1,15 +1,15 @@
-% Chain describes a routing chain, i.e., a collection of classes in which the job can switch its current class.
-% 
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
 classdef Chain < NetworkElement
+    % A service chain
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         classes;
         classnames;
         visits;
         index; % index within model
-		completes;
+        completes;
         njobs;
     end
     
@@ -27,7 +27,7 @@ classdef Chain < NetworkElement
             idx  = self.getClass(class.name);
             self.visits{idx} = v;
         end
-                
+        
         function self = addClass(self, class, v, index)
             if ~exist('v','var')
                 v = [];

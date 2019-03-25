@@ -16,19 +16,10 @@ sched = qn.sched;
 
 Tstart = tic;
 
-PH=cell(qn.nstations,qn.nclasses);
-for ist=1:qn.nstations
+PH=cell(M,K);
+for i=1:M
     for k=1:K
-        if isempty(mu{ist,k})
-            PH{ist,k} = [];
-        elseif length(mu{ist,k})==1
-            PH{ist,k} = map_exponential(1/mu{ist,k});
-        else
-            D0 = diag(-mu{ist,k})+diag(mu{ist,k}(1:end-1).*(1-phi{ist,k}(1:end-1)),1);
-            D1 = zeros(size(D0));
-            D1(:,1)=(phi{ist,k}.*mu{ist,k});
-            PH{ist,k} = map_normalize({D0,D1});
-        end
+        PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRenewalProcess();
     end
 end
 

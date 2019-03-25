@@ -1,4 +1,6 @@
 function [QN] = getAvgQLenChain(self,Q)
+% Return average queue-lengths aggregated by chain
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

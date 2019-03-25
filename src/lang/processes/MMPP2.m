@@ -1,4 +1,6 @@
 classdef MMPP2 < MarkovModulated
+    % 2-phase Markov-Modulated Poisson Process - MMPP(2)
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

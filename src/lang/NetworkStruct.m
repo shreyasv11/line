@@ -1,4 +1,6 @@
 classdef NetworkStruct <handle
+    % Data structure representation for a Network object
+    %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     

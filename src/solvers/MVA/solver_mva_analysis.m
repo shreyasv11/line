@@ -62,8 +62,12 @@ Tstart = tic;
 
 switch options.method
     case {'exact','mva'}
-        if any(isfinite(Nchain)) % if closed or mixed
+        if all(isfinite(Nchain)) % if closed
             [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+        elseif any(isfinite(Nchain)) % if mixed
+            warning('Exact analysis for mixed models not supported yet. Switching to amva.');
+%            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+            [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
         else % if open same as running amva
             [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
         end

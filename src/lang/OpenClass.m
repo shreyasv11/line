@@ -1,6 +1,8 @@
 classdef OpenClass < JobClass
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A class of jobs that arrive from the external world
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     methods
         
@@ -17,7 +19,7 @@ classdef OpenClass < JobClass
             if isempty(model.getSink)
                 error('Network require a Sink prior to instantiating open classes.');
             end
-
+            
             self.type = 'open';
             self.priority = 0;
             if exist('prio','var')
@@ -28,7 +30,7 @@ classdef OpenClass < JobClass
             
             % set default scheduling for this class at all nodes
             for i=1:length(model.nodes)
-                if ~isempty(model.nodes{i}) && ~isa(model.nodes{i},'Source') && ~isa(model.nodes{i},'Sink') && ~isa(model.nodes{i},'Join') 
+                if ~isempty(model.nodes{i}) && ~isa(model.nodes{i},'Source') && ~isa(model.nodes{i},'Sink') && ~isa(model.nodes{i},'Join')
                     %&& ~isa(model.nodes{i},'Fork')
                     model.nodes{i}.setScheduling(self, SchedStrategy.FCFS);
                 end
@@ -37,7 +39,7 @@ classdef OpenClass < JobClass
                     model.nodes{i}.setRequired(self,-1);
                 end
                 if ~isempty(model.nodes{i})
-%                    && (isa(model.nodes{i},'Queue') || isa(model.nodes{i},'Router'))
+                    %                    && (isa(model.nodes{i},'Queue') || isa(model.nodes{i},'Router'))
                     model.nodes{i}.setRouting(self, 'Random');
                 end
             end

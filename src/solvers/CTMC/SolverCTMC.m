@@ -1,6 +1,8 @@
 classdef SolverCTMC < NetworkSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A solver based on continuous-time Markov chain (CTMC) formalism.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     methods
         function self = SolverCTMC(model,varargin)
@@ -13,7 +15,7 @@ classdef SolverCTMC < NetworkSolver
                 supported=struct();
             end
         end
-                
+        
         function runtime = run(self)
             T0=tic;
             
@@ -27,11 +29,11 @@ classdef SolverCTMC < NetworkSolver
             Solver.resetRandomGeneratorSeed(options.seed);
             
             if ~self.supports(self.model)
-%                if options.verbose
-                    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%                end
-%                runtime = toc(T0);
-%                return
+                %                if options.verbose
+                error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+                %                end
+                %                runtime = toc(T0);
+                %                return
             end
             
             qn = self.getStruct();
@@ -117,7 +119,7 @@ classdef SolverCTMC < NetworkSolver
                 self.result.solverSpecific = lastSol;
             end
         end
-            
+        
         function Pnir = getProbState(self, ist)
             if ~exist('ist','var')
                 error('getProbState requires to indicate the station of interest.');
@@ -142,7 +144,7 @@ classdef SolverCTMC < NetworkSolver
             end
             T0 = tic;
             qn = self.model.getStruct;
-            if self.model.isStateValid 
+            if self.model.isStateValid
                 Pn = solver_ctmc_joint(qn, self.options);
                 self.result.('solver') = self.getName();
                 self.result.Prob.joint = Pn;
@@ -170,10 +172,10 @@ classdef SolverCTMC < NetworkSolver
                 'SchedStrategy_HOL','SchedStrategy_LCFS',...
                 'RoutingStrategy_PROB','RoutingStrategy_RAND',...
                 'ClosedClass','OpenClass','Replayer'});
-        end        
+        end
         
         function [bool, featSupported, featUsed] = supports(model)
-            featUsed = model.getUsedLangFeatures();    
+            featUsed = model.getUsedLangFeatures();
             featSupported = SolverCTMC.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end

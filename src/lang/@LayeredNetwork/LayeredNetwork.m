@@ -1,11 +1,11 @@
-% LayeredNetwork defines a layered queueing network model.
-% 
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
 classdef LayeredNetwork < Model & Ensemble
+    % A layered queueing network model.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     properties
         objects = struct();    % cell arrays of objects
-        processors = cell(0,4);      % list of processors                
+        processors = cell(0,4);      % list of processors
         lqnGraph; % digraph representation of all dependencies
         taskGraph; % digraph representation of task dependencies
         layerGraph;
@@ -63,15 +63,15 @@ classdef LayeredNetwork < Model & Ensemble
         function self = init(self)
             self.generateGraph;
             self.initDefault;
-            self.param.Nodes.RespT = []; 
-            self.param.Nodes.Tput = []; 
-            self.param.Nodes.Util = []; 
-            self.param.Nodes.QLen = [];            
-            self.param.Edges.RespT = []; 
-            self.param.Edges.Tput = []; 
+            self.param.Nodes.RespT = [];
+            self.param.Nodes.Tput = [];
+            self.param.Nodes.Util = [];
+            self.param.Nodes.QLen = [];
+            self.param.Edges.RespT = [];
+            self.param.Edges.Tput = [];
             self.param.Edges.QLen = [];
         end
-                                
+        
         ensemble = updateEnsemble(self, isBuild, deepUpdate)
         
         self = generateGraph(self);
@@ -117,11 +117,11 @@ classdef LayeredNetwork < Model & Ensemble
             end
             E = length(self.ensemble);
         end
-
+        
         function layers = getLayers(self)
             layers = self.getEnsemble();
         end
-
+        
         % setUsedFeatures : records that a certain language feature has been used
         function self = setUsedFeatures(self,e,className)
             self.usedFeatures{e}.setTrue(className);
@@ -144,6 +144,6 @@ classdef LayeredNetwork < Model & Ensemble
     end
     
     methods (Static)
-        myLN = parseXML(filename, verbose)     
-    end   
+        myLN = parseXML(filename, verbose)
+    end
 end

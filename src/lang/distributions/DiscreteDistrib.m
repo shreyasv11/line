@@ -1,4 +1,6 @@
 classdef DiscreteDistrib < Distrib
+    % An abstract class for discrete distributions
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

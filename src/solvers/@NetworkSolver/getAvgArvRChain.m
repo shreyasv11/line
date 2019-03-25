@@ -1,4 +1,6 @@
 function [AN] = getAvgArvRChain(self,A)
+% Return average arrival rates aggregated by chain
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

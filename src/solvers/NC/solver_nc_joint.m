@@ -14,14 +14,7 @@ C = qn.nchains;
 PH=cell(M,K);
 for i=1:M
     for k=1:K
-        if length(mu_chain{i,k})==1
-            PH{i,k} = map_exponential(1/mu_chain{i,k});
-        else
-            D0 = diag(-mu_chain{i,k})+diag(mu_chain{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
-            D1 = zeros(size(D0));
-            D1(:,1)=(phi{i,k}.*mu_chain{i,k});
-            PH{i,k} = map_normalize({D0,D1});
-        end
+        PH{i,k} = Coxian(mu_chain{i,k}, phi{i,k}).getRenewalProcess();
     end
 end
 %% initialization

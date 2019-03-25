@@ -1,4 +1,6 @@
 classdef Uniform < ContinuousDistrib
+    % The uniform statistical distribution
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

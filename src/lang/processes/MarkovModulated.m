@@ -1,4 +1,6 @@
 classdef MarkovModulated < PointProcess
+    % An abstract class for Markov-modulated processes
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

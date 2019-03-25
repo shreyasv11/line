@@ -209,7 +209,7 @@ for net=1:length(graphLayer)
                     destEntryProcess = Exp(Distrib.InfRate);
                 end
                 if ~isBuild
-                    [demandMu,demandPhi] = Cox.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
+                    [demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
                 end                
             else % convolution of thinkTime and interArrivalFromUpperLayer processes
 % The code will never enter this section since thinkTime is available only
@@ -227,7 +227,7 @@ for net=1:length(graphLayer)
 %                     demandMu = Distrib.InfRate;
 %                     demandPhi = 1.0;
 %                 elseif ~isBuild
-%                     [demandMu,demandPhi] = Cox.fitMeanAndSCV(destEntryMean, destEntrySCV);
+%                     [demandMu,demandPhi] = Coxian.fitMeanAndSCV(destEntryMean, destEntrySCV);
 %                 end
             end
             if isBuild
@@ -282,7 +282,7 @@ for net=1:length(graphLayer)
                                 node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
                             end
                             qn.rates(2,jobclass{class_hostdemand}.index) = destEntryRate;
-                            [demandMu,demandPhi] = Cox.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
+                            [demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
                             qn.mu{2,jobclass{class_hostdemand}.index} = demandMu;
                             qn.phi{2,jobclass{class_hostdemand}.index} = demandPhi;
                         end

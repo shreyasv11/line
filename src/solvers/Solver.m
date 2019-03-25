@@ -1,13 +1,13 @@
-% Solver is an abstract class for model solution algorithms and tools
-%
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
-classdef Solver < handle    
+classdef Solver < handle
+    % Abstract class for model solution algorithms and tools
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
-    properties
-        options;
-        name;
-        model;
+    properties (Access = protected)
+        options; % Data structure with solver options
+        name; % Solver name
+        model; % Model to be solved
         result; % last result
     end
     
@@ -24,21 +24,24 @@ classdef Solver < handle
     end
     
     methods %(Abstract) % implemented with errors for Octave compatibility
-        function bool = supports(self,model) % true if model is supported by the solver
+        function bool = supports(self,model)
+            % True if the input model is supported by the solver
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function runtime = run(self) % generic method to run the solver
+            % Solve the model
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
     end
     
     methods
         function out = getName(self)
+            % Get solver name
             out = self.name;
         end
         
-        % this method is meant to be over-ridden by subclasses
         function options = getDefaultOptions(self)
+            % Get option data structure with default values
             options = Solver.defaultOptions;
         end
         
@@ -46,7 +49,8 @@ classdef Solver < handle
     
     methods
         
-        function checkOptions(self, disabledChecks)
+        function checkOptions(self, ~)
+            % Check if input option data structure is valid for the given model
             if strcmp(self.options.method,'exact')
                 if ~self.model.hasProductFormSolution
                     error('The model does not have a product-form solution, hence exact solution is not possible.');
@@ -55,22 +59,27 @@ classdef Solver < handle
         end
         
         function results = getResults(self)
+            % Return results data structure
             results = self.result;
         end
         
         function bool = hasResults(self)
+            % Check if the model has been solved
             bool = ~isempty(self.result);
         end
         
         function options = getOptions(self)
+            % Return options data structure
             options = self.options;
         end
         
         function reset(self)
+            % Dispose previously stored results
             self.result = [];
         end
         
         function self = setOptions(self, options)
+            % Set a new options data structure
             defaultOptions = self.defaultOptions;
             optList = Solver.listValidOptions();
             for l=1:length(optList)
@@ -82,18 +91,20 @@ classdef Solver < handle
         end
     end
     
-    methods (Static)        
+    methods (Static)
         
         function resetRandomGeneratorSeed(seed)
-            rand('seed',seed); 
+            % Assign a new seed to the random number generator
+            rand('seed',seed);
         end
         
         function bool = isAvailable()
-            % to be over-ridden by classes depending on external solvers
+            % Check if external dependencies are available for the solver
             bool = true;
         end
         
         function bool = isJavaAvailable()
+            % Check if Java dependencies are available for the solver
             bool = true;
             if ispc % windows
                 [~,ret] = dos('java -version');
@@ -109,39 +120,43 @@ classdef Solver < handle
         end
         
         function fun = accurateStiffOdeSolver()
-			    if isoctave
-				    %fun = @ode15s;
-            fun = @lsode;
-			    else
-            fun = @ode15s;
-			    end
+            % Return default high-accuracy stiff solver
+            if isoctave
+                %fun = @ode15s;
+                fun = @lsode;
+            else
+                fun = @ode15s;
+            end
         end
         
         function fun = accurateOdeSolver()
-			    if isoctave
-				    %fun = @ode15s;
-            fun = @lsode;
-			    else
-            fun = @ode45;
-			    end
+            % Return default high-accuracy non-stiff solver
+            if isoctave
+                %fun = @ode15s;
+                fun = @lsode;
+            else
+                fun = @ode45;
+            end
         end
         
         function fun = fastStiffOdeSolver()
-			    if isoctave
-				    %fun = @ode15s;
-            fun = @lsode;
-			    else
-				    fun = @ode23s;
-			    end
+            % Return default low-accuracy stiff solver
+            if isoctave
+                %fun = @ode15s;
+                fun = @lsode;
+            else
+                fun = @ode23s;
+            end
         end
         
         function fun = fastOdeSolver()
-			    if isoctave
-				    %fun = @ode15s;
-            fun = @lsode;
-			    else
-				    fun = @ode23s;
-			    end
+            % Return default low-accuracy non-stiff solver
+            if isoctave
+                %fun = @ode15s;
+                fun = @lsode;
+            else
+                fun = @ode23s;
+            end
         end
         
         %         function solver = suggestAnalytical(model)
@@ -161,16 +176,19 @@ classdef Solver < handle
         %         end
         
         function optList = listValidOptions()
+            % List valid fields for options data structure
             optList = {'cache','cutoff','force','init_sol','iter_max','iter_tol','tol', ...
                 'keep','method','odesolvers','samples','seed','stiff', ...
                 'timespan','verbose'};
         end
         
         function bool = isValidOption(optName)
+            % Check if the given option exists for the solver
             bool = any(cell2mat(findstring(optName, Solver.listValidOptions()))==1);
         end
         
         function options = defaultOptions()
+            % Return default options
             options = struct();
             options.cache = true;
             options.cutoff = Inf;
@@ -188,9 +206,9 @@ classdef Solver < handle
             odesfun.accurateStiffOdeSolver = Solver.accurateStiffOdeSolver;
             options.odesolvers = odesfun;
             if isoctave
-            options.samples = 5e3;
+                options.samples = 5e3;
             else
-            options.samples = 1e4;
+                options.samples = 1e4;
             end
             %options.seed = 23000;
             options.seed = randi([1,1e6]);
@@ -200,6 +218,7 @@ classdef Solver < handle
         end
         
         function options = parseOptions(varargin, defaultOptions)
+            % Parse option parameters into options data structure
             if isempty(varargin)
                 options = defaultOptions;
             elseif isstruct(varargin{1})
@@ -218,53 +237,13 @@ classdef Solver < handle
             end
         end
         
-        function solvers = getAllSolvers(model, options)
-            if ~exist('options','var')
-                options = Solver.defaultOptions;
-            end
-            solvers = {};
-            solvers{end+1} = SolverCTMC(model, options);
-            solvers{end+1} = SolverJMT(model, options);
-            solvers{end+1} = SolverSSA(model, options);
-            solvers{end+1} = SolverFluid(model, options);
-            solvers{end+1} = SolverMAM(model, options);
-            solvers{end+1} = SolverMVA(model, options);
-            solvers{end+1} = SolverNC(model, options);
-        end
-        
-        function solvers = getAllFeasibleSolvers(model, options)
-            if ~exist('options','var')
-                options = Solver.defaultOptions;
-            end
-            solvers = {};
-            if SolverCTMC.supports(model)
-                solvers{end+1} = SolverCTMC(model, options);
-            end
-            if SolverJMT.supports(model)
-                solvers{end+1} = SolverJMT(model, options);
-            end
-            if SolverSSA.supports(model)
-                solvers{end+1} = SolverSSA(model, options);
-            end
-            if SolverFluid.supports(model)
-                solvers{end+1} = SolverFluid(model, options);
-            end
-            if SolverMAM.supports(model)
-                solvers{end+1} = SolverMAM(model, options);
-            end
-            if SolverMVA.supports(model)
-                solvers{end+1} = SolverMVA(model, options);
-            end
-            if SolverNC.supports(model)
-                solvers{end+1} = SolverNC(model, options);
-            end
-        end
-        
         function solver = get(chosenmethod, model, varargin)
+            % Alias for Solver.method
             solver = Solver.method(chosenmethod, model, varargin);
         end
         
         function solver = method(chosenmethod, model, varargin)
+            % Returns a solver configured to run the chosen method
             options = Solver.parseOptions(varargin, Solver.defaultOptions);
             options.method = chosenmethod;
             switch options.method
@@ -300,8 +279,8 @@ classdef Solver < handle
                     if strcmp(options.method,'mam'), options.method='default'; end
                     options.method = erase(options.method,'mam.');
                     solver = SolverMAM(model, options);
-                case {'mm1','mg1','gig1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b','gm1'}
-                    solver = NetworkSolverLibrary(model, options);                    
+                case {'mm1','mg1','gig1','gim1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b'}
+                    solver = NetworkSolverLibrary(model, options);
             end
         end
     end

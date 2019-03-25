@@ -1,6 +1,8 @@
 classdef ClosedClass < JobClass
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A class of jobs that perpetually cycle inside the model.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         population;
@@ -11,7 +13,7 @@ classdef ClosedClass < JobClass
         %Constructor
         function self = ClosedClass(model, name, njobs, refstat, prio)
             self = self@JobClass('closed', name);
-
+            
             self.type = 'closed';
             self.population = njobs;
             self.priority = 0;

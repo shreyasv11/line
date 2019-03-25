@@ -1,7 +1,9 @@
 classdef SolverEnv < EnsembleSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
-
+    % Solver for models immersed in a random environment.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
+    
     
     properties
         env; % user-supplied representation of each stage transition
@@ -41,12 +43,12 @@ classdef SolverEnv < EnsembleSolver
                 mapes = zeros(1,E);
                 for e=1:E
                     for i=1:size(self.results{it,e}.TranAvg.Q,1)
-                        for j=1:size(self.results{it,e}.TranAvg.Q,2)                            
+                        for j=1:size(self.results{it,e}.TranAvg.Q,2)
                             % error is calculated only on entry value (t=0)
                             mapes(e) = max(mapes(e), mape(self.results{it,e}.TranAvg.Q{i,j}(1,1), self.results{it-1,e}.TranAvg.Q{i,j}(1,1)));
                         end
                     end
-                end                
+                end
                 if max(mapes) < self.options.iter_tol
                     bool = true;
                 end
@@ -56,7 +58,7 @@ classdef SolverEnv < EnsembleSolver
             else
                 if self.options.verbose
                     fprintf(1,'Iteration %3d, max abs. perc. error: %f\n',it,Inf);
-                end                
+                end
             end
         end
         
@@ -120,7 +122,7 @@ classdef SolverEnv < EnsembleSolver
                 if probEnv(e) > 0
                     self.probOrig(:,e) = self.probOrig(:,e) / sum(self.probOrig(:,e));
                 end
-            end            
+            end
             
         end
         
@@ -140,14 +142,14 @@ classdef SolverEnv < EnsembleSolver
             T0 = tic;
             runtime = toc(T0);
             %% initialize
-            [Qt,Ut,Tt] = self.ensemble{e}.getTranHandles;                        
-            %[results_e.Avg.Q, results_e.Avg.U, results_e.Avg.R, results_e.Avg.T] = self.solvers{e}.getAvg();            
-            [results_e.TranAvg.Q, results_e.TranAvg.U, results_e.TranAvg.T] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);           
+            [Qt,Ut,Tt] = self.ensemble{e}.getTranHandles;
+            %[results_e.Avg.Q, results_e.Avg.U, results_e.Avg.R, results_e.Avg.T] = self.solvers{e}.getAvg();
+            [results_e.TranAvg.Q, results_e.TranAvg.U, results_e.TranAvg.T] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);
         end
         
         function post(self, it)
             E = self.getNumberOfModels;
-            for e=1:E                
+            for e=1:E
                 QExit{e}=[];
                 for i=1:size(self.results{it,e}.TranAvg.Q,1)
                     for r=1:size(self.results{it,e}.TranAvg.Q,2)
@@ -176,7 +178,7 @@ classdef SolverEnv < EnsembleSolver
                 for h=1:E
                     Q0{e} = Q0{e} + self.probOrig(h,e) * QE{h,e};
                 end
-                self.solvers{e}.reset();                
+                self.solvers{e}.reset();
                 self.ensemble{e}.initFromMarginal(Q0{e});
             end
         end
@@ -184,7 +186,7 @@ classdef SolverEnv < EnsembleSolver
         function finish(self)
             it = size(self.results,1); % use last iteration
             E = self.getNumberOfModels;
-            for e=1:E                
+            for e=1:E
                 QExit{e}=[];
                 UExit{e}=[];
                 TExit{e}=[];
@@ -196,29 +198,29 @@ classdef SolverEnv < EnsembleSolver
                         TExit{e}(i,r) = self.results{it,e}.TranAvg.T{i,r}(:,1)'*w{e}/sum(w{e});
                     end
                 end
-%                 for h = 1:E
-%                     QE{e,h} = zeros(size(self.results{it,e}.TranAvg.Q));
-%                     for i=1:size(self.results{it,e}.TranAvg.Q,1)
-%                         for r=1:size(self.results{it,e}.TranAvg.Q,2)
-%                             w{e,h} = [0, map_cdf(self.envMMAP{e,h}, self.results{it,e}.TranAvg.Q{i,r}(2:end,2)) - map_cdf(self.envMMAP{e,h}, self.results{it,e}.TranAvg.Q{i,r}(1:end-1,2))]';
-%                             if ~isnan(w{e,h})
-%                                 QE{e,h}(i,r) = self.results{it,e}.TranAvg.Q{i,r}(:,1)'*w{e,h}/sum(w{e,h});
-%                             else
-%                                 QE{e,h}(i,r) = 0;
-%                             end
-%                         end
-%                     end
-%                 end
+                %                 for h = 1:E
+                %                     QE{e,h} = zeros(size(self.results{it,e}.TranAvg.Q));
+                %                     for i=1:size(self.results{it,e}.TranAvg.Q,1)
+                %                         for r=1:size(self.results{it,e}.TranAvg.Q,2)
+                %                             w{e,h} = [0, map_cdf(self.envMMAP{e,h}, self.results{it,e}.TranAvg.Q{i,r}(2:end,2)) - map_cdf(self.envMMAP{e,h}, self.results{it,e}.TranAvg.Q{i,r}(1:end-1,2))]';
+                %                             if ~isnan(w{e,h})
+                %                                 QE{e,h}(i,r) = self.results{it,e}.TranAvg.Q{i,r}(:,1)'*w{e,h}/sum(w{e,h});
+                %                             else
+                %                                 QE{e,h}(i,r) = 0;
+                %                             end
+                %                         end
+                %                     end
+                %                 end
             end
-                        
+            
             Qval=0*QExit{e};
             Uval=0*UExit{e};
             Tval=0*TExit{e};
             for e=1:E
-               Qval = Qval + self.probEnv(e) * QExit{e}; % to check
-               Uval = Uval + self.probEnv(e) * UExit{e}; % to check
-               Tval = Tval + self.probEnv(e) * TExit{e}; % to check
-            end            
+                Qval = Qval + self.probEnv(e) * QExit{e}; % to check
+                Uval = Uval + self.probEnv(e) * UExit{e}; % to check
+                Tval = Tval + self.probEnv(e) * TExit{e}; % to check
+            end
             self.result.Avg.Q = Qval;
             %    self.result.Avg.R = R;
             %    self.result.Avg.X = X;

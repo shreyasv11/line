@@ -2,9 +2,9 @@
 %
 % Static classes
 %   Perf                -	Available performance measures (throughput, utilization, ...).
-%   DropRule            -	Available drop rules (drop, BAS blocking, ...). 
+%   DropStrategy            -	Available drop rules (drop, BAS blocking, ...). 
 %   JoinStrategy        -	Available join strategies (standard, quorum, ...).
-%   SchedPolicy         -	Available scheduling policies (preemptive, non-preemptive, ...).
+%   SchedStrategyType         -	Available scheduling policies (preemptive, non-preemptive, ...).
 %   SchedStrategy       -	Available scheduling strategies (FCFS, LCFS, ...).
 %   RoutingStrategy     -	Available routing strategies (join-short-queue, ...).
 %   ServiceStrategy     -	Available service strategies (load-dependent, ...).

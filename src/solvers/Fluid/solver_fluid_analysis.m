@@ -19,12 +19,9 @@ for i=1:M
             rates0(i,k) = mu{i,k};
             phases(i,k) = 1;
         else
-            D0 = diag(-mu{i,k})+diag(mu{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
-            D1 = zeros(size(D0));
-            D1(:,1)=(phi{i,k}.*mu{i,k});
-            PH{i,k} = map_normalize({D0,D1});
+            PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRenewalProcess();
             rates0(i,k) = map_lambda(PH{i,k});
-            phases(i,k) = length(D0);
+            phases(i,k) = length(PH{i,k}{1});
         end
     end
 end
@@ -109,8 +106,8 @@ if findstring(qn.sched, SchedStrategy.FCFS) ~= -1 % if there are FCFS stations
                     for k=1:K
                         if rates(i,k)>0
                             PH{i,k} = map_scale(PH{i,k},1/rates(i,k));
-                            [muik,phiik] = Cox.fitMeanAndSCV(map_mean(PH{i,k}), SCV(i,k));
-                            %[muik,phiik] = Cox.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
+                            [muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), SCV(i,k));
+                            %[muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
                             % we now handle the case that due to either numerical issues
                             % or different relationship between scv and mean the size of
                             % the phase-type representation has changed

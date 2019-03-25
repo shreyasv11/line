@@ -1,4 +1,6 @@
 classdef Disabled < Distrib
+    % A distribution that is not configured
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

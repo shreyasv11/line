@@ -1,4 +1,6 @@
 classdef RenewalProcess < PointProcess
+    % An abstract class for renewal point processes.
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

@@ -1,4 +1,6 @@
 function [UN] = getAvgUtilChain(self,U)
+% Return average utilization aggregated by chain
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

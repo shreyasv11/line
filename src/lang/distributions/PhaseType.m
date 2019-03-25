@@ -1,4 +1,6 @@
 classdef PhaseType < ContinuousDistrib
+    % An astract class for phase-type distributions
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

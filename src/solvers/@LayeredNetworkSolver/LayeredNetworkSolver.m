@@ -1,4 +1,6 @@
 classdef LayeredNetworkSolver < Solver
+    % Abstract class for solvers applicable to LayeredNetwork models
+    %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     

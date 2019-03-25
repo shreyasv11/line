@@ -1,4 +1,6 @@
 classdef Immediate < Distrib
+    % A distribution with probability mass entirely at zero
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

@@ -1,4 +1,6 @@
 classdef ContinuousDistrib < Distrib
+    % An abstract class for continuous distributions
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     
@@ -13,4 +15,3 @@ classdef ContinuousDistrib < Distrib
     end
     
 end
-

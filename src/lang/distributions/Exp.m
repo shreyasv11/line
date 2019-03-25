@@ -1,4 +1,6 @@
 classdef Exp < PhaseType
+    % The exponential statistical distribution
+    %
     % Copyright (c) 2012-Present, Imperial College London
     % All rights reserved.
     

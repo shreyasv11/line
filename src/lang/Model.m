@@ -1,13 +1,13 @@
-% Model is the parent class for all models
-%
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
 classdef Model < Copyable
+    % Abstract parent class for all models
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         name;
     end
-        
+    
     methods
         %Constructor
         function self = Model(name)
@@ -21,7 +21,7 @@ classdef Model < Copyable
         function self = setName(self, name)
             self.name = name;
         end
-      
-    end
         
+    end
+    
 end

@@ -1,4 +1,6 @@
 classdef Replayer < TimeSeries
+    % Empirical time series from a trace
+    % 
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
@@ -16,7 +18,7 @@ classdef Replayer < TimeSeries
                 % JMT requires full file
                 javaFileObj = java.io.File(fileName);
                 if ~javaFileObj.isAbsolute()
-                    fileName = fullfile(pwd,fileName);
+                    fileName = fullfile(pwd,fileName); %#ok<NASGU>
                 end
                 self.javaClass = 'jmt.engine.random.Replayer';
                 self.javaParClass = 'jmt.engine.random.ReplayerPar';

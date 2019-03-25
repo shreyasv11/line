@@ -1,6 +1,8 @@
 classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % LINE native solver for layered networks.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
     end
@@ -88,7 +90,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             procPos = strcmp(lqnGraph.Nodes.Type,'P');
             Avg.Nodes.QLen(procPos) = NaN;
             Avg.Nodes.RespT(procPos) = NaN;
-            Avg.Nodes.Tput(procPos) = NaN;            
+            Avg.Nodes.Tput(procPos) = NaN;
             taskPos = strcmp(lqnGraph.Nodes.Type,'R') | strcmp(lqnGraph.Nodes.Type,'T');
             for tidx = find(taskPos)'
                 entriesOfTask = self.model.listEntriesOfTask(tidx);
@@ -100,11 +102,11 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
                     Avg.Nodes.QLen(tidx) = Avg.Nodes.QLen(tidx) + Avg.Nodes.QLen(eidx);
                     Avg.Nodes.Tput(tidx) = Avg.Nodes.Tput(tidx) + Avg.Nodes.Tput(eidx);
                     actOfEntry = self.model.listActivitiesOfEntry(entriesOfTask{e});
-                     Avg.Nodes.Util(eidx) = 0;
-                     for a = 1:length(actOfEntry)
-                         aidx = self.model.getNodeIndex(actOfEntry{a});
-                         Avg.Nodes.Util(eidx) = Avg.Nodes.Util(eidx) + Avg.Nodes.Util(aidx);
-                     end
+                    Avg.Nodes.Util(eidx) = 0;
+                    for a = 1:length(actOfEntry)
+                        aidx = self.model.getNodeIndex(actOfEntry{a});
+                        Avg.Nodes.Util(eidx) = Avg.Nodes.Util(eidx) + Avg.Nodes.Util(aidx);
+                    end
                     Avg.Nodes.Util(tidx) = Avg.Nodes.Util(tidx) + Avg.Nodes.Util(eidx);
                 end
                 pidx = self.model.getNodeIndex(lqnGraph.Nodes.Proc{tidx});

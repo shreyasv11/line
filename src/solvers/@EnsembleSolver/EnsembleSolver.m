@@ -1,4 +1,6 @@
 classdef EnsembleSolver < Solver
+    % Abstract class for solvers applicable to Ensemble models 
+    %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
