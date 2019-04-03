@@ -18,7 +18,7 @@ classdef CacheClassSwitcher < StatefulClassSwitcher
             if ~exist('levels','var')
                 levels = 1;
             end
-            self = self@StatefulClassSwitcher(classes, 'Cache');
+            self@StatefulClassSwitcher(classes, 'Cache');
             self.classes = classes;
             self.items = items;
             self.cap = capacity;

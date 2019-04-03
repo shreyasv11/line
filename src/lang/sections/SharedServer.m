@@ -7,7 +7,7 @@ classdef SharedServer < ServiceSection
     methods
         %Constructor
         function self = SharedServer(customerClasses)
-            self = self@ServiceSection('SharedServer');
+            self@ServiceSection('SharedServer');
             self.numberOfServers = 1;
             self.serviceProcess = {};
             initServers(self, customerClasses); %[JobClass(), ServiceStrategy.ID_LI, Distribution('exp')];

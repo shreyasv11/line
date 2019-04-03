@@ -1,13 +1,15 @@
 classdef Erlang < PhaseType
     % The Erlang statistical distribution
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods
-        %Constructor
+
         function self = Erlang(alpha, r)
-            self = self@PhaseType('Erlang',2);
+            % Constructs an erlang distribution from the rate in each state
+            % and the number of phases
+            self@PhaseType('Erlang',2);
             setParam(self, 1, 'alpha', alpha, 'java.lang.Double'); % rate in each state
             setParam(self, 2, 'r', round(r), 'java.lang.Long'); % number of phases
             self.javaClass = 'jmt.engine.random.Erlang';
@@ -15,25 +17,26 @@ classdef Erlang < PhaseType
         end
         
         function phases = getNumberOfPhases(self)
+            % Get number of phases in the underpinnning phase-type
+            % representation
             phases  = self.getParam(2).paramValue; %r
         end
         
-        function bool = isImmmediate(self)
-            bool = self.getMean() == 0;
-        end
-        
         function ex = getMean(self)
+            % Get distribution mean
             alpha = self.getParam(1).paramValue;
             r = self.getParam(2).paramValue;
             ex = r/alpha;
         end
         
         function SCV = getSCV(self)
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             r = self.getParam(2).paramValue;
             SCV = 1/r;
         end
-                
+        
         function Ft = evalCDF(self,t)
+            % Evaluate the cumulative distribution function at t
             alpha = self.getParam(1).paramValue; % rate
             r = self.getParam(2).paramValue; % stages
             Ft = 1;
@@ -42,31 +45,51 @@ classdef Erlang < PhaseType
             end
         end
         
-        function PH = getRenewalProcess(self)
+        function PH = getRepresentation(self)
+            % Return the renewal process associated to the distribution
             r = self.getParam(2).paramValue;
             PH = map_erlang(self.getMean(),r);
         end
         
-%        function L = getLaplaceTransform(self, s)
-%            alpha = self.getParam(1).paramValue; % rate
-%            r = self.getParam(2).paramValue; % stages
-%            L = (alpha / (alpha + s))^r;
-%        end
+        function L = evalLaplaceTransform(self, s)
+            % Evaluate the Laplace transform of the distribution function at t            
+            alpha = self.getParam(1).paramValue; % rate
+            r = self.getParam(2).paramValue; % stages
+            L = (alpha / (alpha + s))^r;
+        end
         
     end
     
     methods(Static)
-        function er = fit(MEAN,SCV)
+
+        function er = fit(MEAN, VAR, SKEW)
+            % Fit distribution from first three central moments (mean,
+            % variance, skewness)
+            SCV = VAR/MEAN^2;
             er = Erlang.fitMeanAndSCV(MEAN,SCV);
         end
         
+        function er = fitRate(RATE)
+            % Fit distribution with given rate
+            warning('The Erlang distribution is underspecified by the rate, setting the number of phases to 2.');
+            er = Erlang.fitMeanAndOrder(1/RATE, 2);
+        end
+        
+        function er = fitMean(MEAN)
+            % Fit distribution with given mean
+            warning('The Erlang distribution is underspecified by the mean, setting the number of phases to 2.');
+            er = Erlang.fitMeanAndOrder(MEAN, 2);
+        end
+        
         function er = fitMeanAndSCV(MEAN, SCV)
+            % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             r = ceil(1/SCV);
             alpha = r/MEAN;
             er = Erlang(alpha, r);
         end
         
         function er = fitMeanAndOrder(MEAN, n)
+            % Fit distribution with given mean and number of phases
             SCV = 1/n;
             r = ceil(1/SCV);
             alpha = r/MEAN;

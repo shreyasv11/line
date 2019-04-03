@@ -40,7 +40,7 @@ classdef LayeredNetwork < Model & Ensemble
             if ~exist('name','var')
                 [~,name]=fileparts(tempname);
             end
-            self = self@Model(name);
+            self@Model(name);
             self.lqnGraph = [];
             self.taskGraph = [];
             self.ensemble = {};

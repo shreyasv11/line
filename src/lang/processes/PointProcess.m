@@ -1,7 +1,7 @@
 classdef PointProcess < Copyable
     % An abstract class for stochastic point processes
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     properties
@@ -12,22 +12,28 @@ classdef PointProcess < Copyable
     end
     
     methods %(Abstract) % implemented with errors for Octave compatibility
-        function X = sample(self); % inter-arrival time
+        function X = sample(self)
+            % Sample a value from the inter-arrival time distribution
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
-        function ex = getMean(self); % inter-arrival time
+        function ex = getMean(self)
+            % Returns the mean of the inter-arrival times
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
-        function SCV = getSCV(self); % inter-arrival time
+        function SCV = getSCV(self)
+            % Get squared coefficient of variation of the interarrival times (SCV = variance / mean^2)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
-        function ID = getID(self); % asymptotic index of dispersion
+        function ID = getID(self)
+            % Return the asymptotic index of dispersion
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
-        function lambda = getRate(self);
+        function lambda = getRate(self)
+            % Return the inter-arrival rate           
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
-        function vart = getVarT(self,t);
+        function vart = evalVarT(self,t)
+			% Evaluate the variance-time curve at t            
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
     end
@@ -62,10 +68,6 @@ classdef PointProcess < Copyable
         
         function param = getParam(self,id)
             param = self.params{id};
-        end
-        
-        function bool = isPhaseType(self)
-            bool = isa(self,'MarkovModulated');
         end
     end
     

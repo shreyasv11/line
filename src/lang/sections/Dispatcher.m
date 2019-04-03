@@ -7,7 +7,7 @@ classdef Dispatcher < OutputSection
     methods
         %Constructor
         function self = Dispatcher(customerClasses)
-            self = self@OutputSection('Dispatcher');
+            self@OutputSection('Dispatcher');
             self.outputStrategy = {};
             initDispatcherJobClasses(self, customerClasses);
      end

@@ -11,7 +11,7 @@ classdef Source < Station
     methods
         %Constructor
         function self = Source(model, name)
-            self = self@Station(name);
+            self@Station(name);
             self.numberOfServers = 1;
             if(model ~= 0)
                 classes = model.classes;

@@ -7,7 +7,7 @@ classdef Server < ServiceSection
     methods
         %Constructor
         function self = Server(classes)
-            self = self@ServiceSection('Server');
+            self@ServiceSection('Server');
             self.numberOfServers = 1;
             self.serviceProcess = {};
             initServers(self, classes);

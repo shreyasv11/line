@@ -1,4 +1,4 @@
-classdef Router < Node
+classdef Router < StatefulNode
     % A node to route jobs towards other nodes
     %
     % Copyright (c) 2012-2019, Imperial College London
@@ -16,7 +16,7 @@ classdef Router < Node
         % This is a node and not a Station because jobs cannot station
         % inside it
         function self = Router(model, name)
-            self = self@Node(name);
+            self@StatefulNode(name);
             
             classes = model.classes;
             self.schedPolicy = SchedStrategyType.NP;

@@ -15,7 +15,7 @@ classdef SolverEnv < EnsembleSolver
     
     methods
         function self = SolverEnv(models,env,solverFactory,options)
-            self = self@EnsembleSolver(Ensemble(models),mfilename,options);
+            self@EnsembleSolver(Ensemble(models),mfilename,options);
             self.env = env;
             for e=1:length(env)
                 self.setSolver(solverFactory(models{e}),e);
@@ -78,7 +78,7 @@ classdef SolverEnv < EnsembleSolver
             self.holdTime = {};
             for e=1:E
                 for h=1:E
-                    envMMAP{e,h} = self.env{e,h}.getRenewalProcess; % multiclass MMAP representation
+                    envMMAP{e,h} = self.env{e,h}.getRepresentation; % multiclass MMAP representation
                     for j = 1:E
                         if j == h
                             envMMAP{e,h}{2+j} = envMMAP{e,h}{2};

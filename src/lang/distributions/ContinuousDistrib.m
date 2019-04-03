@@ -1,16 +1,14 @@
 classdef ContinuousDistrib < Distrib
     % An abstract class for continuous distributions
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
-    properties
-    end
-    
     methods (Hidden)
-        %Constructor
         function self = ContinuousDistrib(name, numParam, support)
-            self = self@Distrib(name,numParam,support);
+            % Construct a continuous distribution from name, number of
+            % parameters, and range
+            self@Distrib(name,numParam,support);
         end
     end
     

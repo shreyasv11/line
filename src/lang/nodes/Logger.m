@@ -25,7 +25,7 @@ classdef Logger < Node
     methods
         %Constructor
         function self = Logger(model, name, logFileName)
-            self = self@Node(name);
+            self@Node(name);
             [~,fileName,fileExt] = fileparts(logFileName);
             self.fileName = sprintf('%s%s',fileName,fileExt);
             if isempty(model.getLogPath)

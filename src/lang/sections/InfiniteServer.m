@@ -7,7 +7,7 @@ classdef InfiniteServer < ServiceSection
     methods
         %Constructor
         function self = InfiniteServer(customerClasses)
-            self = self@ServiceSection('InfiniteServer');
+            self@ServiceSection('InfiniteServer');
             self.numberOfServers = Inf;
             self.serviceProcess = {};
             initServers(self, customerClasses);

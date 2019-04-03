@@ -6,7 +6,7 @@ classdef SolverFluid < NetworkSolver
     
     methods
         function self = SolverFluid(model,varargin)
-            self = self@NetworkSolver(model, mfilename);
+            self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         

@@ -1,8 +1,8 @@
 classdef Distrib < Copyable
-% Distrib is an abstract class for statistical distributions.
-%
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % Distrib is an abstract class for statistical distributions.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         name
@@ -13,30 +13,46 @@ classdef Distrib < Copyable
     end
     
     properties (Constant)
-        Tol = 1e-3;
-        InfTime = 1e10;
-        InfRate = 1e10;
-        InfItems = 1e10;
+        Tol = 1e-3; % Tolerance for distribution fitting
+        Inf = 1e10; % Generic representation of infinity
+        InfTime = 1e10; % Conventional value associated to an infinite time
+        InfRate = 1e10; % Conventional value associated to an infinite rate
     end
     
-    methods %(Abstract) % implemented with errors for Octave compatibility
+    methods %(Abstract)
+        
         function X = sample(self)
+            % Get n samples from the distribution
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
+        
         function ex = getMean(self)
+            % Get distribution mean
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
+        
         function SCV = getSCV(self)
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
+        
         function Ft = evalCDF(self,t)
+            % Evaluate the cumulative distribution function at t
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        
+        function L = evalLaplaceTransform(self, s)
+            % Evaluate the Laplace transform of the distribution function at t
+            
+            % Evaluate the Laplace transform of the distribution function at t
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
     end
     
     methods (Hidden)
-        %Constructor
         function self = Distrib(name, numParam, support)
+            % Construct a distribution from name, number of parameters, and
+            % range
             self.name = name;
             self.params = cell(1,numParam);
             self.support = support;
@@ -45,47 +61,49 @@ classdef Distrib < Copyable
             end
         end
         
-        function bool = isContinuous(self)
-            bool = any(~isfinite(self.support));
-        end
-        
-        function bool = isDiscrete(self)
-            bool = all(isfinite(self.support));
-        end
-        
-        function self = setContinuous(self, iscontinuous)
-            self.continuous = iscontinuous;
-        end
-        
         function nParam = getNumParams(self)
+            % Returns the number of parameters needed to specify the distribution
             nParam = length(self.params);
         end
         
-        function setParam(self, id, name, value,typeClass)
+        function setParam(self, id, name, value, typeClass)
+            % Set a distribution parameter given id, name, value, Java
+            % class type (for JMT translation)
             self.params{id}.paramName=name;
             self.params{id}.paramValue=value;
             self.params{id}.paramClass=typeClass;
         end
         
-        function bool = isDisabled(self)
-            bool = any(cellfun(@(c) isnan(c.paramValue), self.params));
-        end
-        
-        function bool = isImmediate(self)
-            bool = self.getMean() == 0;
-        end
-        
         function param = getParam(self,id)
+            % Return the parameter associated to the given id
             param = self.params{id};
         end
         
-        function bool = isPhaseType(self)
-            bool = isa(self,'PhaseType');
+        function bool = isDisabled(self)
+            % Check if the distribution is equivalent to a Disabled
+            % distribution
+            %bool = cellfun(@(c) isnan(c.paramValue), self.params)
+            bool = isnan(self.getMean()) || isa(self,'Disabled');
         end
-    end
-    
-    methods
+        
+        function bool = isImmediate(self)
+            % Check if the distribution is equivalent to an Immediate
+            % distribution
+            bool = self.getMean() == 0 || isa(self,'Immediate');
+        end
+        
+        function bool = isContinuous(self)
+            % Check if the distribution is discrete
+            bool = isa(self,'ContinuousDistrib');
+        end
+        
+        function bool = isDiscrete(self)
+            % Check if the distribution is discrete
+            bool = isa(self,'DiscreteDistrib');
+        end
+        
         function delta = evalCDFInterval(self,t0,t1)
+            % Evaluate the probability mass between t0 and t1 (t1>t0)
             if t1>=t0
                 Ft1 = self.evalCDF(t1);
                 Ft0 = self.evalCDF(t0);
@@ -94,5 +112,6 @@ classdef Distrib < Copyable
                 error('CDF interval incorrectly specified (t1<t0)');
             end
         end
+        
     end
 end

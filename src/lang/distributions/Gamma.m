@@ -1,53 +1,66 @@
 classdef Gamma < ContinuousDistrib
     % The gamma statistical distribution
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods
-        %Constructor
         function self = Gamma(shape, scale)
-            self = self@ContinuousDistrib('Gamma',2,[0,Inf]);
+            % Constructs a gamma distribution from shape and scale
+            % parameters
+            self@ContinuousDistrib('Gamma',2,[0,Inf]);
             setParam(self, 1, 'alpha', shape, 'java.lang.Double');
             setParam(self, 2, 'beta', scale, 'java.lang.Double');
             self.javaClass = 'jmt.engine.random.GammaDistr';
             self.javaParClass = 'jmt.engine.random.GammaDistrPar';
         end
-                
+    end
+    
+    methods
         function ex = getMean(self)
+            % Get distribution mean
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             ex = shape*scale;
         end
         
         function SCV = getSCV(self)
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+                        
             shape = self.getParam(1).paramValue;
             SCV = 1 / shape;
         end
         
         function X = sample(self, n)
+            % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             X = gamrnd(shape, scale, n, 1);
-        end        
+        end
         
         function Ft = evalCDF(self,t)
+            % Evaluate the cumulative distribution function at t            
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             Ft = gamcdf(t,shape,scale);
         end
         
-        function L = getLaplaceTransform(self, s)
+        function L = evalLaplaceTransform(self, s)
+            % Evaluate the Laplace transform of the distribution function at t
+            
+            % Evaluate the Laplace transform of the distribution at s
             shape = self.getParam(1).paramValue; % shape
-            lambda = 1 / self.getMean; % 
+            lambda = 1 / self.getMean; %
             L = (lambda / (lambda + s))^shape;
         end
     end
-
+    
     methods(Static)
         
         function gm = fitMeanAndSCV(MEAN, SCV)
+            % Fit distribution from mean and squared coefficient of
+            % variation
             shape = 1 / SCV;
             scale = MEAN / shape;
             gm = Gamma(shape, scale);

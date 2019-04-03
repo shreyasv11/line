@@ -14,7 +14,7 @@ classdef Queue < Station
     methods
         %Constructor
         function self = Queue(model, name, schedStrategy)
-            self = self@Station(name);
+            self@Station(name);
             
             classes = model.classes;
             self.input = Buffer(classes);

@@ -5,9 +5,10 @@ classdef Pareto < ContinuousDistrib
     % All rights reserved.
     
     methods
-        %Constructor
         function self = Pareto(shape, scale)
-            self = self@ContinuousDistrib('Pareto',2,[0,Inf]);
+            % Constructs a Pareto distribution with given shape and scale
+            % parameters
+            self@ContinuousDistrib('Pareto',2,[0,Inf]);
             if shape < 2
                 error('shape parameter must be >= 2.0');
             end
@@ -18,12 +19,14 @@ classdef Pareto < ContinuousDistrib
         end
         
         function ex = getMean(self)
+            % Get distribution mean
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             ex = shape * scale / (shape - 1);
         end
         
         function SCV = getSCV(self)
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             VAR = scale^2 * shape / (shape - 1)^2 / (shape - 2);
@@ -32,6 +35,7 @@ classdef Pareto < ContinuousDistrib
         end
         
         function X = sample(self, n)
+            % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
@@ -41,6 +45,7 @@ classdef Pareto < ContinuousDistrib
         end
         
         function Ft = evalCDF(self,t)
+            % Evaluate the cumulative distribution function at t
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             k = 1/shape;
@@ -51,6 +56,7 @@ classdef Pareto < ContinuousDistrib
     
     methods (Static)
         function pa = fitMeanAndSCV(MEAN, SCV)
+            % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             shape = (SCV*MEAN + MEAN*(SCV*(SCV + 1))^(1/2))/(SCV*MEAN);
             scale = MEAN + SCV*MEAN - MEAN*(SCV*(SCV + 1))^(1/2);
             pa = Pareto(shape,scale);

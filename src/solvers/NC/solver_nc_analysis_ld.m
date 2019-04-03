@@ -13,7 +13,7 @@ C = qn.nchains;
 PH=cell(M,K);
 for i=1:M
     for k=1:K
-        PH{i,k} = Coxian(mu_chain{i,k}, phi{i,k}).getRenewalProcess();
+        PH{i,k} = Coxian(mu_chain{i,k}, phi{i,k}).getRepresentation();
     end
 end
 %% initialization

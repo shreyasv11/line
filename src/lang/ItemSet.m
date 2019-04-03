@@ -5,7 +5,6 @@ classdef ItemSet < NetworkElement
     % All rights reserved.
     
     properties
-        name;
         nitems;
         index;
         reference;
@@ -14,7 +13,7 @@ classdef ItemSet < NetworkElement
     
     methods
         function self = ItemSet(model, name, nitems, reference)
-            self.name = name;
+            self@NetworkElement(name);
             self.nitems = nitems;
             self.index = 1;
             self.replicable = false;

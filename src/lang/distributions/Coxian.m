@@ -1,13 +1,15 @@
 classdef Coxian < PhaseType
     % The coxian statistical distribution
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
-    methods(Hidden) % At the moment this class cannot be run in JMT
-        %Constructor
+    methods
         function self = Coxian(mu, phi)
-            self = self@PhaseType('Coxian',2);
+            % Constructs a Coxian distribution from phase rates and
+            % completion probabilities, with entry probability 1 on the
+            % first phase
+            self@PhaseType('Coxian',2);
             % mu(j) : rate of state j
             % phi(j): probability of completion in state j
             if phi(end)~=1 && isfinite(phi(end))
@@ -20,40 +22,45 @@ classdef Coxian < PhaseType
     
     methods
         function phases = getNumberOfPhases(self)
+            % Return number of phases in the distribution
             phases  = length(self.getParam(1).paramValue);
         end
-                
+        
         function ex = getMean(self)
+            % Get distribution mean
             mu = self.getMu();
             phi = self.getPhi();
             ex = map_mean({diag(-mu)+diag(mu(1:end-1).*(1-phi(1:end-1)),1),[phi.*mu,zeros(length(mu),length(mu)-1)]});
         end
         
-        % SCV = Variance / Mean
         function ex = getSCV(self)
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             mu = self.getMu();
             phi = self.getPhi();
             ex = map_scv({diag(-mu)+diag(mu(1:end-1).*(1-phi(1:end-1)),1),[phi.*mu,zeros(length(mu),length(mu)-1)]});
         end
         
-        function PH = getRenewalProcess(self)
+        function PH = getRepresentation(self)
+            % Return the renewal process associated to the distribution
             mu = self.getMu();
             phi = self.getPhi();
             PH = {diag(-mu)+diag(mu(1:end-1).*(1-phi(1:end-1)),1),[phi.*mu,zeros(length(mu),length(mu)-1)]};
         end
         
-        function Ft = evalCDF(self,t)            
+        function Ft = evalCDF(self,t)
+            % Evaluate the cumulative distribution function at t
             mu = self.getMu();
             phi = self.getPhi();
             Ft = map_cdf({diag(-mu)+diag(mu(1:end-1).*(1-phi(1:end-1)),1),[phi.*mu,zeros(length(mu),length(mu)-1)]},t);
         end
         
-        
         function mu = getMu(self)
+            % Get vector of rates
             mu = self.getParam(1).paramValue(:);
         end
         
         function phi = getPhi(self)
+            % Get vector of completion probabilities
             phi = self.getParam(2).paramValue(:);
         end
         
@@ -62,10 +69,7 @@ classdef Coxian < PhaseType
     methods(Static)
         
         function [mu,phi] = fitMeanAndSCV(MEAN, SCV)
-            % COXIAN finds a coxian representation (mu,phi) with specified mean and scv
-            % mu:  nx1 vector of rates
-            % phi: nx1 vector of completion probs
-            % n: number of phases (optional parameter)
+            % Fit a Coxian distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             
             if SCV >= 1-Distrib.Tol && SCV <= 1+Distrib.Tol
                 n = 1;

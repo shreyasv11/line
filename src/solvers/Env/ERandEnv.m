@@ -13,7 +13,7 @@
 %     
 %     methods
 %         function self = ERandEnv(networks,holdingTimes,transitionMatrix,options)
-%             self = self@ESolver(networks,options);
+%             self@ESolver(networks,options);
 %             self.transitionMatrix = transitionMatrix;
 %             self.holdingTimes = holdingTimes;
 %         end

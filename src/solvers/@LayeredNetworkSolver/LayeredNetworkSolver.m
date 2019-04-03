@@ -9,7 +9,7 @@ classdef LayeredNetworkSolver < Solver
     
     methods (Hidden)
         function self = LayeredNetworkSolver(model, name, options)
-            self = self@Solver(model,name);
+            self@Solver(model,name);
             if exist('options','var'), self.setOptions(options); end
             if ~isa(model,'LayeredNetwork')
                 error('Model is not a LayeredNetwork.');

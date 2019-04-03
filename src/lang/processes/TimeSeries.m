@@ -1,12 +1,12 @@
 classdef TimeSeries < PointProcess
     % An abstract class for a point process realization (a time series)
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods (Hidden)
         function self = TimeSeries(className, numPar)
-            self = self@PointProcess(className,numPar);
+            self@PointProcess(className,numPar);
         end
     end
     

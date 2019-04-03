@@ -13,7 +13,7 @@ classdef CacheServer < ServiceSection
     methods
         %Constructor
         function self = CacheServer(classes, levels, levelCapacities)
-            self = self@ServiceSection('CacheServer');
+            self@ServiceSection('CacheServer');
             self.classes = classes;
             self.numberOfServers = 1;
             self.numberOfLevels = levels;

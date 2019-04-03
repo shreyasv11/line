@@ -1,7 +1,7 @@
 classdef RenewalProcess < PointProcess
     % An abstract class for renewal point processes.
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     properties
@@ -11,7 +11,7 @@ classdef RenewalProcess < PointProcess
     methods (Hidden)
         %Constructor
         function self = RenewalProcess(distrib)
-            self = self@PointProcess('RenewalProcess',1);
+            self@PointProcess('RenewalProcess',1);
             setParam(self, 1, 'distrib', distrib, 'java.lang.Double');
         end
     end
@@ -35,8 +35,8 @@ classdef RenewalProcess < PointProcess
             end
         end
         
-        function vart = getVarT(self,t)
-        % todo
+        function vart = evalVarT(self,t)
+			% Evaluate the variance-time curve at t            
         end
         
         function mean = getMean(self)

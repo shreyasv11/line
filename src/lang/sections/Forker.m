@@ -11,7 +11,7 @@ classdef Forker < OutputSection
     methods
         %Constructor
         function self = Forker(customerClasses)
-            self = self@OutputSection('Forker');
+            self@OutputSection('Forker');
             self.tasksPerLink=1.0;
             initDispatcherJobClasses(self, customerClasses);
         end

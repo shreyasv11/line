@@ -11,7 +11,7 @@ if nargin<3 || sum(Z)==0
     n=0;
     for r=1:R
         for nr=1:N(r)
-            n=n+1;
+            n=n+1   ;
             I=multichoose(M,(Ntot+1)-(n+1));
             for i=1:size(I,1)
                 m=I(i,:);

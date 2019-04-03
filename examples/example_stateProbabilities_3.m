@@ -1,4 +1,3 @@
-
 clear;
 model = Network('model');
 
@@ -81,3 +80,6 @@ Pr_ctmc = solver.getProbSysState()
 
 solver = SolverNC(model,options);
 Pr_nc = solver.getProbSysState()
+
+solver = SolverJMT(model,'method','jmva.ls');
+solver.getAvgTable

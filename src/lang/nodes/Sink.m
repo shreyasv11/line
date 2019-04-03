@@ -11,7 +11,7 @@ classdef Sink < Node
     methods
         %Constructor
         function self = Sink(model, name)
-            self = self@Node(name);
+            self@Node(name);
             
             if model ~= 0
                 self.input = '';

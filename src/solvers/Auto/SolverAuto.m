@@ -12,7 +12,7 @@ classdef SolverAuto < NetworkSolver
     methods
         %Constructor
         function self = SolverAuto(model, varargin)
-            self = self@NetworkSolver(model, mfilename);
+            self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             
             % solvers sorted from fastest to slowest

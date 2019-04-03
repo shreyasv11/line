@@ -112,6 +112,10 @@ if wantVisits
     end
 end
 if ~isempty(self.qn) %&& isprop(self.qn,'chains')
-    self.qn.setChains(chains, visits, rt ,nodevisits);
+    if exist('nodevisits','var')
+        self.qn.setChains(chains, visits, rt ,nodevisits);
+    else
+        self.qn.setChains(chains, visits, rt ,[]);
+    end
 end
 end

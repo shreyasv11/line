@@ -12,7 +12,7 @@ classdef EnsembleSolver < Solver
     
     methods (Hidden)
         function self = EnsembleSolver(model, name, options)
-            self = self@Solver(model, name);
+            self@Solver(model, name);
             if exist('options','var')
                 self.setOptions(options);
             else

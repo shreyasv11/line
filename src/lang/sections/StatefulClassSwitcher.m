@@ -7,7 +7,7 @@ classdef StatefulClassSwitcher < ClassSwitcher
     methods
         %Constructor
         function self = StatefulClassSwitcher(classes, name)
-            self = self@ClassSwitcher(classes, name);
+            self@ClassSwitcher(classes, name);
             self.csFun = @(r, s, state, statep) StatefulClassSwitcher.classHolderFun(r, s, state, statep); % do nothing by default
         end        
     end

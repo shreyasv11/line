@@ -14,7 +14,7 @@ classdef Station < StatefulNode
     methods(Hidden)
         %Constructor
         function self = Station(name)
-            self = self@StatefulNode(name);
+            self@StatefulNode(name);
             self.cap = Inf;
             self.classCap = [];
             self.numberOfServerPhases = [];

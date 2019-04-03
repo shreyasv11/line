@@ -12,7 +12,7 @@ classdef ClassSwitcher < ServiceSection
     methods
         %Constructor
         function self = ClassSwitcher(classes, name)
-            self = self@ServiceSection(name);
+            self@ServiceSection(name);
             self.classes = classes;
             self.numberOfServers = 1;
             self.serviceProcess = {};

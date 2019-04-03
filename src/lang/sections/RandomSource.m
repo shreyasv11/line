@@ -12,7 +12,7 @@ classdef RandomSource < InputSection
     methods
         %Constructor
         function self = RandomSource(classes)
-            self = self@InputSection('RandomSource');
+            self@InputSection('RandomSource');
             for i = 1 : length(classes)
                 self.sourceClasses{1,i} = {[],ServiceStrategy.LI,Disabled()};
             end

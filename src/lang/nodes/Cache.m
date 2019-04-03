@@ -19,7 +19,7 @@ classdef Cache < StatefulNode
     methods
         %Constructor
         function self = Cache(model, name, nitems, itemLevelCap, replPolicy)
-            self = self@StatefulNode(name);
+            self@StatefulNode(name);
             if ~exist('levels','var')
                 levels = 1;
             end

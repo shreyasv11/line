@@ -6,7 +6,7 @@ classdef NetworkSolverLibrary < NetworkSolver
     
     methods
         function self = NetworkSolverLibrary(model,varargin)
-            self = self@NetworkSolver(model, mfilename);
+            self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if strcmp(self.getOptions.method,'default')
                 error('Line:UnsupportedMethod','This solver does not have a default solution method. Used the method option to choose a solution technique.');

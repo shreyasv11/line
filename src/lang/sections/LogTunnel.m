@@ -7,7 +7,7 @@ classdef LogTunnel < ServiceTunnel
     methods
         %Constructor
         function self = LogTunnel()
-            self = self@ServiceTunnel('LogTunnel');
+            self@ServiceTunnel('LogTunnel');
             self.numberOfServers = 1;
             self.serviceProcess = {};
         end

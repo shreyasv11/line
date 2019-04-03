@@ -7,7 +7,7 @@ classdef DelayStation < Delay
     methods
         %Constructor
         function self = DelayStation(model, name)
-            self = self@Delay(model, name);
+            self@Delay(model, name);
         end
     end
     

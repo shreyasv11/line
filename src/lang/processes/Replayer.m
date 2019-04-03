@@ -11,7 +11,7 @@ classdef Replayer < TimeSeries
     methods
         %Constructor
         function self = Replayer(fileName)
-            self = self@TimeSeries('Replayer',1);
+            self@TimeSeries('Replayer',1);
             setParam(self, 1, 'fileName', fileName, 'java.lang.String');
             if ischar(fileName)
                 self.data = [];
@@ -35,14 +35,18 @@ classdef Replayer < TimeSeries
             self.data = [];
         end
         
-        function ex = getMean(self)
+                function ex = getMean(self)
+            % Get distribution mean
             if isempty(self.data)
                 self.load();
             end
             ex = mean(self.data);
         end
         
-        function SCV = getSCV(self)
+                function SCV = getSCV(self)
+% Get distribution squared coefficient of variation (SCV = variance / mean^2)
+
+
             if isempty(self.data)
                 self.load();
             end

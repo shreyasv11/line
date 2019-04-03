@@ -12,7 +12,7 @@ classdef Fork < Node
     methods
         %Constructor
         function self = Fork(model, name)
-            self = self@Node(name);
+            self@Node(name);
             if(model ~= 0)
                 classes = model.classes;
                 self.cap = Inf;

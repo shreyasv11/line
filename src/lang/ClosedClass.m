@@ -12,7 +12,7 @@ classdef ClosedClass < JobClass
         
         %Constructor
         function self = ClosedClass(model, name, njobs, refstat, prio)
-            self = self@JobClass('closed', name);
+            self@JobClass('closed', name);
             
             self.type = 'closed';
             self.population = njobs;

@@ -6,7 +6,7 @@ classdef SolverMAM < NetworkSolver
     
     methods
         function self = SolverMAM(model,varargin)
-            self = self@NetworkSolver(model, mfilename);
+            self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         

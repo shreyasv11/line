@@ -1,7 +1,7 @@
 classdef MarkovModulated < PointProcess
     % An abstract class for Markov-modulated processes
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods (Hidden)
@@ -14,7 +14,7 @@ classdef MarkovModulated < PointProcess
     methods        
         function X = sample(self, n)
             if ~exist('n','var'), n = 1; end
-            X = map_sample(self.getRenewalProcess,n);
+            X = map_sample(self.getRepresentation,n);
         end
     end
     
@@ -22,7 +22,7 @@ classdef MarkovModulated < PointProcess
         function phases = getNumberOfPhases(self)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
-        function MAP = getRenewalProcess(self)
+        function MAP = getRepresentation(self)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
     end

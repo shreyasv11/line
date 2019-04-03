@@ -5,8 +5,8 @@ node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 
 jobclass{1} = ClosedClass(model, 'Class1', 1, node{1}, 0);
-node{1}.setService(jobclass{1}, Exp.fitMeanAndSCV(1.0));
-node{2}.setService(jobclass{1}, Exp.fitMeanAndSCV(2.0));
+node{1}.setService(jobclass{1}, Exp.fitMean(1.0));
+node{2}.setService(jobclass{1}, Exp.fitMean(2.0));
 
 jobclass{2} = ClosedClass(model, 'Class2', 3, node{1}, 0);
 node{1}.setService(jobclass{2}, Erlang.fitMeanAndOrder(4.0,2));

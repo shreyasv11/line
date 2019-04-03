@@ -17,6 +17,8 @@ for i=1:self.getNumberOfNodes()
                         self.setUsedFeatures(SchedStrategy.toFeature(self.nodes{i}.schedStrategy));
                         self.setUsedFeatures(RoutingStrategy.toFeature(self.nodes{i}.output.outputStrategy{r}{2}));
                     end
+                case 'Router'
+                    self.setUsedFeatures(RoutingStrategy.toFeature(self.nodes{i}.output.outputStrategy{r}{2}));
                 case 'Source'
                     self.setUsedFeatures(self.nodes{i}.input.sourceClasses{r}{3}.name);
                     self.setUsedFeatures('OpenClass');

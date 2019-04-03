@@ -21,18 +21,26 @@ if sum(cellisa(self.nodes,'Source')) > 1
 end
 
 if ~iscell(P)
-    % single class
-    for i=find(issink)'
-        P((i-1)*R+1:i*R,:)=0;
-    end
-    Pmat = P;
-    P = cell(R,R);
-    for r=1:R
-        for s=1:R
-            P{r,s} = zeros(M);
-            for i=1:M
-                for j=1:M
-                    P{r,s}(i,j) = Pmat((i-1)*R+r,(j-1)*R+s);
+    if R>1
+        newP = cell(1,R);
+        for r=1:R
+            newP{r} = P;
+        end        
+        P = newP;
+    else %R==1
+        % single class
+        for i=find(issink)'
+            P((i-1)*R+1:i*R,:)=0;
+        end
+        Pmat = P;
+        P = cell(R,R);
+        for r=1:R
+            for s=1:R
+                P{r,s} = zeros(M);
+                for i=1:M
+                    for j=1:M
+                        P{r,s}(i,j) = Pmat((i-1)*R+r,(j-1)*R+s);
+                    end
                 end
             end
         end

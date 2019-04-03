@@ -13,7 +13,7 @@ classdef Joiner < InputSection
     methods
         %Constructor
         function self = Joiner(customerClasses)
-            self = self@InputSection('Joiner');
+            self@InputSection('Joiner');
             self.joinJobClasses = {};
             initJoinJobClasses(self, customerClasses);
         end

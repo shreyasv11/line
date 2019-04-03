@@ -1,4 +1,4 @@
-function p_opt = example_manual_chap2_ex8()
+function getting_started_ex8()
 model = Network('LoadBalCQN');
 % Block 1: nodes
 delay = Delay(model,'Think');
@@ -19,7 +19,7 @@ P(queue2, delay) = 1.0;
         P(delay, queue1) = p;
         P(delay, queue2) = 1-p;
         model.link(P);
-        R = SolverMVA(model,'method','exact').getAvgSysRespT;
+        R = SolverMVA(model,'method','exact','verbose',false).getAvgSysRespT;
     end
 p_opt = fminbnd(@(p) objFun(p), 0,1)
 

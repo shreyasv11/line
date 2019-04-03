@@ -13,7 +13,7 @@ if isempty(self.layerGraph)
 end
 graphLayer = self.layerGraph;
 %graphs are returned with updated Multiplicity fields on the 'inf' tasks
-maxJobs = Distrib.InfItems; % maximum number of jobs allowed in a submodel class.
+maxJobs = Distrib.Inf; % maximum number of jobs allowed in a submodel class.
 if isempty(self.clientTask)
     for net=1:length(graphLayer)
         self.clientTask{net} = unique(graphLayer{net}.Edges.EndNodes(:,1)');
@@ -214,7 +214,7 @@ for net=1:length(graphLayer)
             else % convolution of thinkTime and interArrivalFromUpperLayer processes
 % The code will never enter this section since thinkTime is available only
 % in the reference task that has no arrivals from an upper layer
-%                 thinkTimeMAP = taskobj.thinkTime.getRenewalProcess();
+%                 thinkTimeMAP = taskobj.thinkTime.getRepresentation();
 %                 D0 = [thinkTimeMAP{1},sum(thinkTimeMAP{2},2);zeros(1,size(thinkTimeMAP{1},2)),-interArrivalFromUpperLayer];
 %                 D1 = zeros(size(D0)); D1(end,1:end-1) = interArrivalFromUpperLayer*map_pie(thinkTimeMAP);
 %                 destEntryMAP = {D0,D1};

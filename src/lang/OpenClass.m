@@ -8,7 +8,7 @@ classdef OpenClass < JobClass
         
         %Constructor
         function self = OpenClass(model, name, prio)
-            self = self@JobClass('open', name);
+            self@JobClass('open', name);
             if nargin >= 3 && isa(prio,'Source')
                 % user error, source passed as ref station
                 prio = 0;

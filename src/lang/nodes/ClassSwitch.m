@@ -13,7 +13,7 @@ classdef ClassSwitch < Node
     methods
         %Constructor
         function self = ClassSwitch(model, name, csMatrix)
-            self = self@Node(name);
+            self@Node(name);
             
             classes = model.classes;
             self.input = Buffer(classes);

@@ -9,7 +9,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     
     methods
         function self = SolverLN(model,solverFactory,varargin)
-            self = self@LayeredNetworkSolver(model, mfilename);
+            self@LayeredNetworkSolver(model, mfilename);
             self@EnsembleSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             self.model.initDefault;

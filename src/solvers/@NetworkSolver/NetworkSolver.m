@@ -13,7 +13,7 @@ classdef NetworkSolver < Solver
         function self = NetworkSolver(model, name, options)
             % Construct a NetworkSolver with given model, name and options
             % data structure.
-            self = self@Solver(model, name);
+            self@Solver(model, name);
             if exist('options','var'), self.setOptions(options); end
             self.result = [];
             self.handles.Q = [];

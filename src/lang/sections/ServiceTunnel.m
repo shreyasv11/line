@@ -10,7 +10,7 @@ classdef ServiceTunnel < ServiceSection
             if nargin<1
                 name = 'ServiceTunnel';
             end
-            self = self@ServiceSection(name);
+            self@ServiceSection(name);
             self.numberOfServers = 1;
             self.serviceProcess = {};
         end

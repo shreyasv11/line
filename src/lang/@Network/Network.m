@@ -87,7 +87,7 @@ classdef Network < Model
     methods
         %Constructor
         function self = Network(modelName)
-            self = self@Model(modelName);
+            self@Model(modelName);
             self.nodes = {};
             self.stations = {};
             self.classes = {};
@@ -524,6 +524,8 @@ classdef Network < Model
                             state_i = zeros(1,self.getNumberOfClasses);
                             state_i = [state_i, 1:sum(self.nodes{i}.itemLevelCap)];
                             self.nodes{i}.setState(state_i);
+                        case 'Router'
+                            self.nodes{i}.setState([1]);
                         otherwise
                             self.nodes{i}.setState([]);
                     end
@@ -961,9 +963,9 @@ classdef Network < Model
                 P{r} = circul(length(node)); P{r}(end,:) = 0;
             end
             for r=1:R
-                node{1}.setArrival(jobclass{r}, Exp.fitMeanAndSCV(1/lambda(r)));
+                node{1}.setArrival(jobclass{r}, Exp.fitMean(1/lambda(r)));
                 for i=1:M
-                    node{1+i}.setService(jobclass{r}, Exp.fitMeanAndSCV(S(i,r)));
+                    node{1+i}.setService(jobclass{r}, Exp.fitMean(S(i,r)));
                 end
             end
             model.link(P);
@@ -1031,7 +1033,7 @@ classdef Network < Model
             end
             for i=1:M
                 for r=1:R
-                    node{i}.setService(jobclass{r}, Exp.fitMeanAndSCV(D(i,r)));
+                    node{i}.setService(jobclass{r}, Exp.fitMean(D(i,r)));
                 end
             end
             model.link(P);

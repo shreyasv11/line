@@ -19,7 +19,7 @@ for i=1:M
             rates0(i,k) = mu{i,k};
             phases(i,k) = 1;
         else
-            PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRenewalProcess();
+            PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRepresentation();
             rates0(i,k) = map_lambda(PH{i,k});
             phases(i,k) = length(PH{i,k}{1});
         end

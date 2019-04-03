@@ -1,13 +1,13 @@
 classdef MMPP2 < MarkovModulated
     % 2-phase Markov-Modulated Poisson Process - MMPP(2)
     %
-    % Copyright (c) 2012-Present, Imperial College London
+    % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods
         %Constructor
         function self = MMPP2(lambda0,lambda1,sigma0,sigma1)
-            self = self@MarkovModulated('MMPP2',4);
+            self@MarkovModulated('MMPP2',4);
             setParam(self, 1, 'lambda0', lambda0, 'java.lang.Double');
             setParam(self, 2, 'lambda1', lambda1, 'java.lang.Double');
             setParam(self, 3, 'sigma0', sigma0, 'java.lang.Double');
@@ -25,12 +25,13 @@ classdef MMPP2 < MarkovModulated
             meant = lambda * t;
         end
         
-        function vart = getVarT(self,t)
+        function vart = evalVarT(self,t)
+			% Evaluate the variance-time curve at t            
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
             sigma1 =  self.getParam(4).paramValue;
-            MAP = getRenewalProcess;
+            MAP = getRepresentation;
             D0 = MAP{1};
             D1 = MAP{2};
             e = [1;1];
@@ -68,7 +69,7 @@ classdef MMPP2 < MarkovModulated
             id = 1 + 2*(lambda0-lambda1)^2*sigma0*sigma1/(sigma0+sigma1)^2/(lambda0*sigma1+lambda1*sigma0);
         end
         
-        function PH = getRenewalProcess(self)
+        function PH = getRepresentation(self)
 			PH = map_renewal(self.getProcess(self));
 		end
 		

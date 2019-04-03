@@ -20,7 +20,7 @@ for ind=1:self.getNumberOfNodes
                 if self.nodes{ind}.popularity{r}.isDisabled
                     varsparam{ind}.pref{r} = NaN;
                 else
-                    varsparam{ind}.pref{r} = self.nodes{ind}.popularity{r}.getPmf(1:varsparam{ind}.nitems);
+                    varsparam{ind}.pref{r} = self.nodes{ind}.popularity{r}.evalPMF(1:varsparam{ind}.nitems);
                 end
             end
             varsparam{ind}.rpolicy = self.nodes{ind}.replacementPolicy;

@@ -25,7 +25,7 @@ classdef SolverJMT < NetworkSolver
     methods
         %Constructor
         function self = SolverJMT(model, varargin)
-            self = self@NetworkSolver(model, mfilename);
+            self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~Solver.isJavaAvailable
                 error('SolverJMT requires the java command to be available on the system path.');

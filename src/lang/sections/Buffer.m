@@ -11,7 +11,7 @@ classdef Buffer < InputSection
     methods
         %Constructor
         function self = Buffer(classes)
-            self = self@InputSection('Buffer');
+            self@InputSection('Buffer');
             self.size = -1;
             self.schedPolicy = SchedStrategyType.NP;
             self.inputJobClasses = {};
