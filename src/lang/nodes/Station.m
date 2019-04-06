@@ -113,25 +113,30 @@ classdef Station < StatefulNode
                     mu{r}  = NaN;
                     phi{r} = NaN;
                 elseif ~self.input.sourceClasses{r}{end}.isDisabled()
-                    switch self.input.sourceClasses{r}{end}.javaClass
-                        case 'jmt.engine.random.Replayer'
+                    switch class(self.input.sourceClasses{r}{end})
+                        case 'Replayer'
                             [mu{r}, phi{r}] = self.input.sourceClasses{r}{end}.fitCox();
-                        case 'jmt.engine.random.Exponential'
+                        case 'Exp'
                             mu{r} = self.input.sourceClasses{r}{end}.params{1}.paramValue;
                             phi{r} = 1;
-                        case 'jmt.engine.random.CoxianDistr'
+                        case 'Cox2'
                             mu1 = self.input.sourceClasses{r}{end}.params{1}.paramValue;
                             mu2 = self.input.sourceClasses{r}{end}.params{2}.paramValue;
                             p = self.input.sourceClasses{r}{end}.params{3}.paramValue;
                             mu{r} = [mu1;mu2];
                             phi{r} = [p;1.0];
-                        case 'jmt.engine.random.HyperExp'
+                        case 'Coxian'
+                            mua = self.input.sourceClasses{r}{end}.params{1}.paramValue;
+                            phia = self.input.sourceClasses{r}{end}.params{2}.paramValue;
+                            mu{r} = mua;
+                            phi{r} = phia;
+                        case 'HyperExp'
                             p = self.input.sourceClasses{r}{end}.params{1}.paramValue;
                             mu1 = self.input.sourceClasses{r}{end}.params{2}.paramValue;
                             mu2 = self.input.sourceClasses{r}{end}.params{3}.paramValue;
                             PH = {[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
-                            [mu{r}, phi{r}] = Coxian.fitMeanAndSCV(map_mean(PH), map_scv(PH));
-                        case 'jmt.engine.random.Erlang'
+                            [~,mu{r}, phi{r}] = Coxian.fitMeanAndSCV(map_mean(PH), map_scv(PH));
+                        case 'Erlang'
                             mu1 = self.input.sourceClasses{r}{end}.params{1}.paramValue;
                             k = self.input.sourceClasses{r}{end}.params{2}.paramValue;
                             mu{r} = mu1*ones(k,1);
@@ -157,30 +162,35 @@ classdef Station < StatefulNode
                     mu{r} = Distrib.InfRate;
                     phi{r} = 1;
                 elseif ~self.server.serviceProcess{r}{end}.isDisabled()
-                    switch self.server.serviceProcess{r}{end}.javaClass
-                        case 'jmt.engine.random.Replayer'
+                    switch class(self.server.serviceProcess{r}{end})
+                        case 'Replayer'
                             cox2 = self.server.serviceProcess{r}{end}.fitCox();
                             mu1 = cox2.params{1}.paramValue;
                             mu2 = cox2.params{2}.paramValue;
                             phi1 = cox2.params{3}.paramValue;
                             mu{r} = [mu1, mu2];
                             phi{r} = [phi1,1.0];
-                        case 'jmt.engine.random.Exponential'
+                        case 'Exp'
                             mu{r} = self.server.serviceProcess{r}{end}.params{1}.paramValue;
                             phi{r} = 1;
-                        case 'jmt.engine.random.CoxianDistr'
+                        case 'Cox2'
                             mu1 = self.server.serviceProcess{r}{end}.params{1}.paramValue;
                             mu2 = self.server.serviceProcess{r}{end}.params{2}.paramValue;
                             p = self.server.serviceProcess{r}{end}.params{3}.paramValue;
                             mu{r} = [mu1;mu2];
                             phi{r} = [p;1.0];
-                        case 'jmt.engine.random.HyperExp'
+                        case 'Coxian'
+                            mu = self.server.serviceProcess{r}{end}.getMu;
+                            phi = self.server.serviceProcess{r}{end}.getPhi;
+                            mu{r} = mu;
+                            phi{r} = phi;
+                        case 'HyperExp'
                             p = self.server.serviceProcess{r}{end}.params{1}.paramValue;
                             mu1 = self.server.serviceProcess{r}{end}.params{2}.paramValue;
                             mu2 = self.server.serviceProcess{r}{end}.params{3}.paramValue;
                             PH = {[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
-                            [mu{r}, phi{r}] = Coxian.fitMeanAndSCV(map_mean(PH), map_scv(PH));
-                        case 'jmt.engine.random.Erlang'
+                            [~, mu{r}, phi{r}] = Coxian.fitMeanAndSCV(map_mean(PH), map_scv(PH));
+                        case 'Erlang'
                             mu1 = self.server.serviceProcess{r}{end}.params{1}.paramValue;
                             k = self.server.serviceProcess{r}{end}.params{2}.paramValue;
                             mu{r} = mu1*ones(k,1);

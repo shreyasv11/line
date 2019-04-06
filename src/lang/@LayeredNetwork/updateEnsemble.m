@@ -209,7 +209,7 @@ for net=1:length(graphLayer)
                     destEntryProcess = Exp(Distrib.InfRate);
                 end
                 if ~isBuild
-                    [demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
+                    [~,demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
                 end                
             else % convolution of thinkTime and interArrivalFromUpperLayer processes
 % The code will never enter this section since thinkTime is available only

@@ -13,7 +13,7 @@ classdef Logger < Node
     end
     
     properties (Access=private)
-        wantExecTimestamp;
+        wantStartTime;
         wantLoggerName;
         wantTimestamp;
         wantJobID;
@@ -40,7 +40,7 @@ classdef Logger < Node
             self.schedPolicy = SchedStrategyType.NP;
             self.schedStrategy = SchedStrategy.FCFS;
             self.server = LogTunnel();
-            self.setExecTimestamp(false);
+            self.setStartTime(false);
             self.setLoggerName(false);
             self.setTimestamp(true);
             self.setJobID(true);
@@ -51,8 +51,8 @@ classdef Logger < Node
             self.model.addNode(self);
         end
         
-        function ret = getExecTimestamp(self)
-            ret = self.wantExecTimestamp;
+        function ret = getStartTime(self)
+            ret = self.wantStartTime;
         end
         function ret = getLoggerName(self)
             ret = self.wantLoggerName;
@@ -73,11 +73,11 @@ classdef Logger < Node
             ret = self.wantTimeAnyClass;
         end
         
-        function setExecTimestamp(self, bool)
+        function setStartTime(self, bool)
             if bool
-                self.wantExecTimestamp = 'true';
+                self.wantStartTime = 'true';
             else
-                self.wantExecTimestamp = 'false';
+                self.wantStartTime = 'false';
             end
         end
         

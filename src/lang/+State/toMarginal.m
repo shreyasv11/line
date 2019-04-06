@@ -30,7 +30,7 @@ if max(K)==1
 end
 
 if nargin < 8
-    space_var = state_i(:,(end-sum(qn.nvars(ind,:))+1):end); % server state
+    space_var = state_i(:,(end-sum(qn.nvars(ind,:))+1):end); % server stat
     space_srv = state_i(:,(end-sum(K)-sum(qn.nvars(ind,:))+1):(end-sum(qn.nvars(ind,:))));
     space_buf = state_i(:,1:(end-sum(K)-sum(qn.nvars(ind,:))));
 end

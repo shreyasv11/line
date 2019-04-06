@@ -24,7 +24,6 @@ for i=1:numOfClasses
             serviceTimeStrategyNode.appendChild(subParValue);
             strategyNode.appendChild(serviceTimeStrategyNode);
             section.appendChild(strategyNode);
-            
         case 'open'
             refClassNode2 = simDoc.createElement('refClass');
             refClassNode2.appendChild(simDoc.createTextNode(currentClass.name));
@@ -35,10 +34,65 @@ for i=1:numOfClasses
             serviceTimeStrategyNode.setAttribute('name', 'ServiceTimeStrategy');
             
             distributionObj = currentNode.input.sourceClasses{i}{3};
-            if isempty(distributionObj.javaParClass) % Disabled distribution
+            %if isempty(distributionObj.javaParClass) % Disabled distribution
+            if isa(distributionObj,'Disabled')
                 subParValue = simDoc.createElement('value');
                 subParValue.appendChild(simDoc.createTextNode('null'));
                 serviceTimeStrategyNode.appendChild(subParValue);
+            elseif isa(distributionObj,'Coxian')
+                distributionNode = simDoc.createElement('subParameter');
+                distributionNode.setAttribute('classPath', 'jmt.engine.random.PhaseTypeDistr');
+                distributionNode.setAttribute('name', 'Phase-Type');
+                distrParNode = simDoc.createElement('subParameter');
+                distrParNode.setAttribute('classPath', 'jmt.engine.random.PhaseTypePar');
+                distrParNode.setAttribute('name', 'distrPar');
+                
+                subParNodeAlpha = simDoc.createElement('subParameter');
+                subParNodeAlpha.setAttribute('array', 'true');
+                subParNodeAlpha.setAttribute('classPath', 'java.lang.Object');
+                subParNodeAlpha.setAttribute('name', 'alpha');
+                subParNodeAlphaVec = simDoc.createElement('subParameter');
+                subParNodeAlphaVec.setAttribute('array', 'true');
+                subParNodeAlphaVec.setAttribute('classPath', 'java.lang.Object');
+                subParNodeAlphaVec.setAttribute('name', 'vector');
+                PH=distributionObj.getRepresentation;
+                alpha = map_pie(PH);
+                for k=1:distributionObj.getNumberOfPhases
+                    subParNodeAlphaElem = simDoc.createElement('subParameter');
+                    subParNodeAlphaElem.setAttribute('classPath', 'java.lang.Double');
+                    subParNodeAlphaElem.setAttribute('name', 'entry');
+                    subParValue = simDoc.createElement('value');
+                    subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',alpha(k))));
+                    subParNodeAlphaElem.appendChild(subParValue);
+                    subParNodeAlphaVec.appendChild(subParNodeAlphaElem);
+                end
+                
+                subParNodeT = simDoc.createElement('subParameter');
+                subParNodeT.setAttribute('array', 'true');
+                subParNodeT.setAttribute('classPath', 'java.lang.Object');
+                subParNodeT.setAttribute('name', 'T');
+                T = PH{1};
+                for k=1:distributionObj.getNumberOfPhases
+                    subParNodeTvec = simDoc.createElement('subParameter');
+                    subParNodeTvec.setAttribute('array', 'true');
+                    subParNodeTvec.setAttribute('classPath', 'java.lang.Object');
+                    subParNodeTvec.setAttribute('name', 'vector');
+                    for j=1:distributionObj.getNumberOfPhases
+                        subParNodeTElem = simDoc.createElement('subParameter');
+                        subParNodeTElem.setAttribute('classPath', 'java.lang.Double');
+                        subParNodeTElem.setAttribute('name', 'entry');
+                        subParValue = simDoc.createElement('value');
+                        subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',T(k,j))));
+                        subParNodeTElem.appendChild(subParValue);
+                        subParNodeTvec.appendChild(subParNodeTElem);
+                    end
+                    subParNodeT.appendChild(subParNodeTvec);
+                end
+                subParNodeAlpha.appendChild(subParNodeAlphaVec);
+                distrParNode.appendChild(subParNodeAlpha);
+                distrParNode.appendChild(subParNodeT);
+                serviceTimeStrategyNode.appendChild(distributionNode);
+                serviceTimeStrategyNode.appendChild(distrParNode);
             else
                 distributionNode = simDoc.createElement('subParameter');
                 distributionNode.setAttribute('classPath', distributionObj.javaClass);
@@ -66,9 +120,8 @@ for i=1:numOfClasses
                 end
                 serviceTimeStrategyNode.appendChild(distrParNode);
             end
-            
-            strategyNode.appendChild(serviceTimeStrategyNode);
-            section.appendChild(strategyNode);
     end
+    strategyNode.appendChild(serviceTimeStrategyNode);
+    section.appendChild(strategyNode);
 end
 end

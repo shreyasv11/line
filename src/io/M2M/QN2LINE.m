@@ -64,27 +64,27 @@ for k = 1:K
     
     for i=1:M
         SCVik = map_scv(PH{i,k});
-        if SCVik >= 0.5
+%        if SCVik >= 0.5
             switch qn.sched{i}
                 case SchedStrategy.EXT
-                    node{i}.setArrival(jobclass{k}, Cox2.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
+                    node{i}.setArrival(jobclass{k}, Coxian.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
                 case SchedStrategy.FORK
                     % do nothing
                 otherwise
-                    node{i}.setService(jobclass{k}, Cox2.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
+                    node{i}.setService(jobclass{k}, Coxian.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
             end
-        else
+%        else
             % this could be made more precised by fitting into a 2-state
             % APH, especially if SCV in [0.5,0.1]
-            nPhases = max(1,round(1/SCVik));
-            switch qn.sched{i}
-                case SchedStrategy.EXT
-                    node{i}.setArrival(jobclass{k}, Erlang(nPhases/map_mean(PH{i,k}),nPhases));
-                case SchedStrategy.FORK
+%            nPhases = max(1,round(1/SCVik));
+%            switch qn.sched{i}
+%                case SchedStrategy.EXT
+%                    node{i}.setArrival(jobclass{k}, Erlang(nPhases/map_mean(PH{i,k}),nPhases));
+%                case SchedStrategy.FORK
                     % do nothing
-                otherwise
-                    node{i}.setService(jobclass{k}, Erlang(nPhases/map_mean(PH{i,k}),nPhases));
-            end
+%                otherwise
+%                    node{i}.setService(jobclass{k}, Erlang(nPhases/map_mean(PH{i,k}),nPhases));
+%            end
         end
     end
 end

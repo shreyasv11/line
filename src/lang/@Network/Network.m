@@ -8,9 +8,9 @@ classdef Network < Model
         usedFeatures; % structure of booleans listing the used classes
         % it must be accessed via getUsedLangFeatures that updates
         % the Distribution classes dynamically
-        isInitialized;
         logPath;
         linkedP;
+        isInitialized;
     end
     
     properties (Access=protected)
@@ -247,7 +247,12 @@ classdef Network < Model
         end
         
         function nodeIndex = getNodeIndex(self, name)
-            nodeIndex = find(cellfun(@(c) strcmp(c,name),self.getNodeNames));
+            if isa(name,'Node')
+                node = name;
+                nodeIndex = find(cellfun(@(c) strcmp(c,node.name),self.getNodeNames));
+            else
+                nodeIndex = find(cellfun(@(c) strcmp(c,name),self.getNodeNames));
+            end
         end
         
         function stationIndex = getStationIndex(self, name)
@@ -481,7 +486,7 @@ classdef Network < Model
             self.initFromMarginal(n);
         end
         
-        function initDefault(self)
+        function initDefault(self, nodes)
             % open classes empty
             % closed classes initialized at ref station
             % running jobs are allocated in class id order until all
@@ -489,7 +494,10 @@ classdef Network < Model
             self.refreshStruct();  % we force update of the model before we initialize
             qn = self.getStruct(false);
             N = qn.njobs';
-            for i=1:self.getNumberOfNodes
+            if nargin < 2
+                nodes = 1:self.getNumberOfNodes;
+            end
+            for i=nodes
                 if qn.isstation(i)
                     n0 = zeros(1,length(N));
                     s0 = zeros(1,length(N));

@@ -74,6 +74,13 @@ classdef Queue < Station
                 weight=1.0;
             end
             
+            resetInitState = false;
+            if length(self.server.serviceProcess) >= class.index
+                if length(self.server.serviceProcess{1,class.index})>= 3
+                    resetInitState = true; % must be carried out at the end
+                end
+            end
+            
             self.serviceProcess{class.index} = distribution;
             self.server.serviceProcess{1, class.index}{2} = ServiceStrategy.LI;
             if distribution.isImmediate()
@@ -85,6 +92,9 @@ classdef Queue < Station
                 self.classCap(class.index) = Inf;
             end
             self.setStrategyParam(class, weight);
+            if resetInitState
+                self.model.initDefault(self.model.getNodeIndex(self));
+            end
         end
         
         function sections = getSections(self)

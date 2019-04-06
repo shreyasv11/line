@@ -24,6 +24,10 @@ classdef PointProcess < Copyable
             % Get squared coefficient of variation of the interarrival times (SCV = variance / mean^2)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
+        function SKEW = getSkewness(self)
+            % Get skewness of the interarrival times
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
         function ID = getID(self)
             % Return the asymptotic index of dispersion
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');

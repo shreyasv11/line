@@ -28,6 +28,19 @@ classdef TimeSeries < PointProcess
             end
         end
         
+        function ex = getMean(self)
+            % Returns the mean of the inter-arrival times
+            ex = mean(self.data);
+        end
+        function SCV = getSCV(self)
+            % Get squared coefficient of variation of the interarrival times (SCV = variance / mean^2)
+            SCV = var(self.data)/mean(self.data)^2;
+        end
+        function SKEW = getSkewness(self)
+            SKEW = skewness(self.data);
+            % Get skewness of the interarrival times
+        end
+        
         function summary(self)
             if isempty(self.data)
                 self.load();

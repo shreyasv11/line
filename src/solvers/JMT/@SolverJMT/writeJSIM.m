@@ -72,6 +72,7 @@ for i=1:numOfStations
     isReferenceNode = 0;
     currentNode = self.model.nodes{i,1};
     if i<=self.model.getNumberOfStations && (~isa(self.model.stations{i},'Source') && ~isa(self.model.stations{i},'Sink') && ~isa(self.model.stations{i},'Join'))
+        
         [~, nir] = State.toMarginal(self.model,qn.stationToNode(i),s0{qn.stationToStateful(i)});
         stationPopulationsNode = simDoc.createElement('stationPopulations');
         stationPopulationsNode.setAttribute('stationName', currentNode.name);

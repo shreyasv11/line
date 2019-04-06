@@ -25,18 +25,7 @@ classdef Exp < PhaseType
             % representation
             phases  = 1;
         end
-        
-        function ex = getMean(self)
-            % Get distribution mean
-            lambda = self.getParam(1).paramValue;
-            ex = 1/lambda;
-        end
-        
-        function SCV = getSCV(self)
-            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
-            SCV = 1;
-        end
-        
+                
         function Ft = evalCDF(self,t)
             % Evaluate the cumulative distribution function at t
             lambda = self.getParam(1).paramValue;
@@ -45,7 +34,8 @@ classdef Exp < PhaseType
         
         function PH = getRepresentation(self)
             % Return the renewal process associated to the distribution            
-            PH = map_exponential(self.getMean());
+            lambda = self.getParam(1).paramValue;
+            PH = {[-lambda],[lambda]};
         end
         
         function L = evalLaplaceTransform(self, s)
@@ -97,14 +87,8 @@ classdef Exp < PhaseType
         function ex = fit(MEAN, VAR, SKEW)
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
-            SCV = VAR/MEAN^2;
-            if abs(SCV-1) < Distrib.Tol
-                warning('Warning: the exponential distribution cannot fit squared coefficient of variation != 1, changing squared coefficient of variation to 1.');
-            end
-            if abs(SKEW-2) < Distrib.Tol
-                warning('Warning: the exponential distribution cannot fit skewness != 2, changing skewness to 2.');
-            end
-            ex = Exp(1/MEAN);
+            ex = Exp(1);
+            ex.update(MEAN, VAR, SKEW);
         end
         
         function ex = fitMean(MEAN)

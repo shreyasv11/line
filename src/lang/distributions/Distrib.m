@@ -60,7 +60,9 @@ classdef Distrib < Copyable
                 self.params{i}=struct('paramName','','paramValue',NaN,'paramClass','');
             end
         end
-        
+    end
+    
+    methods    
         function nParam = getNumParams(self)
             % Returns the number of parameters needed to specify the distribution
             nParam = length(self.params);
@@ -114,4 +116,6 @@ classdef Distrib < Copyable
         end
         
     end
+    
+    
 end

@@ -29,7 +29,7 @@ classdef MarkovModulated < PointProcess
     
     methods (Static)
         function cx = fit(MEAN, SCV)
-            cx = Cox2.fitMeanAndSCV(MEAN,SCV);
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
     end
     

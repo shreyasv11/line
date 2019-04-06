@@ -54,7 +54,7 @@ classdef Replayer < TimeSeries
         end
 
         function distr = fitCox(self)
-            distr = Cox2.fit(self.getMean,self.getSCV);
+            distr = Coxian.fit(self.getMean,self.getSCV);
         end
     end
 end

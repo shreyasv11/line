@@ -68,7 +68,7 @@ classdef Coxian < PhaseType
     
     methods(Static)
         
-        function [mu,phi] = fitMeanAndSCV(MEAN, SCV)
+        function [cx,mu,phi] = fitMeanAndSCV(MEAN, SCV)
             % Fit a Coxian distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             
             if SCV >= 1-Distrib.Tol && SCV <= 1+Distrib.Tol
@@ -97,6 +97,7 @@ classdef Coxian < PhaseType
                 phi(2) = 1;
             end
             phi(n) = 1;
+            cx = Coxian(mu,phi);
         end
     end
     
