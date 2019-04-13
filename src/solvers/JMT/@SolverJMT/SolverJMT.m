@@ -147,8 +147,9 @@ classdef SolverJMT < NetworkSolver
                 'Fork',...
                 'Join',...
                 'Logger',...
+                'Coxian',...
                 'Cox2',...
-                'AcyclicPhaseType',...
+                'APH',...
                 'Erlang',...
                 'Exponential',...
                 'HyperExp',...
@@ -275,14 +276,19 @@ classdef SolverJMT < NetworkSolver
                     StateSys.t = union(StateSys.t, State{i,j}.t);
                 end
             end
-            
+                        
             StateSys.nir = [];
             for i=1:size(Q,1)
                 for j=1:size(Q,2)
                     [~,uniqTS] = unique(State{i,j}.t);
                     % we round the interpolation to have integer states
-                    Qijt = round(interp1(State{i,j}.t(uniqTS), State{i,j}.nir(uniqTS), StateSys.t));
-                    StateSys.nir = [StateSys.nir, Qijt];
+                    if length(uniqTS) > 0
+                        Qijt = round(interp1(State{i,j}.t(uniqTS), State{i,j}.nir(uniqTS), StateSys.t));
+                        StateSys.nir = [StateSys.nir, Qijt];
+                    else                        
+                        Qijt = -ones(length(StateSys.t),1);
+                        StateSys.nir = [StateSys.nir, Qijt];
+                    end
                 end
             end
         end
@@ -307,19 +313,26 @@ classdef SolverJMT < NetworkSolver
             isNodeLogged = max(isNodeClassLogged,[],2);
             logpath = tempdir;
             cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
-            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
+            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data            
             logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.QLen);
+            qn = cdfmodel.getStruct;
             % from here convert from nodes in logData to stations
-            for i= 1:cdfmodel.getNumberOfStations
-                ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
-                [~,uniqTS] = unique(logData{ni,r}.t);
-                for r=1:cdfmodel.getNumberOfClasses
-                    if isNodeClassLogged(ni,r)
-                        if ~isempty(logData{ni,r})
-                            State{i,r} = struct();
-                            State{i,r}.t = logData{ni,r}.t(uniqTS);
-                            State{i,r}.nir = logData{ni,r}.QLen(uniqTS);
+            for ist= 1:qn.nstations
+                ind = qn.statefulToNode(ist);
+                for r=1:qn.nclasses
+                    if ~isempty(logData{ind,r})
+                        [~,uniqTS] = unique(logData{ind,r}.t);
+                        if isNodeClassLogged(ind,r)
+                            if ~isempty(logData{ind,r})
+                                State{ist,r} = struct();
+                                State{ist,r}.t = logData{ind,r}.t(uniqTS);
+                                State{ist,r}.nir = logData{ind,r}.QLen(uniqTS);
+                            end
                         end
+                    else
+                        State{ist,r} = struct();
+                        State{ist,r}.t = [];
+                        State{ist,r}.nir = [];
                     end
                 end
             end

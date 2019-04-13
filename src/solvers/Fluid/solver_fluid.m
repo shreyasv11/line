@@ -7,6 +7,7 @@ K = qn.nclasses;    %number of classes
 N = qn.nclosedjobs;    %population
 Lambda = qn.mu;
 Pi = qn.phi;
+PH = qn.ph;
 sched = qn.sched;
 rt = qn.rt;
 S = qn.nservers;
@@ -87,7 +88,7 @@ else
 end
 
 %% solve ode
-[ymean, ymean_t, t, iters] = solver_fluid_iteration(qn, N, Lambda, Pi, rt, S, ymean, ydefault, slowrate, Tstart, max_time, options);
+[ymean, ymean_t, t, iters] = solver_fluid_iteration(qn, N, Lambda, Pi, PH, rt, S, ymean, ydefault, slowrate, Tstart, max_time, options);
 
 runtime = toc(Tstart);
 % if options.verbose >= 2

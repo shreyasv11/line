@@ -69,6 +69,16 @@ classdef Queue < Station
             self.schedStrategyPar(class.index) = weight;
         end
         
+        function distribution = getService(self, class)
+            % return the service distribution assigned to the given class
+            try
+            distribution = self.server.serviceProcess{1, class.index}{3};
+            catch ME
+                distribution = [];
+                warning('No distribution is available for the specified class');
+            end
+        end
+        
         function setService(self, class, distribution, weight)
             if ~exist('weight','var')
                 weight=1.0;

@@ -1,6 +1,6 @@
 classdef Replayer < TimeSeries
     % Empirical time series from a trace
-    % 
+    %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
@@ -35,7 +35,7 @@ classdef Replayer < TimeSeries
             self.data = [];
         end
         
-                function ex = getMean(self)
+        function ex = getMean(self)
             % Get distribution mean
             if isempty(self.data)
                 self.load();
@@ -43,18 +43,32 @@ classdef Replayer < TimeSeries
             ex = mean(self.data);
         end
         
-                function SCV = getSCV(self)
-% Get distribution squared coefficient of variation (SCV = variance / mean^2)
-
-
+        function SCV = getSCV(self)
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             if isempty(self.data)
                 self.load();
             end
             SCV = var(self.data)/mean(self.data)^2;
         end
-
-        function distr = fitCox(self)
-            distr = Coxian.fit(self.getMean,self.getSCV);
+        
+        function SKEW = getSkewness(self)
+            % Get distribution skewness
+            if isempty(self.data)
+                self.load();
+            end
+            SKEW = skewness(self.data);
+        end
+        
+        function distr = fitExp(self)
+            distr = Exp.fitMean(self.getMean);
+        end        
+        
+        function distr = fitAPH(self)
+            distr = APH.fitCentral(self.getMean, self.getVariance, self.getSkewness);
+        end
+        
+        function distr = fitCoxian(self)
+            distr = Cox2.fitCentral(self.getMean, self.getVariance, self.getSkewness);
         end
     end
 end

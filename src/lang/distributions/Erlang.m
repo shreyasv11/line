@@ -1,4 +1,4 @@
-classdef Erlang < PhaseType
+classdef Erlang < MarkovianDistribution
     % The Erlang statistical distribution
     %
     % Copyright (c) 2012-2019, Imperial College London
@@ -6,12 +6,12 @@ classdef Erlang < PhaseType
     
     methods
 
-        function self = Erlang(alpha, r)
+        function self = Erlang(phaseRate, nphases)
             % Constructs an erlang distribution from the rate in each state
             % and the number of phases
-            self@PhaseType('Erlang',2);
-            setParam(self, 1, 'alpha', alpha, 'java.lang.Double'); % rate in each state
-            setParam(self, 2, 'r', round(r), 'java.lang.Long'); % number of phases
+            self@MarkovianDistribution('Erlang',2);
+            setParam(self, 1, 'alpha', phaseRate, 'java.lang.Double'); % rate in each state
+            setParam(self, 2, 'r', round(nphases), 'java.lang.Long'); % number of phases
             self.javaClass = 'jmt.engine.random.Erlang';
             self.javaParClass = 'jmt.engine.random.ErlangPar';
         end
@@ -41,7 +41,7 @@ classdef Erlang < PhaseType
             r = self.getParam(2).paramValue; % stages
             Ft = 1;
             for j=0:(r-1)
-                Ft = Ft - exp(-r*alpha*t).*(r*alpha*t).^j/factorial(j);
+                Ft = Ft - exp(-alpha*t).*(alpha*t).^j/factorial(j);
             end
         end
         
@@ -62,7 +62,7 @@ classdef Erlang < PhaseType
     
     methods(Static)
 
-        function er = fit(MEAN, VAR, SKEW)
+        function er = fitCentral(MEAN, VAR, SKEW)
             % Fit distribution from first three central moments (mean,
             % variance, skewness)
             SCV = VAR/MEAN^2;

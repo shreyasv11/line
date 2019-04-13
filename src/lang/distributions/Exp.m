@@ -1,4 +1,4 @@
-classdef Exp < PhaseType
+classdef Exp < MarkovianDistribution
     % The exponential distribution
     %
     % Copyright (c) 2012-2019, Imperial College London
@@ -8,7 +8,7 @@ classdef Exp < PhaseType
         function self = Exp(lambda)
             % Constructs an exponential distribution from the rate
             % parameter
-            self@PhaseType('Exponential', 1);
+            self@MarkovianDistribution('Exponential', 1);
             setParam(self, 1, 'lambda', lambda, 'java.lang.Double');
             self.javaClass = 'jmt.engine.random.Exponential';
             self.javaParClass = 'jmt.engine.random.ExponentialPar';
@@ -50,16 +50,16 @@ classdef Exp < PhaseType
             MEAN = varargin{1};
             SCV = varargin{2}/MEAN^2;
             SKEW = varargin{3};
-            KURT = varargin{4};
+%            KURT = varargin{4};
             if abs(SCV-1) < Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit squared coefficient of variation != 1, changing squared coefficient of variation to 1.');
             end
             if abs(SKEW-2) < Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit skewness != 2, changing skewness to 2.');
             end
-            if abs(KURT-9) < Distrib.Tol
-                warning('Warning: the exponential distribution cannot fit kurtosis != 9, changing kurtosis to 9.');
-            end
+%            if abs(KURT-9) < Distrib.Tol
+%                warning('Warning: the exponential distribution cannot fit kurtosis != 9, changing kurtosis to 9.');
+%            end
             self.getParam(1).paramValue = 1 / MEAN;
         end
         
@@ -84,7 +84,7 @@ classdef Exp < PhaseType
     end
     
     methods (Static)
-        function ex = fit(MEAN, VAR, SKEW)
+        function ex = fitCentral(MEAN, VAR, SKEW)
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
             ex = Exp(1);

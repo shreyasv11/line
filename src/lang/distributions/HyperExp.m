@@ -1,66 +1,103 @@
-classdef HyperExp < PhaseType
+classdef HyperExp < MarkovianDistribution
     % The hyper-exponential statistical distribution
     %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods
-        function self = HyperExp(p, lambda1, lambda2)
+        function self = HyperExp(varargin)
             % Constructs a two-phase exponential distribution from
             % probability of selecting phase 1 and the two phase rates
-            self@PhaseType('HyperExp',3);           
-            setParam(self, 1, 'p', p, 'java.lang.Double');
-            setParam(self, 2, 'lambda1', lambda1, 'java.lang.Double');
-            setParam(self, 3, 'lambda2', lambda2, 'java.lang.Double');
-            self.javaClass = 'jmt.engine.random.HyperExp';
-            self.javaParClass = 'jmt.engine.random.HyperExpPar';
-        end
-        
-        function phases = getNumberOfPhases(self)
-            % Get number of phases in the underpinnning phase-type
-            % representation
-            phases  = 2; %r
+            self@MarkovianDistribution('HyperExp',nargin);
+            if length(varargin)==2
+                p = varargin{1};
+                lambda = varargin{2};
+                setParam(self, 1, 'p', p, 'java.lang.Double');
+                setParam(self, 2, 'lambda', lambda, 'java.lang.Double');
+                self.javaClass = ''; % no corresponding class in JMT
+                self.javaParClass = ''; % no corresponding class in JMT
+            elseif length(varargin)==3
+                p1 = varargin{1};
+                lambda1 = varargin{2};
+                lambda2 = varargin{3};
+                setParam(self, 1, 'p', p1, 'java.lang.Double');
+                setParam(self, 2, 'lambda1', lambda1, 'java.lang.Double');
+                setParam(self, 3, 'lambda2', lambda2, 'java.lang.Double');
+                self.javaClass = 'jmt.engine.random.HyperExp';
+                self.javaParClass = 'jmt.engine.random.HyperExpPar';
+            end
         end
         
         function ex = getMean(self)
             % Get distribution mean
-            p = self.getParam(1).paramValue;
-            mu1 = self.getParam(2).paramValue;
-            mu2 = self.getParam(3).paramValue;
-            ex = p/mu1 + (1-p)/mu2;
+            if self.getNumberOfPhases == 2
+                p = self.getParam(1).paramValue;
+                mu1 = self.getParam(2).paramValue;
+                mu2 = self.getParam(3).paramValue;
+                ex = p/mu1 + (1-p)/mu2;
+            else
+                MarkovianDistribution.getMean(self);
+            end
         end
         
         function SCV = getSCV(self)
-            % Get distribution squared coefficient of variation (SCV = variance / mean^2)                    
-            p = self.getParam(1).paramValue;
-            mu1 = self.getParam(2).paramValue;
-            mu2 = self.getParam(3).paramValue;
-            SCV = (2*(p/mu1^2 + (1-p)/mu2^2) - (p/mu1 + (1-p)/mu2)^2)/(p/mu1 + (1-p)/mu2)^2;
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+            if self.getNumberOfPhases == 2
+                p = self.getParam(1).paramValue;
+                mu1 = self.getParam(2).paramValue;
+                mu2 = self.getParam(3).paramValue;
+                SCV = (2*(p/mu1^2 + (1-p)/mu2^2) - (p/mu1 + (1-p)/mu2)^2)/(p/mu1 + (1-p)/mu2)^2;
+            else
+                MarkovianDistribution.getSCV(self);
+            end
         end
         
         function Ft = evalCDF(self,t)
             % Evaluate the cumulative distribution function at t
-            p = self.getParam(1).paramValue;
-            mu1 = self.getParam(2).paramValue;
-            mu2 = self.getParam(3).paramValue;
-            Ft = p*(1-exp(-mu1*t))+(1-p)*(1-exp(-mu2*t));
+            if self.getNumberOfPhases == 2
+                p = self.getParam(1).paramValue;
+                mu1 = self.getParam(2).paramValue;
+                mu2 = self.getParam(3).paramValue;
+                Ft = p*(1-exp(-mu1*t))+(1-p)*(1-exp(-mu2*t));
+            else
+                MarkovianDistribution.evalCDF(self,t);
+            end
         end
         
         function PH = getRepresentation(self)
-            % Return the renewal process associated to the distribution            
+            % Return the renewal process associated to the distribution
             p = self.getParam(1).paramValue;
-            mu1 = self.getParam(2).paramValue;
-            mu2 = self.getParam(3).paramValue;
-            PH={[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
+            n = length(p);
+            if n == 1
+                mu1 = self.getParam(2).paramValue;
+                mu2 = self.getParam(3).paramValue;
+                PH={[-mu1,0;0,-mu2],[mu1*p,mu1*(1-p);mu2*p,mu2*(1-p)]};
+            else
+                mu = self.getParam(2).paramValue;
+                D0 = -diag(mu);
+                D1 = -D0*p(:)*ones(1,n);
+                PH = {D0,D1};
+            end
         end
-        
     end
     
     methods(Static)
-        function he = fit(MEAN, VAR, SKEW)
+        function he = fitCentral(MEAN, VAR, SKEW)
             % Fit distribution from first three central moments (mean,
             % variance, skewness)
             SCV = VAR/MEAN^2;
+            e1 = MEAN;
+            e2 = (1+SCV)*e1^2;
+            e3 = -(2*e1^3-3*e1*e2-SKEW*(e2-e1^2)^(3/2));
+            for n=[2] % larger ph requires more moments
+                PH = kpcfit_ph_prony([e1,e2,e3],n);
+                if map_isfeasible(PH)
+                    p = map_pie(PH);
+                    lambda = -diag(PH{1});
+                    he = HyperExp(p,lambda);
+                    return
+                end
+            end
             he = HyperExp.fitMeanAndSCV(MEAN,SCV);
         end
         
@@ -76,7 +113,7 @@ classdef HyperExp < PhaseType
         
         function he = fitMeanAndSCV(MEAN, SCV)
             % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
-            [~,mu1,mu2,p]=map_hyperexp(MEAN,SCV);
+            [~,mu1,mu2,p] = map_hyperexp(MEAN,SCV);
             he = HyperExp(p, mu1, mu2);
         end
         

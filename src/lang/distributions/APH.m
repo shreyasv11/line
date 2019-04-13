@@ -1,13 +1,13 @@
-classdef AcyclicPhaseType < PhaseType
+classdef APH < MarkovianDistribution
     % An astract class for acyclic phase-type distributions
     %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
     methods
-        function self = AcyclicPhaseType(alpha, T)
+        function self = APH(alpha, T)
             % Abstract class constructor
-            self@PhaseType('AcyclicPhaseType', 2);
+            self@MarkovianDistribution('APH', 2);
             self.setParam(1, 'alpha', alpha, 'java.lang.Double');
             self.setParam(2, 'T', T, 'java.lang.Double');
         end
@@ -20,8 +20,8 @@ classdef AcyclicPhaseType < PhaseType
             alpha = reshape(alpha,1,length(alpha));
         end
         
-        function T = getTranGenerator(self)
-            % Get transient generator
+        function T = getGenerator(self)
+            % Get generator
             T = self.getParam(2).paramValue;
         end
         
@@ -40,7 +40,7 @@ classdef AcyclicPhaseType < PhaseType
             SCV = varargin{2}/MEAN^2;
             SKEW = varargin{3};
             if length(varargin) > 3
-                warning('Warning: update can only handle 3 moments, ignoring higher-order moments.');
+                warning('Warning: update in %s distributions can only handle 3 moments, ignoring higher-order moments.',class(self));
             end
             e1 = MEAN;
             e2 = (1+SCV)*e1^2;
@@ -52,10 +52,10 @@ classdef AcyclicPhaseType < PhaseType
         
         function updateMean(self,MEAN)
             % Update parameters to match the given mean
-            AcyclicPhaseType = self.getRepresentation;
-            AcyclicPhaseType = map_scale(AcyclicPhaseType,MEAN);
-            self.setParam(1, 'alpha', map_pie(AcyclicPhaseType), 'java.lang.Double');
-            self.setParam(2, 'T', AcyclicPhaseType{1}, 'java.lang.Double');
+            APH = self.getRepresentation;
+            APH = map_scale(APH,MEAN);
+            self.setParam(1, 'alpha', map_pie(APH), 'java.lang.Double');
+            self.setParam(2, 'T', APH{1}, 'java.lang.Double');
         end
         
         function updateMeanAndSCV(self, MEAN, VAR)
@@ -71,26 +71,24 @@ classdef AcyclicPhaseType < PhaseType
         
         function APH = getRepresentation(self)
             % Return the renewal process associated to the distribution
-            D0 = self.getTranGenerator;
-            nPhases = length(D0);
-            D1 = ones(nPhases,1)*self.getInitProb;
-            APH = {D0,D1};
+            T = self.getGenerator;
+            APH = {T,-T*ones(length(T),1)*self.getInitProb};
         end
         
     end
     
     methods (Static)
-        function ex = fit(MEAN, VAR, SKEW)
+        function ex = fitCentral(MEAN, VAR, SKEW)
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
-            ex = AcyclicPhaseType(1.0, [1]);
+            ex = APH(1.0, [1]);
             ex.update(MEAN, VAR, SKEW);
         end
         
         function ex = fitMeanAndSCV(MEAN, SCV)
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
-            ex = AcyclicPhaseType(1.0, [1]);
+            ex = APH(1.0, [1]);
             ex.updateMeanAndSCV(MEAN, SCV);
         end
     end

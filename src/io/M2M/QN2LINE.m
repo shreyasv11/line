@@ -30,15 +30,7 @@ for i = 1:M
     end
 end
 
-mu=qn.mu;
-phi=qn.phi;
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRepresentation();
-    end
-end
-
+PH = qn.ph;
 for k = 1:K
     if k<=Ktrue
         if isinf(NK(k))
@@ -51,7 +43,7 @@ for k = 1:K
         % set it to the first node where the rate for this class is
         % non-null
         for i=1:M
-            if nnz(qn.mu{i,k})>0
+            if sum(nnz(qn.ph{i,k}{1}))>0
                 break
             end
         end

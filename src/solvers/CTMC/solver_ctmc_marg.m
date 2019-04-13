@@ -8,20 +8,11 @@ K = qn.nclasses;    %number of classes
 state = qn.state;
 fname = '';
 rt = qn.rt;
-mu = qn.mu;
-phi = qn.phi;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 sched = qn.sched;
 
 Tstart = tic;
-
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRepresentation();
-    end
-end
 
 myP = cell(K,K);
 for k = 1:K

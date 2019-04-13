@@ -19,6 +19,7 @@ classdef NetworkStruct <handle
         isstateful; % element i is true if node i is stateful
         mu;          % service rate in each service phase, for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
+        ph;     % cell matrix of PH representations for each station and class
         nchains;           % number of chains (int)
         nclasses;          % number of classes (int)
         nclosedjobs;          % total population (int)
@@ -154,6 +155,13 @@ classdef NetworkStruct <handle
             self.scv = scv;
         end
         
+        function setPHService(self, ph, phases)
+            self.ph = ph;
+            self.phases = phases;
+            self.phasessz = max(self.phases,ones(size(self.phases)));
+            self.phaseshift = [zeros(size(phases,1),1),cumsum(self.phasessz,2)];
+        end
+        
         function setCoxService(self, mu, phi, phases)
             self.mu = mu;
             self.phi = phi;
@@ -260,6 +268,7 @@ classdef NetworkStruct <handle
         newObj.phasessz = obj.phasessz; % number of phases in each service or arrival process
         newObj.phaseshift = obj.phaseshift; % number of phases in each service or arrival process
         newObj.phi = obj.phi;         % probability of service completion in each service phase,
+        newObj.ph = obj.ph;         % probability of service completion in each service phase,
         newObj.rates = obj.rates;       % service rate for each job class in each station
         newObj.refstat = obj.refstat;    % index of the reference node for each request class (Kx1 int)
         newObj.routing = obj.routing;     % routing strategy type

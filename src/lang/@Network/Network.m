@@ -66,6 +66,7 @@ classdef Network < Model
     methods (Access = protected)
         [rates, scv] = refreshRates(self);
         [mu, phi, phases] = refreshCoxService(self);
+        [ph, phases] = refreshPHService(self);
         [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates);
         sync = refreshSync(self);
         sanitize(self);
@@ -110,7 +111,7 @@ classdef Network < Model
         
         function P = getLinkedRoutingMatrix(self)
             if isempty(self.linkedP)
-                error('Unsupported. To use this function the model topology must have been linked with the link method.');
+                error('Unsupported. To use this function the model topology must have been linked with the link() method.');
             else
                 P = self.linkedP;
             end
@@ -304,23 +305,9 @@ classdef Network < Model
             qn = self.getStruct;
             M = qn.nstations;    %number of stations
             K = qn.nclasses;    %number of classes
-            mu = qn.mu;
-            phi = qn.phi;
             C = qn.nchains;
             
-            PH=cell(M,K);
-            for i=1:M
-                for k=1:K
-                    if length(mu{i,k})==1
-                        PH{i,k} = map_exponential(1/mu{i,k});
-                    else
-                        D0 = diag(-mu{i,k})+diag(mu{i,k}(1:end-1).*(1-phi{i,k}(1:end-1)),1);
-                        D1 = zeros(size(D0));
-                        D1(:,1)=(phi{i,k}.*mu{i,k});
-                        PH{i,k} = map_normalize({D0,D1});
-                    end
-                end
-            end
+            PH=qn.ph;
             
             % determine service times
             ST = zeros(M,K);

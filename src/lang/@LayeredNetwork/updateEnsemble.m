@@ -209,7 +209,7 @@ for net=1:length(graphLayer)
                     destEntryProcess = Exp(Distrib.InfRate);
                 end
                 if ~isBuild
-                    [~,demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
+                    [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
                 end                
             else % convolution of thinkTime and interArrivalFromUpperLayer processes
 % The code will never enter this section since thinkTime is available only
@@ -237,6 +237,7 @@ for net=1:length(graphLayer)
                 qn.rates(1,jobclass{class_entry}.index) = destEntryRate;
                 qn.mu{1,jobclass{class_entry}.index} = demandMu;
                 qn.phi{1,jobclass{class_entry}.index} = demandPhi;
+                qn.ph{1,jobclass{class_entry}.index} = cx;
                 if deepUpdate
                     node{1}.setService(jobclass{class_entry},  destEntryProcess);
                 end
@@ -282,9 +283,10 @@ for net=1:length(graphLayer)
                                 node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
                             end
                             qn.rates(2,jobclass{class_hostdemand}.index) = destEntryRate;
-                            [demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
+                            [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
                             qn.mu{2,jobclass{class_hostdemand}.index} = demandMu;
                             qn.phi{2,jobclass{class_hostdemand}.index} = demandPhi;
+                            qn.ph{2,jobclass{class_hostdemand}.index} = cx.getRepresentation;
                         end
                         stationlast = 2; % store that we last visited the server
                         classlast = class_hostdemand; % store class for return path
@@ -307,6 +309,7 @@ for net=1:length(graphLayer)
                         end
                         qn.rates(1,jobclass{class_hostdemand}.index) = destEntryRate;
                         qn.mu{1,jobclass{class_hostdemand}.index} = destEntryRate;
+                        qn.ph{1,jobclass{class_hostdemand}.index} = entryRT.getRepresentation;
                     end
                     if isBuild % if we are building the model for the first time
                         node{2}.setService(jobclass{class_hostdemand}, Disabled());
@@ -361,6 +364,7 @@ for net=1:length(graphLayer)
                             end
                             qn.rates(2,jobclass{class_synchcall}.index) = destEntryRate;
                             qn.mu{2,jobclass{class_synchcall}.index} = destEntryRate;
+                            qn.ph{2,jobclass{class_synchcall}.index} = entryRT.getRepresentation;
                         end
                         if isBuild % if we are building the model for the first time
                             % Here we are taking the assumption that if the
@@ -394,6 +398,7 @@ for net=1:length(graphLayer)
                                 end
                                 qn.rates(1,jobclass{class_synchcall}.index) = destEntryRate;
                                 qn.mu{1,jobclass{class_synchcall}.index} = destEntryRate;
+                                qn.ph{1,jobclass{class_synchcall}.index} = Exp(destEntryRate).getRepresentation;
                             end
                             stationlast = 1;
                             classlast = class_synchcall;
@@ -416,7 +421,8 @@ for net=1:length(graphLayer)
                                 end
                                 qn.rates(1,jobclass{class_synchcall}.index) = destEntryRate;
                                 qn.mu{1,jobclass{class_synchcall}.index} = destEntryRate;
-                            end
+                                qn.ph{1,jobclass{class_synchcall}.index} = entryRT.getRepresentation;
+                           end
                             if isBuild % if we are building the model for the first time
                                 %                                node{2}.setService(jobclass{class_synchcall}, Disabled());
                                 node{2}.setService(jobclass{class_synchcall}, Exp(Distrib.InfRate));

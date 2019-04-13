@@ -2,8 +2,6 @@ function [XN,UN,QN,RN,TN,CN]=solver_ssa_analysis_spmd(laboptions, qn, qnc, PH)
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 
-mu = qn.mu;
-phi = qn.phi;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 sched = qn.sched;

@@ -6,20 +6,12 @@ M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 fname = '';
 rt = qn.rt;
-mu = qn.mu;
-phi = qn.phi;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 sched = qn.sched;
 
 Tstart = tic;
-
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRepresentation();
-    end
-end
+PH = qn.ph;
 
 myP = cell(K,K);
 for k = 1:K
@@ -51,6 +43,7 @@ QN = NaN*zeros(M,K);
 RN = NaN*zeros(M,K);
 TN = NaN*zeros(M,K);
 CN = NaN*zeros(1,K);
+
 for k=1:K
     refsf = qn.stationToStateful(qn.refstat(k));
     XN(k) = pi*arvRates(:,refsf,k);

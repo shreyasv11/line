@@ -13,11 +13,11 @@ nclasses = qn.nclasses;
 sync = qn.sync;
 csmask = qn.csmask;
 if isoctave
-  warning off;
+    warning off;
 end
 [SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);
 qn.space = qnc.space;
-if options.verbose 
+if options.verbose
     fprintf(1,'State space size: %d states.\n',size(SS,1));
 end
 
@@ -61,7 +61,7 @@ for a=1:A
         %[a,s]
         state = SSh(s,:);
         % update state cell array and SSq
-            for ind = 1:qn.nnodes
+        for ind = 1:qn.nnodes
             if qn.isstateful(ind)
                 isf = qn.nodeToStateful(ind);
                 stateCell{isf} = qn.space{isf}(state(isf),:);
@@ -89,48 +89,63 @@ for a=1:A
                     %prob_sync_p = sync{a}.passive{1}.prob(state_a, state_p)
                     %if prob_sync_p > 0
                     if node_p == node_a %self-loop
-                        [new_state_p, ~] = State.afterEventHashed( qn, node_p, new_state_a(ia), event_p, class_p);
+                        [new_state_p, ~, outprob_p] = State.afterEventHashed( qn, node_p, new_state_a(ia), event_p, class_p);
                     else % departure
-                        [new_state_p, ~] = State.afterEventHashed( qn, node_p, state_p, event_p, class_p);
+                        [new_state_p, ~, outprob_p] = State.afterEventHashed( qn, node_p, state_p, event_p, class_p);
                     end
-                    if new_state_p ~= -1
-                        if qn.isstatedep(node_a,3)
-                            newStateCell = stateCell;
-                            newStateCell{qn.nodeToStateful(node_a)} = qn.space{qn.nodeToStateful(node_a)}(new_state_a(ia),:);
-                            newStateCell{qn.nodeToStateful(node_p)} = qn.space{qn.nodeToStateful(node_p)}(new_state_p,:);
-                            prob_sync_p = sync{a}.passive{1}.prob(stateCell, newStateCell); %state-dependent                            
-                        else
-                            prob_sync_p = sync{a}.passive{1}.prob;
+                    for ip=1:size(new_state_p,1)
+                        if node_p ~= local
+                            if new_state_p ~= -1
+                                if qn.isstatedep(node_a,3)
+                                    newStateCell = stateCell;
+                                    newStateCell{qn.nodeToStateful(node_a)} = qn.space{qn.nodeToStateful(node_a)}(new_state_a(ia),:);
+                                    newStateCell{qn.nodeToStateful(node_p)} = qn.space{qn.nodeToStateful(node_p)}(new_state_p(ip),:);
+                                    prob_sync_p = sync{a}.passive{1}.prob(stateCell, newStateCell) * outprob_p(ip); %state-dependent
+                                else
+                                    prob_sync_p = sync{a}.passive{1}.prob * outprob_p(ip);
+                                end
+                            else
+                                prob_sync_p = 0;
+                            end
                         end
-                    else
-                        prob_sync_p = 0;
+                        if ~isempty(new_state_a(ia))
+                            if node_p == local % local action
+                                new_state = state;
+                                new_state(qn.nodeToStateful(node_a)) = new_state_a(ia);
+                                prob_sync_p = outprob_p(ip);
+                            elseif ~isempty(new_state_p)
+                                new_state = state;
+                                new_state(qn.nodeToStateful(node_a)) = new_state_a(ia);
+                                new_state(qn.nodeToStateful(node_p)) = new_state_p(ip);
+                            end
+                            ns = matchrow(SSh, new_state);
+                            if ns>0
+                                if ~isnan(rate_a)
+                                    if node_p < local && ~csmask(class_a, class_p) && rate_a(ia) * prob_sync_p >0 && (qn.nodetype(node_p)~=NodeType.Source)
+                                        error('Error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a, node_a, node_p, class_a, class_p);
+                                    end
+                                    if size(D{a}) >= [s,ns] % check needed as D{a} is a sparse matrix
+                                        D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;
+                                    else
+                                        D{a}(s,ns) = rate_a(ia) * prob_sync_p;
+                                    end
+                                end
+                            end
+                        end
                     end
-                    %end
-                end
-                if ~isempty(new_state_a(ia))
-                    if node_p == local
+                else % node_p == local
+                    if ~isempty(new_state_a(ia))
                         new_state = state;
                         new_state(qn.nodeToStateful(node_a)) = new_state_a(ia);
                         prob_sync_p = 1;
-                    elseif ~isempty(new_state_p)
-                        new_state = state;
-                        new_state(qn.nodeToStateful(node_a)) = new_state_a(ia);
-                        new_state(qn.nodeToStateful(node_p)) = new_state_p;
-                    end
-                    ns = matchrow(SSh, new_state);
-                    if ns>0
-                        if ~isnan(rate_a)
-                            if event_a == Event.DEP
-                                node_a_sf = qn.nodeToStateful(node_a);
-                                node_p_sf = qn.nodeToStateful(node_p);
-                            end
-                            if node_p < local && ~csmask(class_a, class_p) && rate_a(ia) * prob_sync_p >0 && (qn.nodetype(node_p)~=NodeType.Source)
-                                error('Error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a, node_a, node_p, class_a, class_p);
-                            end
-                            if size(D{a}) >= [s,ns] % needed for sparse matrix
-                                D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;
-                            else
-                                D{a}(s,ns) = rate_a(ia) * prob_sync_p;
+                        ns = matchrow(SSh, new_state);
+                        if ns>0
+                            if ~isnan(rate_a)
+                                if size(D{a}) >= [s,ns] % needed for sparse matrix
+                                    D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;
+                                else
+                                    D{a}(s,ns) = rate_a(ia) * prob_sync_p;
+                                end
                             end
                         end
                     end

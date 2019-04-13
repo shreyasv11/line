@@ -3,4 +3,5 @@ function [rates,scv, mu,phi,phases] = refreshService(self)
 % All rights reserved.
 [rates, scv] = self.refreshRates;
 [mu,phi,phases] = self.refreshCoxService;
+[ph,phases] = self.refreshPHService;
 end

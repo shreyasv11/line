@@ -39,7 +39,7 @@ for i=1:numOfClasses
                 subParValue = simDoc.createElement('value');
                 subParValue.appendChild(simDoc.createTextNode('null'));
                 serviceTimeStrategyNode.appendChild(subParValue);
-            elseif isa(distributionObj,'Coxian')
+            elseif (isa(distributionObj,'Coxian') && distributionObj.getNumberOfPhases > 2) || isa(distributionObj,'APH') || (isa(distributionObj,'HyperExp') && distributionObj.getNumberOfPhases > 2)
                 distributionNode = simDoc.createElement('subParameter');
                 distributionNode.setAttribute('classPath', 'jmt.engine.random.PhaseTypeDistr');
                 distributionNode.setAttribute('name', 'Phase-Type');

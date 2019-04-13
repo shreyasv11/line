@@ -19,7 +19,11 @@ R = qn.nclasses;
 S = qn.nservers;
 K = zeros(1,R);
 for r=1:R
-    K(r) = length(qn.mu{ist,r});
+    if isempty(qn.ph{ist,r})
+        K(r) = 0;
+    else
+        K(r) = length(qn.ph{ist,r}{1});
+    end
 end
 state = [];
 space = [];

@@ -26,7 +26,8 @@ for i=1:(numOfClasses)
     elseif distributionObj.isImmediate()
         serviceTimeStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ServiceStrategies.ZeroServiceTimeStrategy');
         serviceTimeStrategyNode.setAttribute('name', 'ZeroServiceTimeStrategy');
-    elseif isa(distributionObj,'Coxian') || isa(distributionObj,'AcyclicPhaseType')
+    elseif isa(distributionObj,'APH') || (isa(distributionObj,'Coxian') && distributionObj.getNumParams == 2) || (isa(distributionObj,'HyperExp')  && distributionObj.getNumParams == 2)
+        % Coxian and HyperExp have 2 parameters when they have a {mu, p} input specification
         serviceTimeStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ServiceStrategies.ServiceTimeStrategy');
         serviceTimeStrategyNode.setAttribute('name', 'ServiceTimeStrategy');
         distributionNode = simDoc.createElement('subParameter');
@@ -54,7 +55,7 @@ for i=1:(numOfClasses)
             subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',alpha(k))));
             subParNodeAlphaElem.appendChild(subParValue);
             subParNodeAlphaVec.appendChild(subParNodeAlphaElem);
-        end        
+        end
         
         subParNodeT = simDoc.createElement('subParameter');
         subParNodeT.setAttribute('array', 'true');
@@ -92,6 +93,8 @@ for i=1:(numOfClasses)
         switch distributionObj.name
             case 'Replayer'
                 distributionNode.setAttribute('name', 'Replayer');
+            case 'HyperExp'
+                distributionNode.setAttribute('name', 'Hyperexponential');
             otherwise
                 distributionNode.setAttribute('name', distributionObj.name);
         end

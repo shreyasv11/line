@@ -2,16 +2,13 @@ function logData = parseLogs(model,isNodeLogged, metric)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
-numOfResources = length(model.stations);
-for i=1:numOfResources
-    numOfResources = numOfResources - isa(model.stations{i},'Logger');
-end
-numOfClasses = length(model.classes);
-logData = cell(numOfResources,numOfClasses);
-for i=1:numOfResources
-    if isNodeLogged(i)
-        logFileArv = [model.getLogPath,sprintf('%s-Arv.csv',model.getNodeNames{i})];
-        logFileDep = [model.getLogPath,sprintf('%s-Dep.csv',model.getNodeNames{i})];
+qn = model.getStruct;
+nclasses = qn.nclasses;
+logData = cell(qn.nstateful,qn.nclasses);
+for ind=1:qn.nnodes
+    if qn.isstateful(ind) && isNodeLogged(ind)
+        logFileArv = [model.getLogPath,sprintf('%s-Arv.csv',model.getNodeNames{ind})];
+        logFileDep = [model.getLogPath,sprintf('%s-Dep.csv',model.getNodeNames{ind})];
         %% load arrival process
         if exist(logFileArv,'file') && exist(logFileDep,'file')
             %            logArv=readTable(logFileArv,'Delimiter',';','HeaderLines',1); % raw data
@@ -34,7 +31,7 @@ for i=1:numOfResources
                 jobArvClassID(find(strcmp(jobArvClasses{c},jobArvClass))) = findstring(model.getClassNames,jobArvClasses{c});
                 %                jobArvClassID(find(strcmp(jobArvClasses{c},jobArvClass)))=c;
             end
-            logFileArvMat = [model.getLogPath,filesep,sprintf('%s-Arv.mat',model.getNodeNames{i})];
+            logFileArvMat = [model.getLogPath,filesep,sprintf('%s-Arv.mat',model.getNodeNames{ind})];
             save(logFileArvMat,'jobArvTS','jobArvID','jobArvClass','jobArvClasses','jobArvClassID');
             
             %% load departure process
@@ -55,12 +52,12 @@ for i=1:numOfResources
                 jobDepClassID(find(strcmp(jobDepClasses{c},jobDepClass))) = findstring(model.getClassNames,jobDepClasses{c});
                 %                jobDepClassID(find(strcmp(jobDepClasses{c},jobDepClass)))=c;
             end
-            logFileDepMat = [model.getLogPath,filesep,sprintf('%s-Dep.mat',model.getNodeNames{i})];
+            logFileDepMat = [model.getLogPath,filesep,sprintf('%s-Dep.mat',model.getNodeNames{ind})];
             save(logFileDepMat,'jobDepTS','jobDepID','jobDepClass','jobDepClasses','jobDepClassID');
             
-            nodePreload = zeros(1,numOfClasses);
-            for r=1:numOfClasses
-                if strcmpi(model.classes{r}.reference.name,model.stations{i}.name)
+            nodePreload = zeros(1,nclasses);
+            for r=1:nclasses
+                if strcmpi(model.classes{r}.reference.name,model.stations{qn.nodeToStation(ind)}.name)
                     switch model.classes{r}.type
                         case 'closed'
                             nodePreload(r) = model.classes{r}.population;
@@ -70,26 +67,26 @@ for i=1:numOfResources
             
             switch metric
                 case Metric.QLen
-                    [nodeState{i}] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload);
+                    [nodeState{ind}] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload);
                     
                     %% save in default data structure
-                    for r=1:numOfClasses %0:numOfClasses
-                        logData{i,r} = struct();
-                        logData{i,r}.t = nodeState{i}(:,1);
-                        logData{i,r}.QLen = nodeState{i}(:,1+r);
+                    for r=1:nclasses %0:numOfClasses
+                        logData{ind,r} = struct();
+                        logData{ind,r}.t = nodeState{ind}(:,1);
+                        logData{ind,r}.QLen = nodeState{ind}(:,1+r);
                     end
                 case Metric.RespT
                     [classResT, jobRespT, jobResTArvTS] = SolverJMT.parseTranRespT(logFileArvMat, logFileDepMat);
                     
-                    for r=1:numOfClasses
-                        logData{i,r} = struct();
+                    for r=1:nclasses
+                        logData{ind,r} = struct();
                         if r <= size(classResT,2)
-                            logData{i,r}.t = jobResTArvTS;
-                            logData{i,r}.RespT = classResT{r};
+                            logData{ind,r}.t = jobResTArvTS;
+                            logData{ind,r}.RespT = classResT{r};
                             %logData{i,r}.PassT = jobRespT;
                         else
-                            logData{i,r}.t = [];
-                            logData{i,r}.RespT = [];
+                            logData{ind,r}.t = [];
+                            logData{ind,r}.RespT = [];
                             %logData{i,r}.PassT = [];
                         end
                     end

@@ -4,18 +4,11 @@ function [Q,U,R,T,C,X,runtime] = solver_nc_analysis_ld(qn, options)
 
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
-mu_chain = qn.mu;
-phi = qn.phi;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 C = qn.nchains;
 
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu_chain{i,k}, phi{i,k}).getRepresentation();
-    end
-end
+PH = qn.ph;
 %% initialization
 % queue-dependent functions to capture multi-server and delay stations
 

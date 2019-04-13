@@ -52,11 +52,21 @@ for i=1:self.getNumberOfNodes()
         otherwise
             for k=1:K
                 switch self.nodes{i}.output.outputStrategy{k}{2}
-                    case RoutingStrategy.RAND
-                        if isinf(NK(k)) || (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink')) % don't route closed classes out of source nodes
+                    case {RoutingStrategy.RAND, RoutingStrategy.RR, RoutingStrategy.JSQ}
+                        if isinf(NK(k)) % open class
                             for j=1:self.getNumberOfNodes()
                                 if connMatrix(i,j)>0
                                     rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
+                                end
+                            end
+                        elseif (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink') && ~isa(self.nodes{j},'Sink')) % don't route closed classes out of source nodes
+                            connMatrixClosed = connMatrix;
+                            if connMatrixClosed(i,self.getNodeIndex(self.getSink)) 
+                                connMatrixClosed(i,self.getNodeIndex(self.getSink)) = 0;
+                            end
+                            for j=1:self.getNumberOfNodes()
+                                if connMatrixClosed(i,j)>0
+                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/(sum(connMatrixClosed(i,:)));
                                 end
                             end
                         end
@@ -65,16 +75,6 @@ for i=1:self.getNumberOfNodes()
                             for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
                                 j = findstring(nodeNames,self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
                                 rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
-                            end
-                        end
-                    case {RoutingStrategy.RR, RoutingStrategy.JSQ}
-                        % we set the routing probabilities for the chain as in
-                        % RoutingStrategy.RAND
-                        if isinf(NK(k)) || (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink')) % don't route closed classes out of source nodes
-                            for j=1:self.getNumberOfNodes()
-                                if connMatrix(i,j)>0
-                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
-                                end
                             end
                         end
                     otherwise

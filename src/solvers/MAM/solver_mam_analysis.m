@@ -4,17 +4,10 @@ function [QN,UN,RN,TN,CN,XN,runtime] = solver_mam_analysis(qn, options)
 
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
-mu = qn.mu;
-phi = qn.phi;
 
 Tstart = tic;
 
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRepresentation();
-    end
-end
+PH = qn.ph;
 
 [QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
 

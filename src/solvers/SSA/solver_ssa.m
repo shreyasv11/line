@@ -25,10 +25,10 @@ for ind=1:qn.nnodes
         ist = qn.nodeToStation(ind);
         isf = qn.nodeToStateful(ind);
         for r=1:qn.nclasses %cut-off open classes to finite capacity
-            c = find(qn.chains(:,r));
+            c = find(qn.chains(:,r));            
             if ~isempty(qn.visits{c}) && qn.visits{c}(ist,r) == 0
-                capacityc(ind,r) = 0;
-            elseif any(isnan(qn.mu{ist,r})) % disabled
+                capacityc(ind,r) = 0;                
+            elseif ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) % disabled
                 capacityc(ind,r) = 0;
             else
                 if isinf(N(r))

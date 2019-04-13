@@ -180,6 +180,7 @@ for r=1:length(classes)
             end
     end
 end
+
 schedparams = cell(1,length(node_name));
 % set service distributions
 for i=1:length(node_name)
@@ -207,7 +208,7 @@ for i=1:length(node_name)
                         node{i}.setArrival(jobclass{r}, HyperExp(par(1).value,par(2).value,par(3).value));
                     case 'Coxian'
                         par={xarv_sec{i}{r}.subParameter}; par=par{2};
-                        node{i}.setArrival(jobclass{r}, Cox2(par(1).value,par(2).value,par(3).value));
+                        node{i}.setArrival(jobclass{r}, Coxian(par(1).value,par(2).value,par(3).value));
                     case 'Deterministic'
                         par={xarv_sec{i}{r}.subParameter}; par=par{2};
                         node{i}.setArrival(jobclass{r}, Det(par.value));
@@ -262,7 +263,7 @@ for i=1:length(node_name)
                     node{i}.setService(jobclass{r}, HyperExp(par(1).value,par(2).value,par(3).value), para_ir);
                 case 'Coxian'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
-                    node{i}.setService(jobclass{r}, Cox2(par(1).value,par(2).value,par(3).value), para_ir);
+                    node{i}.setService(jobclass{r}, Coxian(par(1).value,par(2).value,par(3).value), para_ir);
                 case 'Deterministic'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Det(par.value));

@@ -95,6 +95,10 @@ classdef Solver < handle
         
         function resetRandomGeneratorSeed(seed)
             % Assign a new seed to the random number generator
+            if ~isoctave
+                warning('off','MATLAB:RandStream:ActivatingLegacyGenerators');
+                warning('off','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');             
+            end
             rand('seed',seed);
         end
         

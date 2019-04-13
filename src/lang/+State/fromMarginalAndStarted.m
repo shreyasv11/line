@@ -20,16 +20,22 @@ isf = qn.nodeToStateful(ind);
 
 K = zeros(1,R);
 for r=1:R
-    K(r) = length(qn.mu{ist,r});
+    if isempty(qn.ph{ist,r})
+        K(r) = 0;
+    else
+        K(r) = length(qn.ph{ist,r}{1});
+    end
 end
 state = [];
 space = [];
 if any(n>qn.classcap(ist,:))
     exceeded = n>qn.classcap(ist,:);
-    if any(cellfun(@(c) isnan(c),{qn.mu{ist,find(exceeded)}}))
+    for r=find(exceeded)
+    if ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1})))
         warning('State vector at station %d (n=%s) exceeds the class capacity (classcap=%s). Some service classes are disabled.\n',ist,mat2str(n(ist,:)),mat2str(qn.classcap(ist,:)));
     else
         warning('State vector at station %d (n=%s) exceeds the class capacity (classcap=%s).\n',ist,mat2str(n(ist,:)),mat2str(qn.classcap(ist,:)));
+    end
     end
     return
 end
@@ -44,7 +50,7 @@ switch qn.nodetype(ind)
                 for r=1:R
                     init = State.spaceClosedSingle(K(r),0);
                     if isinf(qn.njobs(r))
-                        if isnan(qn.mu{ist,r})
+                        if ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) 
                             init(1) = 0; % class is not processed at this source
                         else
                             % init the job generation

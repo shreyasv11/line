@@ -42,7 +42,7 @@ if M==2 && K==1 && qn.nclosedjobs == 0
             W=qsys_gig1_approx_marchal(lambda,mu,ca,cs);
         case {'gm1', 'gim1'}
             % sigma = Load at arrival instants (Laplace transform of the inter-arrival times)
-            PH = Coxian(qn.mu{source_ist}, qn.phi{source_ist}).getRepresentation();
+            PH = qn.ph{source_ist}; 
             pie = map_pie(PH);
             A = PH{1};
             e = ones(length(pie),1);

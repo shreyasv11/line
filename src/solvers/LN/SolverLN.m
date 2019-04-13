@@ -122,8 +122,16 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     
     methods (Static)
         function [bool, featSupported] = supports(model)
-            % todo
+            featUsed = model.getUsedLangFeatures();
+            featSupported = SolverFeatureSet;
+            featSupported.setTrue({'Sink','Source','Queue',...
+                'Coxian','Erlang','Exponential','HyperExp',...
+                'Buffer','Server','JobSink','RandomSource','ServiceTunnel',...
+                'SchedStrategy_PS','SchedStrategy_FCFS','ClosedClass'});
             bool = true;
+            for e=1:model.getNumberOfLayers()
+                bool = bool && SolverFeatureSet.supports(featSupported, featUsed{e});
+            end
         end
     end
     

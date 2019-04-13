@@ -1,27 +1,18 @@
 function rates = ode_rates_new(x, M, K, q_indices, Kic, S, w, strategy, rateBase, eventIdx)
-%rates = zeros(size(rateBase));
-%        rates = zeros(nx,1);
-rates = x;
-% build variable rate vector
+rates = x; % basic vector valid for INF and PS case min(ni,Si)=ni
 for i = 1:M
     switch strategy(i) % source
         case 0  %EXT
             for k=1:K
                 idxIni = q_indices(i,k);
                 idxEnd = q_indices(i,k) + Kic(i,k) - 1;
-                %                        rates(idxIni:idxEnd) = [1-sum(x(idxIni+1:idxEnd)),x(idxIni+1:idxEnd)];
                 rates(idxIni) = 1-sum(x(idxIni+1:idxEnd)); % not needed for idxIni+1:idxEnd as rates is initiliazed equal to x
             end
-        case 1  %INF
-            idxIni = q_indices(i,1);
-            idxEnd = q_indices(i,K) + Kic(i,K) - 1;
-            %rates(idxIni:idxEnd) = x(idxIni:idxEnd); % not needed as rates is initiliazed equal to x
         case 2  %PS
             idxIni = q_indices(i,1);
             idxEnd = q_indices(i,K) + Kic(i,K) - 1;
             ni = sum( x(idxIni:idxEnd) );
-            if ni > 0 && min(ni,S(i)) == S(i) % otherwise simplifies
-                %                        rates(idxIni:idxEnd) = x(idxIni:idxEnd)/n * min(n,S(i));
+            if ni > 0 && min(ni,S(i)) == S(i) % case  min = ni handled by rates = x
                 rates(idxIni:idxEnd) = x(idxIni:idxEnd)/ni * S(i);
             end
         case 3  %DPS
@@ -41,9 +32,8 @@ for i = 1:M
     end
 end
 rates = rates(eventIdx);
-%build effective rate vector
 rates = rateBase.*rates;
-end % ode_rate_new
+end 
 
 % THIS PART TO BE KEPT AS IT ALLOWS TO MAKE RATES STATE-DEPENDENT
 % function xj = get_index(j,k)

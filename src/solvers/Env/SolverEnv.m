@@ -23,7 +23,7 @@ classdef SolverEnv < EnsembleSolver
             
             for e=1:length(self.env)
                 for h=1:length(self.env)
-                    if ~isa(self.env{e,h},'PhaseType')
+                    if ~isa(self.env{e,h},'MarkovianDistribution')
                         error('The distribution of the environment transition from stage %d to %d is not supported by the %s solver.',e,h,self.getName);
                     end
                 end
@@ -264,6 +264,7 @@ classdef SolverEnv < EnsembleSolver
             featSupported.setTrue('Source');
             
             % Distributions
+            featSupported.setTrue('Coxian');
             featSupported.setTrue('Cox2');
             featSupported.setTrue('Erlang');
             featSupported.setTrue('Exponential');

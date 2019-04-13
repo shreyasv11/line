@@ -1,4 +1,4 @@
-function [ode_h,q_indices] = solver_fluid_odes(N, Mu, Phi, P, S, sched, schedparam)
+function [ode_h,q_indices] = solver_fluid_odes(N, Mu, Phi, PH, P, S, sched, schedparam)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -54,7 +54,7 @@ all_jumps = ode_jumps_new(M, K, match, q_indices, P, Kic, strategy);
 
 % determines a vector with the fixed part of the rates,
 % and defines the indexes that correspond to the events that occur
-[rateBase, eventIdx] = getRateBase(Phi,Mu,M, K, match, q_indices, P, Kic, strategy, all_jumps);
+[rateBase, eventIdx] = getRateBase(Phi, Mu, PH, M, K, match, q_indices, P, Kic, strategy, all_jumps);
 
 %% define ODE system to be returned
 ode_h = @(t,x) all_jumps*ode_rates_new(x, M, K, q_indices, Kic, S, w, strategy, rateBase, eventIdx);

@@ -1,4 +1,4 @@
-function RTret = solver_fluid_passt(qn, options)
+function RTret = solver_fluid_passage_time(qn, options)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -11,6 +11,7 @@ K = qn.nclasses;    %number of classes
 N = qn.nclosedjobs;    %population
 Lambda = qn.mu;
 Pi = qn.phi;
+PH = qn.ph;
 rt = qn.rt;
 S = qn.nservers;
 
@@ -56,14 +57,23 @@ for i = 1:qn.nstations
             newLambda = cell(M,Knew);
             newPi = cell(M,Knew);
             new_rt = zeros(M*Knew, M*Knew);
+            newPH = PH;
             
-            % service rates
-            newLambda(:,1:K) = Lambda(:,:);
-            newLambda(:,K+1) = Lambda(:,c);
-            
-            % completion probabilities
-            newPi(:,1:K) = Pi(:,:);
-            newPi(:,K+1) = Pi(:,c);
+            for j=1:qn.nstations
+                % service rates
+                newLambda(j,1:K) = Lambda(j,:);
+                newLambda(j,K+1) = Lambda(j,c);
+                
+                % completion probabilities
+                newPi(j,1:K) = Pi(j,:);
+                newPi(j,K+1) = Pi(j,c);
+                
+                % phd distribution
+                for r=1:nChains
+                    newPH{j,r} = PH{j,r};
+                end
+                newPH{j,K+1} = PH{j,c};
+            end
             
             % routing/switching probabilities
             % among basic classes
@@ -104,7 +114,7 @@ for i = 1:qn.nstations
             end
             
             %setup the ODEs for the new QN
-            [newOde_h, ~] = solver_fluid_odes(N, reshape({newLambda{:,:}},M,Knew), reshape({newPi{:,:}},M,Knew), new_rt, S, qn.sched);
+            [newOde_h, ~] = solver_fluid_odes(N, reshape({newLambda{:,:}},M,Knew), reshape({newPi{:,:}},M,Knew), newPH, new_rt, S, qn.sched);
             
             newY0 = zeros(1, sum(sum(newPhases(:,:))));
             newFluid = 0;

@@ -26,13 +26,23 @@ classdef Distrib < Copyable
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
-        function ex = getMean(self)
+        function MEAN = getMean(self)
             % Get distribution mean
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
         function SCV = getSCV(self)
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+        end
+        
+        function VAR = getVariance(self)
+            % Get distribution variance
+            VAR = self.getSCV()*self.getMean()^2;
+        end
+        
+        function SKEW = getSkewness(self)
+            % Get distribution skewness
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
@@ -54,15 +64,20 @@ classdef Distrib < Copyable
             % Construct a distribution from name, number of parameters, and
             % range
             self.name = name;
-            self.params = cell(1,numParam);
             self.support = support;
-            for i=1:numParam
-                self.params{i}=struct('paramName','','paramValue',NaN,'paramClass','');
-            end
+            self.setNumParams(numParam);
         end
     end
     
     methods    
+        function nParam = setNumParams(self, numParam)
+            % Initializes the parameters
+            self.params = cell(1,numParam);
+            for i=1:numParam
+                self.params{i}=struct('paramName','','paramValue',NaN,'paramClass','');
+            end
+        end
+        
         function nParam = getNumParams(self)
             % Returns the number of parameters needed to specify the distribution
             nParam = length(self.params);

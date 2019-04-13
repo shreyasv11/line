@@ -30,7 +30,11 @@ end
 
 K = zeros(1,R);
 for r=1:R
-    K(r) = length(qn.mu{ist,r});
+    if isempty(qn.ph{ist,r})
+        K(r) = 0;
+    else
+        K(r) = length(qn.ph{ist,r}{1});
+    end
 end
 if (qn.schedid(ist) ~= SchedStrategy.ID_EXT) && any(n>qn.classcap(ist,:))
     return
@@ -42,7 +46,7 @@ switch qn.nodetype(ind)
         switch qn.sched{ist}
             case SchedStrategy.EXT
                 for r=1:R
-                    if isnan(qn.mu{ist,r})
+                    if ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) % disabled
                         init = 0*ones(1,K(r));
                     else
                         init = State.spaceClosedSingle(K(r),1);

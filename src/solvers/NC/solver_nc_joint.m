@@ -5,18 +5,10 @@ function [Pr,G,runtime] = solver_nc_joint(qn, options)
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 state = qn.state;
-mu_chain = qn.mu;
-phi = qn.phi;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 C = qn.nchains;
-
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu_chain{i,k}, phi{i,k}).getRepresentation();
-    end
-end
+PH = qn.ph;
 %% initialization
 
 % determine service times

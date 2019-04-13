@@ -5,8 +5,8 @@ function fname = writeJSIM(self)
 [simElem, simDoc] = saveClasses(self, simElem, simDoc);
 
 numOfClasses = length(self.model.classes);
-numOfStations = length(self.model.nodes);
-for i=1:(numOfStations)
+numOfNodes = length(self.model.nodes);
+for i=1:(numOfNodes)
     currentNode = self.model.nodes{i,1};
     node = simDoc.createElement('node');
     node.setAttribute('name', currentNode.name);
@@ -68,11 +68,11 @@ hasReferenceNodes = 0;
 preloadNode = simDoc.createElement('preload');
 s0 = self.model.getState;
 qn = self.model.getStruct;
+numOfStations = length(self.model.stations);
 for i=1:numOfStations
     isReferenceNode = 0;
-    currentNode = self.model.nodes{i,1};
-    if i<=self.model.getNumberOfStations && (~isa(self.model.stations{i},'Source') && ~isa(self.model.stations{i},'Sink') && ~isa(self.model.stations{i},'Join'))
-        
+    currentNode = self.model.nodes{qn.stationToNode(i),1};
+    if (~isa(self.model.stations{i},'Source') && ~isa(self.model.stations{i},'Join'))        
         [~, nir] = State.toMarginal(self.model,qn.stationToNode(i),s0{qn.stationToStateful(i)});
         stationPopulationsNode = simDoc.createElement('stationPopulations');
         stationPopulationsNode.setAttribute('stationName', currentNode.name);

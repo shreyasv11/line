@@ -1,4 +1,4 @@
-function QN2SCRIPT(model, modelName, fid)
+ function QN2SCRIPT(model, modelName, fid)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('modelName','var')
@@ -14,30 +14,22 @@ fprintf(fid,'\n%%%% Block 1: nodes');
 rt = qn.rt;
 rtnodes = qn.rtnodes;
 hasSink = 0;
-extID = 0;
-mu=qn.mu;
-phi=qn.phi;
-
-PH=cell(M,K);
-for i=1:M
-    for k=1:K
-        PH{i,k} = Coxian(mu{i,k}, phi{i,k}).getRepresentation();
-    end
-end
+sourceID = 0;
+PH = qn.ph;
 
 fprintf(fid,'\n');
 %% write nodes
 for i= 1:qn.nnodes
     switch qn.nodetype(i)
         case NodeType.Source
-            extID = i;
+            sourceID = i;
             fprintf(fid,'node{%d} = Source(model, ''%s'');\n',i,qn.nodenames{i});
             hasSink = 1;
         case NodeType.Delay
             fprintf(fid,'node{%d} = DelayStation(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Queue
             fprintf(fid,'node{%d} = Queue(model, ''%s'', SchedStrategy.%s); ', i, qn.nodenames{i}, SchedStrategy.toProperty(qn.sched{qn.nodeToStation(i)}));
-            fprintf(fid,'node{%d}.setNumServers(%d);\n', i, qn.nservers(i));
+            fprintf(fid,'node{%d}.setNumServers(%d);\n', i, qn.nservers(qn.nodeToStation(i)));
         case NodeType.Router
             fprintf(fid,'node{%d} = Router(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Sink
@@ -70,7 +62,7 @@ for k = 1:qn.nclasses
         if isinf(qn.njobs(k))
             fprintf(fid,'jobclass{%d} = OpenClass(model, ''%s'', %d);\n',k,qn.classnames{k},qn.classprio(k));
         else
-            fprintf(fid,'jobclass{%d} = ClosedClass(model, ''%s'', %d, node{%d}, %d);\n',k,qn.classnames{k},qn.njobs(k),qn.refstat(k),qn.classprio(k));
+            fprintf(fid,'jobclass{%d} = ClosedClass(model, ''%s'', %d, node{%d}, %d);\n',k,qn.classnames{k},qn.njobs(k),qn.stationToNode(qn.refstat(k)),qn.classprio(k));
         end
     else
         % if the reference node is unspecified, as in artificial classes,
@@ -78,7 +70,7 @@ for k = 1:qn.nclasses
         % non-null
         iref = 0;
         for i=1:qn.nstations
-            if nnz(qn.mu{i,k})>0
+            if sum(nnz(qn.ph{i,k}{1}))>0
                 iref = i;
                 break
             end
@@ -144,11 +136,11 @@ end
 fprintf(fid,'\n%%%% Block 3: topology');
 if hasSink
     rt(qn.nstations*qn.nclasses+(1:qn.nclasses),qn.nstations*qn.nclasses+(1:qn.nclasses)) = zeros(qn.nclasses);
-    for k=find(isinf(qn.njobs)) % for all open classes
+    for k=find(isinf(qn.njobs))' % for all open classes        
         for i=1:qn.nstations
             % all open class transitions to ext station are re-routed to sink
-            rt((i-1)*qn.nclasses+k, qn.nstations*qn.nclasses+k) = rt((i-1)*qn.nclasses+k, (extID-1)*qn.nclasses+k);
-            rt((i-1)*qn.nclasses+k, (extID-1)*qn.nclasses+k) = 0;
+            rt((i-1)*qn.nclasses+k, qn.nstations*qn.nclasses+k) = rt((i-1)*qn.nclasses+k, (sourceID-1)*qn.nclasses+k);
+            rt((i-1)*qn.nclasses+k, (sourceID-1)*qn.nclasses+k) = 0;
         end
     end
 end

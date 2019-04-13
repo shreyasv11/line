@@ -29,7 +29,7 @@ function ImageFromMMAP(D,outFileName,prec)
         BuToolsCheckInput = true;
     end   
 
-    if BuToolsCheckInput && ~CheckMAPRepresentation(D)
+    if BuToolsCheckInput && ~CheckMMAPRepresentation(D)
         error('ImageFromMMAP: Input isn''t a valid MMAP representation!');
     end
     
