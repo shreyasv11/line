@@ -1,10 +1,11 @@
-%% 
+clearvars -except exampleName; 
 model = JMT2LINE('example_openModel_3.jsimg'); 
 
 options = Solver.defaultOptions;
 options.keep = true;
 options.verbose = 1;
 options.cutoff = [1,1,0;3,3,0;0,0,3]; % works well with 7
+options.seed = 23000;
 %options.samples=2e4;
 
 %disp('This example shows the execution of the solver on a 1-class 2-node open model.')

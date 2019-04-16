@@ -64,12 +64,11 @@ switch options.method
     case {'exact','mva'}
         if all(isfinite(Nchain)) % if closed
             [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
-        elseif any(isfinite(Nchain)) % if mixed
-            warning('Exact analysis for mixed models not supported yet. Switching to amva.');
-%            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
-            [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+        elseif any(isfinite(Nchain)) % if mixed            
+            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
         else % if open same as running amva
-            [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+            %[~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
         end
     case {'default','amva'}
         [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);

@@ -10,7 +10,7 @@ if nargin==2
     for r=1:R
         idx= idx + prod(N(1:r-1)+1)*n(r);
     end
-return
+    return
 else
     for r=1:R
         idx= idx + prods(r)*n(r);

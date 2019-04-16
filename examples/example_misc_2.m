@@ -1,6 +1,5 @@
-
+clearvars -except exampleName; 
 % This example illustrates the automatic checks of the model features
-clear;
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');

@@ -13,4 +13,4 @@ queue.setService(jobclass, Replayer([cwd,filesep,'example_trace.txt']));
 
 model.link(Network.serialRouting(source,queue,sink));
 
-AvgTable = SolverJMT(model).getAvgTable
+AvgTable = SolverJMT(model,'seed',23000).getAvgTable

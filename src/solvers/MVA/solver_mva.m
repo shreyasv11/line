@@ -27,25 +27,29 @@ U = zeros(M,K);
 T = zeros(M,K);
 C = zeros(1,K);
 W = zeros(M,K);
+Q = zeros(M,K);
 
-ocl = [];
+lambda = zeros(1,K);
+ocl = find(isinf(N));
 if any(isinf(N))
-    ocl = find(isinf(N));
     for r=ocl % open classes
-        X(r) = 1 ./ ST(refstat(r),r);
+        lambda(r) = 1 ./ ST(refstat(r),r);
+        Q(refstat(r),r) = Inf;
     end
 end
 rset = setdiff(1:K,find(N==0));
 
 %% inner iteration
-
-[X,Qpf,~] = pfqn_mvams(ST(pfSET,:).*V(pfSET,:),N,ST(infSET,:).*V(infSET,:),ones(length(pfSET),1),S(pfSET));
+[X,Qpf,U] = pfqn_mvams(lambda,ST(pfSET,:).*V(pfSET,:),N,ST(infSET,:).*V(infSET,:),ones(length(pfSET),1),S(pfSET));
 Q(pfSET,:) = Qpf;
 Q(infSET,:) = repmat(X,numel(infSET),1) .* ST(infSET,:) .* V(infSET,:);
 
 ccl = find(isfinite(N));
-for r=ccl
-    for k=1:M
+for r=rset
+    for k=infSET(:)'
+        W(k,r) = ST(k,r);
+    end
+    for k=pfSET(:)'
         if isinf(S(k)) % infinite server
             W(k,r) = ST(k,r);
         else
@@ -58,7 +62,7 @@ for r=ccl
     end
 end
 
-for r=ccl
+for r=rset
     if sum(W(:,r)) == 0
         X(r) = 0;
     else

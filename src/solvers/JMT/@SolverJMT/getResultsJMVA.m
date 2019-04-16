@@ -210,7 +210,7 @@ for i=1:length(statres)
                         if isinf(qn.nservers(i))
                             s.meanValue = ST(i,k) * (s.meanValue / STchain(i,c)) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
                         else
-                            s.meanValue = ST(i,k) * (s.meanValue / STchain(i,c)) / Vchain(qn.refstat(k),c) * alpha(i,k);% / qn.nservers(i);
+                            s.meanValue = ST(i,k) * (s.meanValue / STchain(i,c)) / Vchain(qn.refstat(k),c) * alpha(i,k) * min(sum(NK(isfinite(NK))), qn.nservers(i)) / qn.nservers(i);
                         end
                         s.('measureType') = classres(c).measure(m).ATTRIBUTE.measureType;
                     case 'Throughput'

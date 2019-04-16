@@ -1,5 +1,4 @@
-
-clear;
+clearvars -except exampleName; 
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
@@ -42,6 +41,7 @@ solver={};
 options = Solver.defaultOptions;
 options.verbose=1;
 options.samples=1e4;
+options.seed = 23000;
 solver{end+1} = SolverCTMC(model,options);
 solver{end+1} = SolverJMT(model,options);
 %solver{end+1} = SolverSSA(model,options);
@@ -49,5 +49,5 @@ solver{end+1} = SolverFluid(model,options);
 solver{end+1} = SolverMVA(model,options);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    AvgTable = solver{s}.getAvgTable()
+    AvgTable{s} = solver{s}.getAvgTable()
 end

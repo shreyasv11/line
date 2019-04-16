@@ -1,3 +1,4 @@
+clearvars -except exampleName; 
 figure;
 label = {};
 nJobs = [1,2,4,8,16];

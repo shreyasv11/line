@@ -1,4 +1,4 @@
-clear;
+clearvars -except exampleName; 
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
@@ -24,6 +24,7 @@ options = Solver.defaultOptions;
 options.keep=true;
 options.verbose=1;
 options.cutoff = 10;
+options.seed = 23000;
 %options.samples=2e4;
 
 disp('This example shows the execution of the solver on a 1-class 2-node open model.')

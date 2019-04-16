@@ -182,6 +182,10 @@ classdef NetworkSolver < Solver
         [QN,UN,RN,TN]       = getAvg(self,Q,U,R,T);
         
         [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled);
+        [AvgTable,QT] = getAvgQLenTable(self,Q,keepDisabled);
+        [AvgTable,UT] = getAvgUtilTable(self,U,keepDisabled);
+        [AvgTable,RT] = getAvgRespTTable(self,R,keepDisabled);
+        [AvgTable,TT] = getAvgTputTable(self,T,keepDisabled);
         
         [NodeAvgTable,QTn,UTn,RTn,TTn] = getNodeAvgTable(self,Q,U,R,T,keepDisabled);
         

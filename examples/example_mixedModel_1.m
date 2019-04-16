@@ -1,4 +1,4 @@
-clear;
+clearvars -except exampleName; 
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
@@ -32,6 +32,7 @@ options = Solver.defaultOptions;
 options.keep=true;
 options.verbose=1;
 options.cutoff = 3;
+options.seed = 23000;
 %options.samples=2e4;
 
 disp('This example shows the execution of the solver on a 2-class 2-node mixed model.')
@@ -45,5 +46,6 @@ solver{end+1} = SolverMVA(model,options);
 %solver{end+1} = SolverNC(model,options);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    AvgTable = solver{s}.getAvgTable()
+    AvgTable{s} = solver{s}.getAvgTable();
+    AvgTable{s}
 end

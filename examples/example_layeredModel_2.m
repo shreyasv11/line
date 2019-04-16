@@ -1,3 +1,4 @@
+clearvars -except exampleName; 
 model = LayeredNetwork('LQN1');
 
 % definition of processors, tasks and entries
@@ -21,10 +22,18 @@ options.keep = true;
 options.verbose = 1;
 %options.method = 'lqsim';
 %options.samples = 1e4;
-AvgTable = SolverLQNS(model, options).getAvgTable
+lqnssolver = SolverLQNS(model, options);
+AvgTableLQNS = lqnssolver.getAvgTable;
+AvgTableLQNS
 
 lnoptions = SolverLN.defaultOptions;
 lnoptions.verbose = 1;
-AvgTable = SolverLN(model, @SolverNC, lnoptions).getAvgTable
+lnoptions.seed = 2300;
+solver{1} = SolverLN(model, @SolverNC, lnoptions);
+AvgTable{1} = solver{1}.getAvgTable
+AvgTable{1}
 
-AvgTableAdaptive = SolverLN(model, @(model) SolverAuto(model, SolverAuto.defaultOptions), lnoptions).getAvgTable
+% this method adapts with the layer
+solver{2} = SolverLN(model, @(model) SolverAuto(model, SolverAuto.defaultOptions), lnoptions);
+AvgTable{2} = solver{2}.getAvgTable
+AvgTable{2}

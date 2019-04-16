@@ -1,4 +1,4 @@
-clearvars -except handleFig;
+clearvars -except handleFig exampleName;
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');

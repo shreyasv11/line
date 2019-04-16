@@ -55,6 +55,8 @@ clear; example_openModel_4; fprintf(1,'Pausing...'); pause(3.0);
 fprintf(1,'\n<strong>RUNNING: example_mixedModel_*</strong>');
 fprintf(1,'\n\nExample: <strong>example_mixedModel_1</strong>\n');
 clear; example_mixedModel_1; fprintf(1,'Pausing...'); pause(3.0);
+fprintf(1,'\n\nExample: <strong>example_mixedModel_2</strong>\n');
+clear; example_mixedModel_2; fprintf(1,'Pausing...'); pause(3.0);
 
 %%
 fprintf(1,'\n<strong>RUNNING: example_forkJoin_*</strong>');
