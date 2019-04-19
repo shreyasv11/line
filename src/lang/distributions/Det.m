@@ -13,8 +13,8 @@ classdef Det < ContinuousDistrib & DiscreteDistrib
             self@ContinuousDistrib('Det',1,[t,t]);
             self@DiscreteDistrib('Det',1,[t,t]);
             setParam(self, 1, 't', t, 'java.lang.Double');
-            self.javaClass = 'jmt.engine.random.DeterministicDistr';
-            self.javaParClass = 'jmt.engine.random.DeterministicDistrPar';
+%            self.javaClass = 'jmt.engine.random.DeterministicDistr';
+%            self.javaParClass = 'jmt.engine.random.DeterministicDistrPar';
         end
         
         function ex = getMean(self)

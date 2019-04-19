@@ -30,10 +30,10 @@ classdef SolverJMT < NetworkSolver
             if ~Solver.isJavaAvailable
                 error('SolverJMT requires the java command to be available on the system path.');
             end
-            if ~Solver.isAvailable            
+            if ~Solver.isAvailable
                 error('SolverJMT cannot located JMT.jar in the MATLAB path.');
             end
-
+            
             jarPath = jmtGetPath;
             self.setJMTJarPath(jarPath);
             filePath = tempdir;
@@ -93,9 +93,9 @@ classdef SolverJMT < NetworkSolver
         
         [outputFileName] = writeJMVA(self, outputFileName)
         [outputFileName] = writeJSIM(self, outputFileName)
-
+        
         function [result, parsed] = getResults(self)
-            options = self.getOptions;            
+            options = self.getOptions;
             switch options.method
                 case {'jsim','default'}
                     [result, parsed] = self.getResultsJSIM;
@@ -103,7 +103,7 @@ classdef SolverJMT < NetworkSolver
                     [result, parsed] = self.getResultsJMVA;
             end
         end
-
+        
         [result, parsed] = getResultsJSIM(self)
         [result, parsed] = getResultsJMVA(self)
     end
@@ -228,7 +228,7 @@ classdef SolverJMT < NetworkSolver
     end
     
     methods
-        function lNormConst = getProbNormConst(self) 
+        function lNormConst = getProbNormConst(self)
             switch self.options.method
                 case {'jmva','jmva.recal','jmva.comom','jmva.ls'}
                     self.run();
@@ -237,9 +237,38 @@ classdef SolverJMT < NetworkSolver
                     lNormConst = NaN; %#ok<NASGU>
                     error('Selected solver method does not compute normalizing constants. Choose either jmva.recal, jmva.comom, or jmva.ls.');
             end
-        end        
+        end
         
-        function Pr = getProbSysState(self)
+        function Pr = getProbStateAggr(self, ist, ist_state)
+            if ~exist('ist','var')
+                error('getProbState requires to pass a parameter the station of interest.');
+            end
+            if ist > self.model.getNumberOfStations
+                error('Station number exceeds the number of stations in the model.');
+            end
+            state = self.model.getState;
+            if ~exist('ist_state','var')
+                ist_state = state{ist};
+            end
+            state = self.getTranStateSys;
+            qn = self.model.getStruct;
+            iat = diff(state.t);
+            [unique_states,~,IC] = unique(state.nir,'rows');
+            Pr = zeros(1,max(IC));
+            for i=1:max(IC)
+                Pr(i) = sum(iat(IC(1:end-1)==i));
+            end
+            Pr = Pr/sum(Pr);
+            [~, nir, ~, ~] = State.toMarginal(qn, ist, ist_state, self.getOptions);
+            nir=nir(:)'; % put as row
+            if isa(ist,'Station')
+                counter = 1:self.model.getNumberOfStations;
+                ist = counter(ist);
+            end
+            Pr = sum(Pr(matchrows(unique_states(:,(ist-1)*qn.nclasses + 1:qn.nclasses), nir)));
+        end
+        
+        function Pr = getProbSysStateAggr(self)
             state = self.getTranStateSys;
             qn = self.model.getStruct;
             iat = diff(state.t);
@@ -255,10 +284,15 @@ classdef SolverJMT < NetworkSolver
                 [~, nir(i,:), ~, ~] = State.toMarginal(qn, i, state{i}, self.getOptions);
             end
             nir=nir'; nir=nir(:)'; % put as row
-            Pr = Pr(matchrow(unique_states, nir));
+            row = matchrow(unique_states, nir);
+            if row == -1
+                Pr = 0;
+            else
+                Pr = Pr(row);
+            end
         end
         
-        function StateSys = getTranStateSys(self)
+        function StateSys = getTranStateSysAggr(self)
             Q = self.model.getAvgQLenHandles();
             Qsys = cell(size(Q));
             for i=1:size(Q,1)
@@ -276,7 +310,7 @@ classdef SolverJMT < NetworkSolver
                     StateSys.t = union(StateSys.t, State{i,j}.t);
                 end
             end
-                        
+            
             StateSys.nir = [];
             for i=1:size(Q,1)
                 for j=1:size(Q,2)
@@ -285,7 +319,7 @@ classdef SolverJMT < NetworkSolver
                     if length(uniqTS) > 0
                         Qijt = round(interp1(State{i,j}.t(uniqTS), State{i,j}.nir(uniqTS), StateSys.t));
                         StateSys.nir = [StateSys.nir, Qijt];
-                    else                        
+                    else
                         Qijt = -ones(length(StateSys.t),1);
                         StateSys.nir = [StateSys.nir, Qijt];
                     end
@@ -293,7 +327,7 @@ classdef SolverJMT < NetworkSolver
             end
         end
         
-        function State = getTranState(self, Q)
+        function State = getTranStateAggr(self, Q)
             if ~exist('Q','var')
                 Q = self.model.getAvgQLenHandles();
             end
@@ -313,7 +347,7 @@ classdef SolverJMT < NetworkSolver
             isNodeLogged = max(isNodeClassLogged,[],2);
             logpath = tempdir;
             cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
-            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data            
+            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
             logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.QLen);
             qn = cdfmodel.getStruct;
             % from here convert from nodes in logData to stations
@@ -337,7 +371,7 @@ classdef SolverJMT < NetworkSolver
                 end
             end
         end
-
+        
         function RD = getCdfRespT(self, R)
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
@@ -374,7 +408,7 @@ classdef SolverJMT < NetworkSolver
                     end
                 end
             end
-        end        
+        end
         
         function RD = getTranCdfRespT(self, R)
             if ~exist('R','var')
@@ -448,6 +482,5 @@ classdef SolverJMT < NetworkSolver
             end
         end
     end
-    
     
 end

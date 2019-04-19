@@ -122,7 +122,10 @@ classdef SolverCTMC < NetworkSolver
         
         function Pnir = getProbState(self, ist)
             if ~exist('ist','var')
-                error('getProbState requires to indicate the station of interest.');
+                error('getProbState requires to pass a parameter the station of interest.');
+            end
+            if ist > self.model.getNumberOfStations
+                error('Station number exceeds the number of stations in the model.');
             end
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
@@ -130,6 +133,12 @@ classdef SolverCTMC < NetworkSolver
             T0 = tic;
             qn = self.model.getStruct;
             qn.state = self.model.getState;
+            for isf=1:length(qn.state)
+                isf_param = qn.stationToStateful(ist);
+                if isf ~= isf_param
+                    qn.state{isf} = qn.state{isf}*0 -1;
+                end
+            end
             Pnir = solver_ctmc_marg(qn, self.options);
             self.result.('solver') = self.getName();
             self.result.Prob.marginal = Pnir;
@@ -146,6 +155,49 @@ classdef SolverCTMC < NetworkSolver
             qn = self.model.getStruct;
             if self.model.isStateValid
                 Pn = solver_ctmc_joint(qn, self.options);
+                self.result.('solver') = self.getName();
+                self.result.Prob.joint = Pn;
+            else
+                error('The model state is invalid.');
+            end
+            runtime = toc(T0);
+            self.result.runtime = runtime;
+        end
+        
+        function Pnir = getProbStateAggr(self, ist)
+            if ~exist('ist','var')
+                error('getProbState requires to pass a parameter the station of interest.');
+            end
+            if ist > self.model.getNumberOfStations
+                error('Station number exceeds the number of stations in the model.');
+            end
+            if ~isfield(self.options,'keep')
+                self.options.keep = false;
+            end
+            T0 = tic;
+            qn = self.model.getStruct;
+            qn.state = self.model.getState;
+            
+            if isempty(self.result) || ~isfield(self.result,'Prob') || ~isfield(self.result.Prob,'marginal')
+                Pnir = solver_ctmc_margaggr(qn, self.options);
+                self.result.('solver') = self.getName();
+                self.result.Prob.marginal = Pnir;
+            else
+                Pnir = self.result.Prob.marginal;
+            end
+            runtime = toc(T0);
+            self.result.runtime = runtime;
+            Pnir = Pnir(ist);
+        end
+        
+        function Pn = getProbSysStateAggr(self)
+            if ~isfield(self.options,'keep')
+                self.options.keep = false;
+            end
+            T0 = tic;
+            qn = self.model.getStruct;
+            if self.model.isStateValid
+                Pn = solver_ctmc_jointaggr(qn, self.options);
                 self.result.('solver') = self.getName();
                 self.result.Prob.joint = Pn;
             else

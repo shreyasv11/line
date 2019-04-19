@@ -92,24 +92,7 @@ for ist=1:qn.nstations
         Pr(i) = NaN;
     else
         set_ist = setdiff(1:qn.nstations,ist);
-        nivec_chain = nivec * qn.chains';
-        
-%        F_i = pfqn_ca(ST(ist,:).*V(ist,:),nivec);
-%        Vchain_i = pfqn_gmvald(REFchain(ist,:), nivec_chain, mu_chain(ist,:), options);
-%        Gchain_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);
-%        Pr(ist) = F_i * Vchain_i * Gchain_minus_i / G ;
-        
-%        F_i = pfqn_gmvald(Lchain(ist,:), nivec_chain, mu_chain(ist,:), options);
-%        G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);
-%        g0_i = pfqn_gmvald(ST(ist,:).*alpha(ist,:),nivec, mu_chain(ist,:), options);
-%        G0_i = pfqn_gmvald(STchain(ist,:),nivec_chain, mu_chain(ist,:), options);        
-%        Pr(ist) = F_i * G_minus_i / G * (g0_i / G0_i);
-        
-%        G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu_chain(set_ist,:), options);
-%        F_i = prod(Vchain(ist,:).^nivec_chain);
-%        H_i = pfqn_gmvald(ST(ist,:).*alpha(ist,:),nivec, mu_chain(ist,:), options);
-%        Pr(ist) =  G_minus_i / G * H_i * F_i;
-        
+        nivec_chain = nivec * qn.chains';        
         G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu(set_ist,:), options);
         F_i = pfqn_gmvald(ST(ist,:).*V(ist,:), nivec, mu(ist,:), options);
         Pr(ist) =  F_i * G_minus_i / G;

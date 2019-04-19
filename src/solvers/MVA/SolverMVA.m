@@ -14,34 +14,90 @@ classdef SolverMVA < NetworkSolver
             T0=tic;
             options = self.getOptions;
             if ~self.supports(self.model)
-                %                if options.verbose
                 error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-                %                end
-                %                runtime = toc(T0);
-                %                return
             end
-            
-            %            if isoctave
             Solver.resetRandomGeneratorSeed(options.seed);
-            %            else
-            %                rng(options.seed,'v4');
-            %            end
             
             [qn] = self.model.getStruct();
             
             if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && ~self.model.hasProductFormSolution
-                error('The exact method requires the model to have a product-form solution.');
+                error('The exact method requires the model to have a product-form solution. This model does not have one. You can use the Network method hasProductFormSolution() to check in advance.');
             end
             
-            %            if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && self.model.hasMultiServer
-            %                options.method = 'default';
-            %                warning('The exact method does not support yet multi-server stations. Switching to default method.');
-            %            end
-            
-            [Q,U,R,T,C,X] = solver_mva_analysis(qn, options);
-            runtime = toc(T0);
+            [Q,U,R,T,C,X,lG,runtime] = solver_mva_analysis(qn, options);
             self.setAvgResults(Q,U,R,T,C,X,runtime);
+            self.result.Prob.logNormConst = lG;
         end
+        
+        function [lNormConst] = getProbNormConst(self)
+            if ~isempty(self.result)
+                lNormConst = self.result.Prob.logNormConst;
+            else
+                optnc = self.options;
+                optnc.method = 'exact';
+                [~,~,~,~,~,~,lNormConst] = solver_mva_analysis(self.getStruct, optnc);
+                self.result.Prob.logNormConst = lNormConst;
+            end
+        end
+        
+        function [Pnir,logPnir] = getProbStateAggr(self, ist)
+            if ~exist('ist','var')
+                error('getProbStateAggr requires to pass a parameter the station of interest.');
+            end
+            if ist > self.model.getNumberOfStations
+                error('Station number exceeds the number of stations in the model.');
+            end
+            if isempty(self.result)
+                self.run;
+            end
+            Q = self.result.Avg.Q;
+            qn = self.model.getStruct;
+            N = qn.njobs;
+            if all(isfinite(N))
+                state = self.model.getState{qn.stationToStateful(ist)};
+                [~, nir, ~, ~] = State.toMarginal(qn, ist, state, self.getOptions);
+                % Binomial approximation with mean fitted to queue-lengths.
+                % Rainer Schmidt, "An approximate MVA ...", PEVA 29:245-254, 1997.
+                logPnir = 0;
+                for r=1:size(nir,2)
+                    logPnir = logPnir + nchoosekln(N(r),nir(r));
+                    logPnir = logPnir + nir(r)*log(Q(ist,r)/N(r));
+                    logPnir = logPnir + (N(r)-nir(r))*log(1-Q(ist,r)/N(r));
+                end
+                Pnir = real(exp(logPnir));
+            else
+                error('getProbStateAggr not yet implemented for models with open classes.');
+            end
+        end
+        
+        function [Pnir,logPn] = getProbSysStateAggr(self)
+            if isempty(self.result)
+                self.run;
+            end
+            Q = self.result.Avg.Q;
+            qn = self.model.getStruct;
+            N = qn.njobs;
+            if all(isfinite(N))
+                state = self.model.getState;
+                % Binomial approximation with mean fitted to queue-lengths.
+                % Rainer Schmidt, "An approximate MVA ...", PEVA 29:245-254, 1997.
+                logPn = sum(factln(N));
+                for ist=1:qn.nstations
+                    [~, nir, ~, ~] = State.toMarginal(qn, ist, state{ist}, self.getOptions);
+%                    logPn = logPn - log(sum(nir));
+                    for r=1:qn.nclasses
+                        logPn = logPn - factln(nir(r));
+                        if Q(ist,r)>0
+                        logPn = logPn + nir(r)*log(Q(ist,r)/N(r));
+                        end
+                    end
+                end
+                Pnir = real(exp(logPn));
+            else
+                error('getProbStateAggr not yet implemented for models with open classes.');
+            end
+        end        
+        
     end
     
     methods(Static)

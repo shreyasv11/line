@@ -146,7 +146,7 @@ if hasSink
 end
 
 fprintf(fid,'\n');
-fprintf(fid,'P = cellzeros(length(jobclass),length(jobclass),length(node),length(node)); %% routing matrix \n',qn.nclasses,qn.nclasses,qn.nnodes,qn.nnodes);
+fprintf(fid,'P = model.initRoutingMatrix(); %% initialize routing matrix \n',qn.nclasses,qn.nclasses,qn.nnodes,qn.nnodes);
 for k = 1:qn.nclasses
     for c = 1:qn.nclasses
         for i=1:qn.nnodes

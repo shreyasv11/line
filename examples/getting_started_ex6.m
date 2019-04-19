@@ -19,7 +19,7 @@ cacheNode.setHitClass(clientClass, hitClass);
 cacheNode.setMissClass(clientClass, missClass);
 
 % Block 3: topology
-P = cellzeros(3,3,4,4); % 3x3 cell, each with 4x4 zero matrices
+P = model.initRoutingMatrix;
 % routing from client to cache
 P{clientClass, clientClass}(clientDelay, cacheNode)=1;
 % routing out of the cache

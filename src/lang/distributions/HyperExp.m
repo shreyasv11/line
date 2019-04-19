@@ -14,8 +14,8 @@ classdef HyperExp < MarkovianDistribution
                 lambda = varargin{2};
                 setParam(self, 1, 'p', p, 'java.lang.Double');
                 setParam(self, 2, 'lambda', lambda, 'java.lang.Double');
-                self.javaClass = ''; % no corresponding class in JMT
-                self.javaParClass = ''; % no corresponding class in JMT
+%                self.javaClass = ''; % no corresponding class in JMT
+%                self.javaParClass = ''; % no corresponding class in JMT
             elseif length(varargin)==3
                 p1 = varargin{1};
                 lambda1 = varargin{2};

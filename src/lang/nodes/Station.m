@@ -26,6 +26,18 @@ classdef Station < StatefulNode
             self.numberOfServers = value;
         end
         
+        function setNumberOfServers(self, value)
+            self.numberOfServers = value;
+        end
+        
+        function value = getNumServers(self)
+            value = self.numberOfServers;
+        end
+        
+        function value = getNumberOfServers(self)
+            value = self.numberOfServers;
+        end
+        
         function setCapacity(self, value)
             self.cap = value;
         end

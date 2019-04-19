@@ -1,4 +1,4 @@
-clearvars -except exampleName; 
+if ~isoctave(), clearvars -except exampleName; end 
 model = LayeredNetwork('LQN1');
 
 % definition of processors, tasks and entries

@@ -1,4 +1,4 @@
-function [Pnir,runtime,fname] = solver_ctmc_marg(qn, options)
+function [Pnir,pi,runtime,fname] = solver_ctmc_margaggr(qn, options)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -56,7 +56,14 @@ for ind=1:qn.nnodes
         isf = qn.nodeToStateful(ind);
         ist = qn.nodeToStation(ind);
         state_i = [zeros(1,size(qn.space{isf},2)-length(state{isf})),state{isf}];
-        Pnir(ist) = sum(pi(findrows(SS(:,(cstatesz(isf)+1):(cstatesz(isf)+length(state_i))), state_i)));
+        [~,nivec] = State.toMarginal(qn, ind, state{isf});
+        Pnir(ist) = 0;
+        for s=1:size(SS,1)
+            [~,sivec] = State.toMarginal(qn, ind, SS(s,(cstatesz(isf)+1):(cstatesz(isf)+length(state_i))));
+            if all(sivec == nivec)
+                Pnir(ist) = Pnir(ist) + pi(s);
+            end
+        end        
     end
 end
 

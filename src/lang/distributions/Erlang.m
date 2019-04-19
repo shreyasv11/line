@@ -12,8 +12,8 @@ classdef Erlang < MarkovianDistribution
             self@MarkovianDistribution('Erlang',2);
             setParam(self, 1, 'alpha', phaseRate, 'java.lang.Double'); % rate in each state
             setParam(self, 2, 'r', round(nphases), 'java.lang.Long'); % number of phases
-            self.javaClass = 'jmt.engine.random.Erlang';
-            self.javaParClass = 'jmt.engine.random.ErlangPar';
+%            self.javaClass = 'jmt.engine.random.Erlang';
+%            self.javaParClass = 'jmt.engine.random.ErlangPar';
         end
         
         function phases = getNumberOfPhases(self)

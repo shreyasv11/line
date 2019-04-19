@@ -89,7 +89,39 @@ for i=1:(numOfClasses)
         serviceTimeStrategyNode.setAttribute('name', 'ServiceTimeStrategy');
         
         distributionNode = simDoc.createElement('subParameter');
-        distributionNode.setAttribute('classPath', distributionObj.javaClass);
+        switch class(distributionObj)
+            case 'Det'
+                javaClass = 'jmt.engine.random.DeterministicDistr';
+                javaParClass = 'jmt.engine.random.DeterministicDistrPar';
+            case 'Coxian'
+                javaClass = 'jmt.engine.random.CoxianDistr';
+                javaParClass = 'jmt.engine.random.CoxianPar';
+            case 'Erlang'
+                javaClass = 'jmt.engine.random.Erlang';
+                javaParClass = 'jmt.engine.random.ErlangPar';
+            case 'Exp'
+                javaClass = 'jmt.engine.random.Exponential';
+                javaParClass = 'jmt.engine.random.ExponentialPar';
+            case 'Gamma'
+                javaClass = 'jmt.engine.random.GammaDistr';
+                javaParClass = 'jmt.engine.random.GammaDistrPar';
+            case 'HyperExp'
+                javaClass = 'jmt.engine.random.HyperExp';
+                javaParClass = 'jmt.engine.random.HyperExpPar';
+            case 'Pareto'
+                javaClass = 'jmt.engine.random.Pareto';
+                javaParClass = 'jmt.engine.random.ParetoPar';
+            case 'Uniform'
+                javaClass = 'jmt.engine.random.Uniform';
+                javaParClass = 'jmt.engine.random.UniformPar';
+            case 'MMPP2'
+                javaClass = 'jmt.engine.random.MMPP2Distr';
+                javaParClass = 'jmt.engine.random.MMPP2Par';
+            case 'Replayer'
+                javaClass = 'jmt.engine.random.Replayer';
+                javaParClass = 'jmt.engine.random.ReplayerPar';
+        end
+        distributionNode.setAttribute('classPath', javaClass);
         switch distributionObj.name
             case 'Replayer'
                 distributionNode.setAttribute('name', 'Replayer');
@@ -101,7 +133,7 @@ for i=1:(numOfClasses)
         serviceTimeStrategyNode.appendChild(distributionNode);
         
         distrParNode = simDoc.createElement('subParameter');
-        distrParNode.setAttribute('classPath', distributionObj.javaParClass);
+        distrParNode.setAttribute('classPath', javaParClass);
         distrParNode.setAttribute('name', 'distrPar');
         
         for k=1:distributionObj.getNumParams()

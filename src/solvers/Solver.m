@@ -4,7 +4,7 @@ classdef Solver < handle
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
-    properties (Access = protected)
+    properties (Access = public)
         options; % Data structure with solver options
         name; % Solver name
         model; % Model to be solved

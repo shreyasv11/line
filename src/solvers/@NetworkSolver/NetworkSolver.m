@@ -266,32 +266,62 @@ classdef NetworkSolver < Solver
         end
         
         function [lNormConst] = getProbNormConst(self)
-              % Return normalizing constant of state probabilities
-               error('getProbNormConst is not supported by this solver.');
+            % Return normalizing constant of state probabilities
+            error('getProbNormConst is not supported by this solver.');
         end
         
-        function Pnir = getProbState(self, ist)
-              % Return marginal state probability for station ist
+        function Pstate = getProbState(self, ist)
+            % Return marginal state probability for station ist state
             error('getProbState is not supported by this solver.');
         end
         
-        function Pnjoint = getProbSysState(self)
-              % Return joint state probability
+        function Psysstate = getProbSysState(self)
+            % Return joint state probability
             error('getStateSysProb is not supported by this solver.');
         end
         
+        function Pnir = getProbStateAggr(self, ist)
+            % Return marginal state probability for station ist state
+            error('getProbStateAggr is not supported by this solver.');
+        end
+        
+        function Pnjoint = getProbSysStateAggr(self)
+            % Return joint state probability
+            error('getProbSysStateAggr is not supported by this solver.');
+        end
+
+        function tstate = getTranState(self, ist)
+            % Return marginal state probability for station ist state
+            error('getTranState is not supported by this solver.');
+        end
+        
+        function tnir = getTranStateAggr(self, ist)
+            % Return marginal state probability for station ist state
+            error('getTranStateAggr is not supported by this solver.');
+        end
+        
+        function tsysstate = getTranSysState(self)
+            % Return joint state probability
+            error('getTranSysState is not supported by this solver.');
+        end
+        
+        function tnjoint = getTranSysStateAggr(self)
+            % Return joint state probability
+            error('getTranSysStateAggr is not supported by this solver.');
+        end        
+        
         function RD = getCdfRespT(self, R)
-              % Return cumulative distribution of response times at steady-state             
+            % Return cumulative distribution of response times at steady-state
             error('getCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfRespT(self, R)
-              % Return cumulative distribution of response times during transient             
+            % Return cumulative distribution of response times during transient
             error('getTranCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfPassT(self, R)
-              % Return cumulative distribution of passage times at steady-state             
+            % Return cumulative distribution of passage times at steady-state
             error('getTranCdfPassT is not supported by this solver.');
         end
     end

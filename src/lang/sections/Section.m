@@ -15,4 +15,10 @@ classdef Section < NetworkElement
             self.className = className;
         end
     end
+    
+    methods
+        function summary(self)
+%            fprintf('\n%s',class(self));
+        end
+    end
 end

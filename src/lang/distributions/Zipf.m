@@ -18,8 +18,8 @@ classdef Zipf < DiscreteDistrib
             setParam(self, 2, 'x', x(:)', 'java.lang.Double');
             setParam(self, 3, 's', s, 'java.lang.Double');
             setParam(self, 4, 'n', n, 'java.lang.Integer');
-            self.javaClass = '';
-            self.javaParClass = '';
+%            self.javaClass = '';
+%            self.javaParClass = '';
         end
         
         function ex = getMean(self)

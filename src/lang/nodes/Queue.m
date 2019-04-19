@@ -71,6 +71,9 @@ classdef Queue < Station
         
         function distribution = getService(self, class)
             % return the service distribution assigned to the given class
+            if ~exist('class','var')
+                error('getService requires in input a class object.');
+            end
             try
             distribution = self.server.serviceProcess{1, class.index}{3};
             catch ME

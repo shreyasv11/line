@@ -12,8 +12,8 @@ classdef MMPP2 < MarkovModulated
             setParam(self, 2, 'lambda1', lambda1, 'java.lang.Double');
             setParam(self, 3, 'sigma0', sigma0, 'java.lang.Double');
             setParam(self, 4, 'sigma1', sigma1, 'java.lang.Double');
-            self.javaClass = 'jmt.engine.random.MMPP2Distr';
-            self.javaParClass = 'jmt.engine.random.MMPP2Par';
+%            self.javaClass = 'jmt.engine.random.MMPP2Distr';
+%            self.javaParClass = 'jmt.engine.random.MMPP2Par';
         end
         
         function meant = getMeanT(self,t)

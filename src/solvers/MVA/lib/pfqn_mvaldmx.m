@@ -3,7 +3,7 @@ function [XN,QN,UN,CN] = pfqn_mvaldmx(lambda,D,N,Z,mu,S)
 if size(mu,2) < sum(N(isfinite(N)))
     error('MVALDMX requires to specify the load-dependent rates with one job more than the maximum closed population.');
 end
-if any(N(find(lambda))>0 && isfinite(N(find(lambda))))
+if any(N(find(lambda))>0 & isfinite(N(find(lambda))))
     error('Arrival rate cannot be specified on closed classes.');
 end
 [M,R] = size(D);
@@ -78,11 +78,9 @@ for c=1:C
     hnvec_c = hashpop(oner(Nc,c),Nc,C,prods);
     for i=1:M
         u(i,c) = 0;
-              for n=1:sum(Nc) % closed class utilization
-%                  u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n-1, hnvec_c)
-%                  u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n-1, hnvec_c);
-              end
-        u(i,c) = Dc(i,c) * x(c,hnvec) / S(i);
+        for n=1:sum(Nc) % closed class utilization
+            u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n-1) / E(i,1+n-1) * Pc(i, 1+n-1, hnvec_c);
+        end
     end
 end
 
@@ -110,9 +108,9 @@ for r=openClasses
         % Utilization - the formula from Bruell-Balbo-Ashfari does not
         % match simulation, this appears to be simly lambda_r*D_{ir}
         UN(i,r) = 0;
-        %for n=0:sum(Nc)
-            UN(i,r) = UN(i,r) + lambda(r) * D(i,r)/S(i);% * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n, hnvec);
-        %end
+        for n=0:sum(Nc)
+            UN(i,r) = UN(i,r) + lambda(r) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n, hnvec);
+        end
     end
 end
 end

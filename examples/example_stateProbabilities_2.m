@@ -1,4 +1,4 @@
-clearvars -except exampleName; 
+if ~isoctave(), clearvars -except exampleName; end 
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
@@ -77,14 +77,14 @@ state = model.getState;
 
 solver = SolverCTMC(model,options);
 for i=M
-    Pr = solver.getProbState(i);
+    Pr = solver.getProbStateAggr(i);
     fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 end
 Pr_ctmc = Pr
 
 solver = SolverNC(model,options);
 for i=M
-    Pr = solver.getProbState(i);
+    Pr = solver.getProbStateAggr(i);
     fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 end
 Pr_nc = Pr

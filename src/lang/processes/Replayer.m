@@ -20,8 +20,8 @@ classdef Replayer < TimeSeries
                 if ~javaFileObj.isAbsolute()
                     fileName = fullfile(pwd,fileName); %#ok<NASGU>
                 end
-                self.javaClass = 'jmt.engine.random.Replayer';
-                self.javaParClass = 'jmt.engine.random.ReplayerPar';
+%                self.javaClass = 'jmt.engine.random.Replayer';
+%                self.javaParClass = 'jmt.engine.random.ReplayerPar';
             end
         end
         

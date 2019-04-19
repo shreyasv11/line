@@ -15,12 +15,12 @@ source.setArrival(jobclass2, Exp(0.5));
 queue.setService(jobclass1, Erlang.fitMeanAndSCV(1,1/3));
 queue.setService(jobclass2, Replayer([cwd,filesep,'example_trace.txt']));
 
-P = {};
+P = model.initRoutingMatrix;
 P{1} = Network.serialRouting(source,queue,sink);
 P{2} = Network.serialRouting(source,queue,sink);
 model.link(P);
 
-AvgTable = SolverJMT(model).getAvgTable
+SolverJMT(model).getAvgTable
 
 queue.setService(jobclass2, Replayer([cwd,filesep,'example_trace.txt']).fitCoxian());
 SolverCTMC(model,'cutoff',2,'verbose',true).getAvgTable

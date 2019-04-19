@@ -1,4 +1,4 @@
-clearvars -except exampleName; 
+if ~isoctave(), clearvars -except exampleName; end 
 figure;
 label = {};
 nJobs = [1,2,4,8,16];

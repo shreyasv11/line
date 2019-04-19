@@ -1,4 +1,4 @@
-clearvars -except exampleName; 
+if ~isoctave(), clearvars -except exampleName; end 
 N = 1;
 M = 2;
 E = 2;

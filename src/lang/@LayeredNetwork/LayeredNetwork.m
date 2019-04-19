@@ -79,6 +79,10 @@ classdef LayeredNetwork < Model & Ensemble
         self = setGraph(self,lqnGraph,taskGraph)
         [subgraphs, levels] = getGraphLayers(self, lqnGraph, taskGraph)
         
+        function G = summary(self)
+            G = self.getGraph;
+        end        
+        
         bool = isValid(self)
         self = update(self)
         self = updateParam(self, AvgTable)

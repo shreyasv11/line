@@ -28,8 +28,8 @@ classdef Coxian < MarkovianDistribution
                 setParam(self, 1, 'lambda0', mu1, 'java.lang.Double');
                 setParam(self, 2, 'lambda1', mu2, 'java.lang.Double');
                 setParam(self, 3, 'phi0', phi1, 'java.lang.Double'); % completion probability in phase 1
-                self.javaClass = 'jmt.engine.random.CoxianDistr';
-                self.javaParClass = 'jmt.engine.random.CoxianPar';
+%                self.javaClass = 'jmt.engine.random.CoxianDistr';
+%                self.javaParClass = 'jmt.engine.random.CoxianPar';
             else
                 error('Coxian accepts at most 3 parameters.');
             end

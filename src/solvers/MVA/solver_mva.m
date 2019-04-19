@@ -1,4 +1,4 @@
-function [Q,U,R,T,C,X] = solver_mva(ST,V,N,S,options,sched,refstat)
+function [Q,U,R,T,C,X,lG] = solver_mva(ST,V,N,S,options,sched,refstat)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 [M,K]=size(ST);
@@ -40,7 +40,7 @@ end
 rset = setdiff(1:K,find(N==0));
 
 %% inner iteration
-[X,Qpf,U] = pfqn_mvams(lambda,ST(pfSET,:).*V(pfSET,:),N,ST(infSET,:).*V(infSET,:),ones(length(pfSET),1),S(pfSET));
+[X,Qpf,U,~,lG] = pfqn_mvams(lambda,ST(pfSET,:).*V(pfSET,:),N,ST(infSET,:).*V(infSET,:),ones(length(pfSET),1),S(pfSET));
 Q(pfSET,:) = Qpf;
 Q(infSET,:) = repmat(X,numel(infSET),1) .* ST(infSET,:) .* V(infSET,:);
 

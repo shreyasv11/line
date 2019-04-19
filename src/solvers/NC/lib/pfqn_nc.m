@@ -109,8 +109,10 @@ switch options.method
         [~,lG] = pfqn_ls(L,N,sum(Z,1),options.samples);
     case {'default','mci','imci'}
         [~,lG] = pfqn_mci(L,N,sum(Z,1),options.samples,'imci'); % repairmen
-    case {'exact','mva'}
+    case {'mva'}
         [~,~,~,~,lG] = pfqn_mva(L,N,sum(Z,1));
+    case {'exact','ca'}
+        [~,lG] = pfqn_ca(L,N,sum(Z,1));
 end
 return
 end

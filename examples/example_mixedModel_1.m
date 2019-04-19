@@ -1,4 +1,4 @@
-clearvars -except exampleName; 
+if ~isoctave(), clearvars -except exampleName; end 
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');

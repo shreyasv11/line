@@ -27,6 +27,7 @@ classdef Node < NetworkElement
     end
     
     methods
+        
         function sections = getSections(self)
             sections = {self.input, self.server, self.output};
         end
@@ -97,6 +98,14 @@ classdef Node < NetworkElement
             for v=1:length(varargin)
                 V(1+v) = 1+varargin{v}.subsindex;
             end
+        end
+        
+        function summary(self)
+%            fprintf('\nNode: <strong>%s</strong>',self.getName);
+%            self.input.summary;
+%            self.server.summary;
+%            self.output.summary;
+%            fprintf('\n');
         end
     end
 end

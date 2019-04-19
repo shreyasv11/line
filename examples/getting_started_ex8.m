@@ -10,7 +10,7 @@ delay.setService(cclass, Exp(1));
 queue1.setService(cclass, Exp(0.75));
 queue2.setService(cclass, Exp(0.50));
 % Block 3: topology
-P = zeros(3);
+P = model.initRoutingMatrix;
 P(queue1, delay) = 1.0;
 P(queue2, delay) = 1.0;
 

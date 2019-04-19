@@ -11,8 +11,8 @@ classdef Uniform < ContinuousDistrib
             self@ContinuousDistrib('Uniform',2,[minVal,maxVal]);
             setParam(self, 1, 'min', minVal, 'java.lang.Double');
             setParam(self, 2, 'max', maxVal, 'java.lang.Double');
-            self.javaClass = 'jmt.engine.random.Uniform';
-            self.javaParClass = 'jmt.engine.random.UniformPar';
+%            self.javaClass = 'jmt.engine.random.Uniform';
+%            self.javaParClass = 'jmt.engine.random.UniformPar';
         end
         
         function ex = getMean(self)

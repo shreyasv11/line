@@ -1,4 +1,4 @@
-function [Q,U,R,T,C,X,runtime] = solver_mva_analysis(qn, options)
+function [Q,U,R,T,C,X,lG,runtime] = solver_mva_analysis(qn, options)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -63,14 +63,15 @@ Tstart = tic;
 switch options.method
     case {'exact','mva'}
         if all(isfinite(Nchain)) % if closed
-            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+            [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
         elseif any(isfinite(Nchain)) % if mixed            
-            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+            [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
         else % if open same as running amva
-            [~,~,Rchain,Tchain,~, Xchain] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
+            [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
             %[~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
         end
     case {'default','amva'}
+        lG = NaN;
         [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
     otherwise
         error('Unsupported SolverMVA method.');

@@ -228,7 +228,17 @@ classdef Network < Model
                 end
             end
         end
-        
+
+        function P = initRoutingMatrix(self)
+            M = self.getNumberOfNodes;
+            K = self.getNumberOfClasses;
+            if K == 1
+                P = zeros(M);
+            else
+                P = cellzeros(K,K,M,M);
+            end
+        end
+
         function rtTypes = getRoutingStrategies(self)
             rtTypes = zeros(self.getNumberOfNodes,self.getNumberOfClasses);
             for ind=1:self.getNumberOfNodes
@@ -268,6 +278,12 @@ classdef Network < Model
             stationnames = {};
             for i=self.getIndexStations
                 stationnames{end+1,1} = self.nodes{i}.name;
+            end
+        end
+        
+        function summary(self)
+            for i=1:self.getNumberOfNodes
+                self.nodes{i}.summary();
             end
         end
         
@@ -632,15 +648,21 @@ classdef Network < Model
             K = self.getNumberOfClasses;
             qn = self.getStruct;
             [P,Pnodes] = self.getRoutingMatrix();
-            name = {}; sched = {}; type = {};
+            name = {}; sched = {}; type = {}; nservers = [];
             for i=1:M
                 name{end+1} = self.nodes{i}.name;
                 type{end+1} = class(self.nodes{i});
                 sched{end+1} = self.nodes{i}.schedStrategy;
+                if isa(self.nodes{i},'Station')
+                    nservers(end+1) = self.nodes{i}.getNumberOfServers;
+                else
+                    nservers(end+1) = 0;
+                end
             end
             TG.Name = name(:);
             TG.Type = type(:);
             TG.Sched = sched(:);
+            TG.Servers = nservers(:);
             G = G.addnode(TG);
             for i=1:M
                 for j=1:M
@@ -653,7 +675,7 @@ classdef Network < Model
             end
             H = digraph(); TH = Table();
             I = self.getNumberOfStations;
-            name = {}; sched = {}; type = {}; jobs = zeros(I,1);
+            name = {}; sched = {}; type = {}; jobs = zeros(I,1); nservers = [];
             for i=1:I
                 name{end+1} = self.stations{i}.name;
                 type{end+1} = class(self.stations{i});
@@ -663,11 +685,17 @@ classdef Network < Model
                         jobs(i) = jobs(i) + qn.njobs(k);
                     end
                 end
+                if isa(self.nodes{i},'Station')
+                    nservers(end+1) = self.nodes{i}.getNumberOfServers;
+                else
+                    nservers(end+1) = 0;
+                end
             end
             TH.Name = name(:);
             TH.Type = type(:);
             TH.Sched = sched(:);
             TH.Jobs = jobs(:);
+            TH.Servers = nservers(:);
             H = H.addnode(TH);
             rate = [];
             classes = {};
@@ -1050,12 +1078,15 @@ classdef Network < Model
             options = Solver.defaultOptions;
             [M,R] = size(D);
             node = {};
+            nQ = 0; nD = 0;
             for i=1:M
                 switch strategy{i}
                     case SchedStrategy.INF
-                        node{end+1} = DelayStation(model, ['Station',num2str(i)]);
+                        nD = nD + 1;
+                        node{end+1} = DelayStation(model, ['Delay',num2str(nD)]);
                     otherwise
-                        node{end+1} = Queue(model, ['Station',num2str(i)], strategy{i});
+                        nQ = nQ + 1;
+                        node{end+1} = Queue(model, ['Queue',num2str(nQ)], strategy{i});
                 end
             end
             for r=1:R

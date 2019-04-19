@@ -10,8 +10,8 @@ classdef Exp < MarkovianDistribution
             % parameter
             self@MarkovianDistribution('Exponential', 1);
             setParam(self, 1, 'lambda', lambda, 'java.lang.Double');
-            self.javaClass = 'jmt.engine.random.Exponential';
-            self.javaParClass = 'jmt.engine.random.ExponentialPar';
+%            self.javaClass = 'jmt.engine.random.Exponential';
+%            self.javaParClass = 'jmt.engine.random.ExponentialPar';
         end
         
         function X = sample(self, n)

@@ -11,6 +11,23 @@ end
 R = self.getNumberOfClasses;
 M = self.getNumberOfNodes;
 
+% This block is to make sure that P = model.initRoutingMatrix; P{2} writes
+% into P{2,2} rather than being interpreted as P{2,1}.
+isLinearP = true;
+for s=2:R    
+    for r=1:R
+        if nnz(P{r,s})>0
+            isLinearP = false;
+        end
+    end
+end
+if isLinearP 
+    for r=2:R
+        P{r,r} = P{r,1};
+        P{r,1} = 0*P{r,1};
+    end
+end
+
 issink = cellisa(self.nodes,'Sink');
 if sum(issink) > 1
     error('The model can have at most one sink node.');

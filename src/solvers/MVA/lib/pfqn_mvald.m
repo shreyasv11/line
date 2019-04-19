@@ -41,9 +41,8 @@ while n~=-1
         pi(i,(0)+1,hashpop(n,N))=1-sum(pi(i,(1:sum(n))+1,hashpop(n,N)));
     end
     
-    
     last_nnz = max(find(n>0));
-    if sum(n(1:last_nnz-1)) == sum(N(1:last_nnz-1)) & sum(n((last_nnz+1):R))==0                
+    if sum(n(1:last_nnz-1)) == sum(N(1:last_nnz-1)) & sum(n((last_nnz+1):R))==0
         logX = log(Xs(last_nnz,hashpop(n,N)));
         if ~isempty(logX)
             lGN = lGN - logX;

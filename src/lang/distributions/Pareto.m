@@ -14,8 +14,8 @@ classdef Pareto < ContinuousDistrib
             end
             setParam(self, 1, 'alpha', shape, 'java.lang.Double');
             setParam(self, 2, 'k', scale, 'java.lang.Double');
-            self.javaClass = 'jmt.engine.random.Pareto';
-            self.javaParClass = 'jmt.engine.random.ParetoPar';
+%            self.javaClass = 'jmt.engine.random.Pareto';
+%            self.javaParClass = 'jmt.engine.random.ParetoPar';
         end
         
         function ex = getMean(self)
