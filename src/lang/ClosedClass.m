@@ -36,7 +36,7 @@ classdef ClosedClass < JobClass
                 end
                 if ~isempty(model.nodes{i})
                     %                    && (isa(model.nodes{i},'Queue') || isa(model.nodes{i},'Router'))
-                    model.nodes{i}.setRouting(self, RoutingStrategy.RAND);
+                    model.nodes{i}.setRouting(self, RoutingStrategy.DISABLED);
                 end
             end
         end

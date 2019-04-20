@@ -14,14 +14,14 @@ M = self.getNumberOfNodes;
 % This block is to make sure that P = model.initRoutingMatrix; P{2} writes
 % into P{2,2} rather than being interpreted as P{2,1}.
 isLinearP = true;
-for s=2:R    
-    for r=1:R        
+for s=2:R
+    for r=1:R
         if nnz(P{r,s})>0
             isLinearP = false;
         end
     end
 end
-if isLinearP 
+if isLinearP
     for r=2:R
         P{r,r} = P{r,1};
         P{r,1} = 0*P{r,1};
@@ -42,7 +42,7 @@ if ~iscell(P)
         newP = cell(1,R);
         for r=1:R
             newP{r} = P;
-        end        
+        end
         P = newP;
     else %R==1
         % single class

@@ -77,10 +77,13 @@ for i=1:self.getNumberOfNodes()
                                 rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
                             end
                         end
+                    case RoutingStrategy.DISABLED
+                        % set a small numerical tolerance to avoid messing
+                        % up with routing chain CTMC solution
+                        rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
                     otherwise
-                        if self.nodes{i}.output.outputStrategy{k}{2}~=0 % disabled
                             error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);
-                        end
+                    
                 end
             end
     end

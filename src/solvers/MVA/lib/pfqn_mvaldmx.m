@@ -1,5 +1,4 @@
 function [XN,QN,UN,CN] = pfqn_mvaldmx(lambda,D,N,Z,mu,S)
-% utilization in general ld case does not work
 if size(mu,2) < sum(N(isfinite(N)))
     error('MVALDMX requires to specify the load-dependent rates with one job more than the maximum closed population.');
 end
@@ -49,7 +48,9 @@ while nvec>=0
         end
     end
     % Compute tput
-    x(c,hnvec) = nvec(c) / (Zc(c)+sum(w(1:M,c,hnvec)));
+    for c=1:C
+        x(c,hnvec) = nvec(c) / (Zc(c)+sum(w(1:M,c,hnvec)));
+    end
     for i=1:M
         for n=1:nc
             for c=1:C

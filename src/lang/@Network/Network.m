@@ -248,6 +248,8 @@ classdef Network < Model
                             rtTypes(ind,r) = RoutingStrategy.ID_RR;
                         case RoutingStrategy.JSQ
                             rtTypes(ind,r) = RoutingStrategy.ID_JSQ;
+                        case RoutingStrategy.DISABLED
+                            rtTypes(ind,r) = RoutingStrategy.ID_DISABLED;
                     end
                 end
             end

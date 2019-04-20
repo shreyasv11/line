@@ -9,10 +9,12 @@ classdef (Sealed) RoutingStrategy
         ID_PROB = 1;
         ID_RR = 2;
         ID_JSQ = 3;
+        ID_DISABLED = -1;
         RAND = 'Random';
         RR = 'RoundRobin';
         PROB = 'Probabilities';
         JSQ = 'JoinShortestQueue';
+        DISABLED = 'Disabled';
     end
     
     methods (Static, Access = public)
@@ -26,6 +28,8 @@ classdef (Sealed) RoutingStrategy
                     type = RoutingStrategy.PROB;
                 case 'JoinShortestQueue'
                     type = RoutingStrategy.JSQ;
+                case 'Disabled'
+                    type = RoutingStrategy.DISABLED;
             end
         end
         
@@ -39,8 +43,10 @@ classdef (Sealed) RoutingStrategy
                     feature = 'RoutingStrategy_PROB';
                 case RoutingStrategy.JSQ
                     feature = 'RoutingStrategy_JSQ';
-                case 0 % if unassigned, set it by default to Random
-                    feature = 'RoutingStrategy_RAND';
+                case RoutingStrategy.DISABLED
+                    feature = 'RoutingStrategy_DISABLED';
+                case 0 % if unassigned, set it by default to Disabled
+                    feature = 'RoutingStrategy_DISABLED';
             end
         end
         
@@ -54,8 +60,10 @@ classdef (Sealed) RoutingStrategy
                     text = 'Probabilities';
                 case RoutingStrategy.JSQ
                     text = 'JoinShortestQueue';
-                case 0 % if unassigned, set it by default to Random
-                    text = 'Random';
+                case RoutingStrategy.DISABLED
+                    text = 'Disabled';
+                case 0 % if unassigned, set it by default to Disabled
+                    text = 'Disabled';
             end
         end
     end
