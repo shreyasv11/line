@@ -28,8 +28,9 @@ source.setArrival(jobclass{2}, Exp(0.3));
 M = model.getNumberOfStations();
 K = model.getNumberOfClasses();
 
+P = model.initRoutingMatrix;
 P{1,1} = zeros(M+1);
-P{1,1}(1:4,1:4) = Network.serialRouting(node{1},node{2},node{3},node{4});
+P{1,1} = Network.serialRouting(node{1},node{2},node{3},node{4});
 P{1,2} = zeros(M+1);
 P{2,1} = zeros(M+1);
 P{2,2} = Network.serialRouting(source,node{1},node{2},node{3},node{5},sink);

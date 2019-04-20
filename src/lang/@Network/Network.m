@@ -232,11 +232,7 @@ classdef Network < Model
         function P = initRoutingMatrix(self)
             M = self.getNumberOfNodes;
             K = self.getNumberOfClasses;
-            if K == 1
-                P = zeros(M);
-            else
-                P = cellzeros(K,K,M,M);
-            end
+            P = cellzeros(K,K,M,M);
         end
 
         function rtTypes = getRoutingStrategies(self)
@@ -1016,17 +1012,17 @@ classdef Network < Model
                 end
             end
             node{end+1} = Sink(model, 'Sink');
-            P = {};
+            P = cellzeros(R,R,M+2,M+2);
             for r=1:R
                 jobclass{r} = OpenClass(model, ['Class',num2str(r)], 0);
-                P{r} = circul(length(node)); P{r}(end,:) = 0;
+                P{r,r} = circul(length(node)); P{r}(end,:) = 0;
             end
             for r=1:R
                 node{1}.setArrival(jobclass{r}, Exp.fitMean(1/lambda(r)));
                 for i=1:M
                     node{1+i}.setService(jobclass{r}, Exp.fitMean(S(i,r)));
                 end
-            end
+            end            
             model.link(P);
         end
         
@@ -1089,9 +1085,10 @@ classdef Network < Model
                         node{end+1} = Queue(model, ['Queue',num2str(nQ)], strategy{i});
                 end
             end
+            P = cellzeros(R,M);
             for r=1:R
                 jobclass{r} = ClosedClass(model, ['Class',num2str(r)], N(r), node{1}, 0);
-                P{r} = circul(M);
+                P{r,r} = circul(M);
             end
             for i=1:M
                 for r=1:R
@@ -1102,7 +1099,8 @@ classdef Network < Model
         end
         
         function P = serialRouting(varargin)
-            P = zeros(length(varargin));
+            model = varargin{1}.model;
+            P = zeros(model.getNumberOfNodes);
             for i=1:length(varargin)-1
                 P(varargin{i},varargin{i+1})=1;
             end

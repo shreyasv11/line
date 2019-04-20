@@ -20,8 +20,7 @@ node{2}.setService(jobclass{3}, Exp(3));
 M = model.getNumberOfStations();
 K = model.getNumberOfClasses();
 
-P = cell(K,K);
-
+P = model.initRoutingMatrix;
 P{1,1} = [0.3,0.1; 0.2,0];
 P{1,2} = [0.6,0; 0.8,0];
 P{1,3} = zeros(M);

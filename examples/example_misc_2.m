@@ -20,7 +20,7 @@ for i=1:M
     node{i}.setService(jobclass{2}, Exp(10.0));
 end
 
-P = cell(K,1);
+P = model.initRoutingMatrix;
 for r=1:K P{r} = circul(M); end
 model.link(P);
 

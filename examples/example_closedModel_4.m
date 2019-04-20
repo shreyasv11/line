@@ -32,7 +32,7 @@ node{3}.setService(jobclass{4}, Exp(1));
 M = model.getNumberOfStations();
 K = model.getNumberOfClasses();
 
-myP = cell(K,K);
+myP = model.initRoutingMatrix;
 myP{1,1} = [0,0.5,0;
     1,0,0;
     1,0,0];

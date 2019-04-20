@@ -76,10 +76,10 @@ end
 state = model.getState;
 
 solver = SolverCTMC(model,options);
-Pr_ctmc = solver.getProbSysState()
+Pr_ctmc = solver.getProbSysStateAggr()
 
 solver = SolverNC(model,options);
-Pr_nc = solver.getProbSysState()
+Pr_nc = solver.getProbSysStateAggr()
 
 solver = SolverJMT(model,'method','jmva.ls');
 solver.getAvgTable

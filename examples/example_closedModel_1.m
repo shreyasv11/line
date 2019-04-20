@@ -8,6 +8,7 @@ jobclass{1} = ClosedClass(model, 'Class1', 10, node{1}, 0);
 node{1}.setService(jobclass{1}, Exp.fitMean(1.0)); % mean = 1
 node{2}.setService(jobclass{1}, Exp.fitMean(1.5)); % mean = 1.5
 
+P = model.initRoutingMatrix;
 P{1} = [0.7,0.3;1.0,0];
 % This may be alternatively specified as:
 %P{1}(node{1},[node{1},node{2}]) = [0.7,0.3]; 

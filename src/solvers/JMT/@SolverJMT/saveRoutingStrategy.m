@@ -59,6 +59,8 @@ for i=1:(numOfClasses)
             end
             concStratNode.appendChild(concStratNode2);
         otherwise
+            currentNode.output.outputStrategy{i}{2}
+            pause
             concStratNode = simDoc.createElement('subParameter');
             concStratNode.setAttribute('classPath', 'jmt.engine.NetStrategies.RoutingStrategies.RandomStrategy');
             concStratNode.setAttribute('name', 'Random');

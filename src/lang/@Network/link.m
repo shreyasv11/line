@@ -15,7 +15,7 @@ M = self.getNumberOfNodes;
 % into P{2,2} rather than being interpreted as P{2,1}.
 isLinearP = true;
 for s=2:R    
-    for r=1:R
+    for r=1:R        
         if nnz(P{r,s})>0
             isLinearP = false;
         end
