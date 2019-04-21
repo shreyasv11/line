@@ -27,11 +27,13 @@ for ind=1:M % from
         for r=1:K
             for s=1:K
                 if qn.isstatedep(ind,3)
-                    switch qn.routing(ind)
+                    switch qn.routing(ind,r)
                         case RoutingStrategy.ID_RR
                             rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) sub_rr(ind, jnd, r, s, linksmat, state_before, state_after);
                         case RoutingStrategy.ID_JSQ
                             rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after);
+                        otherwise
+                            rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
                     end
                 else
                     rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
@@ -72,7 +74,6 @@ statefulNodesClasses = [];
 for ind=stateful
     statefulNodesClasses(end+1:end+K)= ((ind-1)*K+1):(ind*K);
 end
-
 
 rtfunraw = @(state_before, state_after) dtmc_stochcomp(cell2mat(cellfun(@(f) f(state_before, state_after), rnodefuncell,'UniformOutput',false)), statefulNodesClasses);
 rtfun = rtfunraw;

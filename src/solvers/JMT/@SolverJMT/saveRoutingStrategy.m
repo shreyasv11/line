@@ -30,7 +30,7 @@ for i=1:(numOfClasses)
         case RoutingStrategy.PROB
             concStratNode = simDoc.createElement('subParameter');
             concStratNode.setAttribute('classPath', 'jmt.engine.NetStrategies.RoutingStrategies.EmpiricalStrategy');
-            concStratNode.setAttribute('name', 'Probabilities');
+            concStratNode.setAttribute('name', RoutingStrategy.PROB);
             concStratNode2 = simDoc.createElement('subParameter');
             concStratNode2.setAttribute('array', 'true');
             concStratNode2.setAttribute('classPath', 'jmt.engine.random.EmpiricalEntry');

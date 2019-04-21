@@ -5,6 +5,7 @@ function logData = parseLogs(model,isNodeLogged, metric)
 qn = model.getStruct;
 nclasses = qn.nclasses;
 logData = cell(qn.nstateful,qn.nclasses);
+nodePreload = model.getStateAggr;
 for ind=1:qn.nnodes
     if qn.isstateful(ind) && isNodeLogged(ind)
         logFileArv = [model.getLogPath,sprintf('%s-Arv.csv',model.getNodeNames{ind})];
@@ -17,7 +18,7 @@ for ind=1:qn.nnodes
             % unclear if this part works fine if user has another local
             % since JMT might write with a different delimiter
             fid=fopen(logFileArv);
-            logArv = textscan(fid, '%s%f%f%s%s%s', 'delimiter',';', 'headerlines',1);            
+            logArv = textscan(fid, '%s%f%f%s%s%s', 'delimiter',';', 'headerlines',1);
             fclose(fid);
             jobArvTS = logArv{2};
             jobArvID = logArv{3};
@@ -55,19 +56,9 @@ for ind=1:qn.nnodes
             logFileDepMat = [model.getLogPath,filesep,sprintf('%s-Dep.mat',model.getNodeNames{ind})];
             save(logFileDepMat,'jobDepTS','jobDepID','jobDepClass','jobDepClasses','jobDepClassID');
             
-            nodePreload = zeros(1,nclasses);
-            for r=1:nclasses
-                if strcmpi(model.classes{r}.reference.name,model.stations{qn.nodeToStation(ind)}.name)
-                    switch model.classes{r}.type
-                        case 'closed'
-                            nodePreload(r) = model.classes{r}.population;
-                    end
-                end
-            end
-            
             switch metric
                 case Metric.QLen
-                    [nodeState{ind}] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload);
+                    [nodeState{ind}] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload{ind});
                     
                     %% save in default data structure
                     for r=1:nclasses %0:numOfClasses

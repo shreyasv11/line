@@ -1,4 +1,4 @@
-function [QN,UN,RN,TN,CN,XN,runtime] = solver_ssa_analysis(qn, options)
+function [QN,UN,RN,TN,CN,XN,runtime,tranSysState] = solver_ssa_analysis(qn, options)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -11,11 +11,13 @@ sched = qn.sched;
 Tstart = tic;
 
 PH = qn.ph;
-
+tranSysState = [];
+probSysState = [];
+        
 qnc = qn.copy;
 switch options.method
-    case 'serial.hash'
-        [pi,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, options);
+    case {'serial.hash','serial.hashed','hashed'}
+        [probSysState,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, options);
         qn.space = qnc.space;
         XN = NaN*zeros(1,K);
         UN = NaN*zeros(M,K);
@@ -25,11 +27,11 @@ switch options.method
         CN = NaN*zeros(1,K);
         for k=1:K
             refsf = qn.stationToStateful(qn.refstat(k));
-            XN(k) = pi*arvRates(:,refsf,k);
+            XN(k) = probSysState*arvRates(:,refsf,k);
             for i=1:M
                 isf = qn.stationToStateful(i);
-                TN(i,k) = pi*depRates(:,isf,k);
-                QN(i,k) = pi*SSq(:,(i-1)*K+k);
+                TN(i,k) = probSysState*depRates(:,isf,k);
+                QN(i,k) = probSysState*SSq(:,(i-1)*K+k);
                 switch sched{i}
                     case SchedStrategy.INF
                         UN(i,k) = QN(i,k);
@@ -38,7 +40,7 @@ switch options.method
                         % estimating the fraction of time assigned to class k (to
                         % recheck)
                         if ~isempty(PH{i,k})
-                            UN(i,k) = pi*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
+                            UN(i,k) = probSysState*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
                         end
                 end
             end
@@ -63,7 +65,7 @@ switch options.method
         TN(isnan(TN))=0;
         
     case {'default','serial'}
-        [pi,SSq,arvRates,depRates] = solver_ssa(qnc, options);
+        [probSysState,SSq,arvRates,depRates,tranSysState] = solver_ssa(qnc, options);        
         qn.space = qnc.space;
         XN = NaN*zeros(1,K);
         UN = NaN*zeros(M,K);
@@ -73,11 +75,11 @@ switch options.method
         CN = NaN*zeros(1,K);
         for k=1:K
             refsf = qn.stationToStateful(qn.refstat(k));
-            XN(k) = pi*arvRates(:,refsf,k);
+            XN(k) = probSysState*arvRates(:,refsf,k);
             for i=1:M
                 isf = qn.stationToStateful(i);
-                TN(i,k) = pi*depRates(:,isf,k);
-                QN(i,k) = pi*SSq(:,(i-1)*K+k);
+                TN(i,k) = probSysState*depRates(:,isf,k);
+                QN(i,k) = probSysState*SSq(:,(i-1)*K+k);
                 switch sched{i}
                     case SchedStrategy.INF
                         UN(i,k) = QN(i,k);
@@ -86,7 +88,7 @@ switch options.method
                         % estimating the fraction of time assigned to class k (to
                         % recheck)
                         if ~isempty(PH{i,k})
-                            UN(i,k) = pi*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
+                            UN(i,k) = probSysState*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
                         end
                 end
             end

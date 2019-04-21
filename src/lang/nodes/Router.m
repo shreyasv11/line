@@ -29,10 +29,11 @@ classdef Router < StatefulNode
             self.numberOfServers = 1;
             self.setModel(model);
             self.model.addNode(self);
+            self.setRouting(RoutingStrategy.RAND);
         end
         
         function setProbRouting(self, class, destination, probability)
-            setRouting(self, class, 'Probabilities', destination, probability);
+            setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function setScheduling(self, class, strategy)

@@ -2,6 +2,7 @@ function self = link(self, P)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
+
 isReset = false;
 if ~isempty(self.qn)
     %    warning('Network topology already instantiated. Calling resetNetwork automatically.');
@@ -11,8 +12,6 @@ end
 R = self.getNumberOfClasses;
 M = self.getNumberOfNodes;
 
-% This block is to make sure that P = model.initRoutingMatrix; P{2} writes
-% into P{2,2} rather than being interpreted as P{2,1}.
 isLinearP = true;
 for s=2:R
     for r=1:R
@@ -21,6 +20,23 @@ for s=2:R
         end
     end
 end
+    
+for i=self.getDummys   
+    for r=1:R
+        if iscell(P)
+            if isLinearP
+                P{r}(i,self.getSink) = 1.0;
+            else
+                P{r,r}(i,self.getSink) = 1.0;                
+            end
+        else
+            P(i,self.getSink) = 0.0;
+        end
+    end
+end
+
+% This block is to make sure that P = model.initRoutingMatrix; P{2} writes
+% into P{2,2} rather than being interpreted as P{2,1}.
 if isLinearP
     for r=2:R
         P{r,r} = P{r,1};
@@ -28,14 +44,16 @@ if isLinearP
     end
 end
 
-issink = cellisa(self.nodes,'Sink');
-if sum(issink) > 1
+% link virtual sinks automatically to sink
+ispool = cellisa(self.nodes,'Sink');
+if sum(ispool) > 1
     error('The model can have at most one sink node.');
 end
 
 if sum(cellisa(self.nodes,'Source')) > 1
     error('The model can have at most one source node.');
 end
+
 
 if ~iscell(P)
     if R>1
@@ -46,7 +64,7 @@ if ~iscell(P)
         P = newP;
     else %R==1
         % single class
-        for i=find(issink)'
+        for i=find(ispool)'
             P((i-1)*R+1:i*R,:)=0;
         end
         Pmat = P;
@@ -67,7 +85,7 @@ end
 if numel(P) == R
     % 1 matrix per class
     for r=1:R
-        for i=find(issink)'
+        for i=find(ispool)'
             P{r}((i-1)*R+1:i*R,:)=0;
         end
     end
@@ -81,12 +99,14 @@ if numel(P) == R
     end
 end
 
+
+
 for r=1:R
     for s=1:R
         if isempty(P{r,s})
             P{r,s} = zeros(M);
         else
-            for i=find(issink)'
+            for i=find(ispool)'
                 P{r,s}(i,:)=0;
             end
         end
@@ -102,6 +122,7 @@ end
 %                   error(sprintf('Invalid routing probabilities (Node %d departures, switching from class %d).',maxpos(Psum),r));
 %                 end
 %             end
+
 
 self.linkedP = P;
 for i=1:M
@@ -149,7 +170,6 @@ for r=1:R
     end
 end
 
-
 for i=1:M
     for j=1:M
         if csid(i,j)>0
@@ -166,7 +186,6 @@ for i=1:M
 end
 
 connected = zeros(Mplus);
-
 for i=1:Mplus
     for j=1:Mplus
         for r=1:R

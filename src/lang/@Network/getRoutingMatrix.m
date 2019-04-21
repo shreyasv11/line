@@ -36,7 +36,7 @@ for i=1:self.getNumberOfNodes()
                     if connMatrix(i,j)>0
                         rtNodes((i-1)*K+k,(j-1)*K+k)=1.0;
                         switch self.nodes{i}.output.outputStrategy{k}{2}
-                            case 'Probabilities'
+                            case RoutingStrategy.PROB
                                 if length(self.nodes{i}.output.outputStrategy{k}{end}) ~= sum(connMatrix(i,:))
                                     error('Fork must have 1.0 routing probability towards all outgoing links.');
                                 end
@@ -61,7 +61,7 @@ for i=1:self.getNumberOfNodes()
                             end
                         elseif (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink') && ~isa(self.nodes{j},'Sink')) % don't route closed classes out of source nodes
                             connMatrixClosed = connMatrix;
-                            if connMatrixClosed(i,self.getNodeIndex(self.getSink)) 
+                            if connMatrixClosed(i,self.getNodeIndex(self.getSink))
                                 connMatrixClosed(i,self.getNodeIndex(self.getSink)) = 0;
                             end
                             for j=1:self.getNumberOfNodes()
@@ -82,8 +82,8 @@ for i=1:self.getNumberOfNodes()
                         % up with routing chain CTMC solution
                         rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
                     otherwise
-                            error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);
-                    
+                        rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                        %error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);
                 end
             end
     end
@@ -198,10 +198,10 @@ for i=1:self.getNumberOfNodes % source
         end
     end
     
-    % We now obtain the routing matrix P by ignoring the non-stateless
+    % We now obtain the routing matrix P by ignoring the non-stateful
     % nodes and calculating by the stochastic complement method the
     % correct transition probabilities, that includes the effects
-    % of the non-station nodes (e.g., ClassSwitch)
+    % of the non-stateful nodes (e.g., ClassSwitch)
     statefulNodesClasses = [];
     for i=self.getIndexStatefulNodes()
         statefulNodesClasses(end+1:end+K)= ((i-1)*K+1):(i*K);

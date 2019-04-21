@@ -31,6 +31,10 @@ node{1}.setProbRouting(jobclass{1}, node{3}, 0.7)
 node{2}.setProbRouting(jobclass{1}, node{1}, 1.0)
 node{3}.setProbRouting(jobclass{1}, node{1}, 1.0)
 
+node{1}.setRouting(jobclass{2},RoutingStrategy.RAND);
+node{2}.setRouting(jobclass{2},RoutingStrategy.RAND);
+node{3}.setRouting(jobclass{2},RoutingStrategy.RAND);
+
 solver={};
 options = Solver.defaultOptions;
 options.seed = 23000;

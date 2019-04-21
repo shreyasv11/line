@@ -24,7 +24,7 @@ classdef (Sealed) RoutingStrategy
                     type = RoutingStrategy.RAND;
                 case 'RoundRobin'
                     type = RoutingStrategy.RR;
-                case 'Probabilities'
+                case RoutingStrategy.PROB
                     type = RoutingStrategy.PROB;
                 case 'JoinShortestQueue'
                     type = RoutingStrategy.JSQ;
@@ -57,7 +57,7 @@ classdef (Sealed) RoutingStrategy
                 case RoutingStrategy.RR
                     text = 'RoundRobin';
                 case RoutingStrategy.PROB
-                    text = 'Probabilities';
+                    text = RoutingStrategy.PROB;
                 case RoutingStrategy.JSQ
                     text = 'JoinShortestQueue';
                 case RoutingStrategy.DISABLED

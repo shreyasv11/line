@@ -11,13 +11,13 @@ queue1.setService(cclass, Exp(0.75));
 queue2.setService(cclass, Exp(0.50));
 % Block 3: topology
 P = model.initRoutingMatrix;
-P(queue1, delay) = 1.0;
-P(queue2, delay) = 1.0;
+P{cclass}(queue1, delay) = 1.0;
+P{cclass}(queue2, delay) = 1.0;
 
 % Block 4: solution
     function R = objFun(p)
-        P(delay, queue1) = p;
-        P(delay, queue2) = 1-p;
+        P{cclass}(delay, queue1) = p;
+        P{cclass}(delay, queue2) = 1-p;
         model.link(P);
         R = SolverMVA(model,'method','exact','verbose',false).getAvgSysRespT;
     end

@@ -41,6 +41,7 @@ if options.keep
 end
 pi = ctmc_solve(Q);
 pi(pi<1e-14)=0;
+pi = pi/sum(pi);
 
 statesz = [];
 for ind=1:qn.nnodes

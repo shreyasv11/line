@@ -81,5 +81,5 @@ Pr_ctmc = solver.getProbSysStateAggr()
 solver = SolverNC(model,options);
 Pr_nc = solver.getProbSysStateAggr()
 
-solver = SolverJMT(model,'method','jmva.ls');
-solver.getAvgTable
+solver = SolverJMT(model,options,'samples',5e3);
+Pr_jmt = solver.getProbSysStateAggr()

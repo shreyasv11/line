@@ -31,7 +31,7 @@ classdef NetworkStruct <handle
         nvars; % number of local variables
         nodenames;   % name of each node
         nodevisits;  % visits placed by classes at the nodes
-        nodetype; % server type in each node        
+        nodetype; % server type in each node
         phases; % number of phases in each service or arrival process
         phasessz; % shift for number of phases
         phaseshift; % shift for number of phases
@@ -88,12 +88,12 @@ classdef NetworkStruct <handle
                 for ind=1:self.nnodes
                     switch self.nodetype(ind)
                         case NodeType.Cache
-                            self.isstatedep(ind,2) = true; % state dependent service                  
+                            self.isstatedep(ind,2) = true; % state dependent service
                     end
                     for r=1:self.nclasses
                         switch self.routing(ind,r)
                             case {RoutingStrategy.ID_RR, RoutingStrategy.ID_JSQ}
-                                self.isstatedep(ind,3) = true; % state dependent routing                  
+                                self.isstatedep(ind,3) = true; % state dependent routing
                         end
                     end
                 end
@@ -115,7 +115,7 @@ classdef NetworkStruct <handle
                 for j = 1:self.nclasses
                     self.classnames{j,1} = int2str(j);
                 end
-            end            
+            end
             self.reindex();
         end
         
@@ -130,7 +130,7 @@ classdef NetworkStruct <handle
             end
             for isf=1:self.nstateful
                 self.statefulToNode(isf) = self.sf2nd(isf);
-            end            
+            end
         end
         
         function setChains(self, chains, visits, rt, nodes_visits)
@@ -242,48 +242,48 @@ classdef NetworkStruct <handle
         end
         
         function newObj = copy(obj)
-        newObj = NetworkStruct(obj.nodetype, obj.nodenames, obj.classnames, obj.nservers, obj.njobs, obj.refstat, obj.routing);
-        newObj.cap = obj.cap;     % total buffer size
-        newObj.chains = obj.chains;     % binary CxK matrix where 1 in entry (i,j) indicates that class j is in chain i.
-        newObj.classcap = obj.classcap;    % buffer size for each class
-        newObj.classnames = obj.classnames;  % name of each job class
-        newObj.classprio = obj.classprio;       % scheduling priorities in each class (optional)
-        newObj.csmask = obj.csmask; % (r,s) entry if class r can switch into class s somewhere
-        newObj.isstatedep = obj.isstatedep; % state dependent routing
-        newObj.isstation = obj.isstation; % element i is true if node i is a station
-        newObj.isstateful = obj.isstateful; % element i is true if node i is stateful
-        newObj.mu = obj.mu;          % service rate in each service phase, for each job class in each station
-        newObj.nchains = obj.nchains;           % number of chains (int)
-        newObj.nclasses = obj.nclasses;          % number of classes (int)
-        newObj.nclosedjobs = obj.nclosedjobs;          % total population (int)
-        newObj.njobs = obj.njobs;             % initial distribution of jobs in classes (Kx1 int)
-        newObj.nnodes = obj.nnodes; % number of nodes (Mn int)
-        newObj.nservers = obj.nservers;   % number of servers per station (Mx1 int)
-        newObj.nstations = obj.nstations;  % number of stations (int)
-        newObj.nstateful = obj.nstateful;  % number of stations (int)
-        newObj.nvars = obj.nvars; % number of local variables
-        newObj.nodenames = obj.nodenames;   % name of each node
-        newObj.nodetype = obj.nodetype; % server type in each node
-        newObj.phases = obj.phases; % number of phases in each service or arrival process
-        newObj.phasessz = obj.phasessz; % number of phases in each service or arrival process
-        newObj.phaseshift = obj.phaseshift; % number of phases in each service or arrival process
-        newObj.phi = obj.phi;         % probability of service completion in each service phase,
-        newObj.ph = obj.ph;         % probability of service completion in each service phase,
-        newObj.rates = obj.rates;       % service rate for each job class in each station
-        newObj.refstat = obj.refstat;    % index of the reference node for each request class (Kx1 int)
-        newObj.routing = obj.routing;     % routing strategy type
-        newObj.rt = obj.rt;         % routing table with class switching
-        newObj.rtnodes = obj.rtnodes;         % routing table with class switching
-        newObj.rtfun = obj.rtfun; % local routing functions
-        newObj.sched = obj.sched;       % scheduling strategy in each station
-        newObj.schedid = obj.schedid;       % scheduling strategy id in each station (optional)
-        newObj.schedparam = obj.schedparam;       % scheduling weights in each station and class (optional)
-        newObj.sync = obj.sync;
-        newObj.space = obj.space;    % state space
-        newObj.state = obj.state;    % initial or current state
-        newObj.scv = obj.scv; % squared coefficient of variation of service times (MxK)
-        newObj.visits = obj.visits;           % visits placed by classes at the resources
-        newObj.varsparam = obj.varsparam;     % parameters for local variables
+            newObj = NetworkStruct(obj.nodetype, obj.nodenames, obj.classnames, obj.nservers, obj.njobs, obj.refstat, obj.routing);
+            newObj.cap = obj.cap;     % total buffer size
+            newObj.chains = obj.chains;     % binary CxK matrix where 1 in entry (i,j) indicates that class j is in chain i.
+            newObj.classcap = obj.classcap;    % buffer size for each class
+            newObj.classnames = obj.classnames;  % name of each job class
+            newObj.classprio = obj.classprio;       % scheduling priorities in each class (optional)
+            newObj.csmask = obj.csmask; % (r,s) entry if class r can switch into class s somewhere
+            newObj.isstatedep = obj.isstatedep; % state dependent routing
+            newObj.isstation = obj.isstation; % element i is true if node i is a station
+            newObj.isstateful = obj.isstateful; % element i is true if node i is stateful
+            newObj.mu = obj.mu;          % service rate in each service phase, for each job class in each station
+            newObj.nchains = obj.nchains;           % number of chains (int)
+            newObj.nclasses = obj.nclasses;          % number of classes (int)
+            newObj.nclosedjobs = obj.nclosedjobs;          % total population (int)
+            newObj.njobs = obj.njobs;             % initial distribution of jobs in classes (Kx1 int)
+            newObj.nnodes = obj.nnodes; % number of nodes (Mn int)
+            newObj.nservers = obj.nservers;   % number of servers per station (Mx1 int)
+            newObj.nstations = obj.nstations;  % number of stations (int)
+            newObj.nstateful = obj.nstateful;  % number of stations (int)
+            newObj.nvars = obj.nvars; % number of local variables
+            newObj.nodenames = obj.nodenames;   % name of each node
+            newObj.nodetype = obj.nodetype; % server type in each node
+            newObj.phases = obj.phases; % number of phases in each service or arrival process
+            newObj.phasessz = obj.phasessz; % number of phases in each service or arrival process
+            newObj.phaseshift = obj.phaseshift; % number of phases in each service or arrival process
+            newObj.phi = obj.phi;         % probability of service completion in each service phase,
+            newObj.ph = obj.ph;         % probability of service completion in each service phase,
+            newObj.rates = obj.rates;       % service rate for each job class in each station
+            newObj.refstat = obj.refstat;    % index of the reference node for each request class (Kx1 int)
+            newObj.routing = obj.routing;     % routing strategy type
+            newObj.rt = obj.rt;         % routing table with class switching
+            newObj.rtnodes = obj.rtnodes;         % routing table with class switching
+            newObj.rtfun = obj.rtfun; % local routing functions
+            newObj.sched = obj.sched;       % scheduling strategy in each station
+            newObj.schedid = obj.schedid;       % scheduling strategy id in each station (optional)
+            newObj.schedparam = obj.schedparam;       % scheduling weights in each station and class (optional)
+            newObj.sync = obj.sync;
+            newObj.space = obj.space;    % state space
+            newObj.state = obj.state;    % initial or current state
+            newObj.scv = obj.scv; % squared coefficient of variation of service times (MxK)
+            newObj.visits = obj.visits;           % visits placed by classes at the resources
+            newObj.varsparam = obj.varsparam;     % parameters for local variables
         end
     end % getIndex
 end

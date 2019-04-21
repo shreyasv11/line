@@ -14,10 +14,10 @@ classdef OpenClass < JobClass
                 prio = 0;
             end
             if isempty(model.getSource)
-                error('Network require a Source prior to instantiating open classes.');
+                error('The model requires a Source prior to instantiating open classes.');
             end
             if isempty(model.getSink)
-                error('Network require a Sink prior to instantiating open classes.');
+                error('The model requires a Sink prior to instantiating open classes.');
             end
             
             self.type = 'open';

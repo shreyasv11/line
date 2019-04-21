@@ -120,12 +120,9 @@ classdef SolverCTMC < NetworkSolver
             end
         end
         
-        function Pnir = getProbState(self, ist)
-            if ~exist('ist','var')
+        function Pnir = getProbState(self, node, state)
+            if ~exist('node','var')
                 error('getProbState requires to pass a parameter the station of interest.');
-            end
-            if ist > self.model.getNumberOfStations
-                error('Station number exceeds the number of stations in the model.');
             end
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
@@ -133,8 +130,12 @@ classdef SolverCTMC < NetworkSolver
             T0 = tic;
             qn = self.model.getStruct;
             qn.state = self.model.getState;
+            if exist('state','var')
+                qn.state{node} = state;
+            end
+            ind = self.model.getNodeIndex(node);
             for isf=1:length(qn.state)
-                isf_param = qn.stationToStateful(ist);
+                isf_param = qn.nodeToStateful(ind);
                 if isf ~= isf_param
                     qn.state{isf} = qn.state{isf}*0 -1;
                 end
@@ -144,7 +145,7 @@ classdef SolverCTMC < NetworkSolver
             self.result.Prob.marginal = Pnir;
             runtime = toc(T0);
             self.result.runtime = runtime;
-            Pnir = Pnir(ist);
+            Pnir = Pnir(node);
         end
         
         function Pn = getProbSysState(self)

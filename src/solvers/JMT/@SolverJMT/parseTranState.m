@@ -15,8 +15,8 @@ for i=1:size(jobDepTS)
     state(length(jobArvTS)+i,1+jobDepClassID(i))=-1;
 end
 state = sortrows(state,1);
-for j=2:(nClasses+1)
-    state(:,j) = cumsum(state(:,j))+nodePreload(j-1);
-end
 state = [0,nodePreload;state];
+for j=2:(nClasses+1)
+    state(:,j) = cumsum(state(:,j));%+nodePreload(j-1);
+end
 end

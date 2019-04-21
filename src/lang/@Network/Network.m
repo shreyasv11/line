@@ -213,18 +213,20 @@ classdef Network < Model
                         nodeTypes(i) = NodeType.ClassSwitch;
                     case {'Queue','QueueingStation'}
                         nodeTypes(i) = NodeType.Queue;
+                    case 'Sink'
+                        nodeTypes(i) = NodeType.Sink;
                     case 'Router'
                         nodeTypes(i) = NodeType.Router;
                     case {'Delay','DelayStation'}
                         nodeTypes(i) = NodeType.Delay;
-                    case 'Sink'
-                        nodeTypes(i) = NodeType.Sink;
                     case 'Fork'
                         nodeTypes(i) = NodeType.Fork;
                     case 'Join'
                         nodeTypes(i) = NodeType.Join;
                     case 'Source'
                         nodeTypes(i) = NodeType.Source;
+                    otherwise
+                        error('Unknown node type.');
                 end
             end
         end
@@ -258,14 +260,25 @@ classdef Network < Model
         function nodeIndex = getNodeIndex(self, name)
             if isa(name,'Node')
                 node = name;
-                nodeIndex = find(cellfun(@(c) strcmp(c,node.name),self.getNodeNames));
-            else
-                nodeIndex = find(cellfun(@(c) strcmp(c,name),self.getNodeNames));
+                name = node.getName();
             end
+            nodeIndex = find(cellfun(@(c) strcmp(c,name),self.getNodeNames));
         end
         
         function stationIndex = getStationIndex(self, name)
+            if isa(name,'Node')
+                node = name;
+                name = node.getName();
+            end
             stationIndex = find(cellfun(@(c) strcmp(c,name),self.getStationNames));
+        end
+        
+        function statefulIndex = getStatefulNodeIndex(self, name)
+            if isa(name,'Node')
+                node = name;
+                name = node.getName();
+            end
+            statefulIndex = find(cellfun(@(c) strcmp(c,name),self.getStatefulNodeNames));
         end
         
         function classIndex = getClassIndex(self, name)
@@ -335,7 +348,7 @@ classdef Network < Model
         end
         
         function S = getNumberOfStatefulNodes(self)
-            S = sum(cellisa(self.nodes,'StatefulNodes'));
+            S = sum(cellisa(self.nodes,'StatefulNode'));
         end
         
         function M = getNumberOfStations(self)
@@ -425,6 +438,10 @@ classdef Network < Model
         node = getSource(self);
         node = getSink(self);
         
+        function list = getDummys(self)
+            list = find(cellisa(self.nodes, 'Passage'))';
+        end
+        
         function list = getIndexStations(self)
             % returns the ids of nodes that are stations
             list = find(cellisa(self.nodes, 'Station'))';
@@ -492,6 +509,16 @@ classdef Network < Model
                 [~, nir(ist,:), sir(ist,:), ~] = State.toMarginal(qn, qn.stationToNode(ist), qn.state{isf});
             end
             isvalid = State.isValid(qn, nir, sir);
+        end
+        
+        function [initialStateAggr] = getStateAggr(self) % get initial state
+            initialState = getState(self);
+            initialStateAggr = cell(size(initialState));
+            qn = self.getStruct;
+            for isf=1:length(initialStateAggr)
+                ind = qn.statefulToNode(isf);
+                [~,initialStateAggr{isf}] = State.toMarginalAggr(qn, ind, initialState{isf});
+            end
         end
         
         function [initialState, priorInitialState] = getState(self) % get initial state

@@ -1,4 +1,4 @@
-function [pi,SSq,arvRates,depRates]=solver_ssa(qn,options)
+function [pi,SSq,arvRates,depRates,tranSysState]=solver_ssa(qn,options)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -87,8 +87,9 @@ for ind=1:qn.nnodes
 end
 
 state = cell2mat(stateCell');
-output = zeros(1+length(state),samples_collected);
-output(1:(1+length(state)),1) = [0, state]';
+tranState = zeros(1+length(state),samples_collected);
+tranState(1:(1+length(state)),1) = [0, state]';
+samples_collected = 1;
 SSq = cell2mat(nir');
 local = qn.nnodes+1;
 last_node_a = 0;
@@ -184,7 +185,7 @@ while samples_collected < options.samples
     last_node_a = node_a{enabled_action{firing_ctr}};
     last_node_p = node_p{enabled_action{firing_ctr}};
     state = cell2mat(stateCell');
-    output(1:(1+length(state)),samples_collected) = [-(log(rand)/tot_rate), state]';
+    tranState(1:(1+length(state)),samples_collected) = [-(log(rand)/tot_rate), state]';
     
     for ind=1:qn.nnodes
         if qn.isstation(ind)
@@ -216,14 +217,22 @@ end
 %transient = min([floor(samples_collected/10),1000]); % remove first part of simulation (10% of the samples up to 1000 max)
 %transient = 0;
 %output = output((transient+1):end,:);
-output = output';
-[u,ui,uj] = unique(output(:,2:end),'rows');
+tranState = tranState';
+
+%tranState = [0, init_state;tranState];
+[u,ui,uj] = unique(tranState(:,2:end),'rows');
+statesz = cellfun(@length, stateCell)';
+tranSysState = cell(1,length(stateCell)+1);
+tranSysState{1} = cumsum(tranState(:,1));
+for j=1:length(statesz)
+    tranSysState{1+j} = tranState(:,1+(1+sum(statesz(1:(j-1)))):(1+sum(statesz(1:j))));
+end
 arvRates = zeros(size(u,1),qn.nstateful,R);
 depRates = zeros(size(u,1),qn.nstateful,R);
 
 pi = zeros(1,size(u,1));
 for s=1:size(u,1)
-    pi(s) = sum(output(uj==s,1));
+    pi(s) = sum(tranState(uj==s,1));
 end
 SSq = SSq(:,ui)';
 

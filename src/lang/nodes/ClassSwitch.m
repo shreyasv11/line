@@ -27,7 +27,7 @@ classdef ClassSwitch < Node
         end
         
         function setProbRouting(self, class, destination, probability)
-            setRouting(self, class, 'Probabilities', destination, probability);
+            setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function sections = getSections(self)

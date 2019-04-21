@@ -1,4 +1,4 @@
-classdef RenewalProcess < PointProcess
+classdef RenewalProcess < SinkProcess
     % An abstract class for renewal point processes.
     %
     % Copyright (c) 2012-2019, Imperial College London
@@ -11,7 +11,7 @@ classdef RenewalProcess < PointProcess
     methods (Hidden)
         %Constructor
         function self = RenewalProcess(distrib)
-            self@PointProcess('RenewalProcess',1);
+            self@SinkProcess('RenewalProcess',1);
             setParam(self, 1, 'distrib', distrib, 'java.lang.Double');
         end
     end

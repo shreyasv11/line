@@ -98,6 +98,20 @@ for ist=1:qn.nstations
         Pr(ist) =  F_i * G_minus_i / G;
     end
 end
+
+% Pr = 1;
+% for i=1:M
+%     isf = qn.stationToStateful(i);
+%     [~,nivec] = State.toMarginal(qn, i, state{isf});
+%     nivec_chain = nivec * qn.chains';
+%     F_i = pfqn_gmvald(Lchain(i,:), nivec_chain, mu_chain(i,:));
+%     G_minus_i = pfqn_gmvald(Lchain(setdiff(1:M,i),:), Nchain-nivec_chain, mu_chain(setdiff(1:M,i),:));
+%     g0_i = pfqn_gmvald(ST(i,:).*alpha(i,:),nivec, mu_chain(i,:));
+%     G0_i = pfqn_gmvald(STchain(i,:),nivec_chain, mu_chain(i,:));
+%     Pr = F_i * G_minus_i / G * (g0_i / G0_i);
+% end
+% 
+
 runtime = toc(Tstart);
 Pr(isnan(Pr))=0;
 lG = log(G);

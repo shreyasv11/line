@@ -30,16 +30,15 @@ classdef SolverNC < NetworkSolver
             self.result.Prob.logNormConst = lG;
         end
         
-        function Pnir = getProbStateAggr(self, ist)
-            if ~exist('ist','var')
-                error('getProbStateAggr requires to pass a parameter the station of interest.');
-            end
-            if ist > self.model.getNumberOfStations
-                error('Station number exceeds the number of stations in the model.');
-            end
+        function Pnir = getProbStateAggr(self, node, state_a)
+             if ~exist('state_a','var')
+                 state_a = self.model.getState{self.model.getStatefulNodeIndex(node)};
+             end
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
+            ist = self.model.getStationIndex(node);
+            qn.state{ist} = state_a;
             [Pnir,lG] = solver_nc_marg(qn, self.options);
             self.result.('solver') = self.getName();
             self.result.Prob.logNormConst = lG;
@@ -49,11 +48,23 @@ classdef SolverNC < NetworkSolver
             Pnir = Pnir(ist);
         end
         
-        function Pn = getProbSysStateAggr(self)
+        function Pn = getProbSysState(self)
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
             [Pn,lG] = solver_nc_joint(qn, self.options);
+            self.result.('solver') = self.getName();
+            self.result.Prob.logNormConst = lG;
+            self.result.Prob.joint = Pn;
+            runtime = toc(T0);
+            self.result.runtime = runtime;
+        end
+        
+        function Pn = getProbSysStateAggr(self)
+            T0 = tic;
+            qn = self.model.getStruct;
+            % now compute marginal probability
+            [Pn,lG] = solver_nc_jointaggr(qn, self.options);
             self.result.('solver') = self.getName();
             self.result.Prob.logNormConst = lG;
             self.result.Prob.joint = Pn;

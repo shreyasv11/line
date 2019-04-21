@@ -6,7 +6,6 @@ classdef (Sealed) NodeType
     
     properties (Constant)
         Fork = 7;
-        %    Dispatcher = 6;
         Router = 6;
         Cache = 5;
         Logger = 4;

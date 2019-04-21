@@ -52,11 +52,11 @@ state = model.getState;
 %%
 i=M;
 solver = SolverCTMC(model,options);
-Pr = solver.getProbStateAggr(i);
+Pr = solver.getProbStateAggr(node{i});
 fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 Pmarg_ctmc = Pr
 
 solver = SolverNC(model,options);
-Pr = solver.getProbStateAggr(i);
+Pr = solver.getProbStateAggr(node{i});
 fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 Pmarg_nc = Pr

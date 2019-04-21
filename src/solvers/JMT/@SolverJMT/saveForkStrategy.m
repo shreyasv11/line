@@ -47,7 +47,7 @@ for class=1:(numOfClasses)
     classStratNode2.setAttribute('classPath', 'jmt.engine.NetStrategies.ForkStrategies.OutPath');
     classStratNode2.setAttribute('name', 'EmpiricalEntryArray');
     switch currentNode.output.outputStrategy{class}{2} % check routing strategy
-        case 'Probabilities'
+        case RoutingStrategy.PROB
             for k=1:length(currentNode.output.outputStrategy{class}{3})
                 classStratNode3 = simDoc.createElement('subParameter');
                 classStratNode3.setAttribute('classPath', 'jmt.engine.NetStrategies.ForkStrategies.OutPath');

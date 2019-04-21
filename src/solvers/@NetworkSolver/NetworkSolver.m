@@ -270,17 +270,17 @@ classdef NetworkSolver < Solver
             error('getProbNormConst is not supported by this solver.');
         end
         
-        function Pstate = getProbState(self, ist)
+        function Pstate = getProbState(self, node, state)
             % Return marginal state probability for station ist state
             error('getProbState is not supported by this solver.');
         end
         
         function Psysstate = getProbSysState(self)
             % Return joint state probability
-            error('getStateSysProb is not supported by this solver.');
+            error('getProbSysState is not supported by this solver.');
         end
         
-        function Pnir = getProbStateAggr(self, ist)
+        function Pnir = getProbStateAggr(self, node, state_a)
             % Return marginal state probability for station ist state
             error('getProbStateAggr is not supported by this solver.');
         end
@@ -290,12 +290,12 @@ classdef NetworkSolver < Solver
             error('getProbSysStateAggr is not supported by this solver.');
         end
 
-        function tstate = getTranState(self, ist)
+        function tstate = getTranState(self, node, state)
             % Return marginal state probability for station ist state
             error('getTranState is not supported by this solver.');
         end
         
-        function tnir = getTranStateAggr(self, ist)
+        function tnir = getTranStateAggr(self, node, state_a)
             % Return marginal state probability for station ist state
             error('getTranStateAggr is not supported by this solver.');
         end

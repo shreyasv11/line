@@ -239,138 +239,123 @@ classdef SolverJMT < NetworkSolver
             end
         end
         
-        function Pr = getProbStateAggr(self, ist, ist_state)
-            if ~exist('ist','var')
-                error('getProbState requires to pass a parameter the station of interest.');
-            end
-            if ist > self.model.getNumberOfStations
-                error('Station number exceeds the number of stations in the model.');
-            end
-            state = self.model.getState;
-            if ~exist('ist_state','var')
-                ist_state = state{ist};
-            end
-            state = self.getTranStateSys;
-            qn = self.model.getStruct;
-            iat = diff(state.t);
-            [unique_states,~,IC] = unique(state.nir,'rows');
-            Pr = zeros(1,max(IC));
-            for i=1:max(IC)
-                Pr(i) = sum(iat(IC(1:end-1)==i));
-            end
-            Pr = Pr/sum(Pr);
-            [~, nir, ~, ~] = State.toMarginal(qn, ist, ist_state, self.getOptions);
-            nir=nir(:)'; % put as row
-            if isa(ist,'Station')
-                counter = 1:self.model.getNumberOfStations;
-                ist = counter(ist);
-            end
-            Pr = sum(Pr(matchrows(unique_states(:,(ist-1)*qn.nclasses + 1:qn.nclasses), nir)));
-        end
+        %% StateAggr methods
         
-        function Pr = getProbSysStateAggr(self)
-            state = self.getTranStateSys;
-            qn = self.model.getStruct;
-            iat = diff(state.t);
-            [unique_states,~,IC] = unique(state.nir,'rows');
-            Pr = zeros(1,max(IC));
-            for i=1:max(IC)
-                Pr(i) = sum(iat(IC(1:end-1)==i));
-            end
-            Pr = Pr/sum(Pr);
-            nir = [];
-            state = self.model.getState;
-            for i=1:self.model.getNumberOfStations
-                [~, nir(i,:), ~, ~] = State.toMarginal(qn, i, state{i}, self.getOptions);
-            end
-            nir=nir'; nir=nir(:)'; % put as row
-            row = matchrow(unique_states, nir);
-            if row == -1
-                Pr = 0;
-            else
-                Pr = Pr(row);
-            end
+        function Pr = getProbStateAggr(self, node, state_a)             
+             if ~exist('state_a','var')
+                 state_a = self.model.getState{self.model.getStationIndex(node)};
+             end
+             stationStateAggr = self.getTranStateAggr(node);
+             ist = self.model.getStationIndex(node);
+             rows = findrows(stationStateAggr{ist}.state, state_a);
+             t = stationStateAggr{ist}.t;
+             dt = [t(1);diff(t)];
+             Pr = sum(dt(rows))/sum(dt);
         end
-        
-        function StateSys = getTranStateSysAggr(self)
-            Q = self.model.getAvgQLenHandles();
-            Qsys = cell(size(Q));
-            for i=1:size(Q,1)
-                for j=1:size(Q,2)
-                    Qsys{i,j} = Q{i,j}.copy;
-                    Qsys{i,j}.disabled = false; % enable all
-                end
-            end
-            State =  self.getTranState(Qsys);
-            StateSys = struct();
+                
+        function sysStateAggr = getTranSysStateAggr(self)
+            statStateAggr =  self.getTranStateAggr();
+            tranSysStateAggr = cell(1,1+self.model.getNumberOfStations);
             
-            StateSys.t = [];
-            for i=1:size(Q,1)
-                for j=1:size(Q,2)
-                    StateSys.t = union(StateSys.t, State{i,j}.t);
-                end
-            end
-            
-            StateSys.nir = [];
-            for i=1:size(Q,1)
-                for j=1:size(Q,2)
-                    [~,uniqTS] = unique(State{i,j}.t);
-                    % we round the interpolation to have integer states
-                    if length(uniqTS) > 0
-                        Qijt = round(interp1(State{i,j}.t(uniqTS), State{i,j}.nir(uniqTS), StateSys.t));
-                        StateSys.nir = [StateSys.nir, Qijt];
+            tranSysStateAggr{1} = []; % timestamps
+            for i=1:self.model.getNumberOfStations % stations
+                tranSysStateAggr{1} = union(tranSysStateAggr{1}, statStateAggr{i}.t);
+            end            
+                        
+            for i=1:self.model.getNumberOfStations % stations
+                tranSysStateAggr{1+i} = [];
+                [~,uniqTS] = unique(statStateAggr{i}.t);
+                for j=1:self.model.getNumberOfClasses % classes
+                    % we floor the interpolation as we hold the last state
+                    if ~isempty(uniqTS)
+                        Qijt = floor(interp1(statStateAggr{i}.t(uniqTS), statStateAggr{i}.state(uniqTS,j), tranSysStateAggr{1}));
+                        if isnan(Qijt(end))
+                            Qijt(end)=Qijt(end-1);
+                        end
+                        tranSysStateAggr{1+i} = [tranSysStateAggr{1+i}, Qijt];
                     else
-                        Qijt = -ones(length(StateSys.t),1);
-                        StateSys.nir = [StateSys.nir, Qijt];
+                        Qijt = NaN*ones(length(tranSysStateAggr{1}),1);
+                        tranSysStateAggr{1+i} = [tranSysStateAggr{1+i}, Qijt];
                     end
                 end
-            end
+            end            
+            sysStateAggr = SystemStateAggr(self.model, tranSysStateAggr);
         end
         
-        function State = getTranStateAggr(self, Q)
-            if ~exist('Q','var')
-                Q = self.model.getAvgQLenHandles();
+        function ProbSysStateAggr = getProbSysStateAggr(self)
+            TranSysStateAggr = self.getTranSysStateAggr;
+            TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);            
+            TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
+            state = self.model.getState;
+            qn = self.model.getStruct;
+            nir = zeros(qn.nstateful,qn.nclasses);
+            for isf=1:qn.nstateful
+                ind = qn.statefulToNode(isf);
+                [~,nir(isf,:)] = State.toMarginal(qn, ind, state{isf});
+            end            
+            nir = nir';
+            rows = findrows(TSS(:,2:end), nir(:)');
+            if ~isempty(rows)
+                ProbSysStateAggr = sum(TSS(rows,1))/sum(TSS(:,1));
+            else
+                warning('The state was not seen during the simulation.');
+                ProbSysStateAggr = 0;
             end
-            State = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
-            cdfmodel = self.model.copy;
-            cdfmodel.resetNetwork;
-            isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
-            for i= 1:cdfmodel.getNumberOfStations
-                for r=1:cdfmodel.getNumberOfClasses
-                    if ~Q{i,r}.disabled
-                        ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
-                        isNodeClassLogged(ni,r) = true;
+        end        
+        
+        function stationStateAggr = getTranStateAggr(self, node)
+            Q = self.model.getAvgQLenHandles();
+            stationStateAggr = cell(self.model.getNumberOfStations,1);
+            % create a temp model
+            modelCopy = self.model.copy;
+            modelCopy.resetNetwork;
+            
+            % determine the nodes to logs
+            isNodeClassLogged = false(modelCopy.getNumberOfNodes, modelCopy.getNumberOfClasses);
+            for i= 1:modelCopy.getNumberOfStations
+                for r=1:modelCopy.getNumberOfClasses
+                    if ~Q{i,r}.disabled && nargin == 1
+                        ind = self.model.getNodeIndex(modelCopy.getStationNames{i});
+                        isNodeClassLogged(ind,r) = true;
+                    else
+                        isNodeClassLogged(node,r) = true;
                     end
                 end
-            end
+            end                        
+            % apply logging to the copied model
             Plinked = self.model.getLinkedRoutingMatrix();
             isNodeLogged = max(isNodeClassLogged,[],2);
             logpath = tempdir;
-            cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
-            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
-            logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.QLen);
-            qn = cdfmodel.getStruct;
+            modelCopy.linkAndLog(Plinked, isNodeLogged, logpath);
+            % simulate the model copy and retrieve log data
+            SolverJMT(modelCopy, self.getOptions).getAvg(); % log data
+            logData = SolverJMT.parseLogs(modelCopy, isNodeLogged, Metric.QLen);
+            
             % from here convert from nodes in logData to stations
+            qn = modelCopy.getStruct;
             for ist= 1:qn.nstations
-                ind = qn.statefulToNode(ist);
+                isf = qn.stationToStateful(ist);
+                t = [];
+                nir = cell(1,qn.nclasses);
                 for r=1:qn.nclasses
-                    if ~isempty(logData{ind,r})
-                        [~,uniqTS] = unique(logData{ind,r}.t);
-                        if isNodeClassLogged(ind,r)
-                            if ~isempty(logData{ind,r})
-                                State{ist,r} = struct();
-                                State{ist,r}.t = logData{ind,r}.t(uniqTS);
-                                State{ist,r}.nir = logData{ind,r}.QLen(uniqTS);
+                    if ~isempty(logData{isf,r})
+                        [~,uniqTS] = unique(logData{isf,r}.t);                        
+                        if isNodeClassLogged(isf,r)
+                            if ~isempty(logData{isf,r})
+                                t = logData{isf,r}.t(uniqTS);
+                                t = [t(2:end);t(end)];
+                                nir{r} = logData{isf,r}.QLen(uniqTS);
                             end
                         end
                     else
-                        State{ist,r} = struct();
-                        State{ist,r}.t = [];
-                        State{ist,r}.nir = [];
+                        nir{r} = [];
                     end
-                end
+                end                
+                stationStateAggr{ist} = StationStateAggr(self.model.stations{ist},t,cell2mat(nir));
             end
         end
+        
+        %% Cdf methods
         
         function RD = getCdfRespT(self, R)
             if ~exist('R','var')

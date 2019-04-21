@@ -1,4 +1,4 @@
-function [Pr,G,runtime] = solver_nc_joint(qn, options)
+function [Pr,G,runtime] = solver_nc_jointaggr(qn, options)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -80,7 +80,6 @@ G = pfqn_gmvald(Lchain, Nchain, mu_chain);
 Pr = 1;
 for i=1:M
     isf = qn.stationToStateful(i);
-    state_i = state{isf};
     [~,nivec] = State.toMarginal(qn, i, state{isf});
     nivec_chain = nivec * qn.chains';
     F_i = pfqn_gmvald(Lchain(i,:), nivec_chain, mu_chain(i,:));

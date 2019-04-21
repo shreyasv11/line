@@ -41,7 +41,7 @@ classdef Join < Station
         end
         
         function self = setProbRouting(self, class, destination, probability)
-            setRouting(self, class, 'Probabilities', destination, probability);
+            setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
     end

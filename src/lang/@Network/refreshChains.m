@@ -15,7 +15,7 @@ if nargin == 1
 end
 
 I = self.getNumberOfNodes();
-M = self.getNumberOfStations();
+M = self.getNumberOfStatefulNodes();
 K = self.getNumberOfClasses();
 refstat = self.getReferenceStations();
 [rt,~,csmask, rtnodes] = self.refreshRoutingMatrix(rates);

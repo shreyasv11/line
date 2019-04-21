@@ -104,7 +104,7 @@ classdef Station < StatefulNode
                 switch RoutingStrategy.toText(self.output.outputStrategy{k}{2})
                     case 'Random'
                         p(k) = 1 / nOutLinks;
-                    case 'Probabilities'
+                    case RoutingStrategy.PROB
                         for t=1:nOutLinks % for all outgoing links
                             if strcmp(self.output.outputStrategy{k}{end}{t}{1}.name, self.name)
                                 p(k) = self.output.outputStrategy{k}{end}{t}{2};
