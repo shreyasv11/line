@@ -13,6 +13,8 @@ classdef ItemSet < NetworkElement
     
     methods
         function self = ItemSet(model, name, nitems, reference)
+            % SELF = ITEMSET(MODEL, NAME, NITEMS, REFERENCE)
+            
             self@NetworkElement(name);
             self.nitems = nitems;
             self.index = 1;
@@ -25,14 +27,20 @@ classdef ItemSet < NetworkElement
         end
         
         function name = getName(self)
+            % NAME = GETNAME(SELF)
+            
             name = self.name;
         end
         
         function bool = hasReplicableItems(self)
+            % BOOL = HASREPLICABLEITEMS(SELF)
+            
             bool = self.replicable;
         end
         
         function ntypes = getNumberOfItems(self)
+            % NTYPES = GETNUMBEROFITEMS(SELF)
+            
             ntypes = self.nitems;
         end
     end

@@ -1,4 +1,6 @@
 function acts=listActivitiesOfEntry(self,entry)
+% ACTS=LISTACTIVITIESOFENTRY(SELF,ENTRY)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 G = self.lqnGraph;

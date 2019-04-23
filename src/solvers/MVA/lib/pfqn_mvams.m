@@ -1,4 +1,6 @@
 function [XN,QN,UN,CN,lGN]=pfqn_mvams(lambda,L,N,Z,mi,S)
+% [XN,QN,UN,CN,LGN]=PFQN_MVAMS(LAMBDA,L,N,Z,MI,S)
+
 % this is a general purpose script to handle mixed qns with multi-server nodes
 % S(i) number of servers in station i
 [M,R]=size(L); % get number of queues (M) and classes (R)

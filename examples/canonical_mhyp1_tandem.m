@@ -1,0 +1,1 @@
+model = canonical_mhyp1_linear(2);

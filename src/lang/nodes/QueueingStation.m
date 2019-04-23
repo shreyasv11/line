@@ -7,6 +7,8 @@ classdef QueueingStation < Queue
     methods
         %Constructor
         function self = QueueingStation(model, name, schedStrategy)
+            % SELF = QUEUEINGSTATION(MODEL, NAME, SCHEDSTRATEGY)
+            
             self@Queue(model, name, schedStrategy);
         end
     end

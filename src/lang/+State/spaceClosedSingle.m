@@ -1,4 +1,6 @@
 function SS = spaceClosedSingle(M, N)
+% SS = SPACECLOSEDSINGLE(M, N)
+
 % Copyright (c) 2012-2014, Imperial College London
 % All rights reserved.
 if M==0
@@ -9,6 +11,8 @@ end
 end
 
 function [v] = multichoose(n,k)
+% [V] = MULTICHOOSE(N,K)
+
 v=[];
 if n==1
     v=k;

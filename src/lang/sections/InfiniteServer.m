@@ -7,6 +7,8 @@ classdef InfiniteServer < ServiceSection
     methods
         %Constructor
         function self = InfiniteServer(customerClasses)
+            % SELF = INFINITESERVER(CUSTOMERCLASSES)
+            
             self@ServiceSection('InfiniteServer');
             self.numberOfServers = Inf;
             self.serviceProcess = {};
@@ -16,6 +18,8 @@ classdef InfiniteServer < ServiceSection
     
     methods (Access = 'private')
         function initServers(self, customerClasses)
+            % INITSERVERS(SELF, CUSTOMERCLASSES)
+            
             for i = 1 : length(customerClasses)
                 self.serviceProcess{1, i} = {customerClasses{1, i}.name, ServiceStrategy.ID_LI, Exp(0.0)};
             end
@@ -25,6 +29,8 @@ classdef InfiniteServer < ServiceSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object

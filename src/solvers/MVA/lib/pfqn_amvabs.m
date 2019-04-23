@@ -1,4 +1,6 @@
 function [XN,QN,UN]=pfqn_amvabs(L,N,Z,tol,maxiter,QN,weight)
+% [XN,QN,UN]=PFQN_AMVABS(L,N,Z,TOL,MAXITER,QN,WEIGHT)
+
 if ~exist('Z','var')
     Z=0*N;
 end
@@ -23,7 +25,7 @@ for it=1:maxiter
         for r=1:R
             relprio(i,r) = (QN(i,r)*weight(i,r));
         end
-    end    
+    end
     for r=1:R
         for i=1:M
             CN(i,r) = L(i,r);

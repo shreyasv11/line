@@ -1,4 +1,6 @@
 function [CNchain,XNchain] = getAvgSys(self,R,T)
+% [CNCHAIN,XNCHAIN] = GETAVGSYS(SELF,R,T)
+
 % Return average system metrics at steady state
 %
 % Copyright (c) 2012-2019, Imperial College London

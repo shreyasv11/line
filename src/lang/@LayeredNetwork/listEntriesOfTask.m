@@ -1,4 +1,6 @@
 function entries=listEntriesOfTask(self,task)
+% ENTRIES=LISTENTRIESOFTASK(SELF,TASK)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 G = self.lqnGraph;

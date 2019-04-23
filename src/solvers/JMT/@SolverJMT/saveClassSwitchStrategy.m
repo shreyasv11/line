@@ -1,4 +1,6 @@
 function [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode)
+% [SIMDOC, SECTION] = SAVECLASSSWITCHSTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

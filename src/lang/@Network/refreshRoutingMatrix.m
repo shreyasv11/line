@@ -1,4 +1,6 @@
 function [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates)
+% [RT, RTFUN, CSMASK, RTNODES] = REFRESHROUTINGMATRIX(SELF, RATES)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -87,6 +89,8 @@ if ~isempty(self.qn)
 end
 
     function p = sub_rr(ind, jnd, r, s, linksmat, state_before, state_after)
+        % P = SUB_RR(IND, JND, R, S, LINKSMAT, STATE_BEFORE, STATE_AFTER)
+        
         isf = qn.nodeToStateful(ind);
         if isempty(state_before{isf})
             p = min(linksmat(ind,jnd),1);
@@ -100,6 +104,8 @@ end
     end
 
     function p = sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after) %#ok<INUSD>
+        % P = SUB_JSQ(IND, JND, R, S, LINKSMAT, STATE_BEFORE, STATE_AFTER) %#OK<INUSD>
+        
         isf = qn.nodeToStateful(ind);
         if isempty(state_before{isf})
             p = min(linksmat(ind,jnd),1);

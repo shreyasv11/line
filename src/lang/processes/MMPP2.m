@@ -7,16 +7,20 @@ classdef MMPP2 < MarkovModulated
     methods
         %Constructor
         function self = MMPP2(lambda0,lambda1,sigma0,sigma1)
+            % SELF = MMPP2(LAMBDA0,LAMBDA1,SIGMA0,SIGMA1)
+            
             self@MarkovModulated('MMPP2',4);
             setParam(self, 1, 'lambda0', lambda0, 'java.lang.Double');
             setParam(self, 2, 'lambda1', lambda1, 'java.lang.Double');
             setParam(self, 3, 'sigma0', sigma0, 'java.lang.Double');
             setParam(self, 4, 'sigma1', sigma1, 'java.lang.Double');
-%            self.javaClass = 'jmt.engine.random.MMPP2Distr';
-%            self.javaParClass = 'jmt.engine.random.MMPP2Par';
+            %            self.javaClass = 'jmt.engine.random.MMPP2Distr';
+            %            self.javaParClass = 'jmt.engine.random.MMPP2Par';
         end
         
         function meant = getMeanT(self,t)
+            % MEANT = GETMEANT(SELF,T)
+            
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
@@ -26,7 +30,9 @@ classdef MMPP2 < MarkovModulated
         end
         
         function vart = evalVarT(self,t)
-			% Evaluate the variance-time curve at t            
+            % VART = EVALVART(SELF,T)
+            
+            % Evaluate the variance-time curve at t
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
@@ -45,6 +51,8 @@ classdef MMPP2 < MarkovModulated
         
         % inter-arrival time properties
         function mean = getMean(self)
+            % MEAN = GETMEAN(SELF)
+            
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
@@ -54,6 +62,8 @@ classdef MMPP2 < MarkovModulated
         end
         
         function scv = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
@@ -62,6 +72,8 @@ classdef MMPP2 < MarkovModulated
         end
         
         function id = getID(self) % asymptotic index of dispersion
+            % ID = GETID(SELF) % ASYMPTOTIC INDEX OF DISPERSION
+            
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
@@ -70,10 +82,14 @@ classdef MMPP2 < MarkovModulated
         end
         
         function PH = getRepresentation(self)
-			PH = map_renewal(self.getProcess(self));
-		end
-		
+            % PH = GETREPRESENTATION(SELF)
+            
+            PH = map_renewal(self.getProcess(self));
+        end
+        
         function MAP = getProcess(self)
+            % MAP = GETPROCESS(SELF)
+            
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
@@ -84,11 +100,15 @@ classdef MMPP2 < MarkovModulated
         end
         
         function n = getNumberOfPhases(self)
+            % N = GETNUMBEROFPHASES(SELF)
+            
             n = 2;
         end
         
         function bool = isImmmediate(self)
+            % BOOL = ISIMMMEDIATE(SELF)
+            
             bool = self.getMean() == 0;
         end
-    end    
+    end
 end

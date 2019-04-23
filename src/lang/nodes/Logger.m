@@ -1,8 +1,8 @@
 classdef Logger < Node
-% A node where jobs are logged upon passage.
-% 
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A node where jobs are logged upon passage.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         fileName;
@@ -25,6 +25,8 @@ classdef Logger < Node
     methods
         %Constructor
         function self = Logger(model, name, logFileName)
+            % SELF = LOGGER(MODEL, NAME, LOGFILENAME)
+            
             self@Node(name);
             [~,fileName,fileExt] = fileparts(logFileName);
             self.fileName = sprintf('%s%s',fileName,fileExt);
@@ -52,28 +54,44 @@ classdef Logger < Node
         end
         
         function ret = getStartTime(self)
+            % RET = GETSTARTTIME(SELF)
+            
             ret = self.wantStartTime;
         end
         function ret = getLoggerName(self)
+            % RET = GETLOGGERNAME(SELF)
+            
             ret = self.wantLoggerName;
         end
         function ret = getTimestamp(self)
+            % RET = GETTIMESTAMP(SELF)
+            
             ret = self.wantTimestamp;
         end
         function ret = getJobID(self)
+            % RET = GETJOBID(SELF)
+            
             ret = self.wantJobID;
         end
         function ret = getJobClass(self)
+            % RET = GETJOBCLASS(SELF)
+            
             ret = self.wantJobClass;
         end
         function ret = getTimeSameClass(self)
+            % RET = GETTIMESAMECLASS(SELF)
+            
             ret = self.wantTimeSameClass;
         end
         function ret = getTimeAnyClass(self)
+            % RET = GETTIMEANYCLASS(SELF)
+            
             ret = self.wantTimeAnyClass;
         end
         
         function setStartTime(self, bool)
+            % SETSTARTTIME(SELF, BOOL)
+            
             if bool
                 self.wantStartTime = 'true';
             else
@@ -82,6 +100,8 @@ classdef Logger < Node
         end
         
         function setTimestamp(self, bool)
+            % SETTIMESTAMP(SELF, BOOL)
+            
             if bool
                 self.wantTimestamp = 'true';
             else
@@ -90,6 +110,8 @@ classdef Logger < Node
         end
         
         function setLoggerName(self, bool)
+            % SETLOGGERNAME(SELF, BOOL)
+            
             if bool
                 self.wantLoggerName = 'true';
             else
@@ -98,6 +120,8 @@ classdef Logger < Node
         end
         
         function setTimeSameClass(self, bool)
+            % SETTIMESAMECLASS(SELF, BOOL)
+            
             if bool
                 self.wantTimeSameClass = 'true';
             else
@@ -106,6 +130,8 @@ classdef Logger < Node
         end
         
         function setTimeAnyClass(self, bool)
+            % SETTIMEANYCLASS(SELF, BOOL)
+            
             if bool
                 self.wantTimeAnyClass = 'true';
             else
@@ -114,6 +140,8 @@ classdef Logger < Node
         end
         
         function setJobID(self, bool)
+            % SETJOBID(SELF, BOOL)
+            
             if bool
                 self.wantJobID = 'true';
             else
@@ -122,6 +150,8 @@ classdef Logger < Node
         end
         
         function setJobClass(self, bool)
+            % SETJOBCLASS(SELF, BOOL)
+            
             if bool
                 self.wantJobClass = 'true';
             else
@@ -130,14 +160,20 @@ classdef Logger < Node
         end
         
         function setProbRouting(self, class, destination, probability)
+            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function setScheduling(self, class, strategy)
+            % SETSCHEDULING(SELF, CLASS, STRATEGY)
+            
             self.input.inputJobClasses{1, class.index}{2} = strategy;
         end
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {self.input, self.server, self.output};
         end
     end

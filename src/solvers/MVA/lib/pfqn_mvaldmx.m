@@ -1,4 +1,6 @@
 function [XN,QN,UN,CN] = pfqn_mvaldmx(lambda,D,N,Z,mu,S)
+% [XN,QN,UN,CN] = PFQN_MVALDMX(LAMBDA,D,N,Z,MU,S)
+
 if size(mu,2) < sum(N(isfinite(N)))
     error('MVALDMX requires to specify the load-dependent rates with one job more than the maximum closed population.');
 end
@@ -61,14 +63,14 @@ while nvec>=0
         Pc(i, 1 + 0, hnvec) = max(eps,1-sum(Pc(i, 1 + (1:nc), hnvec)));
     end
     
-%     % now compute the normalizing constant
-%     last_nnz = find(nvec>0, 1, 'last' );
-%     if sum(nvec(1:last_nnz-1)) == sum(Nc(1:last_nnz-1)) && sum(nvec((last_nnz+1):C))==0
-%         logX = log(XN(last_nnz));
-%         if ~isempty(logX)
-%             lGN = lGN - logX;
-%         end
-%     end
+    %     % now compute the normalizing constant
+    %     last_nnz = find(nvec>0, 1, 'last' );
+    %     if sum(nvec(1:last_nnz-1)) == sum(Nc(1:last_nnz-1)) && sum(nvec((last_nnz+1):C))==0
+    %         logX = log(XN(last_nnz));
+    %         if ~isempty(logX)
+    %             lGN = lGN - logX;
+    %         end
+    %     end
     
     nvec = pprod(nvec, Nc);
 end

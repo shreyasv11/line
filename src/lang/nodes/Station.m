@@ -14,6 +14,8 @@ classdef Station < StatefulNode
     methods(Hidden)
         %Constructor
         function self = Station(name)
+            % SELF = STATION(NAME)
+            
             self@StatefulNode(name);
             self.cap = Inf;
             self.classCap = [];
@@ -23,26 +25,38 @@ classdef Station < StatefulNode
     
     methods
         function setNumServers(self, value)
+            % SETNUMSERVERS(SELF, VALUE)
+            
             self.numberOfServers = value;
         end
         
         function setNumberOfServers(self, value)
+            % SETNUMBEROFSERVERS(SELF, VALUE)
+            
             self.numberOfServers = value;
         end
         
         function value = getNumServers(self)
+            % VALUE = GETNUMSERVERS(SELF)
+            
             value = self.numberOfServers;
         end
         
         function value = getNumberOfServers(self)
+            % VALUE = GETNUMBEROFSERVERS(SELF)
+            
             value = self.numberOfServers;
         end
         
         function setCapacity(self, value)
+            % SETCAPACITY(SELF, VALUE)
+            
             self.cap = value;
         end
         
         function setChainCapacity(self, values)
+            % SETCHAINCAPACITY(SELF, VALUES)
+            
             qn = self.model.getStruct;
             if numel(values) ~= qn.nchains
                 error('The method requires in input a capacity value for each chain.');
@@ -61,6 +75,8 @@ classdef Station < StatefulNode
         end
         
         function K = getNumberOfServerPhases(self)
+            % K = GETNUMBEROFSERVERPHASES(SELF)
+            
             R = size(self.server.serviceProcess,2);
             if isempty(self.numberOfServerPhases)
                 K = zeros(1,R);
@@ -74,6 +90,8 @@ classdef Station < StatefulNode
         end
         
         function isD = isServiceDisabled(self, class)
+            % ISD = ISSERVICEDISABLED(SELF, CLASS)
+            
             switch self.server.className
                 case 'ServiceTunnel'
                     isD = false;
@@ -83,20 +101,28 @@ classdef Station < StatefulNode
         end
         
         function isI = isServiceImmediate(self, class)
+            % ISI = ISSERVICEIMMEDIATE(SELF, CLASS)
+            
             isI = self.server.serviceProcess{1,class}{end}.isImmediate();
         end
         
         function R = getNumberOfServiceClasses(self)
+            % R = GETNUMBEROFSERVICECLASSES(SELF)
+            
             R = size(self.server.serviceProcess,2);
         end
         
         function [R,K,S] = getStationParams(self)
+            % [R,K,S] = GETSTATIONPARAMS(SELF)
+            
             R = self.getNumberOfServiceClasses();
             K = self.getNumberOfServerPhases();
             S = self.numberOfServers;
         end
         
         function [p] = getSelfLoopProbabilities(self)
+            % [P] = GETSELFLOOPPROBABILITIES(SELF)
+            
             R = self.getNumberOfServiceClasses();
             p = zeros(1,R);
             for k=1:R
@@ -116,6 +142,8 @@ classdef Station < StatefulNode
         end
         
         function [mu,phi] = getCoxSourceRates(self)
+            % [MU,PHI] = GETCOXSOURCERATES(SELF)
+            
             R = size(self.input.sourceClasses,2);
             mu = cell(1,R);
             phi = cell(1,R);
@@ -168,6 +196,8 @@ classdef Station < StatefulNode
         end
         
         function [ph] = getPHSourceRates(self)
+            % [PH] = GETPHSOURCERATES(SELF)
+            
             nclasses = size(self.input.sourceClasses,2);
             ph = cell(1,nclasses);
             for r=1:nclasses
@@ -188,6 +218,8 @@ classdef Station < StatefulNode
         end
         
         function [mu,phi] = getCoxServiceRates(self)
+            % [MU,PHI] = GETCOXSERVICERATES(SELF)
+            
             R = size(self.server.serviceProcess,2);
             mu = cell(1,R);
             phi = cell(1,R);
@@ -250,6 +282,8 @@ classdef Station < StatefulNode
         end
         
         function [ph] = getPHServiceRates(self)
+            % [PH] = GETPHSERVICERATES(SELF)
+            
             nclasses = size(self.server.serviceProcess,2);
             ph = cell(1,nclasses);
             for r=1:nclasses

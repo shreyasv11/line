@@ -1,4 +1,6 @@
 function jumps = ode_jumps_new(M, K, match, q_indices, P, Kic, strategy)
+% JUMPS = ODE_JUMPS_NEW(M, K, MATCH, Q_INDICES, P, KIC, STRATEGY)
+
 jumps = []; %returns state changes triggered by all the events
 for i = 1 : M   %state changes from departures in service phases 2...
     for c = 1:K

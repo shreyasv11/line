@@ -1,5 +1,5 @@
 classdef StatefulClassSwitcher < ClassSwitcher
-    % An abstract class for a state-dependent class switch 
+    % An abstract class for a state-dependent class switch
     %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
@@ -7,13 +7,17 @@ classdef StatefulClassSwitcher < ClassSwitcher
     methods
         %Constructor
         function self = StatefulClassSwitcher(classes, name)
+            % SELF = STATEFULCLASSSWITCHER(CLASSES, NAME)
+            
             self@ClassSwitcher(classes, name);
             self.csFun = @(r, s, state, statep) StatefulClassSwitcher.classHolderFun(r, s, state, statep); % do nothing by default
-        end        
+        end
     end
     
     methods (Static)
-        function prob = classHolderFun(r, s, state, statep) 
+        function prob = classHolderFun(r, s, state, statep)
+            % PROB = CLASSHOLDERFUN(R, S, STATE, STATEP)
+            
             if ~isempty(state)
                 % probability of switching from r to s given state
                 if r == s

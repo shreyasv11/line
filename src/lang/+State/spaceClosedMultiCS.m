@@ -1,4 +1,6 @@
 function SS = spaceClosedMultiCS(M, N, chains)
+% SS = SPACECLOSEDMULTICS(M, N, CHAINS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

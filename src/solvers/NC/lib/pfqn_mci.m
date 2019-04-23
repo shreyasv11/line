@@ -1,4 +1,6 @@
 function [G,lG,lZ] = pfqn_mci(D,N,Z,I,variant)
+% [G,LG,LZ] = PFQN_MCI(D,N,Z,I,VARIANT)
+
 % gmvamcint - normalizing constant estimation via Monte Carlo Integration
 %
 % Syntax:
@@ -71,27 +73,27 @@ elseif strcmpi(variant,'rm') % repairman problem
     end
 end
 try
-for r=1:R
-    logfact(r) = sum(log(1:N(r)));  % log N(r)!
-end
-
-% uniform sampling
-persistent VL
-if isempty(VL) || size(VL,1) < I || size(VL,2) < M
-    VL = log(rand(I,M));
-end
-V = repmat(-1./gamma,I,1).*VL(1:I,1:M);
-ZI = repmat(Z,I,1);
-% importance sampling
-lZ = -(ones(1,M) - gamma) * V' - sum(log(gamma)) - sum(logfact) + N*log(V*D+ZI)';
-
-
-lG = logmeanexp(lZ); % return average
-
-if isinf(lG)
-%    warning('Floating-point range exception, Monte Carlo integration will return an approximation.');
-    lG = max(lZ);
-end
-G=exp(lG);
-
+    for r=1:R
+        logfact(r) = sum(log(1:N(r)));  % log N(r)!
+    end
+    
+    % uniform sampling
+    persistent VL
+    if isempty(VL) || size(VL,1) < I || size(VL,2) < M
+        VL = log(rand(I,M));
+    end
+    V = repmat(-1./gamma,I,1).*VL(1:I,1:M);
+    ZI = repmat(Z,I,1);
+    % importance sampling
+    lZ = -(ones(1,M) - gamma) * V' - sum(log(gamma)) - sum(logfact) + N*log(V*D+ZI)';
+    
+    
+    lG = logmeanexp(lZ); % return average
+    
+    if isinf(lG)
+        %    warning('Floating-point range exception, Monte Carlo integration will return an approximation.');
+        lG = max(lZ);
+    end
+    G=exp(lG);
+    
 end

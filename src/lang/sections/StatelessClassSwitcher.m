@@ -7,6 +7,8 @@ classdef StatelessClassSwitcher < ClassSwitcher
     methods
         %Constructor
         function self = StatelessClassSwitcher(classes, csMatrix)
+            % SELF = STATELESSCLASSSWITCHER(CLASSES, CSMATRIX)
+            
             self@ClassSwitcher(classes, 'StatelessClassSwitcher');
             % this is slower than indexing the matrix, but it is a small
             % matrix anyway

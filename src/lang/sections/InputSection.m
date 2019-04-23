@@ -12,6 +12,8 @@ classdef InputSection < Section
     methods(Hidden)
         %Constructor
         function self = InputSection(className)
+            % SELF = INPUTSECTION(CLASSNAME)
+            
             self@Section(className);
         end
     end

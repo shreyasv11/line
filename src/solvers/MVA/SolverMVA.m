@@ -6,11 +6,24 @@ classdef SolverMVA < NetworkSolver
     
     methods
         function self = SolverMVA(model,varargin)
+            % SELF = SOLVERMVA(MODEL,VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
+        function setOptions(self, options)
+            % SETOPTIONS(SELF, OPTIONS)
+            % Assign the solver options
+            
+            self.checkOptions(options);
+            setOptions@Solver(self,options);
+        end
+        
         function runtime = run(self)
+            % RUNTIME = RUN(SELF)
+            % Run the solver
+            
             T0=tic;
             options = self.getOptions;
             if ~self.supports(self.model)
@@ -30,6 +43,8 @@ classdef SolverMVA < NetworkSolver
         end
         
         function [lNormConst] = getProbNormConst(self)
+            % [LNORMCONST] = GETPROBNORMCONST(SELF)
+            
             if ~isempty(self.result)
                 lNormConst = self.result.Prob.logNormConst;
             else
@@ -41,6 +56,8 @@ classdef SolverMVA < NetworkSolver
         end
         
         function [Pnir,logPnir] = getProbStateAggr(self, ist)
+            % [PNIR,LOGPNIR] = GETPROBSTATEAGGR(SELF, IST)
+            
             if ~exist('ist','var')
                 error('getProbStateAggr requires to pass a parameter the station of interest.');
             end
@@ -54,23 +71,30 @@ classdef SolverMVA < NetworkSolver
             qn = self.model.getStruct;
             N = qn.njobs;
             if all(isfinite(N))
-                state = self.model.getState{qn.stationToStateful(ist)};
-                [~, nir, ~, ~] = State.toMarginal(qn, ist, state, self.getOptions);
-                % Binomial approximation with mean fitted to queue-lengths.
-                % Rainer Schmidt, "An approximate MVA ...", PEVA 29:245-254, 1997.
-                logPnir = 0;
-                for r=1:size(nir,2)
-                    logPnir = logPnir + nchoosekln(N(r),nir(r));
-                    logPnir = logPnir + nir(r)*log(Q(ist,r)/N(r));
-                    logPnir = logPnir + (N(r)-nir(r))*log(1-Q(ist,r)/N(r));
+                switch options.method
+                    case 'exact'
+                        error('Exact marginal state probabilities not available yet in SolverMVA.');
+                    otherwise
+                        state = self.model.getState{qn.stationToStateful(ist)};
+                        [~, nir, ~, ~] = State.toMarginal(qn, ist, state, self.getOptions);
+                        % Binomial approximation with mean fitted to queue-lengths.
+                        % Rainer Schmidt, "An approximate MVA ...", PEVA 29:245-254, 1997.
+                        logPnir = 0;
+                        for r=1:size(nir,2)
+                            logPnir = logPnir + nchoosekln(N(r),nir(r));
+                            logPnir = logPnir + nir(r)*log(Q(ist,r)/N(r));
+                            logPnir = logPnir + (N(r)-nir(r))*log(1-Q(ist,r)/N(r));
+                        end
+                        Pnir = real(exp(logPnir));
                 end
-                Pnir = real(exp(logPnir));
             else
                 error('getProbStateAggr not yet implemented for models with open classes.');
             end
         end
         
         function [Pnir,logPn] = getProbSysStateAggr(self)
+            % [PNIR,LOGPN] = GETPROBSYSSTATEAGGR(SELF)
+            
             if isempty(self.result)
                 self.run;
             end
@@ -78,30 +102,37 @@ classdef SolverMVA < NetworkSolver
             qn = self.model.getStruct;
             N = qn.njobs;
             if all(isfinite(N))
-                state = self.model.getState;
-                % Binomial approximation with mean fitted to queue-lengths.
-                % Rainer Schmidt, "An approximate MVA ...", PEVA 29:245-254, 1997.
-                logPn = sum(factln(N));
-                for ist=1:qn.nstations
-                    [~, nir, ~, ~] = State.toMarginal(qn, ist, state{ist}, self.getOptions);
-%                    logPn = logPn - log(sum(nir));
-                    for r=1:qn.nclasses
-                        logPn = logPn - factln(nir(r));
-                        if Q(ist,r)>0
-                        logPn = logPn + nir(r)*log(Q(ist,r)/N(r));
+                switch options.method
+                    case 'exact'
+                        error('Exact joint state probabilities not available yet in SolverMVA.');
+                    otherwise
+                        state = self.model.getState;
+                        % Binomial approximation with mean fitted to queue-lengths.
+                        % Rainer Schmidt, "An approximate MVA ...", PEVA 29:245-254, 1997.
+                        logPn = sum(factln(N));
+                        for ist=1:qn.nstations
+                            [~, nir, ~, ~] = State.toMarginal(qn, ist, state{ist}, self.getOptions);
+                            %                    logPn = logPn - log(sum(nir));
+                            for r=1:qn.nclasses
+                                logPn = logPn - factln(nir(r));
+                                if Q(ist,r)>0
+                                    logPn = logPn + nir(r)*log(Q(ist,r)/N(r));
+                                end
+                            end
                         end
-                    end
+                        Pnir = real(exp(logPn));
                 end
-                Pnir = real(exp(logPn));
             else
                 error('getProbStateAggr not yet implemented for models with open classes.');
             end
-        end        
+        end
         
     end
     
     methods(Static)
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source',...
                 'ClassSwitch','DelayStation','Queue',...
@@ -115,6 +146,8 @@ classdef SolverMVA < NetworkSolver
         end
         
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverMVA.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
@@ -122,7 +155,17 @@ classdef SolverMVA < NetworkSolver
     end
     
     methods (Static)
+        function checkOptions(options)
+            % CHECKOPTIONS(OPTIONS)
+            
+            solverName = mfilename;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                error('Finite timespan not supported in %s',solverName);
+            end
+        end
         function options = defaultOptions(self)
+            % OPTIONS = DEFAULTOPTIONS(SELF)
+            
             options = Solver.defaultOptions();
             options.iter_max = 10^3;
             options.iter_tol = 10^-6;

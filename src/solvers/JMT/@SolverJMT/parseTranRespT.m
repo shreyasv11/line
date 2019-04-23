@@ -1,4 +1,6 @@
 function [classResT, jobRespT, jobResTArvTS] = parseTranRespT(fileArv, fileDep)
+% [CLASSREST, JOBRESPT, JOBRESTARVTS] = PARSETRANRESPT(FILEARV, FILEDEP)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -41,7 +43,7 @@ for id=uIDs
             jobResTArvTS{1+id}=jobData(1:2:end-1); % unclear what happens in case of dropping
             jobRespT{1+id}=jobData(2:2:end-1)-jobData(1:2:end-1); % unclear what happens in case of dropping
             jobArvClass{1+id} = jobClassData{1+id}(1:2:end-1);
-       end
+        end
     else
         jobResTArvTS{1+id}=min(jobData(:,1));
         jobRespT{1+id}=max(jobData(:,1))-min(jobData(:,1));

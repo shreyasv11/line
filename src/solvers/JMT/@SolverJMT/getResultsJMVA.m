@@ -1,4 +1,6 @@
 function [result, parsed] = getResultsJMVA(self)
+% [RESULT, PARSED] = GETRESULTSJMVA(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -10,7 +12,7 @@ try
     else
         error('JMT did not output a result file, the analysis has likely failed.');
     end
-catch me    
+catch me
     error('Unknown error upon parsing JMT result file. ');
 end
 self.result.('solver') = self.getName();
@@ -217,13 +219,13 @@ for i=1:length(statres)
                         s.meanValue = s.meanValue * alpha(i,k);
                     case 'Number of Customers'
                         % Q(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
-                        s.meanValue = s.meanValue * ST(i,k) / STchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);                       
+                        s.meanValue = s.meanValue * ST(i,k) / STchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
                     case 'Residence time'
-                        s.('measureType') = 'Response Time';                        
+                        s.('measureType') = 'Response Time';
                         s.meanValue = s.meanValue / qn.visits{c}(i,k); % this is to convert from JMVA's residence into LINE's response time per visit
-                        if isinf(qn.nservers(i))                        
+                        if isinf(qn.nservers(i))
                             s.meanValue = s.meanValue * ST(i,k) / STchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
-                        else                            
+                        else
                             s.meanValue = s.meanValue * ST(i,k) / STchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
                         end
                     otherwise
@@ -234,7 +236,7 @@ for i=1:length(statres)
                 s.('nodeType') = 'station';
                 s.('precision') = Inf;
                 s.('station') = statres(i).ATTRIBUTE.station;
-                s.('successful') = classres(c).measure(m).ATTRIBUTE.successful;                
+                s.('successful') = classres(c).measure(m).ATTRIBUTE.successful;
                 self.result.metric{end+1} = s;
             end
         end

@@ -3,10 +3,12 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
     %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
-
+    
     methods (Static)
         
         function cx = fitCentral(MEAN,VAR,SKEW)
+            % CX = FITCENTRAL(MEAN,VAR,SKEW)
+            
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
             SCV = VAR/MEAN^2;
@@ -45,6 +47,8 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
         end
         
         function cx = fitMean(MEAN)
+            % CX = FITMEAN(MEAN)
+            
             p = 1.0-Distrib.Tol;
             l0 = 1/MEAN;
             l1 = 1/MEAN;
@@ -52,6 +56,8 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
         end
         
         function cx = fitMeanAndSCV(MEAN, SCV)
+            % CX = FITMEANANDSCV(MEAN, SCV)
+            
             % Fit a 2-phase Coxian distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             if (SCV <1 && SCV >=0.5)
                 p = 0.0;

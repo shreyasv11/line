@@ -1,4 +1,6 @@
 function self = generateGraph(self)
+% SELF = GENERATEGRAPH(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -63,7 +65,7 @@ for p=1:length(self.processors)
             ctre = ctre + 1;
             fullname{end+1} = self.processors(p).tasks(t).entries(e).name;
             name{end+1} = sprintf('E%d',ctre);
-            eidx = length(name);            
+            eidx = length(name);
             entryname = name{end};
             type{end+1} = 'E';
             demand(end+1)= 0.0;
@@ -143,7 +145,7 @@ PostType = [];
 PreType = [];
 for p=1:length(proc)
     tasks_p = proc(p).tasks;
-    for t=1:length(tasks_p)        
+    for t=1:length(tasks_p)
         if wantProcs
             EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,proc(p).tasks(t).name);
             EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,proc(p).name);
@@ -255,7 +257,7 @@ for e=1:size(EndNodes,1) % do not merge with previous as addedge does mess
 end
 
 % fix all activities
-for j=find(cellfun(@(c) strcmpi(c,'NaN'),self.lqnGraph.Nodes.Entry))'    
+for j=find(cellfun(@(c) strcmpi(c,'NaN'),self.lqnGraph.Nodes.Entry))'
     self.lqnGraph.Nodes.Entry{j} = self.findEntryOfActivity(self.lqnGraph.Nodes.Name{j});
 end
 % for i=1:numnodes(G)

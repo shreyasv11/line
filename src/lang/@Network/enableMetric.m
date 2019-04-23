@@ -1,4 +1,6 @@
 function self = enableMetric(self, Y)
+% SELF = ENABLEMETRIC(SELF, Y)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

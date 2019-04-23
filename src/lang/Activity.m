@@ -23,6 +23,8 @@ classdef Activity < LayeredNetworkElement
         
         %constructor
         function obj = Activity(model, name, hostDemand, boundToEntry, phase)
+            % OBJ = ACTIVITY(MODEL, NAME, HOSTDEMAND, BOUNDTOENTRY, PHASE)
+            
             if ~exist('name','var')
                 error('Constructor requires to specify at least: name, hostDemandMean.');
             end
@@ -49,6 +51,8 @@ classdef Activity < LayeredNetworkElement
         end
         
         function obj = setParent(obj, parentName)
+            % OBJ = SETPARENT(OBJ, PARENTNAME)
+            
             if isa(parentName,'Entry') ||  isa(parentName,'Task')
                 obj.parentName = parentName.name;
                 obj.parent = parentName;
@@ -59,11 +63,15 @@ classdef Activity < LayeredNetworkElement
         end
         
         function obj = on(obj, parent)
+            % OBJ = ON(OBJ, PARENT)
+            
             parent.addActivity(obj);
             obj.parent = parent;
         end
         
         function obj = repliesTo(obj, entry)
+            % OBJ = REPLIESTO(OBJ, ENTRY)
+            
             if ~isempty(obj.parent)
                 switch obj.parent.scheduling
                     case SchedStrategy.REF
@@ -77,6 +85,8 @@ classdef Activity < LayeredNetworkElement
         end
         
         function obj = boundTo(obj, entry)
+            % OBJ = BOUNDTO(OBJ, ENTRY)
+            
             if isa(entry,'Entry')
                 obj.boundToEntry = entry.name;
             elseif ischar(entry)
@@ -88,6 +98,8 @@ classdef Activity < LayeredNetworkElement
         
         %synchCall
         function obj = synchCall(obj, synchCallDest, synchCallMean)
+            % OBJ = SYNCHCALL(OBJ, SYNCHCALLDEST, SYNCHCALLMEAN)
+            
             if ~exist('synchCallMean','var')
                 synchCallMean = 1.0;
             end
@@ -101,6 +113,8 @@ classdef Activity < LayeredNetworkElement
         
         %asynchCall
         function obj = asynchCall(obj, asynchCallDest, asynchCallMean)
+            % OBJ = ASYNCHCALL(OBJ, ASYNCHCALLDEST, ASYNCHCALLMEAN)
+            
             if nargin == 3
                 if ischar(asynchCallDest)
                     obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest;

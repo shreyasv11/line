@@ -6,6 +6,7 @@ classdef HyperExp < MarkovianDistribution
     
     methods
         function self = HyperExp(varargin)
+            % SELF = HYPEREXP(VARARGIN)
             % Constructs a two-phase exponential distribution from
             % probability of selecting phase 1 and the two phase rates
             self@MarkovianDistribution('HyperExp',nargin);
@@ -14,8 +15,8 @@ classdef HyperExp < MarkovianDistribution
                 lambda = varargin{2};
                 setParam(self, 1, 'p', p, 'java.lang.Double');
                 setParam(self, 2, 'lambda', lambda, 'java.lang.Double');
-%                self.javaClass = ''; % no corresponding class in JMT
-%                self.javaParClass = ''; % no corresponding class in JMT
+                %                self.javaClass = ''; % no corresponding class in JMT
+                %                self.javaParClass = ''; % no corresponding class in JMT
             elseif length(varargin)==3
                 p1 = varargin{1};
                 lambda1 = varargin{2};
@@ -29,6 +30,7 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
             % Get distribution mean
             if self.getNumberOfPhases == 2
                 p = self.getParam(1).paramValue;
@@ -41,7 +43,8 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function SCV = getSCV(self)
-            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+            % SCV = GETSCV(SELF)
+            % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             if self.getNumberOfPhases == 2
                 p = self.getParam(1).paramValue;
                 mu1 = self.getParam(2).paramValue;
@@ -53,7 +56,10 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function Ft = evalCDF(self,t)
+            % FT = EVALCDF(SELF,T)
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             if self.getNumberOfPhases == 2
                 p = self.getParam(1).paramValue;
                 mu1 = self.getParam(2).paramValue;
@@ -65,6 +71,7 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
+            % PH = GETREPRESENTATION(SELF)
             % Return the renewal process associated to the distribution
             p = self.getParam(1).paramValue;
             n = length(p);
@@ -83,6 +90,7 @@ classdef HyperExp < MarkovianDistribution
     
     methods(Static)
         function he = fitCentral(MEAN, VAR, SKEW)
+            % HE = FITCENTRAL(MEAN, VAR, SKEW)
             % Fit distribution from first three central moments (mean,
             % variance, skewness)
             SCV = VAR/MEAN^2;
@@ -102,16 +110,19 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function he = fitRate(RATE)
+            % HE = FITRATE(RATE)
             % Fit distribution with given rate
             he = HyperExp(p, RATE, RATE);
         end
         
         function he = fitMean(MEAN)
+            % HE = FITMEAN(MEAN)
             % Fit distribution with given mean
             he = HyperExp(p, 1/MEAN, 1/MEAN);
         end
         
         function he = fitMeanAndSCV(MEAN, SCV)
+            % HE = FITMEANANDSCV(MEAN, SCV)
             % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             [~,mu1,mu2,p] = map_hyperexp(MEAN,SCV);
             he = HyperExp(p, mu1, mu2);

@@ -1,8 +1,8 @@
 % classdef ERandEnv < ESolver
 % % Copyright (c) 2012-2019, Imperial College London
 % % All rights reserved.
-% 
-%     
+%
+%
 %     properties
 %         holdingTimes;
 %         transitionMatrix;
@@ -10,36 +10,41 @@
 %         solversInit;
 %         solversIter;
 %     end
-%     
+%
 %     methods
 %         function self = ERandEnv(networks,holdingTimes,transitionMatrix,options)
+% SELF = ERANDENV(NETWORKS,HOLDINGTIMES,TRANSITIONMATRIX,OPTIONS)
+
 %             self@ESolver(networks,options);
 %             self.transitionMatrix = transitionMatrix;
 %             self.holdingTimes = holdingTimes;
 %         end
-%         
+%
 %         function runtime = run(self)
+% RUNTIME = RUN(SELF)
+% Run the solver
+
 %             tic;
 %                 options = self.getOptions;
 %             if ~isfield(options,'verbose')
 %                 options.verbose = 0;
 %             end
-%             
+%
 %             if ~isfield(options,'samples')
 %                 options.samples = 1e4;
 %             end
-%             
+%
 %             if ~isfield(options,'iter_max')
 %                 options.iter_max = 100;
 %             end
 %             if ~isfield(options,'iter_tol')
 %                 options.iter_tol = 1e-4;
 %             end
-%             
+%
 %             if ~isfield(options,'force')
 %                 options.force = false;
 %             end
-%             
+%
 %             for e=1:length(self.models)
 %                 if ~options.force && ~self.supports(self.models{e})
 %                     if options.verbose
@@ -49,21 +54,21 @@
 %                     return
 %                 end
 %             end
-%             
+%
 %             if ~isfield(options,'seed')
 %                 options.seed = randi([1,1e6]);
 %             end
-%             
+%
 %             if isfield(options,'seed')
 %                 rand('seed',options.seed);
 %             end
-%             
+%
 %             if ~isfield(options,'timespan')
 %                 options.timespan = [0,Inf];
 %             end
-%             
+%
 %             E = length(self.models);
-%             
+%
 %             self.solversIter = {};
 %             lambda=zeros(1,E);
 %             A=zeros(E); I=eye(E);
@@ -74,7 +79,7 @@
 %                 for h=1:E
 %                     A(e,h)=-lambda(e)*(I(e,h)-self.transitionMatrix(e,h));
 %                 end
-%             end         
+%             end
 %             pi = ctmc_solve(A);
 %             psrc = zeros(E);
 %             for e = 1:E
@@ -85,13 +90,13 @@
 %                     psrc(:,e) = psrc(:,e) / sum(psrc(:,e));
 %                 end
 %             end
-%             
+%
 %             for e = 1:E
 %                 [Qt,Ut,Xt] = self.models{e}.getTranHandles();
 %                 self.models{e}.initFromMarginal(QN);
 %                 self.handlers{e} = {Qt,Ut,Xt};
 %             end
-%             
+%
 %             %% initialize
 %             for it=1:options.iter_max
 %                 QE=cell(1,E);
@@ -136,7 +141,7 @@
 %                     end
 %                 end
 %             end
-%             
+%
 %             QN=0*QE{e};
 %             UN=0*UE{e};
 %             TN=0*TE{e};
@@ -155,12 +160,16 @@
 %             %    self.result.Avg.C = C;
 %             self.result.runtime = runtime;
 %         end
-%         
+%
 %         function name = getName(self)
+% NAME = GETNAME(SELF)
+
 %             name = mfilename;
 %         end
-%         
+%
 %         function [results,runtime] = solve(self, options)
+% [RESULTS,RUNTIME] = SOLVE(SELF, OPTIONS)
+
 %             %            try
 %                 options = self.getOptions;
 %             runtime = self.run();
@@ -169,8 +178,10 @@
 %             %                error(getReport(me));
 %             %            end
 %         end
-%         
+%
 %         function [QNclass, UNclass, TNclass] = getAvg(self)
+% [QNCLASS, UNCLASS, TNCLASS] = GETAVG(SELF)
+
 %             if isempty(self.result) || (isfield(self.options,'force') && self.options.force)
 %                 self.solve(self.options);
 %                 if isempty(self.result)
@@ -185,26 +196,28 @@
 %             TNclass = self.result.Avg.T;
 %         end
 %     end
-%     
+%
 %     methods (Static)
 %         function [bool, featSupported] = supports(model)
+% [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+
 %             featUsed = model.getUsedLangFeatures();
-%             
+%
 %             featSupported = SolverFeatureSet;
-%             
+%
 %             % Nodes
 %             featSupported.setTrue('ClassSwitch');
 %             featSupported.setTrue('DelayStation');
 %             featSupported.setTrue('Queue');
 %             featSupported.setTrue('Sink');
 %             featSupported.setTrue('Source');
-%             
+%
 %             % Distributions
 %             featSupported.setTrue('Cox2');
 %             featSupported.setTrue('Erlang');
 %             featSupported.setTrue('Exponential');
 %             featSupported.setTrue('HyperExp');
-%             
+%
 %             % Sections
 %             featSupported.setTrue('StatelessClassSwitcher'); % Section
 %             featSupported.setTrue('InfiniteServer'); % Section
@@ -215,17 +228,17 @@
 %             featSupported.setTrue('JobSink'); % Section
 %             featSupported.setTrue('RandomSource'); % Section
 %             featSupported.setTrue('ServiceTunnel'); % Section
-%             
+%
 %             % Scheduling strategy
 %             featSupported.setTrue('SchedStrategy_INF');
 %             featSupported.setTrue('SchedStrategy_PS');
-%             
+%
 %             % Customer Classes
 %             featSupported.setTrue('ClosedClass');
 %             featSupported.setTrue('OpenClass');
-%             
+%
 %             bool = SolverFeatureSet.supports(featSupported, featUsed);
 %         end
 %     end
 % end
-% 
+%

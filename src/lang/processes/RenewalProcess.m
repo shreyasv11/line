@@ -11,13 +11,17 @@ classdef RenewalProcess < SinkProcess
     methods (Hidden)
         %Constructor
         function self = RenewalProcess(distrib)
+            % SELF = RENEWALPROCESS(DISTRIB)
+            
             self@SinkProcess('RenewalProcess',1);
             setParam(self, 1, 'distrib', distrib, 'java.lang.Double');
         end
     end
     
-    methods        
+    methods
         function mt = getMeanT(self, t, steps)
+            % MT = GETMEANT(SELF, T, STEPS)
+            
             distrib =  self.getParam(1).paramValue;
             if ~exist('steps','var')
                 steps = t/distrib.getMean()*20;
@@ -36,10 +40,14 @@ classdef RenewalProcess < SinkProcess
         end
         
         function vart = evalVarT(self,t)
-			% Evaluate the variance-time curve at t            
+            % VART = EVALVART(SELF,T)
+            
+            % Evaluate the variance-time curve at t
         end
         
         function mean = getMean(self)
+            % MEAN = GETMEAN(SELF)
+            
             distrib =  self.getParam(1).paramValue;
             mean = distrib.getMean;
         end

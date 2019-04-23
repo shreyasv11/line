@@ -1,7 +1,8 @@
 function self = link(self, P)
+% SELF = LINK(SELF, P)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-
 
 isReset = false;
 if ~isempty(self.qn)
@@ -12,6 +13,10 @@ end
 R = self.getNumberOfClasses;
 M = self.getNumberOfNodes;
 
+if ~iscell(P) && R>1
+    error('Multiclass model: the linked routing matrix P must be a cell array, e.g., P=model.initRoutingMatrix; P{1}=P1; P{2}=P2.');
+end
+
 isLinearP = true;
 for s=2:R
     for r=1:R
@@ -20,14 +25,14 @@ for s=2:R
         end
     end
 end
-    
-for i=self.getDummys   
+
+for i=self.getDummys
     for r=1:R
         if iscell(P)
             if isLinearP
                 P{r}(i,self.getSink) = 1.0;
             else
-                P{r,r}(i,self.getSink) = 1.0;                
+                P{r,r}(i,self.getSink) = 1.0;
             end
         else
             P(i,self.getSink) = 0.0;

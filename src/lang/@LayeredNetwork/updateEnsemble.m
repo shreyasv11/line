@@ -1,4 +1,6 @@
 function self = updateEnsemble(self, isBuild, deepUpdate)
+% SELF = UPDATEENSEMBLE(SELF, ISBUILD, DEEPUPDATE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 ensemble = self.ensemble;
@@ -210,25 +212,25 @@ for net=1:length(graphLayer)
                 end
                 if ~isBuild
                     [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
-                end                
+                end
             else % convolution of thinkTime and interArrivalFromUpperLayer processes
-% The code will never enter this section since thinkTime is available only
-% in the reference task that has no arrivals from an upper layer
-%                 thinkTimeMAP = taskobj.thinkTime.getRepresentation();
-%                 D0 = [thinkTimeMAP{1},sum(thinkTimeMAP{2},2);zeros(1,size(thinkTimeMAP{1},2)),-interArrivalFromUpperLayer];
-%                 D1 = zeros(size(D0)); D1(end,1:end-1) = interArrivalFromUpperLayer*map_pie(thinkTimeMAP);
-%                 destEntryMAP = {D0,D1};
-%                 destEntryMean = map_mean(destEntryMAP);
-%                 destEntrySCV = map_scv(destEntryMAP);
-%                 destEntryProcess = Cox2.fitMeanAndSCV(destEntryMean,destEntrySCV);
-%                 if destEntryMean == 0
-%                     destEntryProcess = Exp(Distrib.InfRate);
-%                     destEntrySCV = 1;
-%                     demandMu = Distrib.InfRate;
-%                     demandPhi = 1.0;
-%                 elseif ~isBuild
-%                     [demandMu,demandPhi] = Coxian.fitMeanAndSCV(destEntryMean, destEntrySCV);
-%                 end
+                % The code will never enter this section since thinkTime is available only
+                % in the reference task that has no arrivals from an upper layer
+                %                 thinkTimeMAP = taskobj.thinkTime.getRepresentation();
+                %                 D0 = [thinkTimeMAP{1},sum(thinkTimeMAP{2},2);zeros(1,size(thinkTimeMAP{1},2)),-interArrivalFromUpperLayer];
+                %                 D1 = zeros(size(D0)); D1(end,1:end-1) = interArrivalFromUpperLayer*map_pie(thinkTimeMAP);
+                %                 destEntryMAP = {D0,D1};
+                %                 destEntryMean = map_mean(destEntryMAP);
+                %                 destEntrySCV = map_scv(destEntryMAP);
+                %                 destEntryProcess = Cox2.fitMeanAndSCV(destEntryMean,destEntrySCV);
+                %                 if destEntryMean == 0
+                %                     destEntryProcess = Exp(Distrib.InfRate);
+                %                     destEntrySCV = 1;
+                %                     demandMu = Distrib.InfRate;
+                %                     demandPhi = 1.0;
+                %                 elseif ~isBuild
+                %                     [demandMu,demandPhi] = Coxian.fitMeanAndSCV(destEntryMean, destEntrySCV);
+                %                 end
             end
             if isBuild
                 node{1}.setService(jobclass{class_entry}, destEntryProcess);
@@ -422,7 +424,7 @@ for net=1:length(graphLayer)
                                 qn.rates(1,jobclass{class_synchcall}.index) = destEntryRate;
                                 qn.mu{1,jobclass{class_synchcall}.index} = destEntryRate;
                                 qn.ph{1,jobclass{class_synchcall}.index} = entryRT.getRepresentation;
-                           end
+                            end
                             if isBuild % if we are building the model for the first time
                                 %                                node{2}.setService(jobclass{class_synchcall}, Disabled());
                                 node{2}.setService(jobclass{class_synchcall}, Exp(Distrib.InfRate));
@@ -502,6 +504,8 @@ return
 end
 
 function myP = initclass(myP,M,R)
+% MYP = INITCLASS(MYP,M,R)
+
 P0 = zeros(M);
 myP{R+1,R+1} = P0;
 for c=1:R

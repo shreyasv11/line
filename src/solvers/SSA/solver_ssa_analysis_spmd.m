@@ -1,4 +1,6 @@
 function [XN,UN,QN,RN,TN,CN]=solver_ssa_analysis_spmd(laboptions, qn, qnc, PH)
+% [XN,UN,QN,RN,TN,CN]=SOLVER_SSA_ANALYSIS_SPMD(LABOPTIONS, QN, QNC, PH)
+
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 

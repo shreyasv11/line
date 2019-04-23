@@ -8,6 +8,8 @@ classdef OpenClass < JobClass
         
         %Constructor
         function self = OpenClass(model, name, prio)
+            % SELF = OPENCLASS(MODEL, NAME, PRIO)
+            
             self@JobClass('open', name);
             if nargin >= 3 && isa(prio,'Source')
                 % user error, source passed as ref station
@@ -46,6 +48,8 @@ classdef OpenClass < JobClass
         end
         
         function setReferenceStation(class, source)
+            % SETREFERENCESTATION(CLASS, SOURCE)
+            
             if ~isa(source,'Source')
                 error('The reference station for an open class must be a Source.');
             end

@@ -1,4 +1,6 @@
 function [TNchain] = getAvgSysTput(self,T)
+% [TNCHAIN] = GETAVGSYSTPUT(SELF,T)
+
 % Return average system throughputs at steady state
 %
 % Copyright (c) 2012-2019, Imperial College London

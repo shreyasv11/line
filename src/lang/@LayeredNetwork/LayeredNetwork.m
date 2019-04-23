@@ -36,6 +36,8 @@ classdef LayeredNetwork < Model & Ensemble
         
         % constructor
         function self = LayeredNetwork(name, filename)
+            % SELF = LAYEREDNETWORK(NAME, FILENAME)
+            
             self@Ensemble({})
             if ~exist('name','var')
                 [~,name]=fileparts(tempname);
@@ -61,6 +63,8 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         function self = init(self)
+            % SELF = INIT(SELF)
+            
             self.generateGraph;
             self.initDefault;
             self.param.Nodes.RespT = [];
@@ -80,8 +84,10 @@ classdef LayeredNetwork < Model & Ensemble
         [subgraphs, levels] = getGraphLayers(self, lqnGraph, taskGraph)
         
         function G = summary(self)
+            % G = SUMMARY(SELF)
+            
             G = self.getGraph;
-        end        
+        end
         
         bool = isValid(self)
         self = update(self)
@@ -113,9 +119,13 @@ classdef LayeredNetwork < Model & Ensemble
     
     methods
         function E = getNumberOfLayers(self)
+            % E = GETNUMBEROFLAYERS(SELF)
+            
             E = self.getNumberOfModels();
         end
         function E = getNumberOfModels(self)
+            % E = GETNUMBEROFMODELS(SELF)
+            
             if isempty(self.ensemble)
                 self.ensemble = self.getEnsemble();
             end
@@ -123,21 +133,29 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         function layers = getLayers(self)
+            % LAYERS = GETLAYERS(SELF)
+            
             layers = self.getEnsemble();
         end
         
         % setUsedFeatures : records that a certain language feature has been used
         function self = setUsedFeatures(self,e,className)
+            % SELF = SETUSEDFEATURES(SELF,E,CLASSNAME)
+            
             self.usedFeatures{e}.setTrue(className);
         end
         
         function self = initUsedFeatures(self)
+            % SELF = INITUSEDFEATURES(SELF)
+            
             for e=1:self.getNumberOfModels()
                 self.usedFeatures{e} = SolverFeatureSet;
             end
         end
         
         function usedFeatures = getUsedLangFeatures(self)
+            % USEDFEATURES = GETUSEDLANGFEATURES(SELF)
+            
             E = self.getNumberOfLayers();
             usedFeatures = cell(1,E);
             for e=1:E

@@ -12,20 +12,28 @@ classdef NodeState
     
     methods
         function self = NodeState(node, tranState)
+            % SELF = NODESTATE(NODE, TRANSTATE)
+            
             self.t = tranState{1};
             self.state = tranState{2};
             self.node = node;
         end
         
         function state = getTimestamps(self)
+            % STATE = GETTIMESTAMPS(SELF)
+            
             state = self.t;
         end
         
         function state = getState(self)
+            % STATE = GETSTATE(SELF)
+            
             state = self.state;
         end
         
         function buf = getBufferState(self)
+            % BUF = GETBUFFERSTATE(SELF)
+            
             qn = self.node.model.getStruct;
             ind = self.node.model.getNodeIndex(self.node);
             ist = qn.nodeToStation(ind);
@@ -34,12 +42,16 @@ classdef NodeState
         end
         
         function var = getLocalVarState(self)
+            % VAR = GETLOCALVARSTATE(SELF)
+            
             qn = self.node.model.getStruct;
             ind = self.node.model.getNodeIndex(self.node);
             var = self.state(:,(end-sum(qn.nvars(ind,:))+1):end); % local var
         end
         
         function srv = getServerState(self)
+            % SRV = GETSERVERSTATE(SELF)
+            
             qn = self.node.model.getStruct;
             ind = self.node.model.getNodeIndex(self.node);
             ist = qn.nodeToStation(ind);

@@ -1,4 +1,6 @@
 function [submodels, levels] = getGraphLayers(self, lqnGraph, taskGraph)
+% [SUBMODELS, LEVELS] = GETGRAPHLAYERS(SELF, LQNGRAPH, TASKGRAPH)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -17,6 +19,8 @@ submodels = {submodels{order}};
 end
 
 function submodels = layerize_loose(self,G, H)
+% SUBMODELS = LAYERIZE_LOOSE(SELF,G, H)
+
 initnodes = [findstring(G.Nodes.Type,'P')];
 nextlevel = zeros(1,length(initnodes));
 for r = 1:length(initnodes)
@@ -31,7 +35,7 @@ for n=1:height(H.Nodes)
         submodels{end+1} = digraph();
         for p=pred'
             nameFrom = H.Nodes.Name{p};
-            nameTo = H.Nodes.Name{n};            
+            nameTo = H.Nodes.Name{n};
             submodels{end} = submodels{end}.addedge(nameFrom,nameTo);
         end
     end

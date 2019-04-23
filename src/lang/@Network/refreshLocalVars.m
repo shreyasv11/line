@@ -1,12 +1,14 @@
 function nvars = refreshLocalVars(self)
+% NVARS = REFRESHLOCALVARS(SELF)
+
 nvars = zeros(self.getNumberOfNodes, 1);
 varsparam = cell(self.getNumberOfNodes, 1);
-rtnodes = self.qn.rtnodes; 
+rtnodes = self.qn.rtnodes;
 for ind=1:self.getNumberOfNodes
     switch class(self.nodes{ind})
         case 'Cache'
             nvars(ind) = sum(self.nodes{ind}.itemLevelCap);
-            varsparam{ind} = struct();            
+            varsparam{ind} = struct();
             varsparam{ind}.nitems = 0;
             varsparam{ind}.accost = self.nodes{ind}.accessCost;
             for r=1:self.getNumberOfClasses

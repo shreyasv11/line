@@ -1,4 +1,6 @@
 function [simElem,simDoc] = saveXMLHeader(self, logPath)
+% [SIMELEM,SIMDOC] = SAVEXMLHEADER(SELF, LOGPATH)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 fname = [self.getFileName(), ['.', 'jsimg']];

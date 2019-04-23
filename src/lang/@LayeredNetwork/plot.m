@@ -1,4 +1,6 @@
 function plot(self,useNodes, showProcs)
+% PLOT(SELF,USENODES, SHOWPROCS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('useNodes','var')

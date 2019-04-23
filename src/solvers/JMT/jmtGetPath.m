@@ -1,4 +1,6 @@
 function jmtPath = jmtGetPath
+% JMTPATH = JMTGETPATH
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -22,7 +24,7 @@ if isempty(jmtPath)
             else
                 outfilename = urlwrite('http://jmt.sourceforge.net/latest/JMT.jar', [jmtSolverFolder,'/JMT.jar']);
             end
-            fprintf(1,'Download completed. JMT jar now located at: %s\n',outfilename);        
+            fprintf(1,'Download completed. JMT jar now located at: %s\n',outfilename);
         else
             error('The MATLAB version is too old and JMT cannot be downloaded automatically. Please download http://jmt.sourceforge.net/latest/JMT.jar and put it under "bin\solvers\JMT\".\n');
         end

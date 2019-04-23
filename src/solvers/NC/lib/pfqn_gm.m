@@ -1,7 +1,9 @@
 function [Gn,lGn]=pfqn_gm(L,N,Z,order)
-% PFQN_GM Exact and approximate solution of closed product-form queueing 
+% [GN,LGN]=PFQN_GM(L,N,Z,ORDER)
+
+% PFQN_GM Exact and approximate solution of closed product-form queueing
 % networks by Grundmann-Moeller cubature rules
-% 
+%
 % [Gn,lGn]=pfqn_gm(L,N,Z,S)
 % Input:
 % L : MxR demand matrix. L(i,r) is the demand of class-r at queue i
@@ -15,7 +17,7 @@ function [Gn,lGn]=pfqn_gm(L,N,Z,order)
 %      will be correctly estimated.
 %
 % Reference:
-% G. Casale. Accelerating performance inference over closed systems by 
+% G. Casale. Accelerating performance inference over closed systems by
 % asymptotic methods. ACM SIGMETRICS 2017.
 % Available at: http://dl.acm.org/citation.cfm?id=3084445
 
@@ -51,7 +53,7 @@ else
         [~,Q] = simplexquad(@(x) exp(sum(Nt*h(x))),M-1,order,1e-8);
         dG = exp(-v)*v^(M-1)*Q(end)*dv;
         Gn = Gn + dG;
-        if v>0 && dG/Gn<tol            
+        if v>0 && dG/Gn<tol
             break
         end
     end
@@ -61,11 +63,15 @@ lGn = log(Gn);
 end
 
 function [I,Q,nv]=simplexquad(f,n,order,tol)
+% [I,Q,NV]=SIMPLEXQUAD(F,N,ORDER,TOL)
+
 [Q,nv]=grnmol(@(x)f(x),eye(n,n+1),order,tol);
 I=Q(end);
 end
 
 function [Q,nv] = grnmol( f, V, s , tol)
+% [Q,NV] = GRNMOL( F, V, S , TOL)
+
 %
 %   Q = grnmol( f, V )
 %     computes approximation to the integral of f over an s-simplex
@@ -125,10 +131,14 @@ while 1
 end
 end
 
-function mln=multinomialln(n)                                                                                                                                                                                      
-mln = factln(sum(n))- sum(factln(n));                                                                                                                                                                              
-end 
+function mln=multinomialln(n)
+% MLN=MULTINOMIALLN(N)
 
-function lf=factln(n)                                                                                                                                                                                             
-lf = gammaln(1+n);                                                                                                                                                                                                 
-end 
+mln = factln(sum(n))- sum(factln(n));
+end
+
+function lf=factln(n)
+% LF=FACTLN(N)
+
+lf = gammaln(1+n);
+end

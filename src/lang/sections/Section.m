@@ -11,6 +11,8 @@ classdef Section < NetworkElement
     methods(Hidden)
         %Constructor
         function self = Section(className)
+            % SELF = SECTION(CLASSNAME)
+            
             self@NetworkElement('Section');
             self.className = className;
         end
@@ -18,7 +20,9 @@ classdef Section < NetworkElement
     
     methods
         function summary(self)
-%            fprintf('\n%s',class(self));
+            % SUMMARY(SELF)
+            
+            %            fprintf('\n%s',class(self));
         end
     end
 end

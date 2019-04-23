@@ -1,8 +1,8 @@
 classdef Task < LayeredNetworkElement
-% A software server in a LayeredNetwork.
-%
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % A software server in a LayeredNetwork.
+    %
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties
         multiplicity;       %int
@@ -23,6 +23,8 @@ classdef Task < LayeredNetworkElement
         
         %constructor
         function obj = Task(model, name, multiplicity, scheduling, thinkTime)
+            % OBJ = TASK(MODEL, NAME, MULTIPLICITY, SCHEDULING, THINKTIME)
+            
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
@@ -68,14 +70,20 @@ classdef Task < LayeredNetworkElement
         end
         
         function obj = on(obj, parent)
+            % OBJ = ON(OBJ, PARENT)
+            
             parent.addTask(obj);
         end
         
         function obj = setAsReferenceTask(obj)
+            % OBJ = SETASREFERENCETASK(OBJ)
+            
             self.scheduling = SchedStrategy.REF;
         end
         
         function obj = setThinkTime(obj, thinkTime)
+            % OBJ = SETTHINKTIME(OBJ, THINKTIME)
+            
             if isnumeric(thinkTime)
                 obj.thinkTimeMean = Exp(1/thinkTime);
                 obj.thinkTimeMean = thinkTime;
@@ -89,6 +97,8 @@ classdef Task < LayeredNetworkElement
         
         %addEntry
         function obj = addEntry(obj, newEntry)
+            % OBJ = ADDENTRY(OBJ, NEWENTRY)
+            
             if(nargin > 1)
                 obj.entries = [obj.entries; newEntry];
             end
@@ -96,6 +106,8 @@ classdef Task < LayeredNetworkElement
         
         %addActivity
         function obj = addActivity(obj, newAct)
+            % OBJ = ADDACTIVITY(OBJ, NEWACT)
+            
             if(nargin > 1)
                 newAct.setParent(obj.name);
                 obj.activities = [obj.activities; newAct];
@@ -104,6 +116,8 @@ classdef Task < LayeredNetworkElement
         
         %setActivity
         function obj = setActivity(obj, newAct, index)
+            % OBJ = SETACTIVITY(OBJ, NEWACT, INDEX)
+            
             if(nargin > 2)
                 %if length(obj.activities) < index
                 %    obj.activities = [obj.activities; LayeredNetwork.Activity.empty(index-length(obj.activities),0)];
@@ -114,6 +128,8 @@ classdef Task < LayeredNetworkElement
         
         %remove activity
         function obj = removeActivity(obj, index)
+            % OBJ = REMOVEACTIVITY(OBJ, INDEX)
+            
             if(nargin > 1)
                 if length(obj.activities) < index
                     % throw exception - attempted to remove unexisting activity
@@ -131,6 +147,8 @@ classdef Task < LayeredNetworkElement
         
         %setInitActivity
         function obj = setInitActivity(obj, initActID)
+            % OBJ = SETINITACTIVITY(OBJ, INITACTID)
+            
             if(nargin > 1)
                 obj.initActID = initActID;
             end
@@ -138,6 +156,8 @@ classdef Task < LayeredNetworkElement
         
         %set
         function obj = addPrecedence(obj, newPrec)
+            % OBJ = ADDPRECEDENCE(OBJ, NEWPREC)
+            
             if iscell(newPrec)
                 for m=1:length(newPrec)
                     obj.precedences = [obj.precedences; newPrec{m}];
@@ -149,12 +169,16 @@ classdef Task < LayeredNetworkElement
         
         %setReplyEntry
         function obj = setReplyEntry(obj, newReplyEntry)
+            % OBJ = SETREPLYENTRY(OBJ, NEWREPLYENTRY)
+            
             if(nargin > 1)
                 obj.replyEntry = newReplyEntry;
             end
         end
         
         function meanHostDemand = getMeanHostDemand(obj, entryName)
+            % MEANHOSTDEMAND = GETMEANHOSTDEMAND(OBJ, ENTRYNAME)
+            
             % determines the demand posed by the entry entryName
             % the demand is located in the activity of the corresponding entry
             

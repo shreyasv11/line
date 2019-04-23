@@ -1,4 +1,6 @@
 function addJobClass(self, customerClass)
+% ADDJOBCLASS(SELF, CUSTOMERCLASS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if sum(cellfun(@(x) strcmp(x.name,customerClass.name), {self.classes{1:end}}))>0

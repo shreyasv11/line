@@ -6,6 +6,7 @@ classdef Coxian < MarkovianDistribution
     
     methods
         function self = Coxian(varargin)
+            % SELF = COXIAN(VARARGIN)
             % Constructs a Coxian distribution from phase rates and
             % completion probabilities, with entry probability 1 on the
             % first phase
@@ -28,8 +29,8 @@ classdef Coxian < MarkovianDistribution
                 setParam(self, 1, 'lambda0', mu1, 'java.lang.Double');
                 setParam(self, 2, 'lambda1', mu2, 'java.lang.Double');
                 setParam(self, 3, 'phi0', phi1, 'java.lang.Double'); % completion probability in phase 1
-%                self.javaClass = 'jmt.engine.random.CoxianDistr';
-%                self.javaParClass = 'jmt.engine.random.CoxianPar';
+                %                self.javaClass = 'jmt.engine.random.CoxianDistr';
+                %                self.javaParClass = 'jmt.engine.random.CoxianPar';
             else
                 error('Coxian accepts at most 3 parameters.');
             end
@@ -38,6 +39,7 @@ classdef Coxian < MarkovianDistribution
     
     methods
         function phases = getNumberOfPhases(self)
+            % PHASES = GETNUMBEROFPHASES(SELF)
             % Return number of phases in the distribution
             if length(self.params) == 2
                 phases  = length(self.getParam(1).paramValue);
@@ -47,6 +49,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
             % Get distribution mean
             if length(self.params) == 2
                 mu = self.getMu();
@@ -62,7 +65,8 @@ classdef Coxian < MarkovianDistribution
         end
         
         function SCV = getSCV(self)
-            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+            % SCV = GETSCV(SELF)
+            % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             if length(self.params) == 2
                 mu = self.getMu();
                 phi = self.getPhi();
@@ -78,6 +82,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
+            % PH = GETREPRESENTATION(SELF)
             % Return the renewal process associated to the distribution
             if length(self.params) == 2
                 mu = self.getMu();
@@ -92,6 +97,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function mu = getMu(self)
+            % MU = GETMU(SELF)
             % Get vector of rates
             if length(self.params) == 2
                 mu = self.getParam(1).paramValue(:);
@@ -103,6 +109,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function phi = getPhi(self)
+            % PHI = GETPHI(SELF)
             % Get vector of completion probabilities
             if length(self.params) == 2
                 phi = self.getParam(2).paramValue(:);
@@ -116,14 +123,16 @@ classdef Coxian < MarkovianDistribution
     
     methods(Static)
         function cx = fitCentral(MEAN, VAR, SKEW)
+            % CX = FITCENTRAL(MEAN, VAR, SKEW)
             cx = Cox2.fitCentral(MEAN, VAR, SKEW);
             SCV = VAR/MEAN^2;
             if abs(1-map_scv(cx.getRepresentation)/SCV) > 0.01
-                cx = Coxian.fitMeanAndSCV(MEAN, SCV);                
+                cx = Coxian.fitMeanAndSCV(MEAN, SCV);
             end
         end
         
         function [cx,mu,phi] = fitMeanAndSCV(MEAN, SCV)
+            % [CX,MU,PHI] = FITMEANANDSCV(MEAN, SCV)
             % Fit a Coxian distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             if SCV >= 1-Distrib.Tol && SCV <= 1+Distrib.Tol
                 n = 1;

@@ -40,6 +40,8 @@ classdef (Sealed) SchedStrategy
     
     methods (Static)
         function id = toId(type)
+            % ID = TOID(TYPE)
+            
             switch type
                 case SchedStrategy.INF
                     id = 0;
@@ -75,6 +77,8 @@ classdef (Sealed) SchedStrategy
         end
         
         function property = toProperty(text)
+            % PROPERTY = TOPROPERTY(TEXT)
+            
             switch text
                 case 'inf'
                     property = 'INF';
@@ -113,6 +117,8 @@ classdef (Sealed) SchedStrategy
         end
         
         function text = toFeature(type)
+            % TEXT = TOFEATURE(TYPE)
+            
             switch type
                 case SchedStrategy.INF
                     text = 'SchedStrategy_INF';

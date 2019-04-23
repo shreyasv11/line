@@ -9,6 +9,7 @@ classdef LayeredNetworkSolver < Solver
     
     methods (Hidden)
         function self = LayeredNetworkSolver(model, name, options)
+            % SELF = LAYEREDNETWORKSOLVER(MODEL, NAME, OPTIONS)
             self@Solver(model,name);
             if exist('options','var'), self.setOptions(options); end
             if ~isa(model,'LayeredNetwork')
@@ -19,15 +20,18 @@ classdef LayeredNetworkSolver < Solver
     
     methods %(Abstract) % implemented with errors for Octave compatibility
         function bool = supports(self, model) % true if model is supported by the solver
+            % BOOL = SUPPORTS(SELF, MODEL) % TRUE IF MODEL IS SUPPORTED BY THE SOLVER
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function [QN,UN,RN,TN] = getAvg(self)
+            % [QN,UN,RN,TN] = GETAVG(SELF)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
     end
     
     methods
         function [AvgTable,QT,UT,RT,TT] = getAvgTable(self, wantLQNSnaming)
+            % [AVGTABLE,QT,UT,RT,TT] = GETAVGTABLE(SELF, WANTLQNSNAMING)
             if ~exist('wantLQNSnaming','var')
                 wantLQNSnaming = false;
             end
@@ -66,6 +70,7 @@ classdef LayeredNetworkSolver < Solver
     methods (Static)
         % ensemble solver options
         function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
             options = struct();
             options.method = 'default';
             options.init_sol = [];

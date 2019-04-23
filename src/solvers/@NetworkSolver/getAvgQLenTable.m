@@ -1,4 +1,6 @@
 function [AvgTable,QT] = getAvgQLenTable(self,Q,keepDisabled)
+% [AVGTABLE,QT] = GETAVGQLENTABLE(SELF,Q,KEEPDISABLED)
+
 % Return table of average station metrics
 %
 % Copyright (c) 2012-2019, Imperial College London
@@ -33,7 +35,7 @@ elseif ~keepDisabled
     QT = Table(Station,Class,QLen);
     AvgTable = Table(Station,Class,QLen);
 else
-    Qval = zeros(M,K); 
+    Qval = zeros(M,K);
     Class = cell(K*M,1);
     Station = cell(K*M,1);
     for i=1:M

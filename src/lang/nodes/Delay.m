@@ -7,6 +7,8 @@ classdef Delay < Queue
     methods
         %Constructor
         function self = Delay(model, name)
+            % SELF = DELAY(MODEL, NAME)
+            
             self@Queue(model, name, SchedStrategy.INF);
             self.numberOfServers = Inf;
         end

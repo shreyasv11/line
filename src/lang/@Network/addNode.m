@@ -1,4 +1,6 @@
 function addNode(self, node)
+% ADDNODE(SELF, NODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

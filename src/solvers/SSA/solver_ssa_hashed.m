@@ -1,4 +1,6 @@
 function [pi,SSq,arvRates,depRates]=solver_ssa_hashed(qn,options)
+% [PI,SSQ,ARVRATES,DEPRATES]=SOLVER_SSA_HASHED(QN,OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -103,7 +105,7 @@ while samples_collected < options.samples
     enabled_rates = [];
     for act=1:A
         update_cond_a = ((node_a{act} == last_node_a || node_a{act} == last_node_p));
-                
+        
         if update_cond_a || isempty(outprob_a{act})
             state_a(act) = state(qn.nodeToStateful(node_a{act}));
             [new_state_a{act}, rate_a{act}, outprob_a{act}, qn] = State.afterEventHashedOrAdd(qn, node_a{act}, state_a(act), event_a{act}, class_a{act});
@@ -210,7 +212,7 @@ arvRates = zeros(size(u,1),qn.nstateful,R);
 depRates = zeros(size(u,1),qn.nstateful,R);
 pi = zeros(1,size(u,1));
 for s=1:size(u,1)
-    pi(s) = sum(tranState(uj==s,1));    
+    pi(s) = sum(tranState(uj==s,1));
 end
 
 for ind=1:qn.nnodes

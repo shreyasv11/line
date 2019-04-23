@@ -1,4 +1,6 @@
 function [Gn,lGn]=pfqn_le(L,N,Z)
+% [GN,LGN]=PFQN_LE(L,N,Z)
+
 % PFQN_LE Asymptotic solution of closed product-form queueing networks by
 % logistic expansion
 %
@@ -40,6 +42,8 @@ end
 end
 
 function [u,d]=pfqn_le_fpi(L,N)
+% [U,D]=PFQN_LE_FPI(L,N)
+
 % find location of mode of gaussian
 [M,R]=size(L);
 u=ones(M,1)/M;
@@ -58,6 +62,8 @@ end
 end
 
 function [u,v,d]=pfqn_le_fpiZ(L,N,Z)
+% [U,V,D]=PFQN_LE_FPIZ(L,N,Z)
+
 % find location of mode of gaussian
 [M,R]=size(L);
 eta = sum(N)+M;
@@ -88,6 +94,8 @@ end
 end
 
 function hu=pfqn_le_hessian(L,N,u0)
+% HU=PFQN_LE_HESSIAN(L,N,U0)
+
 % find hessian of gaussian
 [M,R]=size(L);
 Ntot=sum(N);
@@ -110,6 +118,8 @@ end
 end
 
 function A=pfqn_le_hessianZ(L,N,Z,u,v)
+% A=PFQN_LE_HESSIANZ(L,N,Z,U,V)
+
 % find hessian of gaussian
 [K,R]=size(L);
 Ntot=sum(N);
@@ -154,13 +164,19 @@ end
 end
 
 function y=allbut(y,xset)
+% Y=ALLBUT(Y,XSET)
+
 y=y(setdiff(1:length(y),xset));
 end
 
 function mln=multinomialln(n)
+% MLN=MULTINOMIALLN(N)
+
 mln = factln(sum(n))- sum(factln(n));
 end
 
 function lf=factln(n)
+% LF=FACTLN(N)
+
 lf = gammaln(1+n);
 end

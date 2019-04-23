@@ -17,6 +17,8 @@ classdef ActivityPrecedence
         
         %constructor
         function obj = ActivityPrecedence(pres, posts, preType, postType, postProbs)
+            % OBJ = ACTIVITYPRECEDENCE(PRES, POSTS, PRETYPE, POSTTYPE, POSTPROBS)
+            
             if nargin == 3
                 obj.pres = pres;
                 obj.posts = posts;
@@ -33,6 +35,8 @@ classdef ActivityPrecedence
     
     methods (Static)
         function ap = Serial(varargin)
+            % AP = SERIAL(VARARGIN)
+            
             ap = cell(1,nargin-1);
             for m=1:nargin-1
                 preActObj = varargin{m};

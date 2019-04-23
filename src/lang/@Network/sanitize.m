@@ -1,4 +1,6 @@
 function sanitize(self)
+% SANITIZE(SELF)
+
 % Preprocess model to ensure consistent parameterization.
 %
 % Copyright (c) 2012-2019, Imperial College London

@@ -1,4 +1,6 @@
 function self = updateParam(self, AvgTable)
+% SELF = UPDATEPARAM(SELF, AVGTABLE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 network = self.getEnsemble();
@@ -70,7 +72,7 @@ for net = netorder
 end
 
 for net = netorder
-    % first update all values for the entries    
+    % first update all values for the entries
     for h=find(startsWith(AvgTable{net}.Class,'E'))'% 1:length(WT{net}.Station) % for all param
         if ~isnan(AvgTable{net}.RespT(h)) % if not disabled
             ename = AvgTable{net}.Class{h};
@@ -99,8 +101,8 @@ for net = netorder
                 targetentryname = self.syncDest{net}{h};
                 targetentryidx = self.getNodeIndex(targetentryname);
                 edgeidx = self.findEdgeIndex(self.syncSource{net}{h}, self.syncDest{net}{h});
-               % psourcename = getNodeProcessor(aname);
-               % ptargetname = getNodeProcessor(targetentryidx);
+                % psourcename = getNodeProcessor(aname);
+                % ptargetname = getNodeProcessor(targetentryidx);
                 tsourcename = self.getNodeTask(self.syncSource{net}{h});
                 tsourceidx = self.getNodeIndex( tsourcename);
                 esourcename = lqnGraph.Nodes.Entry{aidx};
@@ -147,7 +149,7 @@ self.param.Edges.Tput = param.Edges.Tput;
 end
 
 %% PERF INDEXES CONVENTION
-% - nodes.RespT(eidx) = for entries, includes response at processor layer + response time of calls 
+% - nodes.RespT(eidx) = for entries, includes response at processor layer + response time of calls
 % - nodes.RespT(aidx) = for activities, excludes response time of calls
 % - edges.RespT(edge) = time for an activity to call the entry once
 % - nodes.Util = entry utilization used by buildlqn, not the processor util

@@ -42,6 +42,8 @@ classdef Metric < Copyable
     methods (Hidden)
         %Constructor
         function self = Metric(type, class, station)
+            % SELF = METRIC(TYPE, CLASS, STATION)
+            
             self.type = type;
             self.class = class;
             if exist('station','var')
@@ -69,30 +71,43 @@ classdef Metric < Copyable
     
     methods
         function self = setTran(self, bool)
+            % SELF = SETTRAN(SELF, BOOL)
+            
             self.transient = bool;
         end
         
         function bool = isTran(self)
+            % BOOL = ISTRAN(SELF)
+            
             bool = self.transient;
         end
         
         function bool = isDisabled(self)
+            % BOOL = ISDISABLED(SELF)
+            
             bool = self.disabled;
         end
         
         function self = disable(self)
+            % SELF = DISABLE(SELF)
+            
             self.disabled = 1;
         end
         
         function self = enable(self)
+            % SELF = ENABLE(SELF)
+            
             self.disabled = 0;
         end
         
         function value = get(self, results, model)
+            % VALUE = GET(SELF, RESULTS, MODEL)
+            
             if self.disabled == 1
                 value = NaN;
                 return
             end
+            
             switch results.solver
                 case 'SolverJMT'
                     for i=1:length(results.metric)
@@ -138,17 +153,17 @@ classdef Metric < Copyable
                         case Metric.QLen
                             value = results.Avg.Q(i,r);
                         case Metric.TranTput
-                            %results.TranAvg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);
-                            %results.TranAvg.T{i,r}.TimeInfo.Units = 'since initialization';
-                            value = results.TranAvg.T{i,r};
+                            %results.Tran.Avg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);
+                            %results.Tran.Avg.T{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.T{i,r};
                         case Metric.TranUtil
-                            %results.TranAvg.U{i,r}.Name = sprintf('Utilization (station %d, class %d)',i,r);
-                            %results.TranAvg.U{i,r}.TimeInfo.Units = 'since initialization';
-                            value = results.TranAvg.U{i,r};
+                            %results.Tran.Avg.U{i,r}.Name = sprintf('Utilization (station %d, class %d)',i,r);
+                            %results.Tran.Avg.U{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.U{i,r};
                         case Metric.TranQLen
-                            %results.TranAvg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
-                            %results.TranAvg.Q{i,r}.TimeInfo.Units = 'since initialization';
-                            value = results.TranAvg.Q{i,r};
+                            %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
+                            %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.Q{i,r};
                     end
             end
         end

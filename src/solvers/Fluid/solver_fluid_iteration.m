@@ -1,12 +1,14 @@
 function [ymean, ymean_t, t, iter] = solver_fluid_iteration(qn, N, Mu, Phi, PH, P, S, ymean, ydefault, slowrate, Tstart, max_time, options)
+% [YMEAN, YMEAN_T, T, ITER] = SOLVER_FLUID_ITERATION(QN, N, MU, PHI, PH, P, S, YMEAN, YDEFAULT, SLOWRATE, TSTART, MAX_TIME, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 iter_max = options.iter_max;
-verbose = options.verbose; 
+verbose = options.verbose;
 tol = options.tol;
 iter_tol = options.iter_tol;
-stiff = options.stiff; 
+stiff = options.stiff;
 timespan = options.timespan;
 
 goon = true; % max stiff solver
@@ -52,15 +54,15 @@ while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
             [t_iter, ymean_t_iter] = solveode(y0);
         end
     catch me
-%        switch me.identifier
-%            case 'MATLAB:odearguments:SizeIC' % if the cached initial point fails
-                fprintf(1,'Supplied initial point failed, Fluid solver switching to default initialization.\n');
-                opt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ydefault));
-                [t_iter, ymean_t_iter] = solveode(ydefault);
- %           otherwise
- %               me
- %               error('Unspecified ODE solver exception.');
-%        end
+        %        switch me.identifier
+        %            case 'MATLAB:odearguments:SizeIC' % if the cached initial point fails
+        fprintf(1,'Supplied initial point failed, Fluid solver switching to default initialization.\n');
+        opt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ydefault));
+        [t_iter, ymean_t_iter] = solveode(ydefault);
+        %           otherwise
+        %               me
+        %               error('Unspecified ODE solver exception.');
+        %        end
     end
     ymean_t(end+1:end+size(ymean_t_iter,1),:) = ymean_t_iter;
     t(end+1:end+size(t_iter,1),:) = t_iter;
@@ -99,6 +101,8 @@ while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
 end
 
     function [t, yt_e] = solveode(y0)
+        % [T, YT_E] = SOLVEODE(Y0)
+        
         if tol <= 1e-3
             [t, yt_e] = feval(options.odesolvers.accurateOdeSolver, ode_h, [T0 T], y0, opt);
         else
@@ -107,6 +111,8 @@ end
     end
 
     function [t, yt_e] = solveodestiff(y0)
+        % [T, YT_E] = SOLVEODESTIFF(Y0)
+        
         if tol <= 1e-3
             [t, yt_e] = feval(options.odesolvers.accurateStiffOdeSolver, ode_h, [T0 T], y0, opt);
         else

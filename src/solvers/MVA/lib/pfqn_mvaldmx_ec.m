@@ -1,4 +1,5 @@
 function [EC,E,Eprime,Lo] = pfqn_mvaldmx_ec(lambda,D,mu)
+% [EC,E,EPRIME,LO] = PFQN_MVALDMX_EC(LAMBDA,D,MU)
 % Compute the effective capacity terms in MVALDMX
 % Think times are not handled since this assumes limited load-dependence
 [M,R] = size(mu);

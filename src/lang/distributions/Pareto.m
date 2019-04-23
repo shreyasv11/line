@@ -6,6 +6,8 @@ classdef Pareto < ContinuousDistrib
     
     methods
         function self = Pareto(shape, scale)
+            % SELF = PARETO(SHAPE, SCALE)
+            
             % Constructs a Pareto distribution with given shape and scale
             % parameters
             self@ContinuousDistrib('Pareto',2,[0,Inf]);
@@ -14,11 +16,13 @@ classdef Pareto < ContinuousDistrib
             end
             setParam(self, 1, 'alpha', shape, 'java.lang.Double');
             setParam(self, 2, 'k', scale, 'java.lang.Double');
-%            self.javaClass = 'jmt.engine.random.Pareto';
-%            self.javaParClass = 'jmt.engine.random.ParetoPar';
+            %            self.javaClass = 'jmt.engine.random.Pareto';
+            %            self.javaParClass = 'jmt.engine.random.ParetoPar';
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
@@ -26,6 +30,8 @@ classdef Pareto < ContinuousDistrib
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
@@ -35,6 +41,8 @@ classdef Pareto < ContinuousDistrib
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             shape = self.getParam(1).paramValue;
@@ -45,7 +53,11 @@ classdef Pareto < ContinuousDistrib
         end
         
         function Ft = evalCDF(self,t)
+            % FT = EVALCDF(SELF,T)
+            
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             k = 1/shape;
@@ -56,6 +68,8 @@ classdef Pareto < ContinuousDistrib
     
     methods (Static)
         function pa = fitMeanAndSCV(MEAN, SCV)
+            % PA = FITMEANANDSCV(MEAN, SCV)
+            
             % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             shape = (SCV*MEAN + MEAN*(SCV*(SCV + 1))^(1/2))/(SCV*MEAN);
             scale = MEAN + SCV*MEAN - MEAN*(SCV*(SCV + 1))^(1/2);

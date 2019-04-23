@@ -1,4 +1,6 @@
 function [pi,SSq,arvRates,depRates,tranSysState]=solver_ssa(qn,options)
+% [PI,SSQ,ARVRATES,DEPRATES,TRANSYSSTATE]=SOLVER_SSA(QN,OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -25,9 +27,9 @@ for ind=1:qn.nnodes
         ist = qn.nodeToStation(ind);
         isf = qn.nodeToStateful(ind);
         for r=1:qn.nclasses %cut-off open classes to finite capacity
-            c = find(qn.chains(:,r));            
+            c = find(qn.chains(:,r));
             if ~isempty(qn.visits{c}) && qn.visits{c}(ist,r) == 0
-                capacityc(ind,r) = 0;                
+                capacityc(ind,r) = 0;
             elseif ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) % disabled
                 capacityc(ind,r) = 0;
             else
@@ -106,7 +108,8 @@ for act=1:A
 end
 newStateCell = cell(1,A);
 isSimulation = true; % allow state vector to grow, e.g. for FCFS buffers
-while samples_collected < options.samples
+cur_time = 0;
+while samples_collected < options.samples && cur_time <= options.timespan(2)
     %samples_collected
     ctr = 1;
     enabled_action = {}; % row is action label, col1=rate, col2=new state
@@ -185,7 +188,9 @@ while samples_collected < options.samples
     last_node_a = node_a{enabled_action{firing_ctr}};
     last_node_p = node_p{enabled_action{firing_ctr}};
     state = cell2mat(stateCell');
-    tranState(1:(1+length(state)),samples_collected) = [-(log(rand)/tot_rate), state]';
+    dt = -(log(rand)/tot_rate);
+    cur_time = cur_time + dt;
+    tranState(1:(1+length(state)),samples_collected) = [dt, state]';
     
     for ind=1:qn.nnodes
         if qn.isstation(ind)

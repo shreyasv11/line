@@ -1,4 +1,6 @@
 function RTret = solver_fluid_passage_time(qn, options)
+% RTRET = SOLVER_FLUID_PASSAGE_TIME(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -199,6 +201,8 @@ end
 return
 
     function [value,isterminal,direction] = events(t,y)
+        % [VALUE,ISTERMINAL,DIRECTION] = EVENTS(T,Y)
+        
         value = sum(y(idxN));
         isterminal = 1;
         direction = 0;

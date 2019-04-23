@@ -10,9 +10,8 @@ queue.setService(cclass, Exp(4.0));
 % Block 3: topology
 model.link(Network.serialRouting(delay,queue));
 % Block 4: solution
-SolverCTMC(model,'keep',true).getAvgTable
+solver = SolverCTMC(model);
+solver.getAvgTable
 
-global InfGen;
-global StateSpace;
-StateSpace
-InfGen=full(InfGen)
+StateSpace = solver.getStateSpace()
+InfGen = full(solver.getGenerator())

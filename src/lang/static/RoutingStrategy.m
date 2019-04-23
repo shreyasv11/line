@@ -19,6 +19,8 @@ classdef (Sealed) RoutingStrategy
     
     methods (Static, Access = public)
         function type = toType(text)
+            % TYPE = TOTYPE(TEXT)
+            
             switch text
                 case 'Random'
                     type = RoutingStrategy.RAND;
@@ -34,6 +36,8 @@ classdef (Sealed) RoutingStrategy
         end
         
         function feature = toFeature(type)
+            % FEATURE = TOFEATURE(TYPE)
+            
             switch type
                 case RoutingStrategy.RAND
                     feature = 'RoutingStrategy_RAND';
@@ -51,6 +55,8 @@ classdef (Sealed) RoutingStrategy
         end
         
         function text = toText(type)
+            % TEXT = TOTEXT(TYPE)
+            
             switch type
                 case RoutingStrategy.RAND
                     text = 'Random';

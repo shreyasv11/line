@@ -15,6 +15,8 @@ classdef server
         
         %constructor
         function obj = server(name, quantity, scheduling)
+            % OBJ = SERVER(NAME, QUANTITY, SCHEDULING)
+            
             if(nargin > 0)
                 obj.name = name;
                 obj.quantity = quantity;

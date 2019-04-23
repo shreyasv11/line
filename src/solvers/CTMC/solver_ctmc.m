@@ -1,10 +1,8 @@
-function [Q,SS,SSq,arvRates,depRates,qn]=solver_ctmc(qn,options)
+function [Q,SS,SSq,Dfilt,arvRates,depRates,qn]=solver_ctmc(qn,options)
+% [Q,SS,SSQ,DFILT,ARVRATES,DEPRATES,QN]=SOLVER_CTMC(QN,OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
-global InfGen;
-global EventFilt;
-global StateSpace;
-global StateSpace_njobs;
 
 %% generate state space
 %nnodes = qn.nnodes;
@@ -15,6 +13,7 @@ csmask = qn.csmask;
 if isoctave
     warning off;
 end
+
 [SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);
 qn.space = qnc.space;
 if options.verbose
@@ -25,8 +24,9 @@ end
 %%
 Q = sparse(eye(size(SSh,1))); % the diagonal elements will be removed later
 A = length(sync);
+Dfilt = cell(1,A);
 for a=1:A
-    D{a} = 0*Q;
+    Dfilt{a} = 0*Q;
 end
 local = qn.nnodes+1; % passive action
 arvRates = zeros(size(SSh,1),nstateful,nclasses);
@@ -124,10 +124,10 @@ for a=1:A
                                     if node_p < local && ~csmask(class_a, class_p) && rate_a(ia) * prob_sync_p >0 && (qn.nodetype(node_p)~=NodeType.Source)
                                         error('Error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a, node_a, node_p, class_a, class_p);
                                     end
-                                    if size(D{a}) >= [s,ns] % check needed as D{a} is a sparse matrix
-                                        D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;
+                                    if size(Dfilt{a}) >= [s,ns] % check needed as D{a} is a sparse matrix
+                                        Dfilt{a}(s,ns) = Dfilt{a}(s,ns) + rate_a(ia) * prob_sync_p;
                                     else
-                                        D{a}(s,ns) = rate_a(ia) * prob_sync_p;
+                                        Dfilt{a}(s,ns) = rate_a(ia) * prob_sync_p;
                                     end
                                 end
                             end
@@ -141,10 +141,10 @@ for a=1:A
                         ns = matchrow(SSh, new_state);
                         if ns>0
                             if ~isnan(rate_a)
-                                if size(D{a}) >= [s,ns] % needed for sparse matrix
-                                    D{a}(s,ns) = D{a}(s,ns) + rate_a(ia) * prob_sync_p;
+                                if size(Dfilt{a}) >= [s,ns] % needed for sparse matrix
+                                    Dfilt{a}(s,ns) = Dfilt{a}(s,ns) + rate_a(ia) * prob_sync_p;
                                 else
-                                    D{a}(s,ns) = rate_a(ia) * prob_sync_p;
+                                    Dfilt{a}(s,ns) = rate_a(ia) * prob_sync_p;
                                 end
                             end
                         end
@@ -157,7 +157,7 @@ end
 
 %%
 for a=1:A
-    Q = Q + D{a};
+    Q = Q + Dfilt{a};
     % active
     node_a = sync{a}.active{1}.node;
     class_a = sync{a}.active{1}.class;
@@ -169,8 +169,8 @@ for a=1:A
         node_a_sf = qn.nodeToStateful(node_a);
         node_p_sf = qn.nodeToStateful(node_p);
         for s=1:size(SSh,1)
-            depRates(s,node_a_sf,class_a) = depRates(s,node_a_sf,class_a) + sum(D{a}(s,:));
-            arvRates(s,node_p_sf,class_p) = arvRates(s,node_p_sf,class_p) + sum(D{a}(s,:));
+            depRates(s,node_a_sf,class_a) = depRates(s,node_a_sf,class_a) + sum(Dfilt{a}(s,:));
+            arvRates(s,node_p_sf,class_p) = arvRates(s,node_p_sf,class_p) + sum(Dfilt{a}(s,:));
         end
     end
 end
@@ -186,7 +186,7 @@ Q(:,end+1:end+(size(Q,1)-size(Q,2)))=0;
 Q(zero_row,zero_row) = -eye(length(zero_row)); % can this be replaced by []?
 Q(zero_col,zero_col) = -eye(length(zero_col));
 for a=1:A
-    D{a}(:,end+1:end+(size(D{a},1)-size(D{a},2)))=0;
+    Dfilt{a}(:,end+1:end+(size(Dfilt{a},1)-size(Dfilt{a},2)))=0;
 end
 if options.verbose == 2
     for s1=1:size(SS,1)
@@ -218,15 +218,8 @@ if true
     depRates(imm,:,:) = [];
     [Q,~,~,~,~,T] = ctmc_stochcomp(Q, nonimm);
     for a=1:A
-        D{a} = D{a}(nonimm,nonimm)+T;
+        Dfilt{a} = Dfilt{a}(nonimm,nonimm)+T;
     end
-end
-%%
-if options.keep
-    InfGen = Q;
-    EventFilt = D;
-    StateSpace = SS;
-    StateSpace_njobs = SSq;
 end
 %%
 Q = ctmc_makeinfgen(Q);

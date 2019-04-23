@@ -1,4 +1,6 @@
 function [Pr,G,runtime] = solver_nc_marg(qn, options)
+% [PR,G,RUNTIME] = SOLVER_NC_MARG(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -92,7 +94,7 @@ for ist=1:qn.nstations
         Pr(i) = NaN;
     else
         set_ist = setdiff(1:qn.nstations,ist);
-        nivec_chain = nivec * qn.chains';        
+        nivec_chain = nivec * qn.chains';
         G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu(set_ist,:), options);
         F_i = pfqn_gmvald(ST(ist,:).*V(ist,:), nivec, mu(ist,:), options);
         Pr(ist) =  F_i * G_minus_i / G;
@@ -110,7 +112,7 @@ end
 %     G0_i = pfqn_gmvald(STchain(i,:),nivec_chain, mu_chain(i,:));
 %     Pr = F_i * G_minus_i / G * (g0_i / G0_i);
 % end
-% 
+%
 
 runtime = toc(Tstart);
 Pr(isnan(Pr))=0;

@@ -1,11 +1,13 @@
 function jsimwView(self, options)
+% JSIMWVIEW(SELF, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 if ~self.supports(self.model)
     error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
-%    runtime = toc(T0);
-%    return
+    %    runtime = toc(T0);
+    %    return
 end
 if nargin<2
     options=self.options;

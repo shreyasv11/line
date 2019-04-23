@@ -6,11 +6,24 @@ classdef SolverNC < NetworkSolver
     
     methods
         function self = SolverNC(model,varargin)
+            % SELF = SOLVERNC(MODEL,VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
+        function setOptions(self, options)
+            % SETOPTIONS(SELF, OPTIONS)
+            % Assign the solver options
+            
+            self.checkOptions(options);
+            setOptions@Solver(self,options);
+        end
+        
         function runtime = run(self)
+            % RUNTIME = RUN(SELF)
+            % Run the solver
+            
             T0=tic;
             options = self.getOptions;
             if ~self.supports(self.model)
@@ -31,9 +44,11 @@ classdef SolverNC < NetworkSolver
         end
         
         function Pnir = getProbStateAggr(self, node, state_a)
-             if ~exist('state_a','var')
-                 state_a = self.model.getState{self.model.getStatefulNodeIndex(node)};
-             end
+            % PNIR = GETPROBSTATEAGGR(SELF, NODE, STATE_A)
+            
+            if ~exist('state_a','var')
+                state_a = self.model.getState{self.model.getStatefulNodeIndex(node)};
+            end
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
@@ -49,6 +64,8 @@ classdef SolverNC < NetworkSolver
         end
         
         function Pn = getProbSysState(self)
+            % PN = GETPROBSYSSTATE(SELF)
+            
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
@@ -61,6 +78,8 @@ classdef SolverNC < NetworkSolver
         end
         
         function Pn = getProbSysStateAggr(self)
+            % PN = GETPROBSYSSTATEAGGR(SELF)
+            
             T0 = tic;
             qn = self.model.getStruct;
             % now compute marginal probability
@@ -73,6 +92,8 @@ classdef SolverNC < NetworkSolver
         end
         
         function [lNormConst] = getProbNormConst(self)
+            % [LNORMCONST] = GETPROBNORMCONST(SELF)
+            
             self.run();
             lNormConst = self.result.Prob.logNormConst;
         end
@@ -80,6 +101,8 @@ classdef SolverNC < NetworkSolver
     
     methods (Static)
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source',...
                 'ClassSwitch','DelayStation','Queue',...
@@ -92,14 +115,27 @@ classdef SolverNC < NetworkSolver
         end
         
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverNC.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end
+        
     end
     
     methods (Static)
+        function checkOptions(options)
+            % CHECKOPTIONS(OPTIONS)
+            
+            solverName = mfilename;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                error('Finite timespan not supported in %s',solverName);
+            end
+        end
         function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
+            
             options = Solver.defaultOptions();
             options.samples = 1e6;
             options.timespan = [Inf,Inf];

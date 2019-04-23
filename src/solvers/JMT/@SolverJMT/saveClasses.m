@@ -1,4 +1,6 @@
 function [simElem, simDoc] = saveClasses(self, simElem, simDoc)
+% [SIMELEM, SIMDOC] = SAVECLASSES(SELF, SIMELEM, SIMDOC)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

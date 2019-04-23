@@ -6,6 +6,8 @@ classdef APH < MarkovianDistribution
     
     methods
         function self = APH(alpha, T)
+            % SELF = APH(ALPHA, T)
+            
             % Abstract class constructor
             self@MarkovianDistribution('APH', 2);
             self.setParam(1, 'alpha', alpha, 'java.lang.Double');
@@ -15,17 +17,23 @@ classdef APH < MarkovianDistribution
     
     methods
         function alpha = getInitProb(self)
+            % ALPHA = GETINITPROB(SELF)
+            
             % Get vector of initial probabilities
             alpha = self.getParam(1).paramValue(:);
             alpha = reshape(alpha,1,length(alpha));
         end
         
         function T = getGenerator(self)
+            % T = GETGENERATOR(SELF)
+            
             % Get generator
             T = self.getParam(2).paramValue;
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             X = map_sample(self.getRepresentation,n);
@@ -34,6 +42,8 @@ classdef APH < MarkovianDistribution
     
     methods
         function update(self,varargin)
+            % UPDATE(SELF,VARARGIN)
+            
             % Update parameters to match the first n central moments
             % (n<=4)
             MEAN = varargin{1};
@@ -51,6 +61,8 @@ classdef APH < MarkovianDistribution
         end
         
         function updateMean(self,MEAN)
+            % UPDATEMEAN(SELF,MEAN)
+            
             % Update parameters to match the given mean
             APH = self.getRepresentation;
             APH = map_scale(APH,MEAN);
@@ -59,6 +71,8 @@ classdef APH < MarkovianDistribution
         end
         
         function updateMeanAndSCV(self, MEAN, VAR)
+            % UPDATEMEANANDSCV(SELF, MEAN, VAR)
+            
             % Fit phase-type distribution with given mean and squared coefficient of
             % variation (SCV=variance/mean^2)
             e1 = MEAN;
@@ -70,6 +84,8 @@ classdef APH < MarkovianDistribution
         end
         
         function APH = getRepresentation(self)
+            % APH = GETREPRESENTATION(SELF)
+            
             % Return the renewal process associated to the distribution
             T = self.getGenerator;
             APH = {T,-T*ones(length(T),1)*self.getInitProb};
@@ -79,6 +95,8 @@ classdef APH < MarkovianDistribution
     
     methods (Static)
         function ex = fitCentral(MEAN, VAR, SKEW)
+            % EX = FITCENTRAL(MEAN, VAR, SKEW)
+            
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
             ex = APH(1.0, [1]);
@@ -86,6 +104,8 @@ classdef APH < MarkovianDistribution
         end
         
         function ex = fitMeanAndSCV(MEAN, SCV)
+            % EX = FITMEANANDSCV(MEAN, SCV)
+            
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
             ex = APH(1.0, [1]);

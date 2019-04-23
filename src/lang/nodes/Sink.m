@@ -11,6 +11,8 @@ classdef Sink < Node
     methods
         %Constructor
         function self = Sink(model, name)
+            % SELF = SINK(MODEL, NAME)
+            
             self@Node(name);
             
             if model ~= 0
@@ -24,6 +26,8 @@ classdef Sink < Node
         end
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {'', self.server, ''};
         end
     end
@@ -31,6 +35,8 @@ classdef Sink < Node
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object

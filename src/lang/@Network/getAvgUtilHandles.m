@@ -1,5 +1,7 @@
 % U(i,r): mean utilization of class r at node i
 function [U] = getAvgUtilHandles(self)
+% [U] = GETAVGUTILHANDLES(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

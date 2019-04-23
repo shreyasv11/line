@@ -1,4 +1,6 @@
 function [ni, nir, sir, kir] = toMarginal(qn, ind, state_i, K, Ks, space_buf, space_srv, space_var) %#ok<INUSD>
+% [NI, NIR, SIR, KIR] = TOMARGINAL(QN, IND, STATE_I, K, KS, SPACE_BUF, SPACE_SRV, SPACE_VAR) %#OK<INUSD>
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -61,7 +63,7 @@ switch qn.schedid(ist)
     case SchedStrategy.ID_EXT
         for r=1:R
             nir(:,r) = Inf;
-        end        
+        end
     case SchedStrategy.ID_FCFS
         for r=1:R
             nir(:,r) = sir(:,r) + sum(space_buf==r,2); % class-r jobs in station

@@ -7,6 +7,8 @@ classdef NetworkElement < Element
     methods
         %Constructor
         function self = NetworkElement(name)
+            % SELF = NETWORKELEMENT(NAME)
+            
             self@Element(name);
         end
         

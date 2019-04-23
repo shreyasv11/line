@@ -1,4 +1,6 @@
 function [rateBase, eventIdx] = getRateBase(Phi, Mu, PH, M, K, match, q_indices, P, Kic, strategy, all_jumps)
+% [RATEBASE, EVENTIDX] = GETRATEBASE(PHI, MU, PH, M, K, MATCH, Q_INDICES, P, KIC, STRATEGY, ALL_JUMPS)
+
 rateBase = zeros(size(all_jumps,2),1);
 eventIdx = zeros(size(all_jumps,2),1);
 rateIdx = 0;

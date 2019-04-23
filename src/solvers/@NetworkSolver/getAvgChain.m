@@ -1,4 +1,6 @@
 function [QN,UN,RN,TN] = getAvgChain(self,~,~,~,~)
+% [QN,UN,RN,TN] = GETAVGCHAIN(SELF,~,~,~,~)
+
 % Return average station metrics aggregated by chain
 %
 % Copyright (c) 2012-2019, Imperial College London

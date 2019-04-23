@@ -13,6 +13,8 @@ classdef ClassSwitch < Node
     methods
         %Constructor
         function self = ClassSwitch(model, name, csMatrix)
+            % SELF = CLASSSWITCH(MODEL, NAME, CSMATRIX)
+            
             self@Node(name);
             
             classes = model.classes;
@@ -27,10 +29,14 @@ classdef ClassSwitch < Node
         end
         
         function setProbRouting(self, class, destination, probability)
+            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {self.input, self.server, self.output};
         end
     end

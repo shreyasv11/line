@@ -1,4 +1,5 @@
 function [RN] = getAvgRespTChain(self,R)
+% [RN] = GETAVGRESPTCHAIN(SELF,R)
 % Return average response time aggregated by chain
 %
 % Copyright (c) 2012-2019, Imperial College London

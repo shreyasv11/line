@@ -14,6 +14,8 @@ classdef Join < Station
     methods
         %Constructor
         function self = Join(model, name)
+            % SELF = JOIN(MODEL, NAME)
+            
             self@Station(name);
             if(model ~= 0)
                 classes = model.classes;
@@ -33,14 +35,20 @@ classdef Join < Station
     
     methods
         function self = setStrategy(self, class, strategy)
+            % SELF = SETSTRATEGY(SELF, CLASS, STRATEGY)
+            
             self.input.setStrategy(class,strategy);
         end
         
         function self = setRequired(self, class, njobs)
+            % SELF = SETREQUIRED(SELF, CLASS, NJOBS)
+            
             self.input.setRequired(class,njobs);
         end
         
         function self = setProbRouting(self, class, destination, probability)
+            % SELF = SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         

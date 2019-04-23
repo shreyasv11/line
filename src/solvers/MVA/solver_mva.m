@@ -1,4 +1,6 @@
 function [Q,U,R,T,C,X,lG] = solver_mva(ST,V,N,S,options,sched,refstat)
+% [Q,U,R,T,C,X,LG] = SOLVER_MVA(ST,V,N,S,OPTIONS,SCHED,REFSTAT)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 [M,K]=size(ST);

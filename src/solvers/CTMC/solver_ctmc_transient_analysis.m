@@ -1,4 +1,6 @@
-function [t,QNt,UNt,RNt,TNt,CNt,XNt,runtime,fname] = solver_ctmc_transient_analysis(qn, options)
+function [t,pit,QNt,UNt,RNt,TNt,CNt,XNt,InfGen,StateSpace,StateSpaceAggr,EventFiltration,runtime,fname] = solver_ctmc_transient_analysis(qn, options)
+% [T,PIT,QNT,UNT,RNT,TNT,CNT,XNT,INFGEN,STATESPACE,STATESPACEAGGR,EVENTFILTRATION,RUNTIME,FNAME] = SOLVER_CTMC_TRANSIENT_ANALYSIS(QN, OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -34,12 +36,13 @@ for i=1:M
     end
 end
 
-[Q,SS,SSq,arvRates,depRates,qn] = solver_ctmc(qn, options); % qn is updated with the state space
+[InfGen,StateSpace,StateSpaceAggr,EventFiltration,~,depRates,qn] = solver_ctmc(qn, options); % qn is updated with the state space
+
 
 if options.keep
     fname = tempname;
-    save([fname,'.mat'],'Q','SSq')
-    fprintf(1,'CTMC generator and state space saved in: ');
+    save([fname,'.mat'],'InfGen','StateSpace','StateSpaceAggr','EventFiltration')
+    fprintf(1,'CTMC infinitesimal generator and state space saved in: ');
     disp([fname, '.mat'])
 end
 
@@ -50,14 +53,14 @@ for i=1:qn.nnodes
         state = [state,zeros(1,size(qn.space{isf},2)-length(qn.state{isf})),qn.state{isf}];
     end
 end
-pi0 = zeros(1,length(Q));
-pi0(matchrow(SS,state)) = 1; % find initial state and set it to probability 1
+pi0 = zeros(1,length(InfGen));
+pi0(matchrow(StateSpace,state)) = 1; % find initial state and set it to probability 1
 
 %if options.timespan(1) == options.timespan(2)
 %    pit = ctmc_uniformization(pi0,Q,options.timespan(1));
 %    t = options.timespan(1);
 %else
-[pit,t] = ctmc_transient(Q,pi0,options.timespan(1),options.timespan(2),options.stiff);
+[pit,t] = ctmc_transient(InfGen,pi0,options.timespan(1),options.timespan(2),options.stiff);
 %end
 pit(pit<1e-14)=0;
 
@@ -70,26 +73,32 @@ for k=1:K
     %    XNt(k) = pi*arvRates(:,qn.refstat(k),k);
     for i=1:M
         TNt{i,k} = pit*depRates(:,i,k);
-        QNt{i,k} = pit*SSq(:,(i-1)*K+k);
+        QNt{i,k} = pit*StateSpaceAggr(:,(i-1)*K+k);
         switch sched{i}
             case SchedStrategy.INF
                 UNt{i,k} = QNt{i,k};
-            otherwise
-                % we use Little's law, otherwise there are issues in
-                % estimating the fraction of time assigned to class k (to
-                % recheck)
+            case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.RAND, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF}
                 if ~isempty(PH{i,k})
-                    UNt{i,k} = pit*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
+                    UNt{i,k} = pit*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
+                end
+            case SchedStrategy.PS
+                nik = S(i)* StateSpaceAggr(:,(i-1)*K+k) ./ sum(StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);
+                nik(isnan(nik))=0;
+                UNt{i,k} = pit*nik;
+            case SchedStrategy.DPS
+                w = qn.schedparam(i,:);
+                nik = S(i) * w(k) * StateSpaceAggr(:,(i-1)*K+k) ./ sum(repmat(w,size(StateSpaceAggr,1),1).*StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);
+                nik(isnan(nik))=0;
+                UNt{i,k} = pit*nik;
+            otherwise
+                if ~isempty(PH{i,k})
+                    ind = qn.stationToNode(i);
+                    warning('Transient utilization not support yet for station %s, returning an approximation.',qn.nodenodes{ind});
+                    UNt{i,k} = pit*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
                 end
         end
     end
 end
-
-% QNt(isnan(QNt))=0;
-% UNt(isnan(UNt))=0;
-% %XNt(isnan(XNt))=0;
-% TNt(isnan(TNt))=0;
-
 runtime = toc(Tstart);
 
 if options.verbose > 0

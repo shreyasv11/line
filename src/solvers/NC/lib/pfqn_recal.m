@@ -1,4 +1,5 @@
 function G=pfqn_recal(L,N,Z,m0)
+% G=PFQN_RECAL(L,N,Z,M0)
 [M,R] = size(L);
 Ntot = sum(N);
 G_1 = ones(1,nchoosek(Ntot+M-1,Ntot));
@@ -18,14 +19,14 @@ if nargin<3 || sum(Z)==0
                 G(i)=(0);
                 for j=1:M
                     m(j)=m(j)+1;
-                    G(i)=G(i)+(m(j)+m0(j)-1)*L(j,r)*G_1(matchrow(I_1,m))/nr;         
+                    G(i)=G(i)+(m(j)+m0(j)-1)*L(j,r)*G_1(matchrow(I_1,m))/nr;
                     m(j)=m(j)-1;
                 end
             end
             I_1=I;
             G_1=G;
         end
-    end   
+    end
 end
 G = G(1);
 end

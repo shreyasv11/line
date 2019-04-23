@@ -1,7 +1,9 @@
 function [XN,QN,UN,CN,lGN] = pfqn_mva(L,N,Z,mi)
+% [XN,QN,UN,CN,LGN] = PFQN_MVA(L,N,Z,MI)
+
 % [XN,QN,UN,CN] = pfqn_mva(L,N,Z,mi)
 if isoctave
-  warning off;
+    warning off;
 end
 XN=[];
 QN=[];
@@ -94,7 +96,7 @@ while ctr % for each population
         if ~isempty(logX)
             lGN = lGN - logX;
         end
-    end    
+    end
     if s==0
         break;
     end

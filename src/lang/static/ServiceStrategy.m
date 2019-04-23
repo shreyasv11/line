@@ -18,6 +18,8 @@ classdef (Sealed) ServiceStrategy
     methods (Access = private)
         %private so that you can't instatiate.
         function out = ServiceStrategy
+            % OUT = SERVICESTRATEGY
+            
         end
     end
     

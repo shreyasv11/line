@@ -18,6 +18,8 @@ classdef closedWorkload
         
         %constructor
         function obj = closedWorkload(name, numberJobs, thinkTime, thinkDevice, timeUnits)
+            % OBJ = CLOSEDWORKLOAD(NAME, NUMBERJOBS, THINKTIME, THINKDEVICE, TIMEUNITS)
+            
             if(nargin > 0)
                 obj.name = name;
                 obj.numberJobs = numberJobs;
@@ -30,6 +32,8 @@ classdef closedWorkload
         end
         
         function obj = addTransit(obj, dest, prob)
+            % OBJ = ADDTRANSIT(OBJ, DEST, PROB)
+            
             if isempty(obj.transits)
                 obj.transits = cell(1,2);
                 obj.transits{1,1} = dest;

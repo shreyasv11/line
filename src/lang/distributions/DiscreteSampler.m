@@ -6,6 +6,8 @@ classdef DiscreteSampler < DiscreteDistrib
     
     methods
         function self = DiscreteSampler(p,x)
+            % SELF = DISCRETESAMPLER(P,X)
+            
             % Construct a discrete distribution from a finite probability
             % vector p at the points specificied in vector x
             
@@ -24,6 +26,8 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             p = self.getParam(1).paramValue;
             n = length(p);
@@ -31,6 +35,8 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             
             
@@ -42,12 +48,16 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             f = self.getParam(3).paramValue;
             r = rand(n,1);
             X = maxpos(min(repmat(r,1,size(f,2))<=f,2)')';
         end
         
         function Ft = evalCDF(self,k)
+            % FT = EVALCDF(SELF,K)
+            
             f = self.getParam(3).paramValue;
             if k>=1 && k<length(f)
                 Ft = f(k);
@@ -57,6 +67,8 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function pk = evalPMF(self, v)
+            % PK = EVALPMF(SELF, V)
+            
             p = self.getParam(1).paramValue;
             x = self.getParam(2).paramValue;
             if ~exist('v','var')
@@ -69,6 +81,8 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function bool = isDisabled(self)
+            % BOOL = ISDISABLED(SELF)
+            
             p = self.getParam(1).paramValue;
             bool = any(isnan(p));
         end

@@ -6,6 +6,8 @@ classdef ContinuousDistrib < Distrib
     
     methods (Hidden)
         function self = ContinuousDistrib(name, numParam, support)
+            % SELF = CONTINUOUSDISTRIB(NAME, NUMPARAM, SUPPORT)
+            
             % Construct a continuous distribution from name, number of
             % parameters, and range
             self@Distrib(name,numParam,support);

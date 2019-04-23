@@ -6,6 +6,8 @@ classdef Zipf < DiscreteDistrib
     
     methods
         function self = Zipf(s, n)
+            % SELF = ZIPF(S, N)
+            
             % Construct a Zipf-like distribution on n items with given
             % shape parameter s
             if ~exist('n','var')
@@ -18,11 +20,13 @@ classdef Zipf < DiscreteDistrib
             setParam(self, 2, 'x', x(:)', 'java.lang.Double');
             setParam(self, 3, 's', s, 'java.lang.Double');
             setParam(self, 4, 'n', n, 'java.lang.Integer');
-%            self.javaClass = '';
-%            self.javaParClass = '';
+            %            self.javaClass = '';
+            %            self.javaParClass = '';
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             s = self.getParam(3).paramValue;
             n = self.getParam(4).paramValue;
@@ -30,6 +34,8 @@ classdef Zipf < DiscreteDistrib
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             s = self.getParam(3).paramValue;
             n = self.getParam(4).paramValue;
@@ -39,19 +45,29 @@ classdef Zipf < DiscreteDistrib
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             X = self.getParam(3).paramValue * ones(n,1);
         end
         
         function Ft = evalCDF(self,k)
+            % FT = EVALCDF(SELF,K)
+            
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             s = self.getParam(3).paramValue;
             n = self.getParam(4).paramValue;
             Ft = self.genHarmonic(s,k) / self.genHarmonic(s,n);
         end
         
         function p = evalPMF(self, k)
+            % P = EVALPMF(SELF, K)
+            
             % Evaluate the probability mass function at k
+            % AT K
+            
             s = self.getParam(3).paramValue;
             n = self.getParam(4).paramValue;
             if ~exist('k','var')
@@ -64,6 +80,8 @@ classdef Zipf < DiscreteDistrib
     
     methods (Static)
         function Hnm = genHarmonic(s,n)
+            % HNM = GENHARMONIC(S,N)
+            
             % Generate harmonic numbers to normalize a Zipf-like distribution
             % on n items with shape parameter s
             Hnm = 0;

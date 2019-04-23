@@ -1,8 +1,8 @@
 classdef (Sealed) ReplacementStrategy
     % Enumeration of cache replacement strategies
     %
-% Copyright (c) 2012-2019, Imperial College London
-% All rights reserved.
+    % Copyright (c) 2012-2019, Imperial College London
+    % All rights reserved.
     
     properties (Constant)
         RAND = 'rand'; % random replacement
@@ -18,6 +18,8 @@ classdef (Sealed) ReplacementStrategy
     
     methods (Static)
         function id = toId(type)
+            % ID = TOID(TYPE)
+            
             switch type
                 case ReplacementStrategy.RAND
                     id = ReplacementStrategy.ID_RAND;
@@ -31,6 +33,8 @@ classdef (Sealed) ReplacementStrategy
         end
         
         function property = toProperty(text)
+            % PROPERTY = TOPROPERTY(TEXT)
+            
             switch text
                 case 'rand' % rrom replacement
                     property = 'RAND';
@@ -44,6 +48,8 @@ classdef (Sealed) ReplacementStrategy
         end
         
         function text = toFeature(type)
+            % TEXT = TOFEATURE(TYPE)
+            
             switch type
                 case ReplacementStrategy.RAND
                     text = 'ReplacementStrategy_RAND';

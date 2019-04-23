@@ -1,4 +1,6 @@
 function [outspace, outrate, outprob] =  afterEvent(qn, ind, inspace, event, class, isSimulation)
+% [OUTSPACE, OUTRATE, OUTPROB] =  AFTEREVENT(QN, IND, INSPACE, EVENT, CLASS, ISSIMULATION)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -138,7 +140,7 @@ if qn.isstation(ind)
                     firing_ctr = 1 + max([0,find( rand > cum_prob' )]); % select action
                     outspace = outspace(firing_ctr,:);
                     outrate = -1;
-                    outprob = 1; 
+                    outprob = 1;
                 end
             end
         case Event.DEP
@@ -214,7 +216,7 @@ if qn.isstation(ind)
                                         error('Multi-server GPS stations are not supported yet.');
                                     end
                                     % in GPS, the scheduling parameter are the weights
-                                    w_i = qn.schedparam(ist,:); 
+                                    w_i = qn.schedparam(ist,:);
                                     w_i = w_i / sum(w_i);
                                     cir = min(nir,ones(size(nir)));
                                     rate = mu{ist,class}(k)*(phi{ist,class}(k))*(kir(en,class,k)/nir(class))*w_i(class)/(w_i*cir(:)); % assume active
@@ -382,7 +384,7 @@ if qn.isstation(ind)
                         end
                     end
                 end
-            end        
+            end
         case Event.PHASE
             outspace = [];
             outrate = [];
@@ -646,6 +648,8 @@ elseif qn.isstateful(ind)
     end % switch nodeType
 end
     function pos = cpos(i,j)
+        % POS = CPOS(I,J)
+        
         pos = sum(m(1:i-1)) + j;
     end
 end

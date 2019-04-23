@@ -1,4 +1,6 @@
 function [lGN,lGNr] = pfqn_grm(L,N,Z,samples)
+% [LGN,LGNR] = PFQN_GRM(L,N,Z,SAMPLES)
+
 % Monte carlo sampling for normalizing constant of a repairmen model
 R = length(N);
 % Scale so that all coefficients are >=1.

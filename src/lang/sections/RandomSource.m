@@ -12,6 +12,8 @@ classdef RandomSource < InputSection
     methods
         %Constructor
         function self = RandomSource(classes)
+            % SELF = RANDOMSOURCE(CLASSES)
+            
             self@InputSection('RandomSource');
             for i = 1 : length(classes)
                 self.sourceClasses{1,i} = {[],ServiceStrategy.LI,Disabled()};
@@ -22,6 +24,8 @@ classdef RandomSource < InputSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object

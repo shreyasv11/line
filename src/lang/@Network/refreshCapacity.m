@@ -1,4 +1,6 @@
 function [capacity, classcap] = refreshCapacity(self)
+% [CAPACITY, CLASSCAP] = REFRESHCAPACITY(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 M = self.getNumberOfStations();
@@ -10,7 +12,7 @@ for i=1:M
     for r=1:K
         if isempty(self.qn.rates(i,r)) || self.qn.rates(i,r)==0 || any(~isfinite(self.qn.rates(i,r)))
             classcap(i,r) = 0;
-        else            
+        else
             c = find(self.qn.chains(:,r)); % chain of class r
             classcap(i,r) = sum(self.qn.njobs(find(self.qn.chains(c,:))));
             if self.stations{i}.classCap(r) >= 0

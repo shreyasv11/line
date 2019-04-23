@@ -6,17 +6,32 @@ classdef SolverCTMC < NetworkSolver
     
     methods
         function self = SolverCTMC(model,varargin)
+            % SELF = SOLVERCTMC(MODEL,VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
+        function setOptions(self, options)
+            % SETOPTIONS(SELF, OPTIONS)
+            % Assign the solver options
+            
+            self.checkOptions(options);
+            setOptions@Solver(self,options);
+        end
+        
         function supported = getSupported(self,supported)
+            % SUPPORTED = GETSUPPORTED(SELF,SUPPORTED)
+            
             if ~exist('supported','var')
                 supported=struct();
             end
         end
         
         function runtime = run(self)
+            % RUNTIME = RUN(SELF)
+            % Run the solver
+            
             T0=tic;
             
             options = self.getOptions;
@@ -61,10 +76,14 @@ classdef SolverCTMC < NetworkSolver
             % we compute all metrics anyway because CTMC has essentially
             % the same cost
             if isinf(options.timespan(1))
-                [Q,U,R,T,C,X,~,fname] = solver_ctmc_analysis(qn, options);
+                [QN,UN,RN,TN,CN,XN,Q,SS,SSq,Dfilt] = solver_ctmc_analysis(qn, options);
+                %qn.space = SS;
+                self.result.infGen = Q;
+                self.result.space = SS;
+                self.result.spaceAggr = SSq;
+                self.result.eventFilt = Dfilt;
                 runtime=toc(T0);
-                self.setAvgResults(Q,U,R,T,C,X,runtime);
-                self.result.kept_model = fname;
+                self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime);
             else
                 lastSol= [];
                 [s0, s0prior] = self.model.getState;
@@ -80,33 +99,39 @@ classdef SolverCTMC < NetworkSolver
                         end
                     end
                     if s0prior_val > 0
-                        [t,Qfull_t,Ufull_t,~,Tfull_t,~,~,~,~] = solver_ctmc_transient_analysis(qn, options);
-                        if isempty(self.result) || ~isfield(self.result,'TranAvg') || ~isfield(self.result.TranAvg,'Q')
-                            self.result.TranAvg.Q = cell(M,K);
-                            self.result.TranAvg.U = cell(M,K);
-                            self.result.TranAvg.T = cell(M,K);
+                        [t,pit,QNt,UNt,~,TNt,~,~,Q,SS,SSq,Dfilt,runtime_t] = solver_ctmc_transient_analysis(qn, options);
+                        self.result.space = SS;
+                        self.result.spaceAggr = SSq;
+                        self.result.infGen = Q;
+                        self.result.eventFilt = Dfilt;
+                        qn.space = SS;
+                        setTranProb(self,t,pit,SS,runtime_t);
+                        if isempty(self.result) || ~isfield(self.result,'TranAvg') || ~isfield(self.result.Tran.Avg,'Q')
+                            self.result.Tran.Avg.Q = cell(M,K);
+                            self.result.Tran.Avg.U = cell(M,K);
+                            self.result.Tran.Avg.T = cell(M,K);
                             for i=1:M
                                 for r=1:K
-                                    self.result.TranAvg.Q{i,r} = [Qfull_t{i,r} * s0prior_val,t];
-                                    self.result.TranAvg.U{i,r} = [Ufull_t{i,r} * s0prior_val,t];
-                                    self.result.TranAvg.T{i,r} = [Tfull_t{i,r} * s0prior_val,t];
+                                    self.result.Tran.Avg.Q{i,r} = [QNt{i,r} * s0prior_val,t];
+                                    self.result.Tran.Avg.U{i,r} = [UNt{i,r} * s0prior_val,t];
+                                    self.result.Tran.Avg.T{i,r} = [TNt{i,r} * s0prior_val,t];
                                 end
                             end
                         else
                             for i=1:M
                                 for r=1:K
-                                    tunion = union(self.result.TranAvg.Q{i,r}(:,2), t);
-                                    dataOld = interp1(self.result.TranAvg.Q{i,r}(:,2),self.result.TranAvg.Q{i,r}(:,1),tunion);
-                                    dataNew = interp1(t,Qfull_t{i,r},tunion);
-                                    self.result.TranAvg.Q{i,r} = [dataOld+s0prior_val*dataNew,tunion];
+                                    tunion = union(self.result.Tran.Avg.Q{i,r}(:,2), t);
+                                    dataOld = interp1(self.result.Tran.Avg.Q{i,r}(:,2),self.result.Tran.Avg.Q{i,r}(:,1),tunion);
+                                    dataNew = interp1(t,QNt{i,r},tunion);
+                                    self.result.Tran.Avg.Q{i,r} = [dataOld+s0prior_val*dataNew,tunion];
                                     
-                                    dataOld = interp1(self.result.TranAvg.U{i,r}(:,2),self.result.TranAvg.U{i,r}(:,1),tunion);
-                                    dataNew = interp1(t,Ufull_t{i,r},tunion);
-                                    self.result.TranAvg.U{i,r} = [dataOld+s0prior_val*dataNew,tunion];
+                                    dataOld = interp1(self.result.Tran.Avg.U{i,r}(:,2),self.result.Tran.Avg.U{i,r}(:,1),tunion);
+                                    dataNew = interp1(t,UNt{i,r},tunion);
+                                    self.result.Tran.Avg.U{i,r} = [dataOld+s0prior_val*dataNew,tunion];
                                     
-                                    dataOld = interp1(self.result.TranAvg.T{i,r}(:,2),self.result.TranAvg.T{i,r}(:,1),tunion);
-                                    dataNew = interp1(t,Tfull_t{i,r},tunion);
-                                    self.result.TranAvg.T{i,r} = [dataOld+s0prior_val*dataNew,tunion];
+                                    dataOld = interp1(self.result.Tran.Avg.T{i,r}(:,2),self.result.Tran.Avg.T{i,r}(:,1),tunion);
+                                    dataNew = interp1(t,TNt{i,r},tunion);
+                                    self.result.Tran.Avg.T{i,r} = [dataOld+s0prior_val*dataNew,tunion];
                                 end
                             end
                         end
@@ -121,6 +146,8 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pnir = getProbState(self, node, state)
+            % PNIR = GETPROBSTATE(SELF, NODE, STATE)
+            
             if ~exist('node','var')
                 error('getProbState requires to pass a parameter the station of interest.');
             end
@@ -149,6 +176,8 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pn = getProbSysState(self)
+            % PN = GETPROBSYSSTATE(SELF)
+            
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
             end
@@ -166,6 +195,8 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pnir = getProbStateAggr(self, ist)
+            % PNIR = GETPROBSTATEAGGR(SELF, IST)
+            
             if ~exist('ist','var')
                 error('getProbState requires to pass a parameter the station of interest.');
             end
@@ -192,6 +223,8 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pn = getProbSysStateAggr(self)
+            % PN = GETPROBSYSSTATEAGGR(SELF)
+            
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
             end
@@ -208,10 +241,127 @@ classdef SolverCTMC < NetworkSolver
             self.result.runtime = runtime;
         end
         
+        function [Pi_t, SSsysa] = getTranProbSysStateAggr(self)
+            % [PI_T, SSSYSA] = GETTRANPROBSYSSTATEAGGR(SELF)
+            
+            options = self.getOptions;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                qn = self.getStruct;
+                [t,pi_t,~,~,~,~,~,~,~,~,~,SSsysa] = solver_ctmc_transient_analysis(qn, options);
+                Pi_t = [t, pi_t];
+            else
+                error('getTranProbSysStateAggr in SolverCTMC requires to specify a finite timespan T, e.g., SolverCTMC(model,''timespan'',[0,T]).');
+            end
+        end
+        
+        function [Pi_t, SSnode_a] = getTranProbStateAggr(self, node)
+            % [PI_T, SSNODE_A] = GETTRANPROBSTATEAGGR(SELF, NODE)
+            
+            options = self.getOptions;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                qn = self.getStruct;
+                [t,pi_t,~,~,~,~,~,~,~,~,~,SSa] = solver_ctmc_transient_analysis(qn, options);
+                jnd = self.model.getNodeIndex(node);
+                SSnode_a = SSa(:,(jnd-1)*qn.nclasses+1:jnd*qn.nclasses);
+                Pi_t = [t, pi_t];
+            else
+                error('getTranProbStateAggr in SolverCTMC requires to specify a finite timespan T, e.g., SolverCTMC(model,''timespan'',[0,T]).');
+            end
+        end
+        
+        function [Pi_t, SSsys] = getTranProbSysState(self)
+            % [PI_T, SSSYS] = GETTRANPROBSYSSTATE(SELF)
+            
+            options = self.getOptions;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                qn = self.getStruct;
+                [t,pi_t,~,~,~,~,~,~,~,~,SSsys]  = solver_ctmc_transient_analysis(qn, options);
+                Pi_t = [t, pi_t];
+            else
+                error('getTranProbSysState in SolverCTMC requires to specify a finite timespan T, e.g., SolverCTMC(model,''timespan'',[0,T]).');
+            end
+        end
+        
+        function [Pi_t, SSnode] = getTranProbState(self, node)
+            % [PI_T, SSNODE] = GETTRANPROBSTATE(SELF, NODE)
+            
+            options = self.getOptions;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                qn = self.getStruct;
+                [t,pi_t,~,~,~,~,~,~,~,~,SS] = solver_ctmc_transient_analysis(qn, options);
+                jnd = self.model.getNodeIndex(node);
+                shift = 1;
+                for isf = 1:qn.nstateful
+                    len = length(qn.state{isf});
+                    if qn.statefulToNode(isf) == jnd
+                        SSnode = SS(:,shift:shift+len-1);
+                        break;
+                    end
+                    shift = shift+len;
+                end
+                Pi_t = [t, pi_t];
+            else
+                error('getTranProbState in SolverCTMC requires to specify a finite timespan T, e.g., SolverCTMC(model,''timespan'',[0,T]).');
+            end
+        end
+        
+        function stateSpace = getStateSpace(self)
+            % STATESPACE = GETSTATESPACE(SELF)
+            
+            options = self.getOptions;
+            if options.force
+                self.run;
+            end
+            if isempty(self.result) || ~isfield(self.result,'space')
+                warning('The model has not been solved yet. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpace()');
+                stateSpace = [];
+            else
+                stateSpace = self.result.space;
+            end
+        end
+        
+        function stateSpaceAggr = getStateSpaceAggr(self)
+            % STATESPACEAGGR = GETSTATESPACEAGGR(SELF)
+            
+            options = self.getOptions;
+            if options.force
+                self.run;
+            end
+            if isempty(self.result) || ~isfield(self.result,'spaceAggr')
+                warning('The model has not been solved yet. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpaceAggr()');
+                stateSpaceAggr = [];
+            else
+                stateSpaceAggr = self.result.spaceAggr;
+            end
+        end
+        
+        function [infGen, eventFilt] = getGenerator(self)
+            % [INFGEN, EVENTFILT] = GETGENERATOR(SELF)
+            
+            % [infGen, eventFilt] = getGenerator(self)
+            % returns the infinitesimal generator of the CTMC and the
+            % associated filtration for each event
+            options = self.getOptions;
+            if options.force
+                self.run;
+            end
+            if isempty(self.result) || ~isfield(self.result,'infGen')
+                warning('The model has not been solved yet. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getGenerator()');
+                infGen = [];
+                eventFilt = [];
+            else
+                infGen = self.result.infGen;
+                eventFilt = self.result.eventFilt;
+            end
+            
+        end
+        
     end
     
     methods (Static)
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Source','Sink',...
                 'ClassSwitch','DelayStation','Queue',...
@@ -228,6 +378,8 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function [bool, featSupported, featUsed] = supports(model)
+            % [BOOL, FEATSUPPORTED, FEATUSED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverCTMC.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
@@ -235,12 +387,22 @@ classdef SolverCTMC < NetworkSolver
     end
     
     methods (Static)
+        function checkOptions(options)
+            % CHECKOPTIONS(OPTIONS)
+            
+            % do nothing
+        end
+        
         function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
+            
             options = Solver.defaultOptions();
             options.timespan = [Inf,Inf];
         end
         
         function printInfGen(Q,SS)
+            % PRINTINFGEN(Q,SS)
+            
             SS=full(SS);
             Q=full(Q);
             for s=1:size(SS,1)
@@ -253,6 +415,8 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function printEventFilt(sync,D,SS,myevents)
+            % PRINTEVENTFILT(SYNC,D,SS,MYEVENTS)
+            
             if ~exist('events','var')
                 myevents = 1:length(sync);
             end

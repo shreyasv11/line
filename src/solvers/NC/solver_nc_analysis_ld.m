@@ -1,4 +1,6 @@
 function [Q,U,R,T,C,X,runtime] = solver_nc_analysis_ld(qn, options)
+% [Q,U,R,T,C,X,RUNTIME] = SOLVER_NC_ANALYSIS_LD(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -84,19 +86,19 @@ end
 %     Tchain = repmat(Xchain,M,1) .* Vchain;
 %     Uchain = Tchain .* Lchain;
 %     Cchain = Nchain ./ Xchain - Z;
-%     
+%
 %     Xchain(~isfinite(Xchain))=0;
 %     Uchain(~isfinite(Uchain))=0;
 %     Qchain(~isfinite(Qchain))=0;
 %     Rchain(~isfinite(Rchain))=0;
-%     
+%
 %     Xchain(Nchain==0)=0;
 %     Uchain(:,Nchain==0)=0;
 %     Qchain(:,Nchain==0)=0;
 %     Rchain(:,Nchain==0)=0;
 %     Tchain(:,Nchain==0)=0;
-%     
-%     
+%
+%
 %     for c=1:qn.nchains
 %         inchain = find(qn.chains(c,:));
 %         for k=inchain(:)'
@@ -114,7 +116,7 @@ end
 %                     %                R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');
 %                 else
 %                     T(i,k) = 0;
-%                     
+%
 %                     R(i,k)=0;
 %                     Q(i,k)=0;
 %                 end

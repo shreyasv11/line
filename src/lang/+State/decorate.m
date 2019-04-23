@@ -1,4 +1,6 @@
 function inspace1 = decorate(inspace1, inspace2)
+% INSPACE1 = DECORATE(INSPACE1, INSPACE2)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

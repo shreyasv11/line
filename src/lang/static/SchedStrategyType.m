@@ -5,8 +5,13 @@ classdef (Sealed) SchedStrategyType
     % All rights reserved.
     
     properties (Constant)
+        ID_NP = 0;
+        ID_PR = 1;
+        ID_PNR = 2;
+        ID_NPPrio = 3;
+        
         PR = 'PR'; % preemptive resume
-        PNR = 'PRN'; % preemptive non-resume
+        PNR = 'PNR'; % preemptive non-resume
         NP = 'NPR'; % non-preemptive
         NPPrio = 'NPPrio'; % non-preemptive priority
     end
@@ -14,12 +19,29 @@ classdef (Sealed) SchedStrategyType
     methods (Access = private)
         %private so that it cannot be instatiated.
         function out = SchedStrategyType
+            % OUT = SCHEDSTRATEGYTYPE
+            
         end
     end
     
     methods (Static)
+        function typeId = getTypeId(strategy)
+            % TYPEID = GETTYPEID(STRATEGY)
+            % Classifies the scheduling strategy type
+            switch strategy
+                case {SchedStrategy.PS, SchedStrategy.DPS, SchedStrategy.GPS}
+                    typeId = SchedStrategyType.ID_PR;
+                case {SchedStrategy.FCFS, SchedStrategy.RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT, SchedStrategy.ID_SJF, SchedStrategy.ID_INF}
+                    typeId = SchedStrategyType.ID_NP;
+                case SchedStrategy.HOL
+                    typeId = SchedStrategyType.ID_NPPrio;
+                otherwise
+                    error('Unrecognized scheduling strategy.');
+            end
+        end
         
         function text = toText(type)
+            % TEXT = TOTEXT(TYPE)
             switch type
                 case SchedStrategyType.NP
                     text = 'NonPreemptive';

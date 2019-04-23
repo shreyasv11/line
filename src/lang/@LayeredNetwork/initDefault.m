@@ -1,4 +1,6 @@
 function self = initDefault(self)
+% SELF = INITDEFAULT(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 self.lqnGraph.Edges.Weight=log(self.lqnGraph.Edges.Weight); % use log-weights

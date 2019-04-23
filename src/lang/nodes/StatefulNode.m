@@ -13,6 +13,7 @@ classdef StatefulNode < Node
     methods(Hidden)
         %Constructor
         function self = StatefulNode(name)
+            % SELF = STATEFULNODE(NAME)
             self@Node(name);
             self.statePrior = [];
             self.state = [];
@@ -20,11 +21,13 @@ classdef StatefulNode < Node
         end
         
         function prior = getStatePrior(self)
+            % PRIOR = GETSTATEPRIOR(SELF)
             % prior(j) = probability that the initial state is state(j)
             prior = self.statePrior;
         end
         
         function self = setStatePrior(self, prior)
+            % SELF = SETSTATEPRIOR(SELF, PRIOR)
             % the prior is marginalized on the station state and thus
             % assumed independent of the priors for other stations
             self.statePrior = prior(:); % we do not normalize to allow the user to manually run a model for each point of an external prior
@@ -34,6 +37,7 @@ classdef StatefulNode < Node
         end
         
         function self = setState(self, state)
+            % SELF = SETSTATE(SELF, STATE)
             % state can be stacked in a matrix of states, a state space
             self.state = state;
             if size(self.statePrior,1) ~= size(self.state,1)
@@ -44,15 +48,18 @@ classdef StatefulNode < Node
         end
         
         function state = getState(self)
+            % STATE = GETSTATE(SELF)
             state = self.state;
         end
         
         function self = setStateSpace(self, space)
+            % SELF = SETSTATESPACE(SELF, SPACE)
             self.space = space;
             %            mState.getHash = memoize(@(x) self.State.getHash(x));
         end
         
         function self = resetStateSpace(self)
+            % SELF = RESETSTATESPACE(SELF)
             self.space = {};
         end
         

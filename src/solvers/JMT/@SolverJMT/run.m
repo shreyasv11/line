@@ -1,4 +1,6 @@
 function Tsim = run(self)
+% TSIM = RUN(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

@@ -1,4 +1,6 @@
 function [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ymean_t, t,iters,runtime] = solver_fluid_analysis_inner(qn, options)
+% [QFULL, UFULL, RFULL, TFULL, YMEAN, QFULL_T, UFULL_T, TFULL_T, YMEAN_T, T,ITERS,RUNTIME] = SOLVER_FLUID_ANALYSIS_INNER(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 chains = qn.chains;
@@ -67,7 +69,7 @@ for i = 1:qn.nstations
                     switch qn.sched{i}
                         case SchedStrategy.EXT
                             if f==1
-                                Tfull(i,k) = Tfull(i,k) + (1-sum(Qfull(idx+(2:phases(i,k)))))*Lambda{i,k}(f)*Pi{i,k}(f);                               
+                                Tfull(i,k) = Tfull(i,k) + (1-sum(Qfull(idx+(2:phases(i,k)))))*Lambda{i,k}(f)*Pi{i,k}(f);
                                 Tfull_t{i,k} = Tfull_t{i,k} + (1-sum(ymean_t(:,idx+(2:phases(i,k))),2))*Lambda{i,k}(f)*Pi{i,k}(f);
                                 Xservice{i,k}(f) = (1-sum(Qfull(idx+(2:phases(i,k)))))*Lambda{i,k}(f);
                             else
@@ -145,13 +147,13 @@ end
 Ufull(delayNodes==0,:) = Ufull(delayNodes==0,:)./repmat(qn.nservers(delayNodes==0),1,K);
 
 % for i = 1:qn.nstations
-%     for k=1:qn.nclasses        
+%     for k=1:qn.nclasses
 %         c = find(qn.chains(:,k));
 %         if delayNodes(i) == 1
 %             Rlittle(i,k) = qn.visits{c}(i,k)*(1/qn.rates(i,k));
 %         else
 %             Rlittle(i,k) = qn.visits{c}(i,k)*(1/qn.rates(i,k))*sum(Qfull(i,:));
-%         end        
+%         end
 %     end
 % end
 % Rlittle(isnan(Rlittle)) = 0;

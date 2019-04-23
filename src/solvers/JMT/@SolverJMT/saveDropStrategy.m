@@ -1,4 +1,6 @@
 function [simDoc, section] = saveDropStrategy(self, simDoc, section)
+% [SIMDOC, SECTION] = SAVEDROPSTRATEGY(SELF, SIMDOC, SECTION)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

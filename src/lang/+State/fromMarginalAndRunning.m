@@ -1,4 +1,6 @@
 function space = fromMarginalAndRunning(qn, ind, n, s, options)
+% SPACE = FROMMARGINALANDRUNNING(QN, IND, N, S, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -117,7 +119,7 @@ switch qn.nodetype(ind)
                         mi_buf = mi(:,1:(sum(n)-sum(s)));
                     else % set an empty buffer
                         mi_buf = 0;
-                    end                    
+                    end
                     % si: number of class r jobs that are running
                     si = s;
                     %si = unique(si,'rows');

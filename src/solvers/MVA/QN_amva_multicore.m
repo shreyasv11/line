@@ -1,4 +1,6 @@
 function r = QN_amva_multicore(n,c)
+% R = QN_AMVA_MULTICORE(N,C)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -20,5 +22,7 @@ end
 end
 
 function value = approximate(x,y,alpha) %soft-min
+% VALUE = APPROXIMATE(X,Y,ALPHA) %SOFT-MIN
+
 value = - ((-x)*exp(-alpha*x) -y*exp(-alpha*y)) / (exp(-alpha*x) + exp(-alpha*y));
 end

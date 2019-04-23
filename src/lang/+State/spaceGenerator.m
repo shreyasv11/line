@@ -1,4 +1,6 @@
 function [SS,SSh,qn] = spaceGenerator(qn, cutoff)
+% [SS,SSH,QN] = SPACEGENERATOR(QN, CUTOFF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -16,7 +18,7 @@ end
 if prod(size(cutoff))==1
     cutoff = cutoff * ones(qn.nstations, qn.nclasses);
 end
-
+qn.space = [];
 capacityc = zeros(qn.nnodes, qn.nclasses);
 for ind=1:qn.nnodes
     if qn.isstation(ind) % place jobs across stations

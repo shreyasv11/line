@@ -12,6 +12,8 @@ classdef ServiceSection < Section
     methods(Hidden)
         %Constructor
         function self = ServiceSection(className)
+            % SELF = SERVICESECTION(CLASSNAME)
+            
             self@Section(className);
         end
     end

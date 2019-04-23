@@ -1,4 +1,6 @@
 function addLinks(self, nodesList)
+% ADDLINKS(SELF, NODESLIST)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 for i=1:size(nodesList,1)

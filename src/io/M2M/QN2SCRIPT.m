@@ -1,4 +1,6 @@
- function QN2SCRIPT(model, modelName, fid)
+function QN2SCRIPT(model, modelName, fid)
+% QN2SCRIPT(MODEL, MODELNAME, FID)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('modelName','var')
@@ -136,7 +138,7 @@ end
 fprintf(fid,'\n%%%% Block 3: topology');
 if hasSink
     rt(qn.nstations*qn.nclasses+(1:qn.nclasses),qn.nstations*qn.nclasses+(1:qn.nclasses)) = zeros(qn.nclasses);
-    for k=find(isinf(qn.njobs))' % for all open classes        
+    for k=find(isinf(qn.njobs))' % for all open classes
         for i=1:qn.nstations
             % all open class transitions to ext station are re-routed to sink
             rt((i-1)*qn.nclasses+k, qn.nstations*qn.nclasses+k) = rt((i-1)*qn.nclasses+k, (sourceID-1)*qn.nclasses+k);

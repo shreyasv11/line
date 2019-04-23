@@ -1,4 +1,6 @@
 function [Gn,lGn]=pfqn_ca(L,N,Z)
+% [GN,LGN]=PFQN_CA(L,N,Z)
+
 % PFQN_CA Exact solution of closed product-form queueing networks by the
 % convolution algorithm
 %
@@ -13,7 +15,7 @@ function [Gn,lGn]=pfqn_ca(L,N,Z)
 %
 % References:
 % J. P. Buzen. Computational algorithms for closed queueing networks with
-% exponential servers. Comm. of the ACM, 16(9):527–531, 1973.
+% exponential servers. Comm. of the ACM, 16(9):527ï¿½531, 1973.
 %
 % H. Kobayashi, M. Reiser. Queueing Networks with Multiple Closed Chains:
 % Theory and Computational Algorithms, IBM J. Res. Dev., 19(3), 283--294,
@@ -60,6 +62,8 @@ lGn=log(Gn);
 end
 
 function idx=hashpop(n,N,R,prods)
+% IDX=HASHPOP(N,N,R,PRODS)
+
 % hash a population vector in n: 0<=n<=N
 idx=1;
 if nargin==2
@@ -76,6 +80,8 @@ end
 end
 
 function [n]=pprod(n,N)
+% [N]=PPROD(N,N)
+
 % sequentially generate all vectors n: 0<=n<=N
 % n=pprod(N) - init
 % n=pprod(n,N) - next state
@@ -105,14 +111,16 @@ return;
 end
 
 function f=Fz(Z,n)
-    R=length(n);    
-    if sum(n)==0
-        f=1;
-        return
-    end       
+% F=FZ(Z,N)
+
+R=length(n);
+if sum(n)==0
     f=1;
-    for r=1:R
-        f=f*Z(r)^n(r);                
-        f=f/factorial(n(r));
-    end    
+    return
+end
+f=1;
+for r=1:R
+    f=f*Z(r)^n(r);
+    f=f/factorial(n(r));
+end
 end

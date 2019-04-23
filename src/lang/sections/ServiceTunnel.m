@@ -7,6 +7,8 @@ classdef ServiceTunnel < ServiceSection
     methods
         %Constructor
         function self = ServiceTunnel(name)
+            % SELF = SERVICETUNNEL(NAME)
+            
             if nargin<1
                 name = 'ServiceTunnel';
             end

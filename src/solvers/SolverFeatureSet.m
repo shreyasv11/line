@@ -1,8 +1,8 @@
 classdef SolverFeatureSet < handle
-	% An auxiliary class to specify the features supported by a solver.
-	%
+    % An auxiliary class to specify the features supported by a solver.
+    %
     % Copyright (c) 2012-2019, Imperial College London
-    % All rights reserved.    
+    % All rights reserved.
     
     properties
         list; % list of features
@@ -42,7 +42,7 @@ classdef SolverFeatureSet < handle
             'Server', ...
             'ServiceTunnel', ...
             'RoutingStrategy_PROB', ...
-            'RoutingStrategy_RAND', ... 
+            'RoutingStrategy_RAND', ...
             'RoutingStrategy_RR', ...
             'SchedStrategy_INF', ...
             'SchedStrategy_FCFS', ...
@@ -59,30 +59,34 @@ classdef SolverFeatureSet < handle
             'SchedStrategy_EXT', ...
             'ClosedClass', ...
             'OpenClass'};
-            % High-level properties
-            %             self.list.('FiniteCapacity')=false;
-            %             self.list.('Tandem')=false;
-            %             self.list.('Cyclic')=false;
-            %             self.list.('Multichain')=false;
-            %             self.list.('Multiclass')=false;
-            %             self.list.('Analysis_Avg')=false;
-            %             self.list.('Analysis_Tran')=false;
-            %             self.list.('Analysis_Distribution')=false;
-            %             self.list.('Analysis_State')=false;
-            %             self.list.('Method_Exact')=false;
-            %             self.list.('Method_Simulation')=false;
+        % High-level properties
+        %             self.list.('FiniteCapacity')=false;
+        %             self.list.('Tandem')=false;
+        %             self.list.('Cyclic')=false;
+        %             self.list.('Multichain')=false;
+        %             self.list.('Multiclass')=false;
+        %             self.list.('Analysis_Avg')=false;
+        %             self.list.('Analysis_Tran')=false;
+        %             self.list.('Analysis_Distribution')=false;
+        %             self.list.('Analysis_State')=false;
+        %             self.list.('Method_Exact')=false;
+        %             self.list.('Method_Simulation')=false;
     end
     
     methods
         function self = SolverFeatureSet()
+            % SELF = SOLVERFEATURESET()
+            
             % Nodes and Stations
             fields = SolverFeatureSet.fields;
             for f=1:length(fields)
-            self.list.(fields{f})=false;
+                self.list.(fields{f})=false;
             end
         end
         
         function self = setTrue(self, feature)
+            % SELF = SETTRUE(SELF, FEATURE)
+            
             if iscell(feature)
                 for c=1:length(feature)
                     self.setTrue(feature{c});
@@ -95,6 +99,8 @@ classdef SolverFeatureSet < handle
         end
         
         function self = setFalse(self, feature)
+            % SELF = SETFALSE(SELF, FEATURE)
+            
             if iscell(feature)
                 for c=1:length(feature)
                     self.setFalse(feature{c});
@@ -107,7 +113,9 @@ classdef SolverFeatureSet < handle
     end
     
     methods(Static)
-        function bool = supports(featSupportedList, featUsedList)        
+        function bool = supports(featSupportedList, featUsedList)
+            % BOOL = SUPPORTS(FEATSUPPORTEDLIST, FEATUSEDLIST)
+            
             bool = true;
             unsupported = {};
             
@@ -133,5 +141,5 @@ classdef SolverFeatureSet < handle
                 warning(str);
             end
         end
-    end    
+    end
 end

@@ -12,20 +12,28 @@ classdef SystemState
     
     methods
         function self = SystemState(model, tranSysState)
+            % SELF = SYSTEMSTATE(MODEL, TRANSYSSTATE)
+            
             self.t = tranSysState{1};
             self.state = {tranSysState{2:end}};
             self.model = model;
         end
         
         function state = getTimestamps(self)
+            % STATE = GETTIMESTAMPS(SELF)
+            
             state = self.t;
         end
         
         function state = getJointState(self)
+            % STATE = GETJOINTSTATE(SELF)
+            
             state = cell2mat(self.state);
         end
         
         function buf = getBufferState(self, node)
+            % BUF = GETBUFFERSTATE(SELF, NODE)
+            
             if exist('node','var')
                 qn = self.model.getStruct;
                 ind = self.model.getNodeIndex(node);
@@ -39,6 +47,8 @@ classdef SystemState
         end
         
         function var = getLocalVarState(self, node)
+            % VAR = GETLOCALVARSTATE(SELF, NODE)
+            
             if exist('node','var')
                 qn = self.model.getStruct;
                 ind = self.model.getNodeIndex(node);
@@ -50,6 +60,8 @@ classdef SystemState
         end
         
         function srv = getServerState(self, node)
+            % SRV = GETSERVERSTATE(SELF, NODE)
+            
             if exist('node','var')
                 qn = self.model.getStruct;
                 ind = self.model.getNodeIndex(node);

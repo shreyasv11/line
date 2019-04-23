@@ -9,6 +9,8 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     
     methods
         function self = SolverLN(model,solverFactory,varargin)
+            % SELF = SOLVERLN(MODEL,SOLVERFACTORY,VARARGIN)
+            
             self@LayeredNetworkSolver(model, mfilename);
             self@EnsembleSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
@@ -20,6 +22,8 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function bool = converged(self, it) % convergence test at iteration it
+            % BOOL = CONVERGED(SELF, IT) % CONVERGENCE TEST AT ITERATION IT
+            
             bool = false;
             if it>1
                 maxIterErr = 0;
@@ -38,14 +42,20 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function init(self) % operations before starting to iterate
+            % INIT(SELF) % OPERATIONS BEFORE STARTING TO ITERATE
+            
             %nop
         end
         
         function pre(self, it) % operations before an iteration
+            % PRE(SELF, IT) % OPERATIONS BEFORE AN ITERATION
+            
             %nop
         end
         
         function [result, runtime] = analyze(self, it, e)
+            % [RESULT, RUNTIME] = ANALYZE(SELF, IT, E)
+            
             T0 = tic;
             self.solvers{e}.reset();
             result = self.solvers{e}.getAvgTable();
@@ -53,6 +63,8 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function post(self, it) % operations after an iteration
+            % POST(SELF, IT) % OPERATIONS AFTER AN ITERATION
+            
             for post_it = 1:2 % do elevator up and down
                 self.model.updateParam({self.results{it,:}});
             end
@@ -60,10 +72,14 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function finish(self) % operations after interations are completed
+            % FINISH(SELF) % OPERATIONS AFTER INTERATIONS ARE COMPLETED
+            
             %nop
         end
         
         function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)
+            % [QN,UN,RN,TN] = GETAVG(SELF,~,~,~,~)
+            
             self.run(); % run iterations
             lqnGraph = self.model.getGraph;
             Avg = self.model.param;
@@ -122,6 +138,8 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     
     methods (Static)
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source','Queue',...
@@ -137,6 +155,8 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     
     methods (Static)
         function options = defaultOptions(self)
+            % OPTIONS = DEFAULTOPTIONS(SELF)
+            
             options = EnsembleSolver.defaultOptions();
             options.timespan = [Inf,Inf];
             options.keep = false;

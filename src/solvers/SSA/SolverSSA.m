@@ -6,17 +6,31 @@ classdef SolverSSA < NetworkSolver
     
     methods
         function self = SolverSSA(model,varargin)
+            % SELF = SOLVERSSA(MODEL,VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
+        function setOptions(self, options)
+            % SETOPTIONS(SELF, OPTIONS)
+            % Assign the solver options
+            
+            self.checkOptions(options);
+            setOptions@Solver(self,options);
+        end
+        
         function supported = getSupported(self,supported)
+            % SUPPORTED = GETSUPPORTED(SELF,SUPPORTED)
+            
             if ~exist('supported','var')
                 supported=struct();
             end
         end
         
         function [runtime, tranSysState] = run(self)
+            % [RUNTIME, TRANSYSSTATE] = RUN(SELF)
+            
             T0=tic;
             options = self.getOptions;
             if ~self.supports(self.model)
@@ -42,15 +56,17 @@ classdef SolverSSA < NetworkSolver
         end
         
         function ProbState = getProbState(self, node, state)
+            % PROBSTATE = GETPROBSTATE(SELF, NODE, STATE)
+            
             % we do not use probSysState as that is for joint states
             [~, tranSysState] = self.run;
             isf = self.model.getStatefulNodeIndex(node);
-            TSS = cell2mat({tranSysState{1},tranSysState{1+isf}});    
+            TSS = cell2mat({tranSysState{1},tranSysState{1+isf}});
             TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
             if ~exist('state','var')
                 state = self.model.getState{isf};
             end
-            rows = findrows(TSS(:,2:end), state);            
+            rows = findrows(TSS(:,2:end), state);
             if ~isempty(rows)
                 ProbState = sum(TSS(rows,1))/sum(TSS(:,1));
             else
@@ -60,26 +76,30 @@ classdef SolverSSA < NetworkSolver
         end
         
         function ProbStateAggr = getProbStateAggr(self, node, state)
+            % PROBSTATEAGGR = GETPROBSTATEAGGR(SELF, NODE, STATE)
+            
             % we do not use probSysState as that is for joint states
             TranSysStateAggr = self.getTranSysStateAggr;
             isf = self.model.getStatefulNodeIndex(node);
-            TSS = cell2mat({TranSysStateAggr.t,TranSysStateAggr.state{isf}});            
+            TSS = cell2mat({TranSysStateAggr.t,TranSysStateAggr.state{isf}});
             TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
             if ~exist('state','var')
                 state = self.model.getState{isf};
             end
-            rows = findrows(TSS(:,2:end), state);            
+            rows = findrows(TSS(:,2:end), state);
             if ~isempty(rows)
                 ProbStateAggr = sum(TSS(rows,1))/sum(TSS(:,1));
             else
                 warning('The state was not seen during the simulation.');
                 ProbStateAggr = 0;
             end
-        end        
+        end
         
         function ProbSysState = getProbSysState(self)
+            % PROBSYSSTATE = GETPROBSYSSTATE(SELF)
+            
             TranSysState = self.getTranSysState;
-            TSS = cell2mat([TranSysState.t,TranSysState.state(:)']);            
+            TSS = cell2mat([TranSysState.t,TranSysState.state(:)']);
             TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
             state = cell2mat(self.model.getState');
             rows = findrows(TSS(:,2:end), state);
@@ -88,12 +108,14 @@ classdef SolverSSA < NetworkSolver
             else
                 warning('The state was not seen during the simulation.');
                 ProbSysState = 0;
-            end         
+            end
         end
         
         function ProbSysStateAggr = getProbSysStateAggr(self)
+            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR(SELF)
+            
             TranSysStateAggr = self.getTranSysStateAggr;
-            TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);            
+            TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);
             TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
             state = self.model.getState;
             qn = self.model.getStruct;
@@ -101,7 +123,7 @@ classdef SolverSSA < NetworkSolver
             for isf=1:qn.nstateful
                 ind = qn.statefulToNode(isf);
                 [~,nir(isf,:)] = State.toMarginal(qn, ind, state{isf});
-            end            
+            end
             nir = nir';
             rows = findrows(TSS(:,2:end), nir(:)');
             if ~isempty(rows)
@@ -113,6 +135,8 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranNodeState = getTranState(self, node)
+            % TRANNODESTATE = GETTRANSTATE(SELF, NODE)
+            
             options = self.getOptions;
             switch options.method
                 case {'default','serial'}
@@ -128,6 +152,8 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranNodeStateAggr = getTranStateAggr(self, node)
+            % TRANNODESTATEAGGR = GETTRANSTATEAGGR(SELF, NODE)
+            
             options = self.getOptions;
             switch options.method
                 case {'default','serial'}
@@ -145,10 +171,12 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranSysStateAggr = getTranSysStateAggr(self)
+            % TRANSYSSTATEAGGR = GETTRANSYSSTATEAGGR(SELF)
+            
             options = self.getOptions;
             switch options.method
                 case {'default','serial'}
-                    [~, tranSystemState] = self.run;                    
+                    [~, tranSystemState] = self.run;
                     qn = self.model.getStruct;
                     for ist=1:self.model.getNumberOfStations
                         isf = qn.stationToStateful(ist);
@@ -162,6 +190,8 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranSysState = getTranSysState(self)
+            % TRANSYSSTATE = GETTRANSYSSTATE(SELF)
+            
             options = self.getOptions;
             switch options.method
                 case {'default','serial'}
@@ -176,6 +206,8 @@ classdef SolverSSA < NetworkSolver
     methods (Static)
         %                'Fork','Join','Forker','Joiner',...
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source','Router',...
                 'ClassSwitch','DelayStation','Queue',...
@@ -192,6 +224,8 @@ classdef SolverSSA < NetworkSolver
         end
         
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverSSA.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
@@ -199,7 +233,19 @@ classdef SolverSSA < NetworkSolver
     end
     
     methods (Static)
-        function options = defaultOptions(self)
+        
+        function checkOptions(options)
+            % CHECKOPTIONS(OPTIONS)
+            
+            solverName = mfilename;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                error('Finite timespan not supported in %s',solverName);
+            end
+        end
+        
+        function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
+            
             options = Solver.defaultOptions();
             options.timespan = [0,Inf];
             options.verbose = true;

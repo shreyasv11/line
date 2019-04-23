@@ -6,6 +6,8 @@ classdef DiscreteDistrib < Distrib
     
     methods (Hidden)
         function self = DiscreteDistrib(name, numParam, support)
+            % SELF = DISCRETEDISTRIB(NAME, NUMPARAM, SUPPORT)
+            
             % Construct a continuous distribution from name, number of
             % parameters, and range
             self@Distrib(name,numParam,support);

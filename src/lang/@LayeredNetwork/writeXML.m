@@ -1,4 +1,5 @@
 function writeXML(self,filename)
+% WRITEXML(SELF,FILENAME)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,7 +50,7 @@ for p = 1:length(self.processors)
         taskElement.setAttribute('name', curTask.name);
         taskElement.setAttribute('scheduling', curTask.scheduling);
         if isfinite(curTask.multiplicity)
-        taskElement.setAttribute('multiplicity', num2str(curTask.multiplicity));
+            taskElement.setAttribute('multiplicity', num2str(curTask.multiplicity));
         end
         if ~isnan(curTask.thinkTimeMean)
             taskElement.setAttribute('think-time', num2str(curTask.thinkTimeMean));
@@ -71,7 +72,7 @@ for p = 1:length(self.processors)
             actElement.setAttribute('host-demand-cvsq', num2str(curAct.hostDemandSCV));
             if ~isempty(curAct.boundToEntry)
                 actElement.setAttribute('bound-to-entry', curAct.boundToEntry);
-            end            
+            end
             actElement.setAttribute('name', curAct.name);
             for s=1:length(curAct.synchCallDests)
                 syncCallElement = doc.createElement('synch-call');
@@ -84,18 +85,18 @@ for p = 1:length(self.processors)
             actPrecedence = doc.createElement('precedence');
             taskActElement.appendChild(actPrecedence);
             curActPrec = self.processors(p).tasks(t).precedences(ap);
-
+            
             precPreElement = doc.createElement('pre');
             actPrecedence.appendChild(precPreElement);
             precAct = doc.createElement('activity');
             precAct.setAttribute('name',curActPrec.pres{1});
-            precPreElement.appendChild(precAct);                        
-
+            precPreElement.appendChild(precAct);
+            
             precPostElement = doc.createElement('post');
             actPrecedence.appendChild(precPostElement);
             precAct = doc.createElement('activity');
             precAct.setAttribute('name',curActPrec.posts{1});
-            precPostElement.appendChild(precAct);                        
+            precPostElement.appendChild(precAct);
         end
         for e=1:length(curTask.entries)
             curEntry = self.processors(p).tasks(t).entries(e);

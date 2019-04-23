@@ -1,4 +1,6 @@
 function name = getNodeName(self,node,useNode)
+% NAME = GETNODENAME(SELF,NODE,USENODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 G = self.lqnGraph;

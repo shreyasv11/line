@@ -11,6 +11,8 @@ classdef Forker < OutputSection
     methods
         %Constructor
         function self = Forker(customerClasses)
+            % SELF = FORKER(CUSTOMERCLASSES)
+            
             self@OutputSection('Forker');
             self.tasksPerLink=1.0;
             initDispatcherJobClasses(self, customerClasses);
@@ -19,6 +21,8 @@ classdef Forker < OutputSection
     
     methods (Access = 'private')
         function initDispatcherJobClasses(self, customerClasses)
+            % INITDISPATCHERJOBCLASSES(SELF, CUSTOMERCLASSES)
+            
             for i = 1 : length(customerClasses)
                 self.outputStrategy{i} = {customerClasses{i}.name, RoutingStrategy.RAND};
             end
@@ -28,6 +32,8 @@ classdef Forker < OutputSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object

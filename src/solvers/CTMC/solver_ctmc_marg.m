@@ -1,4 +1,6 @@
 function [Pnir,runtime,fname] = solver_ctmc_marg(qn, options)
+% [PNIR,RUNTIME,FNAME] = SOLVER_CTMC_MARG(QN, OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -32,7 +34,7 @@ for ist=1:qn.nstations
     end
 end
 
-[Q,SS,SSq,~,~,qn] = solver_ctmc(qn, options);
+[Q,SS,SSq,~,~,~,qn] = solver_ctmc(qn, options);
 if options.keep
     fname = tempname;
     save([fname,'.mat'],'Q','SSq')

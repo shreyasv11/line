@@ -11,6 +11,8 @@ classdef NetworkSolver < Solver
     
     methods
         function self = NetworkSolver(model, name, options)
+            % SELF = NETWORKSOLVER(MODEL, NAME, OPTIONS)
+            
             % Construct a NetworkSolver with given model, name and options
             % data structure.
             self@Solver(model, name);
@@ -26,6 +28,8 @@ classdef NetworkSolver < Solver
     
     methods (Access = 'protected')
         function bool = hasAvgResults(self)
+            % BOOL = HASAVGRESULTS(SELF)
+            
             % Returns true if the solver has computed steady-state average metrics.
             bool = false;
             if self.hasResults
@@ -36,14 +40,18 @@ classdef NetworkSolver < Solver
         end
         
         function bool = hasTranResults(self)
+            % BOOL = HASTRANRESULTS(SELF)
+            
             % Return true if the solver has computed transient average metrics.
             bool = false;
             if self.hasResults
-                bool = isfield(self.result.TranAvg,'Qt');
+                bool = isfield(self.result.Tran.Avg,'Qt');
             end
         end
         
         function bool = hasDistribResults(self)
+            % BOOL = HASDISTRIBRESULTS(SELF)
+            
             % Return true if the solver has computed steady-state distribution metrics.
             bool = false;
             if self.hasResults
@@ -54,45 +62,61 @@ classdef NetworkSolver < Solver
     
     methods
         function self = updateModel(self, model)
+            % SELF = UPDATEMODEL(SELF, MODEL)
+            
             % Assign the model to be solved.
             self.model = model;
         end
         
         function ag = getAG(self)
+            % AG = GETAG(SELF)
+            
             % Get agent representation
             ag = self.model.getAG();
         end
         
         function qn = getStruct(self)
+            % QN = GETSTRUCT(SELF)
+            
             % Get data structure summarizing the model
             qn = self.model.getStruct();
         end
         
         function QN = getAvgQLen(self)
+            % QN = GETAVGQLEN(SELF)
+            
             % Compute average queue-lengths at steady-state
             Q = self.model.getAvgQLenHandles();
             [QN,~,~,~] = self.getAvg(Q,[],[],[]);
         end
         
         function UN = getAvgUtil(self)
+            % UN = GETAVGUTIL(SELF)
+            
             % Compute average utilizations at steady-state
             U = self.model.getAvgUtilHandles();
             [~,UN,~,~] = self.getAvg([],U,[],[]);
         end
         
         function RN = getAvgRespT(self)
+            % RN = GETAVGRESPT(SELF)
+            
             % Compute average response times at steady-state
             R = self.model.getAvgRespTHandles();
             [~,~,RN,~] = self.getAvg([],[],R,[]);
         end
         
         function TN = getAvgTput(self)
+            % TN = GETAVGTPUT(SELF)
+            
             % Compute average throughputs at steady-state
             T = self.model.getAvgTputHandles();
             [~,~,~,TN] = self.getAvg([],[],[],T);
         end
         
         function AN = getAvgArvR(self)
+            % AN = GETAVGARVR(SELF)
+            
             % Compute average arrival rate at steady-state
             M = self.model.getNumberOfStations;
             K = self.model.getNumberOfClasses;
@@ -114,6 +138,8 @@ classdef NetworkSolver < Solver
         end
         
         function [QNn,UNn,RNn,TNn] = getNodeAvg(self, Q, U, R, T)
+            % [QNN,UNN,RNN,TNN] = GETNODEAVG(SELF, Q, U, R, T)
+            
             % Compute average utilizations at steady-state for all nodes
             if nargin == 1 % no parameter
                 if isempty(self.model.handles) || ~isfield(self.model.handles,'Q') || ~isfield(self.model.handles,'U') || ~isfield(self.model.handles,'R') || ~isfield(self.model.handles,'T')
@@ -212,6 +238,8 @@ classdef NetworkSolver < Solver
         [QNt,UNt,TNt]       = getTranAvg(self,Qt,Ut,Tt);
         
         function self = setAvgResults(self,Q,U,R,T,C,X,runtime)
+            % SELF = SETAVGRESULTS(SELF,Q,U,R,T,C,X,RUNTIME)
+            
             % Store average metrics at steady-state
             self.result.('solver') = self.getName();
             self.result.Avg.('method') = self.getOptions().method;
@@ -239,6 +267,8 @@ classdef NetworkSolver < Solver
         end
         
         function self = setDistribResults(self,Cd,runtime)
+            % SELF = SETDISTRIBRESULTS(SELF,CD,RUNTIME)
+            
             % Store distribution metrics at steady-state
             self.result.('solver') = self.getName();
             self.result.Distrib.('method') = self.getOptions().method;
@@ -246,87 +276,127 @@ classdef NetworkSolver < Solver
             self.result.Distrib.runtime = runtime;
         end
         
-        function self = setTranAvgResults(self,Qt,Ut,Rt,Tt,Ct,Xt,runtimet)
+        function self = setTranProb(self,t,pi_t,SS,runtimet)
+            % SELF = SETTRANPROB(SELF,T,PI_T,SS,RUNTIMET)
+            
             % Store transient average metrics
             self.result.('solver') = self.getName();
-            self.result.TranAvg.('method') = self.getOptions().method;
+            self.result.Tran.Prob.('method') = self.getOptions().method;
+            self.result.Tran.Prob.t = t;
+            self.result.Tran.Prob.pi_t = pi_t;
+            self.result.Tran.Prob.SS = SS;
+            self.result.Tran.Prob.runtime = runtimet;
+        end
+        
+        function self = setTranAvgResults(self,Qt,Ut,Rt,Tt,Ct,Xt,runtimet)
+            % SELF = SETTRANAVGRESULTS(SELF,QT,UT,RT,TT,CT,XT,RUNTIMET)
+            
+            % Store transient average metrics
+            self.result.('solver') = self.getName();
+            self.result.Tran.Avg.('method') = self.getOptions().method;
             for i=1:size(Qt,1), for r=1:size(Qt,2), if isnan(Qt{i,r}), Qt={}; end, end, end
             for i=1:size(Rt,1), for r=1:size(Rt,2), if isnan(Rt{i,r}), Rt={}; end, end, end
             for i=1:size(Ut,1), for r=1:size(Ut,2), if isnan(Ut{i,r}), Ut={}; end, end, end
             for i=1:size(Tt,1), for r=1:size(Tt,2), if isnan(Tt{i,r}), Tt={}; end, end, end
             for i=1:size(Xt,1), for r=1:size(Xt,2), if isnan(Xt{i,r}), Xt={}; end, end, end
             for i=1:size(Ct,1), for r=1:size(Ct,2), if isnan(Ct{i,r}), Ct={}; end, end, end
-            self.result.TranAvg.Q = Qt;
-            self.result.TranAvg.R = Rt;
-            self.result.TranAvg.U = Ut;
-            self.result.TranAvg.T = Tt;
-            self.result.TranAvg.X = Xt;
-            self.result.TranAvg.C = Ct;
-            self.result.TranAvg.runtime = runtimet;
+            self.result.Tran.Avg.Q = Qt;
+            self.result.Tran.Avg.R = Rt;
+            self.result.Tran.Avg.U = Ut;
+            self.result.Tran.Avg.T = Tt;
+            self.result.Tran.Avg.X = Xt;
+            self.result.Tran.Avg.C = Ct;
+            self.result.Tran.Avg.runtime = runtimet;
         end
         
         function [lNormConst] = getProbNormConst(self)
+            % [LNORMCONST] = GETPROBNORMCONST(SELF)
+            
             % Return normalizing constant of state probabilities
             error('getProbNormConst is not supported by this solver.');
         end
         
         function Pstate = getProbState(self, node, state)
+            % PSTATE = GETPROBSTATE(SELF, NODE, STATE)
+            
             % Return marginal state probability for station ist state
             error('getProbState is not supported by this solver.');
         end
         
         function Psysstate = getProbSysState(self)
+            % PSYSSTATE = GETPROBSYSSTATE(SELF)
+            
             % Return joint state probability
             error('getProbSysState is not supported by this solver.');
         end
         
         function Pnir = getProbStateAggr(self, node, state_a)
+            % PNIR = GETPROBSTATEAGGR(SELF, NODE, STATE_A)
+            
             % Return marginal state probability for station ist state
             error('getProbStateAggr is not supported by this solver.');
         end
         
         function Pnjoint = getProbSysStateAggr(self)
+            % PNJOINT = GETPROBSYSSTATEAGGR(SELF)
+            
             % Return joint state probability
             error('getProbSysStateAggr is not supported by this solver.');
         end
-
+        
         function tstate = getTranState(self, node, state)
+            % TSTATE = GETTRANSTATE(SELF, NODE, STATE)
+            
             % Return marginal state probability for station ist state
             error('getTranState is not supported by this solver.');
         end
         
         function tnir = getTranStateAggr(self, node, state_a)
+            % TNIR = GETTRANSTATEAGGR(SELF, NODE, STATE_A)
+            
             % Return marginal state probability for station ist state
             error('getTranStateAggr is not supported by this solver.');
         end
         
         function tsysstate = getTranSysState(self)
+            % TSYSSTATE = GETTRANSYSSTATE(SELF)
+            
             % Return joint state probability
             error('getTranSysState is not supported by this solver.');
         end
         
         function tnjoint = getTranSysStateAggr(self)
+            % TNJOINT = GETTRANSYSSTATEAGGR(SELF)
+            
             % Return joint state probability
             error('getTranSysStateAggr is not supported by this solver.');
-        end        
+        end
         
         function RD = getCdfRespT(self, R)
+            % RD = GETCDFRESPT(SELF, R)
+            
             % Return cumulative distribution of response times at steady-state
             error('getCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfRespT(self, R)
+            % RD = GETTRANCDFRESPT(SELF, R)
+            
             % Return cumulative distribution of response times during transient
             error('getTranCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfPassT(self, R)
+            % RD = GETTRANCDFPASST(SELF, R)
+            
             % Return cumulative distribution of passage times at steady-state
             error('getTranCdfPassT is not supported by this solver.');
         end
     end
     methods (Static)
         function solvers = getAllSolvers(model, options)
+            % SOLVERS = GETALLSOLVERS(MODEL, OPTIONS)
+            
             % Return a cell array with all Network solvers
             if ~exist('options','var')
                 options = Solver.defaultOptions;
@@ -342,6 +412,8 @@ classdef NetworkSolver < Solver
         end
         
         function solvers = getAllFeasibleSolvers(model, options)
+            % SOLVERS = GETALLFEASIBLESOLVERS(MODEL, OPTIONS)
+            
             % Return a cell array with all Network solvers feasible for
             % this model
             if ~exist('options','var')

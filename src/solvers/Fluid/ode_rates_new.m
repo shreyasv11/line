@@ -1,4 +1,6 @@
 function rates = ode_rates_new(x, M, K, q_indices, Kic, S, w, strategy, rateBase, eventIdx)
+% RATES = ODE_RATES_NEW(X, M, K, Q_INDICES, KIC, S, W, STRATEGY, RATEBASE, EVENTIDX)
+
 rates = x; % basic vector valid for INF and PS case min(ni,Si)=ni
 for i = 1:M
     switch strategy(i) % source
@@ -33,10 +35,12 @@ for i = 1:M
 end
 rates = rates(eventIdx);
 rates = rateBase.*rates;
-end 
+end
 
 % THIS PART TO BE KEPT AS IT ALLOWS TO MAKE RATES STATE-DEPENDENT
 % function xj = get_index(j,k)
+% XJ = GET_INDEX(J,K)
+
 %     % n is the state vector
 %     % j is the queue station index
 %     % k is the class index
@@ -54,6 +58,8 @@ end
 % end
 %
 % function rates = ode_rates(x)
+% RATES = ODE_RATES(X)
+
 %     rates = [];
 %     n = zeros(1,M); % total number of jobs in each station
 %     for i = 1:M
@@ -110,6 +116,8 @@ end
 % end
 %
 % function d = ode_jumps(x)
+% D = ODE_JUMPS(X)
+
 %     d = [];         %returns state changes triggered by all the events
 %     for i = 1 : M   %state changes from departures in service phases 2...
 %         for c = 1:K

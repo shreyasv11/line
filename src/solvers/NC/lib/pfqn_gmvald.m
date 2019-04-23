@@ -1,4 +1,6 @@
 function [G,lG]=pfqn_gmvald(L,N,mu,options)
+% [G,LG]=PFQN_GMVALD(L,N,MU,OPTIONS)
+
 % G=pfqn_gmvald(L,N,mu)
 % mu: MxN matrix of load-dependent rates
 [M,R]=size(L);
@@ -65,6 +67,8 @@ return
 end
 
 function mushifted=mushift(mu,i)
+% MUSHIFTED=MUSHIFT(MU,I)
+
 % shifts the service rate vector
 [M,N]=size(mu);
 
@@ -78,6 +82,8 @@ end
 end
 
 function G=pfqn_gmvaldsingle(L,N,mu)
+% G=PFQN_GMVALDSINGLE(L,N,MU)
+
 [M,R]=size(L);
 if R>1
     error('multiclass model detected. gmvaldsingle is for single class models.');

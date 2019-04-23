@@ -14,14 +14,20 @@ classdef Node < NetworkElement
     methods(Hidden)
         %Constructor
         function self = Node(name)
+            % SELF = NODE(NAME)
+            
             self@NetworkElement(name);
         end
         
         function self = setModel(self, model)
+            % SELF = SETMODEL(SELF, MODEL)
+            
             self.model = model;
         end
         
         function self = link(self, nodeTo)
+            % SELF = LINK(SELF, NODETO)
+            
             self.model.addLink(self,nodeTo);
         end
     end
@@ -29,18 +35,26 @@ classdef Node < NetworkElement
     methods
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {self.input, self.server, self.output};
         end
         
         function setProbRouting(self, class, destination, probability)
+            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            
             self.setRouting(class, RoutingStrategy.PROB, destination, probability);
         end
         
         function setScheduling(self, class, strategy)
+            % SETSCHEDULING(SELF, CLASS, STRATEGY)
+            
             self.input.inputJobClasses{class.index}{2} = strategy;
         end
         
         function setRouting(self, class, strategy, destination, probability)
+            % SETROUTING(SELF, CLASS, STRATEGY, DESTINATION, PROBABILITY)
+            
             switch nargin
                 case 3
                     self.output.outputStrategy{1, class.index}{2} = RoutingStrategy.toType(strategy);
@@ -55,14 +69,20 @@ classdef Node < NetworkElement
         end
         
         function bool = hasClassSwitch(self)
+            % BOOL = HASCLASSSWITCH(SELF)
+            
             bool = isa(self.server,'ClassSwitcher');
         end
         
         function bool = isStateful(self)
+            % BOOL = ISSTATEFUL(SELF)
+            
             bool = isa(self,'StatefulNode');
         end
         
         function bool = isStation(self)
+            % BOOL = ISSTATION(SELF)
+            
             bool = isa(self,'Station');
         end
     end
@@ -70,6 +90,8 @@ classdef Node < NetworkElement
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object
@@ -81,10 +103,14 @@ classdef Node < NetworkElement
     
     methods (Access = public)
         function ind = subsindex(self)
+            % IND = SUBSINDEX(SELF)
+            
             ind = double(self.model.getNodeIndex(self.name))-1; % 0 based
         end
         
         function V = horzcat(self, varargin)
+            % V = HORZCAT(SELF, VARARGIN)
+            
             V = zeros(1,length(varargin));
             V(1) = 1+ self.subsindex;
             for v=1:length(varargin)
@@ -93,6 +119,8 @@ classdef Node < NetworkElement
         end
         
         function V = vertcat(self, varargin)
+            % V = VERTCAT(SELF, VARARGIN)
+            
             V = zeros(length(varargin),1);
             V(1) = 1+ self.subsindex;
             for v=1:length(varargin)
@@ -101,11 +129,13 @@ classdef Node < NetworkElement
         end
         
         function summary(self)
-%            fprintf('\nNode: <strong>%s</strong>',self.getName);
-%            self.input.summary;
-%            self.server.summary;
-%            self.output.summary;
-%            fprintf('\n');
+            % SUMMARY(SELF)
+            
+            %            fprintf('\nNode: <strong>%s</strong>',self.getName);
+            %            self.input.summary;
+            %            self.server.summary;
+            %            self.output.summary;
+            %            fprintf('\n');
         end
     end
 end

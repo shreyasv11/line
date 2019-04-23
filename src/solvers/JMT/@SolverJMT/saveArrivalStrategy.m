@@ -1,4 +1,6 @@
 function [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode)
+% [SIMDOC, SECTION] = SAVEARRIVALSTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

@@ -1,4 +1,6 @@
 function [outhash, outrate, outprob] =  afterEventHashed(qn, ind, inhash, event, class)
+% [OUTHASH, OUTRATE, OUTPROB] =  AFTEREVENTHASHED(QN, IND, INHASH, EVENT, CLASS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

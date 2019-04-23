@@ -1,4 +1,6 @@
 function [logI] = pfqn_lap(L,N,Z)
+% [LOGI] = PFQN_LAP(L,N,Z)
+
 Ntot = sum(N);
 % f = @(x) 1-x + sum((N+x*L)./(Z+x*L));
 % expv0 = fzero(f,1);

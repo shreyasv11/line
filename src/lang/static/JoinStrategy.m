@@ -13,12 +13,16 @@ classdef (Sealed) JoinStrategy
     methods (Access = private)
         %private so that you can't instatiate.
         function out = JoinStrategy
+            % OUT = JOINSTRATEGY
+            
         end
     end
     
     methods (Static)
         
         function text = toText(type)
+            % TEXT = TOTEXT(TYPE)
+            
             switch type
                 case JoinStrategy.Standard
                     text = 'Stardard Join';

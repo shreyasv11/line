@@ -1,4 +1,6 @@
 function [AvgTable,UT] = getAvgUtilTable(self,U,keepDisabled)
+% [AVGTABLE,UT] = GETAVGUTILTABLE(SELF,U,KEEPDISABLED)
+
 % Return table of average station metrics
 %
 % Copyright (c) 2012-2019, Imperial College London
@@ -33,7 +35,7 @@ elseif ~keepDisabled
     UT = Table(Station,Class,Util);
     AvgTable = Table(Station,Class,Util);
 else
-    Uval = zeros(M,K); 
+    Uval = zeros(M,K);
     Class = cell(K*M,1);
     Station = cell(K*M,1);
     for i=1:M

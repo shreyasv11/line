@@ -12,6 +12,8 @@ classdef SolverAuto < NetworkSolver
     methods
         %Constructor
         function self = SolverAuto(model, varargin)
+            % SELF = SOLVERAUTO(MODEL, VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             
@@ -30,6 +32,8 @@ classdef SolverAuto < NetworkSolver
     
     methods
         function bool = supports(self, model)
+            % BOOL = SUPPORTS(SELF, MODEL)
+            
             if isempty(self.candidates)
                 bool = false;
             else
@@ -38,11 +42,16 @@ classdef SolverAuto < NetworkSolver
         end
         
         function runtime = run(self) % generic method to run the solver
+            % RUNTIME = RUN(SELF)
+            % Run the solver % GENERIC METHOD TO RUN THE SOLVER
+            
             T0 = tic;
             runtime = toc(T0);
         end
         
         function [QN,UN,RN,TN] = getAvg(self,Q,U,R,T)
+            % [QN,UN,RN,TN] = GETAVG(SELF,Q,U,R,T)
+            
             % first try with chosen solver, if the method is not available
             % or fails keep going with the other candidates
             proposedSolvers = {self.chooseSolver(), self.candidates};
@@ -55,6 +64,8 @@ classdef SolverAuto < NetworkSolver
         end
         
         function [QNc,UNc,RNc,TNc] = getAvgChain(self,Q,U,R,T)
+            % [QNC,UNC,RNC,TNC] = GETAVGCHAIN(SELF,Q,U,R,T)
+            
             proposedSolvers = {self.chooseSolver(), self.candidates};
             for s=1:length(proposedSolvers)
                 try
@@ -65,6 +76,8 @@ classdef SolverAuto < NetworkSolver
         end
         
         function [CNc,XNc] = getAvgSys(self,R,T)
+            % [CNC,XNC] = GETAVGSYS(SELF,R,T)
+            
             proposedSolvers = {self.chooseSolver(), self.candidates};
             for s=1:length(proposedSolvers)
                 try
@@ -75,6 +88,8 @@ classdef SolverAuto < NetworkSolver
         end
         
         function [QNt,UNt,TNt] = getTranAvg(self,Qt,Ut,Tt)
+            % [QNT,UNT,TNT] = GETTRANAVG(SELF,QT,UT,TT)
+            
             proposedSolvers = {self.chooseSolver(), self.candidates};
             for s=1:length(proposedSolvers)
                 try
@@ -86,6 +101,8 @@ classdef SolverAuto < NetworkSolver
         
         % chooseStatic: choses a solver from static properties of the model
         function solver = chooseSolver(self)
+            % SOLVER = CHOOSESOLVER(SELF)
+            
             model = self.model;
             if model.hasProductFormSolution
                 if model.hasSingleChain

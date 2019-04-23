@@ -6,28 +6,38 @@ classdef Uniform < ContinuousDistrib
     
     methods
         function self = Uniform(minVal, maxVal)
+            % SELF = UNIFORM(MINVAL, MAXVAL)
+            
             % Constructs an uniform distribution with specified minimum and
             % maximum values
             self@ContinuousDistrib('Uniform',2,[minVal,maxVal]);
             setParam(self, 1, 'min', minVal, 'java.lang.Double');
             setParam(self, 2, 'max', maxVal, 'java.lang.Double');
-%            self.javaClass = 'jmt.engine.random.Uniform';
-%            self.javaParClass = 'jmt.engine.random.UniformPar';
+            %            self.javaClass = 'jmt.engine.random.Uniform';
+            %            self.javaParClass = 'jmt.engine.random.UniformPar';
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             ex = (self.getParam(2).paramValue+self.getParam(1).paramValue) / 2;
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             var = (self.getParam(2).paramValue-self.getParam(1).paramValue)^2 / 12;
             SCV = var/self.getMean()^2;
         end
         
         function Ft = evalCDF(self,t)
+            % FT = EVALCDF(SELF,T)
+            
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             minVal = self.getParam(1).paramValue;
             maxVal = self.getParam(2).paramValue;
             if t < minVal
@@ -40,6 +50,8 @@ classdef Uniform < ContinuousDistrib
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             minVal = self.getParam(1).paramValue;

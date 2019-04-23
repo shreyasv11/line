@@ -1,4 +1,6 @@
 function logData = parseLogs(model,isNodeLogged, metric)
+% LOGDATA = PARSELOGS(MODEL,ISNODELOGGED, METRIC)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

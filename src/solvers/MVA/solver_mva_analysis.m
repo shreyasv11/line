@@ -1,4 +1,6 @@
 function [Q,U,R,T,C,X,lG,runtime] = solver_mva_analysis(qn, options)
+% [Q,U,R,T,C,X,LG,RUNTIME] = SOLVER_MVA_ANALYSIS(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -64,7 +66,7 @@ switch options.method
     case {'exact','mva'}
         if all(isfinite(Nchain)) % if closed
             [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
-        elseif any(isfinite(Nchain)) % if mixed            
+        elseif any(isfinite(Nchain)) % if mixed
             [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
         else % if open same as running amva
             [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);

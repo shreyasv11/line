@@ -12,6 +12,8 @@ classdef Fork < Node
     methods
         %Constructor
         function self = Fork(model, name)
+            % SELF = FORK(MODEL, NAME)
+            
             self@Node(name);
             if(model ~= 0)
                 classes = model.classes;
@@ -26,6 +28,8 @@ classdef Fork < Node
         end
         
         function setTasksPerLink(self, nTasks)
+            % SETTASKSPERLINK(SELF, NTASKS)
+            
             self.output.tasksPerLink = nTasks;
         end
     end

@@ -1,4 +1,5 @@
 function [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSolution] = solver_fluid_analysis(qn, options)
+	% [QFULL, UFULL, RFULL, TFULL, CFULL, XFULL, T, QFULL_T, UFULL_T, TFULL_T, LASTSOLUTION] = SOLVER_FLUID_ANALYSIS(QN, OPTIONS)	
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -152,6 +153,7 @@ if findstring(qn.sched, SchedStrategy.FCFS) ~= -1 % if there are FCFS stations
     [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ~, t] = solver_fluid_analysis_inner(qn, options);
 end
 
+
 Ufull0 = Ufull;
 for i=1:M
     sd = find(Qfull(i,:)>0);
@@ -163,6 +165,9 @@ for i=1:M
                 % approximation rates
                 Ufull(i,k) = min([1,Qfull(i,k)/S(i),sum(Ufull0(i,sd)) * (Tfull(i,k)./rates0(i,k))/sum(Tfull(i,sd)./rates0(i,sd))]);
             end
+        case SchedStrategy.INF
+            Ufull(i,k) = Qfull(i,k);
+            Ufull_t{i,k} = Qfull_t{i,k};
     end
 end
 Ufull(isnan(Ufull))=0;
@@ -185,6 +190,8 @@ for k=1:K
         Cfull(k) = qn.njobs(k) ./ Xfull(k);
     end
 end
+
+
 
 lastSolution.odeStateVec = ymean{end};
 lastSolution.qn = qn;

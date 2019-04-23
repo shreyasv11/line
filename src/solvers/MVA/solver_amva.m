@@ -1,6 +1,9 @@
 function [Q,U,R,T,C,X] = solver_amva(ST,V,N,S,SCV,options,sched,schedparam,refstat)
+% [Q,U,R,T,C,X] = SOLVER_AMVA(ST,V,N,S,SCV,OPTIONS,SCHED,SCHEDPARAM,REFSTAT)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+
 [M,K]=size(ST);
 % queue-dependent functions to capture multi-server and delay stations
 ga = @(n) QN_amva_multicore(n,S);
@@ -11,7 +14,7 @@ if nargin < 5 || isempty(Q0)
     Q = ones(M,K);
     Q = Q ./ repmat(sum(Q,1),size(Q,1),1) .* repmat(N,size(Q,1),1);
     Q(isinf(Q))=0; % open classes
-    Q(refstat(isinf(N)))=Inf; 
+    Q(refstat(isinf(N)))=Inf;
 else
     Q=Q0;
 end
@@ -115,7 +118,7 @@ while max(max(abs(Q-Q_1))) > tol
             end
         end
         
-        for k=fcfsSET(:)'            
+        for k=fcfsSET(:)'
             if ST(k,r) == 0
                 W(k,r) = 0;
             else
@@ -142,7 +145,7 @@ while max(max(abs(Q-Q_1))) > tol
         else
             if isinf(N(r))
                 C(r) = V(:,r)'*W(:,r);
-                % X(r) remains constant 
+                % X(r) remains constant
             elseif N(r)==0
                 X(r) = 0;
                 C(r) = 0;

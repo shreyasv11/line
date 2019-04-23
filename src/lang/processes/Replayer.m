@@ -11,6 +11,8 @@ classdef Replayer < TimeSeries
     methods
         %Constructor
         function self = Replayer(fileName)
+            % SELF = REPLAYER(FILENAME)
+            
             self@TimeSeries('Replayer',1);
             setParam(self, 1, 'fileName', fileName, 'java.lang.String');
             if ischar(fileName)
@@ -20,22 +22,28 @@ classdef Replayer < TimeSeries
                 if ~javaFileObj.isAbsolute()
                     fileName = fullfile(pwd,fileName); %#ok<NASGU>
                 end
-%                self.javaClass = 'jmt.engine.random.Replayer';
-%                self.javaParClass = 'jmt.engine.random.ReplayerPar';
+                %                self.javaClass = 'jmt.engine.random.Replayer';
+                %                self.javaParClass = 'jmt.engine.random.ReplayerPar';
             end
         end
         
         function load(self)
+            % LOAD(SELF)
+            
             fileName = self.getParam(1).paramValue;
             self.data = load(fileName);
             self.data = self.data(:);
         end
         
         function unload(self)
+            % UNLOAD(SELF)
+            
             self.data = [];
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             if isempty(self.data)
                 self.load();
@@ -44,6 +52,8 @@ classdef Replayer < TimeSeries
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             if isempty(self.data)
                 self.load();
@@ -52,6 +62,8 @@ classdef Replayer < TimeSeries
         end
         
         function SKEW = getSkewness(self)
+            % SKEW = GETSKEWNESS(SELF)
+            
             % Get distribution skewness
             if isempty(self.data)
                 self.load();
@@ -60,14 +72,20 @@ classdef Replayer < TimeSeries
         end
         
         function distr = fitExp(self)
+            % DISTR = FITEXP(SELF)
+            
             distr = Exp.fitMean(self.getMean);
-        end        
+        end
         
         function distr = fitAPH(self)
+            % DISTR = FITAPH(SELF)
+            
             distr = APH.fitCentral(self.getMean, self.getVariance, self.getSkewness);
         end
         
         function distr = fitCoxian(self)
+            % DISTR = FITCOXIAN(SELF)
+            
             distr = Cox2.fitCentral(self.getMean, self.getVariance, self.getSkewness);
         end
     end

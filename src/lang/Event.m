@@ -23,6 +23,8 @@ classdef Event < Copyable
     
     methods
         function self = Event(event, node, class, prob, state)
+            % SELF = EVENT(EVENT, NODE, CLASS, PROB, STATE)
+            
             self.node = node;
             self.event = event;
             self.class = class;
@@ -37,12 +39,16 @@ classdef Event < Copyable
         end
         
         function print(self)
+            % PRINT(SELF)
+            
             fprintf(1,'(%s: %d,%d)\n',Event.toText(self.event),self.node,self.class);
         end
     end
     
     methods(Static)
         function text = toText(type)
+            % TEXT = TOTEXT(TYPE)
+            
             switch type
                 case Event.ARV
                     text = 'arv';

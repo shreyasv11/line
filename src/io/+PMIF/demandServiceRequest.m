@@ -18,6 +18,8 @@ classdef demandServiceRequest
         
         %constructor
         function obj = demandServiceRequest(workloadName, serverID, serviceDemand, numberVisits, timeUnits)
+            % OBJ = DEMANDSERVICEREQUEST(WORKLOADNAME, SERVERID, SERVICEDEMAND, NUMBERVISITS, TIMEUNITS)
+            
             if(nargin > 0)
                 obj.workloadName = workloadName;
                 obj.serverID = serverID;
@@ -30,6 +32,8 @@ classdef demandServiceRequest
         end
         
         function obj = addTransit(obj, dest, prob)
+            % OBJ = ADDTRANSIT(OBJ, DEST, PROB)
+            
             if isempty(obj.transits)
                 obj.transits = cell(1,2);
                 obj.transits{1,1} = dest;

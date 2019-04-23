@@ -6,6 +6,8 @@ classdef NetworkSolverLibrary < NetworkSolver
     
     methods
         function self = NetworkSolverLibrary(model,varargin)
+            % SELF = NETWORKSOLVERLIBRARY(MODEL,VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if strcmp(self.getOptions.method,'default')
@@ -14,6 +16,9 @@ classdef NetworkSolverLibrary < NetworkSolver
         end
         
         function runtime = run(self)
+            % RUNTIME = RUN(SELF)
+            % Run the solver
+            
             T0=tic;
             options = self.getOptions;
             
@@ -38,6 +43,8 @@ classdef NetworkSolverLibrary < NetworkSolver
     
     methods (Static)
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source','Queue',...
                 'Cox2','Erlang','Exponential','HyperExp',...
@@ -47,6 +54,8 @@ classdef NetworkSolverLibrary < NetworkSolver
         end
         
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = NetworkSolverLibrary.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
@@ -55,6 +64,8 @@ classdef NetworkSolverLibrary < NetworkSolver
     
     methods (Static)
         function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
+            
             options = Solver.defaultOptions();
             options.timespan = [Inf,Inf];
         end

@@ -16,6 +16,8 @@ classdef Router < StatefulNode
         % This is a node and not a Station because jobs cannot station
         % inside it
         function self = Router(model, name)
+            % SELF = ROUTER(MODEL, NAME)
+            
             self@StatefulNode(name);
             
             classes = model.classes;
@@ -33,19 +35,27 @@ classdef Router < StatefulNode
         end
         
         function setProbRouting(self, class, destination, probability)
+            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function setScheduling(self, class, strategy)
+            % SETSCHEDULING(SELF, CLASS, STRATEGY)
+            
             self.input.inputJobClasses{1, class.index}{2} = strategy;
         end
         
         function setService(self, class, distribution)
+            % SETSERVICE(SELF, CLASS, DISTRIBUTION)
+            
             self.server.serviceProcess{1, class.index}{2} = ServiceStrategy.LI;
             self.server.serviceProcess{1, class.index}{3} = distribution;
         end
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {self.input, self.server, self.output};
         end
     end

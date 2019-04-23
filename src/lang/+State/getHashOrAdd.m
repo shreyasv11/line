@@ -1,4 +1,6 @@
 function [hashid, qn] = getHashOrAdd(qn, ind, inspace)
+% [HASHID, QN] = GETHASHORADD(QN, IND, INSPACE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -25,8 +27,8 @@ end
 hashid = matchrows(qn.space{isf},inspace);
 %hashid=zeros(size(inspace,1),1);
 for j=1:size(inspace,1)
-%    hashid(j,1) = matchrow(qn.space{isf},inspace(j,:));
-    if hashid(j,1) <0 
+    %    hashid(j,1) = matchrow(qn.space{isf},inspace(j,:));
+    if hashid(j,1) <0
         qn.space{isf}(end+1,:) = inspace(j,:);
         hashid(j,1) = size(qn.space{isf},1);
     end

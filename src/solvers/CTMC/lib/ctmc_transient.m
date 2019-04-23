@@ -1,4 +1,6 @@
 function [pi,t]=ctmc_transient(Q,pi0,t0,t1)
+% [PI,T]=CTMC_TRANSIENT(Q,PI0,T0,T1)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if nargin==2
@@ -15,6 +17,8 @@ end
 %[t,pi]=ode113(@ctmc_transientode,[t0,t1],pi0);
 
     function dpidt=ctmc_transientode(t,pi)
+        % DPIDT=CTMC_TRANSIENTODE(T,PI)
+        
         pi=pi(:)';
         dpidt=pi*Q;
         dpidt=dpidt(:);

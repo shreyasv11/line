@@ -1,4 +1,6 @@
 function [Gres, iterations] =parseLQNSResults(G, filename, filename_sim, verbose)
+% [GRES, ITERATIONS] =PARSELQNSRESULTS(G, FILENAME, FILENAME_SIM, VERBOSE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -31,6 +33,8 @@ Gres.Nodes = movevars(Gres.Nodes,'Tsim','Before','Q');
 end
 
 function [Gres, iterations] = aux_results(G, filename, verbose)
+% [GRES, ITERATIONS] = AUX_RESULTS(G, FILENAME, VERBOSE)
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;

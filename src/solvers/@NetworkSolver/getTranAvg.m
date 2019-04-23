@@ -1,4 +1,6 @@
 function [QNclass_t, UNclass_t, TNclass_t] = getTranAvg(self,Qt,Ut,Tt)
+% [QNCLASS_T, UNCLASS_T, TNCLASS_T] = GETTRANAVG(SELF,QT,UT,TT)
+
 % Return transient average station metrics
 %
 % Copyright (c) 2012-2019, Imperial College London
@@ -20,9 +22,25 @@ UNclass_t={};
 %RNclass_t={};
 TNclass_t={};
 
+qn = self.model.getStruct;
+minrate = min(qn.rates(isfinite(qn.rates)));
 %if isempty(self.result) || isa(self.result.Avg.Q,double) || (isfield(self.options,'force') && self.options.force)
 if ~self.hasTranResults()
-	self.run();
+    if isinf(self.options.timespan(1)) && isinf(self.options.timespan(2))
+         self.options.timespan = [0,30/minrate];
+        warning('Timespan of transient analysis unspecified, setting the timespan option to [0, %d]. Use %s(model,''timespan'',[0,T]) to customize.',self.options.timespan(2),class(self));
+    end
+    if isinf(self.options.timespan(1))
+        warning('Start time of transient analysis unspecified, setting the timespan option to [0,%d].',self.options.timespan(2));
+        self.options.timespan(1) = 0;
+        %error('Please specify the transient range using the timespan option, e.g., SolverCTMC(model,''timespan'',[0,T]).getTranAvg()');
+    end
+    if isinf(self.options.timespan(2))
+        self.options.timespan(2) = 30/minrate;
+        warning('End time of transient analysis unspecified, setting the timespan option to [%d,%d]. Use %s(model,''timespan'',[0,T]) to customize.',self.options.timespan(1),self.options.timespan(2),class(self));
+        %error('Please specify the transient range using the timespan option, e.g., SolverCTMC(model,''timespan'',[0,T]).getTranAvg()');
+    end
+    self.run();    
 end
 %    if isempty(self.result)
 %        return

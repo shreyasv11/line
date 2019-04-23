@@ -1,4 +1,6 @@
 function [init_sol, state] = solver_fluid_initsol(qn, options) %#ok<INUSD>
+% [INIT_SOL, STATE] = SOLVER_FLUID_INITSOL(QN, OPTIONS) %#OK<INUSD>
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

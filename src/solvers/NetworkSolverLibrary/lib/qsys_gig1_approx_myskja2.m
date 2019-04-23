@@ -1,4 +1,6 @@
 function W=qsys_gig1_approx_myskja2(lambda,mu,ca,cs,q0,qa)
+% W=QSYS_GIG1_APPROX_MYSKJA2(LAMBDA,MU,CA,CS,Q0,QA)
+
 % qa = third relative moment E[X^3]/6/E[X]^3, X=inter-arrival time r.v.
 % q0 = lowest value of the relative third moment for a given mean and SCV
 ra = (1+ca^2)/2;

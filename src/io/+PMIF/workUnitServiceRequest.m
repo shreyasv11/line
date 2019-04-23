@@ -16,6 +16,8 @@ classdef workUnitServiceRequest
         
         %constructor
         function obj = workUnitServiceRequest(workloadName, serverID, numberVisits)
+            % OBJ = WORKUNITSERVICEREQUEST(WORKLOADNAME, SERVERID, NUMBERVISITS)
+            
             if(nargin > 0)
                 obj.workloadName = workloadName;
                 obj.serverID = serverID;
@@ -24,6 +26,8 @@ classdef workUnitServiceRequest
         end
         
         function obj = addTransit(obj, dest, prob)
+            % OBJ = ADDTRANSIT(OBJ, DEST, PROB)
+            
             if isempty(obj.transits)
                 obj.transits = cell(1,2);
                 obj.transits{1,1} = dest;

@@ -1,4 +1,6 @@
 function model = PMIF2LINE(filename,modelName)
+% MODEL = PMIF2LINE(FILENAME,MODELNAME)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 verbose = false;

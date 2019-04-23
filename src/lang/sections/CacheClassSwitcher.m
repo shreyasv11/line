@@ -15,6 +15,8 @@ classdef CacheClassSwitcher < StatefulClassSwitcher
     
     methods
         function self = CacheClassSwitcher(classes, items, capacity, levels)
+            % SELF = CACHECLASSSWITCHER(CLASSES, ITEMS, CAPACITY, LEVELS)
+            
             if ~exist('levels','var')
                 levels = 1;
             end
@@ -31,6 +33,8 @@ classdef CacheClassSwitcher < StatefulClassSwitcher
     
     methods
         function prob = simpleHitMiss(self, r, s, state, statep)
+            % PROB = SIMPLEHITMISS(SELF, R, S, STATE, STATEP)
+            
             if nargin <= 3
                 state = []; %local server state
                 statep = []; %local server state

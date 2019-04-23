@@ -6,6 +6,8 @@ classdef Disabled < ContinuousDistrib & DiscreteDistrib
     
     methods
         function self = Disabled()
+            % SELF = DISABLED()
+            
             % Constructs a disabled distribution
             self@ContinuousDistrib('Disabled',1,[NaN,NaN]);
             self@DiscreteDistrib('Disabled',1,[NaN,NaN]);
@@ -15,38 +17,56 @@ classdef Disabled < ContinuousDistrib & DiscreteDistrib
     
     methods
         function bool = isContinuous(self)
+            % BOOL = ISCONTINUOUS(SELF)
+            
             % Returns true is the distribution is continuous
             bool = true;
         end
         
         function bool = isDiscrete(self)
+            % BOOL = ISDISCRETE(SELF)
+            
             % Returns true is the distribution is discrete
             bool = true;
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             X = nan(n,1);
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             ex = NaN;
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             SCV = NaN;
         end
         
         function Ft = evalCDF(self,t)
+            % FT = EVALCDF(SELF,T)
+            
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             Ft = NaN;
         end
         
         function p = evalPMF(self, k)
+            % P = EVALPMF(SELF, K)
+            
             % Evaluate the probability mass function at k
+            % AT K
+            
             p = 0*k;
         end
     end

@@ -23,8 +23,11 @@ classdef SolverJMT < NetworkSolver
     
     % PUBLIC METHODS
     methods
+        
         %Constructor
         function self = SolverJMT(model, varargin)
+            % SELF = SOLVERJMT(MODEL, VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~Solver.isJavaAvailable
@@ -40,6 +43,14 @@ classdef SolverJMT < NetworkSolver
             self.filePath = filePath;
             [~,fileName]=fileparts(tempname);
             self.fileName = fileName;
+        end
+        
+        function setOptions(self, options)
+            % SETOPTIONS(SELF, OPTIONS)
+            % Assign the solver options
+            
+            self.checkOptions(options);
+            setOptions@Solver(self,options);
         end
         
         [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode)
@@ -63,26 +74,36 @@ classdef SolverJMT < NetworkSolver
         [simElem, simDoc] = saveXMLHeader(self, logPath)
         
         function supported = getSupported(self,supported)
+            % SUPPORTED = GETSUPPORTED(SELF,SUPPORTED)
+            
             if ~exist('supported','var')
                 supported=struct();
             end
         end
         
         function fileName = getFileName(self)
+            % FILENAME = GETFILENAME(SELF)
+            
             fileName = self.fileName;
         end
         
         %Setter
         function self = setJMTJarPath(self, path)
+            % SELF = SETJMTJARPATH(SELF, PATH)
+            
             self.jmtPath = path;
         end
         
         % Getters
         function out = getJMTJarPath(self)
+            % OUT = GETJMTJARPATH(SELF)
+            
             out = self.jmtPath;
         end
         
         function out = getFilePath(self)
+            % OUT = GETFILEPATH(SELF)
+            
             out = self.filePath;
         end
         
@@ -95,6 +116,8 @@ classdef SolverJMT < NetworkSolver
         [outputFileName] = writeJSIM(self, outputFileName)
         
         function [result, parsed] = getResults(self)
+            % [RESULT, PARSED] = GETRESULTS(SELF)
+            
             options = self.getOptions;
             switch options.method
                 case {'jsim','default'}
@@ -111,11 +134,15 @@ classdef SolverJMT < NetworkSolver
     %Private methods.
     methods (Access = 'private')
         function out = getJSIMTempPath(self)
+            % OUT = GETJSIMTEMPPATH(SELF)
+            
             fname = [self.getFileName(), ['.', 'jsimg']];
             out = [self.filePath,'jsimg',filesep, fname];
         end
         
         function out = getJMVATempPath(self)
+            % OUT = GETJMVATEMPPATH(SELF)
+            
             fname = [self.getFileName(), ['.', 'jmva']];
             out = [self.filePath,'jmva',filesep, fname];
         end
@@ -124,12 +151,17 @@ classdef SolverJMT < NetworkSolver
     %Private methods.
     methods (Access = 'protected')
         function bool = hasAvgResults(self)
+            % BOOL = HASAVGRESULTS(SELF)
+            
             bool = self.hasResults();
         end
     end
     
     methods (Static)
+        
         function bool = isAvailable()
+            % BOOL = ISAVAILABLE()
+            
             bool = true;
             if isempty(which('JMT.jar'))
                 bool = false;
@@ -137,6 +169,8 @@ classdef SolverJMT < NetworkSolver
         end
         
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink',...
                 'Source',...
@@ -193,6 +227,8 @@ classdef SolverJMT < NetworkSolver
         end
         
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverJMT.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
@@ -201,6 +237,8 @@ classdef SolverJMT < NetworkSolver
     
     methods (Static)
         function jsimgOpen(filename)
+            % JSIMGOPEN(FILENAME)
+            
             [path] = fileparts(filename);
             if isempty(path)
                 filename=[pwd,filesep,filename];
@@ -212,6 +250,8 @@ classdef SolverJMT < NetworkSolver
         end
         
         function jsimwOpen(filename)
+            % JSIMWOPEN(FILENAME)
+            
             runtime = java.lang.Runtime.getRuntime();
             cmd = ['java -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimw "',which(filename)];
             %system(cmd);
@@ -221,14 +261,12 @@ classdef SolverJMT < NetworkSolver
         dataSet = parseLogs(model, isNodeLogged, metric);
         state = parseTranState(fileArv, fileDep, nodePreload);
         [classResT, jobResT, jobResTArvTS, classResTJobID] = parseTranRespT(fileArv, fileDep);
-        
-        function options = defaultOptions()
-            options = Solver.defaultOptions();
-        end
     end
     
     methods
         function lNormConst = getProbNormConst(self)
+            % LNORMCONST = GETPROBNORMCONST(SELF)
+            
             switch self.options.method
                 case {'jmva','jmva.recal','jmva.comom','jmva.ls'}
                     self.run();
@@ -241,27 +279,31 @@ classdef SolverJMT < NetworkSolver
         
         %% StateAggr methods
         
-        function Pr = getProbStateAggr(self, node, state_a)             
-             if ~exist('state_a','var')
-                 state_a = self.model.getState{self.model.getStationIndex(node)};
-             end
-             stationStateAggr = self.getTranStateAggr(node);
-             ist = self.model.getStationIndex(node);
-             rows = findrows(stationStateAggr{ist}.state, state_a);
-             t = stationStateAggr{ist}.t;
-             dt = [t(1);diff(t)];
-             Pr = sum(dt(rows))/sum(dt);
+        function Pr = getProbStateAggr(self, node, state_a)
+            % PR = GETPROBSTATEAGGR(SELF, NODE, STATE_A)
+            
+            if ~exist('state_a','var')
+                state_a = self.model.getState{self.model.getStationIndex(node)};
+            end
+            stationStateAggr = self.getTranStateAggr(node);
+            ist = self.model.getStationIndex(node);
+            rows = findrows(stationStateAggr{ist}.state, state_a);
+            t = stationStateAggr{ist}.t;
+            dt = [t(1);diff(t)];
+            Pr = sum(dt(rows))/sum(dt);
         end
-                
+        
         function sysStateAggr = getTranSysStateAggr(self)
+            % SYSSTATEAGGR = GETTRANSYSSTATEAGGR(SELF)
+            
             statStateAggr =  self.getTranStateAggr();
             tranSysStateAggr = cell(1,1+self.model.getNumberOfStations);
             
             tranSysStateAggr{1} = []; % timestamps
             for i=1:self.model.getNumberOfStations % stations
                 tranSysStateAggr{1} = union(tranSysStateAggr{1}, statStateAggr{i}.t);
-            end            
-                        
+            end
+            
             for i=1:self.model.getNumberOfStations % stations
                 tranSysStateAggr{1+i} = [];
                 [~,uniqTS] = unique(statStateAggr{i}.t);
@@ -278,13 +320,15 @@ classdef SolverJMT < NetworkSolver
                         tranSysStateAggr{1+i} = [tranSysStateAggr{1+i}, Qijt];
                     end
                 end
-            end            
+            end
             sysStateAggr = SystemStateAggr(self.model, tranSysStateAggr);
         end
         
         function ProbSysStateAggr = getProbSysStateAggr(self)
+            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR(SELF)
+            
             TranSysStateAggr = self.getTranSysStateAggr;
-            TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);            
+            TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);
             TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
             state = self.model.getState;
             qn = self.model.getStruct;
@@ -292,7 +336,7 @@ classdef SolverJMT < NetworkSolver
             for isf=1:qn.nstateful
                 ind = qn.statefulToNode(isf);
                 [~,nir(isf,:)] = State.toMarginal(qn, ind, state{isf});
-            end            
+            end
             nir = nir';
             rows = findrows(TSS(:,2:end), nir(:)');
             if ~isempty(rows)
@@ -301,9 +345,11 @@ classdef SolverJMT < NetworkSolver
                 warning('The state was not seen during the simulation.');
                 ProbSysStateAggr = 0;
             end
-        end        
+        end
         
         function stationStateAggr = getTranStateAggr(self, node)
+            % STATIONSTATEAGGR = GETTRANSTATEAGGR(SELF, NODE)
+            
             Q = self.model.getAvgQLenHandles();
             stationStateAggr = cell(self.model.getNumberOfStations,1);
             % create a temp model
@@ -321,7 +367,7 @@ classdef SolverJMT < NetworkSolver
                         isNodeClassLogged(node,r) = true;
                     end
                 end
-            end                        
+            end
             % apply logging to the copied model
             Plinked = self.model.getLinkedRoutingMatrix();
             isNodeLogged = max(isNodeClassLogged,[],2);
@@ -339,7 +385,7 @@ classdef SolverJMT < NetworkSolver
                 nir = cell(1,qn.nclasses);
                 for r=1:qn.nclasses
                     if ~isempty(logData{isf,r})
-                        [~,uniqTS] = unique(logData{isf,r}.t);                        
+                        [~,uniqTS] = unique(logData{isf,r}.t);
                         if isNodeClassLogged(isf,r)
                             if ~isempty(logData{isf,r})
                                 t = logData{isf,r}.t(uniqTS);
@@ -350,7 +396,7 @@ classdef SolverJMT < NetworkSolver
                     else
                         nir{r} = [];
                     end
-                end                
+                end
                 stationStateAggr{ist} = StationStateAggr(self.model.stations{ist},t,cell2mat(nir));
             end
         end
@@ -358,14 +404,29 @@ classdef SolverJMT < NetworkSolver
         %% Cdf methods
         
         function RD = getCdfRespT(self, R)
+            % RD = GETCDFRESPT(SELF, R)
+            
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
             end
             RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
+            QN = self.getAvgQLen(); % steady-state qlen
+            qn = self.getStruct;
+            n = QN;
+            for r=1:qn.nclasses
+                if isinf(qn.njobs(r))
+                    n(:,r) = floor(QN(:,r));
+                else
+                    n(:,r) = floor(QN(:,r));
+                    if sum(n(:,r)) < qn.njobs(r)
+                        imax = maxpos(n(:,r)); % put jobs on the bottleneck
+                        n(imax,r) = qn.njobs(r) - sum(n(:,r));
+                    end
+                end
+            end
             cdfmodel = self.model.copy;
-            cdfmodel.resetNetwork;
-            QN = SolverJMT(self.model, self.getOptions).getAvgQLen(); % steady-state qlen
-            cdfmodel.initFromMarginal(QN);
+            %            cdfmodel.resetNetwork;
+            cdfmodel.initFromMarginal(n);
             isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
             for i= 1:cdfmodel.getNumberOfStations
                 for r=1:cdfmodel.getNumberOfClasses
@@ -396,6 +457,8 @@ classdef SolverJMT < NetworkSolver
         end
         
         function RD = getTranCdfRespT(self, R)
+            % RD = GETTRANCDFRESPT(SELF, R)
+            
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
             end
@@ -432,6 +495,8 @@ classdef SolverJMT < NetworkSolver
         end
         
         function RD = getTranCdfPassT(self, R)
+            % RD = GETTRANCDFPASST(SELF, R)
+            
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
             end
@@ -465,6 +530,22 @@ classdef SolverJMT < NetworkSolver
                     end
                 end
             end
+        end
+    end
+    
+    methods (Static)
+        function checkOptions(options)
+            % CHECKOPTIONS(OPTIONS)
+            
+            solverName = mfilename;
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                error('Finite timespan not supported in %s',solverName);
+            end
+        end
+        function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
+            
+            options = Solver.defaultOptions();
         end
     end
     

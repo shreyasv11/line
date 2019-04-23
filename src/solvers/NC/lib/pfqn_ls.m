@@ -1,4 +1,6 @@
 function [Gn,lGn]=pfqn_ls(L,N,Z,I)
+% [GN,LGN]=PFQN_LS(L,N,Z,I)
+
 % PFQN_MCI Approximate solution of closed product-form queueing networks
 % by logistic sampling
 %
@@ -53,7 +55,7 @@ else % Z>0
     eN = epsilon*sum(N);
     eta = sum(N)+M*(1+eN);
     K=M;
-    h = @(x)exp(-exp(x(K))+K*(1+eN)*x(M)+sum(N*log( (L(K,:)*exp(x(K))+Z) + exp(x(1:K-1))*(L(1:K-1,:)*exp(x(K))+repmat(Z,K-1,1)))') +sum(x(1:K-1)) -eta*log(1+sum(exp(x(1:K-1)))));    
+    h = @(x)exp(-exp(x(K))+K*(1+eN)*x(M)+sum(N*log( (L(K,:)*exp(x(K))+Z) + exp(x(1:K-1))*(L(1:K-1,:)*exp(x(K))+repmat(Z,K-1,1)))') +sum(x(1:K-1)) -eta*log(1+sum(exp(x(1:K-1)))));
     for i=1:I
         T(i) = h(samples(i,:));
     end
@@ -65,6 +67,8 @@ Gn=exp(lGn);
 end
 
 function [u,d]=pfqn_le_fpi(L,N)
+% [U,D]=PFQN_LE_FPI(L,N)
+
 % find location of mode of gaussian
 [M,R]=size(L);
 u=ones(M,1)/M;
@@ -83,6 +87,8 @@ end
 end
 
 function [u,v,d]=pfqn_le_fpiZ(L,N,Z)
+% [U,V,D]=PFQN_LE_FPIZ(L,N,Z)
+
 % find location of mode of gaussian
 [M,R]=size(L);
 eta = sum(N)+M;
@@ -113,6 +119,8 @@ end
 end
 
 function hu=pfqn_le_hessian(L,N,u0)
+% HU=PFQN_LE_HESSIAN(L,N,U0)
+
 % find hessian of gaussian
 [M,R]=size(L);
 Ntot=sum(N);
@@ -135,6 +143,8 @@ end
 end
 
 function A=pfqn_le_hessianZ(L,N,Z,u,v)
+% A=PFQN_LE_HESSIANZ(L,N,Z,U,V)
+
 % find hessian of gaussian
 [K,R]=size(L);
 Ntot=sum(N);
@@ -179,18 +189,26 @@ end
 end
 
 function y=allbut(y,xset)
+% Y=ALLBUT(Y,XSET)
+
 y=y(setdiff(1:length(y),xset));
 end
 
 function mln=multinomialln(n)
+% MLN=MULTINOMIALLN(N)
+
 mln = factln(sum(n))- sum(factln(n));
 end
 
 function lf=factln(n)
+% LF=FACTLN(N)
+
 lf = gammaln(1+n);
 end
 
 function f=simplex_fun(x,L,N)
+% F=SIMPLEX_FUN(X,L,N)
+
 x=x';
 M=length(x)+1;
 v=[];

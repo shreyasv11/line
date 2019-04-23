@@ -1,5 +1,7 @@
 % T(i,r): mean throughput of class r at node i
 function [T] = getAvgTputHandles(self)
+% [T] = GETAVGTPUTHANDLES(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

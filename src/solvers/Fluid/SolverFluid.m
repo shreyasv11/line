@@ -6,11 +6,23 @@ classdef SolverFluid < NetworkSolver
     
     methods
         function self = SolverFluid(model,varargin)
+            % SELF = SOLVERFLUID(MODEL,VARARGIN)
+            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
+        function setOptions(self, options)
+            % SETOPTIONS(SELF, OPTIONS)
+            % Assign the solver options
+            
+            self.checkOptions(options);
+            setOptions@Solver(self,options);
+        end
+        
         function RD = getTranCdfPassT(self, R)
+            % RD = GETTRANCDFPASST(SELF, R)
+            
             T0 = tic;
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles;
@@ -33,8 +45,10 @@ classdef SolverFluid < NetworkSolver
             runtime = toc(T0);
             self.setDistribResults(RD, runtime);
         end
-
+        
         function [Pnir,logPnir] = getProbStateAggr(self, ist)
+            % [PNIR,LOGPNIR] = GETPROBSTATEAGGR(SELF, IST)
+            
             if ~exist('ist','var')
                 error('getProbStateAggr requires to pass a parameter the station of interest.');
             end
@@ -62,10 +76,12 @@ classdef SolverFluid < NetworkSolver
             else
                 error('getProbStateAggr not yet implemented for models with open classes.');
             end
-        end        
+        end
         
         
         function RD = getCdfRespT(self, R)
+            % RD = GETCDFRESPT(SELF, R)
+            
             T0 = tic;
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles;
@@ -80,6 +96,8 @@ classdef SolverFluid < NetworkSolver
         end
         
         function supported = getSupported(self,supported)
+            % SUPPORTED = GETSUPPORTED(SELF,SUPPORTED)
+            
             if ~exist('supported','var')
                 supported=struct();
             end
@@ -87,6 +105,9 @@ classdef SolverFluid < NetworkSolver
         
         % solve method is supplied by Solver superclass
         function runtime = run(self)
+            % RUNTIME = RUN(SELF)
+            % Run the solver
+            
             self.reset();
             T0=tic;
             options=self.options;
@@ -209,6 +230,8 @@ classdef SolverFluid < NetworkSolver
     end
     methods (Static)
         function featSupported = getFeatureSet()
+            % FEATSUPPORTED = GETFEATURESET()
+            
             featSupported = SolverFeatureSet;
             featSupported.setTrue({
                 'ClassSwitch','DelayStation','Queue',...
@@ -223,6 +246,8 @@ classdef SolverFluid < NetworkSolver
         end
         
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverFluid.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
@@ -230,7 +255,14 @@ classdef SolverFluid < NetworkSolver
     end
     
     methods (Static)
+        function checkOptions(options)
+            % CHECKOPTIONS(OPTIONS)
+            
+            % do nothing
+        end
         function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
+            
             options = Solver.defaultOptions();
             options.iter_max = 50;
             options.stiff = true;

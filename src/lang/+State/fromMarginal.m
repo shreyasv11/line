@@ -1,4 +1,6 @@
 function space = fromMarginal(qn, ind, n, options)
+% SPACE = FROMMARGINAL(QN, IND, N, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

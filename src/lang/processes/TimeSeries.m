@@ -6,12 +6,16 @@ classdef TimeSeries < PointProcess
     
     methods (Hidden)
         function self = TimeSeries(className, numPar)
+            % SELF = TIMESERIES(CLASSNAME, NUMPAR)
+            
             self@PointProcess(className,numPar);
         end
     end
     
     methods
         function transform(self, filterType, filterParam)
+            % TRANSFORM(SELF, FILTERTYPE, FILTERPARAM)
+            
             if isempty(self.data)
                 self.load();
             end
@@ -29,26 +33,36 @@ classdef TimeSeries < PointProcess
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Returns the mean of the inter-arrival times
             ex = mean(self.data);
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get squared coefficient of variation of the interarrival times (SCV = variance / mean^2)
             SCV = var(self.data)/mean(self.data)^2;
         end
         
         function VAR = getVariance(self)
+            % VAR = GETVARIANCE(SELF)
+            
             % Get inter-arrival time distribution variance
             VAR = var(self.data);
         end
         
         function SKEW = getSkewness(self)
+            % SKEW = GETSKEWNESS(SELF)
+            
             SKEW = skewness(self.data);
             % Get skewness of the interarrival times
         end
         
         function summary(self)
+            % SUMMARY(SELF)
+            
             if isempty(self.data)
                 self.load();
             end

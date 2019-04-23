@@ -14,6 +14,8 @@ classdef Queue < Station
     methods
         %Constructor
         function self = Queue(model, name, schedStrategy)
+            % SELF = QUEUE(MODEL, NAME, SCHEDSTRATEGY)
+            
             self@Station(name);
             
             classes = model.classes;
@@ -51,10 +53,14 @@ classdef Queue < Station
         end
         
         function setNumberOfServers(self, value)
+            % SETNUMBEROFSERVERS(SELF, VALUE)
+            
             self.setNumServers(value);
         end
         
         function setNumServers(self, value)
+            % SETNUMSERVERS(SELF, VALUE)
+            
             switch self.schedStrategy
                 case {SchedStrategy.DPS, SchedStrategy.GPS}
                     if value ~= 1
@@ -66,16 +72,20 @@ classdef Queue < Station
         end
         
         function self = setStrategyParam(self, class, weight)
+            % SELF = SETSTRATEGYPARAM(SELF, CLASS, WEIGHT)
+            
             self.schedStrategyPar(class.index) = weight;
         end
         
         function distribution = getService(self, class)
+            % DISTRIBUTION = GETSERVICE(SELF, CLASS)
+            
             % return the service distribution assigned to the given class
             if ~exist('class','var')
                 error('getService requires in input a class object.');
             end
             try
-            distribution = self.server.serviceProcess{1, class.index}{3};
+                distribution = self.server.serviceProcess{1, class.index}{3};
             catch ME
                 distribution = [];
                 warning('No distribution is available for the specified class');
@@ -83,6 +93,7 @@ classdef Queue < Station
         end
         
         function setService(self, class, distribution, weight)
+            % SETSERVICE(SELF, CLASS, DISTRIBUTION, WEIGHT)
             if ~exist('weight','var')
                 weight=1.0;
             end
@@ -111,6 +122,8 @@ classdef Queue < Station
         end
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {self.input, self.server, self.output};
         end
         

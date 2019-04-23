@@ -1,8 +1,10 @@
 function [Gn,lGn]=pfqn_pnc(L,K,Z)
+% [GN,LGN]=PFQN_PNC(L,K,Z)
+
 % K = population vector
 [q,p]=size(L);
 if nargin==2 || isempty(Z)
-    Z=K*0+1e-8; 
+    Z=K*0+1e-8;
 end
 if isempty(L) | sum(L,1)==zeros(1,p)
     lGn = - sum(factln(K)) + sum(K.*log(sum(Z,1)));
@@ -16,7 +18,7 @@ gamma = r * N;
 alpha = 1-K*r';
 gammatilde = gamma ./ repmat(alpha',1,p);
 if min(alpha)<0
-%    warning('Model is not in normal usage');
+    %    warning('Model is not in normal usage');
     Gn=NaN;
     lGn=NaN;
     return

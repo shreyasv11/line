@@ -6,6 +6,8 @@ classdef LayeredNetworkElement < Element
     methods
         %Constructor
         function self = LayeredNetworkElement(name)
+            % SELF = LAYEREDNETWORKELEMENT(NAME)
+            
             self@Element(name);
         end
         

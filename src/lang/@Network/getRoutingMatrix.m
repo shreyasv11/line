@@ -1,4 +1,6 @@
 function [rt,rtNodes,rtNodesByClass,rtNodesByStation,connMatrix] = getRoutingMatrix(self, arvRates)
+% [RT,RTNODES,RTNODESBYCLASS,RTNODESBYSTATION,CONNMATRIX] = GETROUTINGMATRIX(SELF, ARVRATES)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -80,9 +82,17 @@ for i=1:self.getNumberOfNodes()
                     case RoutingStrategy.DISABLED
                         % set a small numerical tolerance to avoid messing
                         % up with routing chain CTMC solution
-                        rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                        for j=1:self.getNumberOfNodes()
+                            if connMatrix(i,j)>0
+                                rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                            end
+                        end
                     otherwise
-                        rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                        for j=1:self.getNumberOfNodes()
+                            if connMatrix(i,j)>0
+                                rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                            end
+                        end
                         %error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);
                 end
             end

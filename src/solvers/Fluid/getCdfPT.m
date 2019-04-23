@@ -1,4 +1,6 @@
 function CDc = getCdfPT(self)
+% CDC = GETCDFPT(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

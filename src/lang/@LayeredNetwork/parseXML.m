@@ -1,4 +1,6 @@
 function myLN = parseXML(filename, verbose)
+% MYLN = PARSEXML(FILENAME, VERBOSE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -259,7 +261,7 @@ for i = 0:procList.getLength()-1
                     end
                     
                     %reply-entry
-                    replyNames = cell(0); 
+                    replyNames = cell(0);
                     replyCalls = cell(0);
                     replyList = taskElement.getElementsByTagName('task-activities').item(0).getElementsByTagName('reply-entry');
                     for l = 0:replyList.getLength()-1
@@ -279,8 +281,8 @@ for i = 0:procList.getLength()-1
                                 end
                             end
                         end
-                    end                    
-
+                    end
+                    
                     %precedences
                     precList = taskElement.getElementsByTagName('task-activities').item(0).getElementsByTagName('precedence');
                     actGraph = zeros(length(actNames));
@@ -349,19 +351,19 @@ for i = 0:procList.getLength()-1
                             end
                             tempPrec = ActivityPrecedence(pres, posts, preType, postType, postProbs);
                             tempTask = tempTask.addPrecedence(tempPrec);
-                             
-%                             if length(postIdxs) == 1
-%                                 for kIn = preIdxs
-%                                     actGraph(kIn,postIdxs) = 1;
-%                                 end
-%                             else
-%                                 for kOut = 1:length(postIdxs)
-%                                     actGraph(preIdxs, postIdxs(kOut)) = postProbs(kOut);
-%                                 end
-%                             end
+                            
+                            %                             if length(postIdxs) == 1
+                            %                                 for kIn = preIdxs
+                            %                                     actGraph(kIn,postIdxs) = 1;
+                            %                                 end
+                            %                             else
+                            %                                 for kOut = 1:length(postIdxs)
+                            %                                     actGraph(preIdxs, postIdxs(kOut)) = postProbs(kOut);
+                            %                                 end
+                            %                             end
                         end
                     end
-%                    tempTask = tempTask.setActGraph(actGraph,actNames);
+                    %                    tempTask = tempTask.setActGraph(actGraph,actNames);
                 end
                 
                 tasks{size(tasks,1)+1,1} = tempTask.name;

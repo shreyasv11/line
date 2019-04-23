@@ -1,4 +1,6 @@
 function [XN,QN,UN,pqueue,R,eta]=qbd_mapmap1(MAPa,MAPs,util)
+% [XN,QN,UN,PQUEUE,R,ETA]=QBD_MAPMAP1(MAPA,MAPS,UTIL)
+
 %[XN,QN,UN,pqueue,R]=qbd_mapmap1(MAPa,MAPs,util)
 na = length(MAPa{1});
 ns = length(MAPs{1});

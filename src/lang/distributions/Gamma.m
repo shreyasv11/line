@@ -6,18 +6,22 @@ classdef Gamma < ContinuousDistrib
     
     methods
         function self = Gamma(shape, scale)
+            % SELF = GAMMA(SHAPE, SCALE)
+            
             % Constructs a gamma distribution from shape and scale
             % parameters
             self@ContinuousDistrib('Gamma',2,[0,Inf]);
             setParam(self, 1, 'alpha', shape, 'java.lang.Double');
             setParam(self, 2, 'beta', scale, 'java.lang.Double');
-%            self.javaClass = 'jmt.engine.random.GammaDistr';
-%            self.javaParClass = 'jmt.engine.random.GammaDistrPar';
+            %            self.javaClass = 'jmt.engine.random.GammaDistr';
+            %            self.javaParClass = 'jmt.engine.random.GammaDistrPar';
         end
     end
     
     methods
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
@@ -25,13 +29,17 @@ classdef Gamma < ContinuousDistrib
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
-                        
+            
             shape = self.getParam(1).paramValue;
             SCV = 1 / shape;
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
             shape = self.getParam(1).paramValue;
@@ -40,14 +48,22 @@ classdef Gamma < ContinuousDistrib
         end
         
         function Ft = evalCDF(self,t)
-            % Evaluate the cumulative distribution function at t            
+            % FT = EVALCDF(SELF,T)
+            
+            % Evaluate the cumulative distribution function at t
+            % AT T
+            
             shape = self.getParam(1).paramValue;
             scale = self.getParam(2).paramValue;
             Ft = gamcdf(t,shape,scale);
         end
         
         function L = evalLaplaceTransform(self, s)
+            % L = EVALLAPLACETRANSFORM(SELF, S)
+            
             % Evaluate the Laplace transform of the distribution function at t
+            % AT T
+            
             
             % Evaluate the Laplace transform of the distribution at s
             shape = self.getParam(1).paramValue; % shape
@@ -59,6 +75,8 @@ classdef Gamma < ContinuousDistrib
     methods(Static)
         
         function gm = fitMeanAndSCV(MEAN, SCV)
+            % GM = FITMEANANDSCV(MEAN, SCV)
+            
             % Fit distribution from mean and squared coefficient of
             % variation
             shape = 1 / SCV;

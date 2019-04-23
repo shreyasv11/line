@@ -15,6 +15,8 @@ classdef JobClass < NetworkElement
     methods (Hidden)
         %Constructor
         function self = JobClass(type, name)
+            % SELF = JOBCLASS(TYPE, NAME)
+            
             self@NetworkElement(name);
             self.priority = 0;
             self.reference = Node('');
@@ -24,15 +26,21 @@ classdef JobClass < NetworkElement
         end
         
         function self = setReferenceStation(self, source)
+            % SELF = SETREFERENCESTATION(SELF, SOURCE)
+            
             self.reference = source;
         end
         
         function boolIsa = isReferenceStation(self, node)
+            % BOOLISA = ISREFERENCESTATION(SELF, NODE)
+            
             boolIsa = strcmp(self.reference.name,node.name);
         end
         
         
         %         function self = set.priority(self, priority)
+        % SELF = SET.PRIORITY(SELF, PRIORITY)
+        
         %             if ~(rem(priority,1) == 0 && priority >= 0)
         %                 error('Priority must be an integer.\n');
         %             end
@@ -42,6 +50,8 @@ classdef JobClass < NetworkElement
     
     methods (Access=public)
         function ind = subsindex(self)
+            % IND = SUBSINDEX(SELF)
+            
             ind = double(self.index)-1; % 0 based
         end
     end

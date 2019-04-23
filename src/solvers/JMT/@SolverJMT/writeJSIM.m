@@ -1,4 +1,6 @@
 function fname = writeJSIM(self)
+% FNAME = WRITEJSIM(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 [simElem, simDoc] = saveXMLHeader(self, self.model.getLogPath);
@@ -72,7 +74,7 @@ numOfStations = length(self.model.stations);
 for i=1:numOfStations
     isReferenceNode = 0;
     currentNode = self.model.nodes{qn.stationToNode(i),1};
-    if (~isa(self.model.stations{i},'Source') && ~isa(self.model.stations{i},'Join'))        
+    if (~isa(self.model.stations{i},'Source') && ~isa(self.model.stations{i},'Join'))
         [~, nir] = State.toMarginal(self.model,qn.stationToNode(i),s0{qn.stationToStateful(i)});
         stationPopulationsNode = simDoc.createElement('stationPopulations');
         stationPopulationsNode.setAttribute('stationName', currentNode.name);
@@ -101,11 +103,11 @@ if hasReferenceNodes
 end
 fname = getJSIMTempPath(self);
 try
-xmlwrite(fname, simDoc);
+    xmlwrite(fname, simDoc);
 catch
-javaaddpath(which('xercesImpl-2.11.0.jar'));
-javaaddpath(which('xml-apis-2.11.0.jar'));
-pkg load io;
-xmlwrite(fname, simDoc);
+    javaaddpath(which('xercesImpl-2.11.0.jar'));
+    javaaddpath(which('xml-apis-2.11.0.jar'));
+    pkg load io;
+    xmlwrite(fname, simDoc);
 end
 end

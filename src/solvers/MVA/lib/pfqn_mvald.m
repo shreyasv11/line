@@ -1,4 +1,6 @@
 function [XN,QN,UN,CN,lGN]=pfqn_mvald(L,N,Z,mu)
+% [XN,QN,UN,CN,LGN]=PFQN_MVALD(L,N,Z,MU)
+
 [M,R]=size(L); % get number of queues (M) and classes (R)
 if ~exist('mi','var')
     mi = ones(M,1);
@@ -60,6 +62,8 @@ CN = N./XN - Z; % cycle time exclusive of think time
 end
 
 function i=hashpop(n,N)
+% I=HASHPOP(N,N)
+
 i=1; % index of the empty population
 for r=1:length(N)
     i=i+prod(N(1:r-1)+1)*n(r);

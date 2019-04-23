@@ -1,4 +1,6 @@
 function [outputFileName] = writeJMVA(self, outputFileName)
+% [OUTPUTFILENAME] = WRITEJMVA(SELF, OUTPUTFILENAME)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -195,9 +197,9 @@ for i=1:qn.nstations
         statVisitElem = mvaDoc.createElement('visit');
         statVisitElem.setAttribute('customerclass',sprintf('Chain%02d',c));
         if STchain(i,c) > 0
-            val = Lchain(i,c) ./ STchain(i,c); 
+            val = Lchain(i,c) ./ STchain(i,c);
         else
-            val = 0; 
+            val = 0;
         end
         statVisitElem.appendChild(mvaDoc.createTextNode(num2str(val)));
         visitsElem.appendChild(statVisitElem);

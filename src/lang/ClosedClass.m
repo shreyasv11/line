@@ -12,6 +12,8 @@ classdef ClosedClass < JobClass
         
         %Constructor
         function self = ClosedClass(model, name, njobs, refstat, prio)
+            % SELF = CLOSEDCLASS(MODEL, NAME, NJOBS, REFSTAT, PRIO)
+            
             self@JobClass('closed', name);
             
             self.type = 'closed';
@@ -42,6 +44,8 @@ classdef ClosedClass < JobClass
         end
         
         function setReferenceStation(class, source)
+            % SETREFERENCESTATION(CLASS, SOURCE)
+            
             setReferenceStation@JobClass(class, source);
         end
     end

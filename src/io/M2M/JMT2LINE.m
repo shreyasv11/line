@@ -1,4 +1,6 @@
 function model = JMT2LINE(filename,modelName)
+% MODEL = JMT2LINE(FILENAME,MODELNAME)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 T0=tic;

@@ -1,4 +1,6 @@
 function [Pnir,pi,runtime,fname] = solver_ctmc_margaggr(qn, options)
+% [PNIR,PI,RUNTIME,FNAME] = SOLVER_CTMC_MARGAGGR(QN, OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -32,7 +34,7 @@ for ist=1:qn.nstations
     end
 end
 
-[Q,SS,SSq,~,~,qn] = solver_ctmc(qn, options);
+[Q,SS,SSq,~,~,~,qn] = solver_ctmc(qn, options);
 if options.keep
     fname = tempname;
     save([fname,'.mat'],'Q','SSq')
@@ -63,7 +65,7 @@ for ind=1:qn.nnodes
             if all(sivec == nivec)
                 Pnir(ist) = Pnir(ist) + pi(s);
             end
-        end        
+        end
     end
 end
 

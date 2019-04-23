@@ -11,6 +11,8 @@ classdef Buffer < InputSection
     methods
         %Constructor
         function self = Buffer(classes)
+            % SELF = BUFFER(CLASSES)
+            
             self@InputSection('Buffer');
             self.size = -1;
             self.schedPolicy = SchedStrategyType.NP;
@@ -21,6 +23,8 @@ classdef Buffer < InputSection
     
     methods (Access = 'private')
         function initQueueJobClasses(self, customerClasses)
+            % INITQUEUEJOBCLASSES(SELF, CUSTOMERCLASSES)
+            
             for i = 1 : length(customerClasses)
                 self.inputJobClasses{i} = {customerClasses{i}, SchedStrategy.FCFS, DropStrategy.InfiniteBuffer};
             end
@@ -30,6 +34,8 @@ classdef Buffer < InputSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object

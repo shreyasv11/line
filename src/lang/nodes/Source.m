@@ -11,11 +11,13 @@ classdef Source < Station
     methods
         %Constructor
         function self = Source(model, name)
+            % SELF = SOURCE(MODEL, NAME)
+            
             self@Station(name);
             self.numberOfServers = 1;
             if(model ~= 0)
                 classes = model.classes;
-				self.classCap = Inf*ones(1,length(classes));
+                self.classCap = Inf*ones(1,length(classes));
                 self.output = Dispatcher(classes);
                 self.server = ServiceTunnel();
                 self.input = RandomSource(classes);
@@ -26,6 +28,8 @@ classdef Source < Station
         end
         
         function setArrival(self, class, distribution)
+            % SETARRIVAL(SELF, CLASS, DISTRIBUTION)
+            
             self.input.sourceClasses{1, class.index}{2} = ServiceStrategy.LI;
             self.input.sourceClasses{1, class.index}{3} = distribution;
             if distribution.isDisabled()
@@ -36,6 +40,8 @@ classdef Source < Station
         end
         
         function sections = getSections(self)
+            % SECTIONS = GETSECTIONS(SELF)
+            
             sections = {self.input, self.server, self.output};
         end
     end

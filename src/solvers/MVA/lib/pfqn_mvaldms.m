@@ -1,4 +1,5 @@
 function [XN,QN,UN,CN] = pfqn_mvaldms(lambda,D,N,Z,S)
+	% [XN,QN,UN,CN] = PFQN_MVALDMS(LAMBDA,D,N,Z,S)	
 % this differs from mvaldmx only in the computation of utilizations, which is based on little's law since each server is constant-rate
 [M,R] = size(D);
 Nct = sum(N(isfinite(N)));

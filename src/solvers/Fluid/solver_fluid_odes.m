@@ -1,4 +1,6 @@
 function [ode_h,q_indices] = solver_fluid_odes(N, Mu, Phi, PH, P, S, sched, schedparam)
+% [ODE_H,Q_INDICES] = SOLVER_FLUID_ODES(N, MU, PHI, PH, P, S, SCHED, SCHEDPARAM)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

@@ -13,6 +13,8 @@ classdef CacheServer < ServiceSection
     methods
         %Constructor
         function self = CacheServer(classes, levels, levelCapacities)
+            % SELF = CACHESERVER(CLASSES, LEVELS, LEVELCAPACITIES)
+            
             self@ServiceSection('CacheServer');
             self.classes = classes;
             self.numberOfServers = 1;
@@ -25,6 +27,8 @@ classdef CacheServer < ServiceSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
+            % CLONE = COPYELEMENT(SELF)
+            
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
             % Make a deep copy of each object

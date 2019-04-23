@@ -1,4 +1,6 @@
 function [lGn] = pfqn_nc(L,N,Z,varargin)
+% [LGN] = PFQN_NC(L,N,Z,VARARGIN)
+
 options = Solver.parseOptions(varargin,SolverNC.defaultOptions);
 
 % remove empty classes
@@ -93,6 +95,8 @@ end
 end
 
 function lG = sub_method(L,N,Z,options)
+% LG = SUB_METHOD(L,N,Z,OPTIONS)
+
 switch options.method
     case {'mmint','pnc2'}
         if size(L,1)>1

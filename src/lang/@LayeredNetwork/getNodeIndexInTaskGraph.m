@@ -1,4 +1,6 @@
 function idx = getNodeIndexInTaskGraph(self,node)
+% IDX = GETNODEINDEXINTASKGRAPH(SELF,NODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 G = self.taskGraph;

@@ -1,4 +1,6 @@
 function [Q,U,R,T,C,X,lG,runtime] = solver_nc_analysis(qn, options)
+% [Q,U,R,T,C,X,LG,RUNTIME] = SOLVER_NC_ANALYSIS(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -82,7 +84,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         else
             if strcmpi(options.method,'exact') && S(i)>1
                 options.method = 'default';
-                warning('%s does not support exact multiserver yet. Switching to approximate method.', mfilename); 
+                warning('%s does not support exact multiserver yet. Switching to approximate method.', mfilename);
             end
             Lcorr(i,:) = Lchain(i,:) / S(i);
             Z(i,:) = 0;
@@ -125,12 +127,12 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         end
     end
     if isnan(Xchain)
-%        Z
-%        Zcorr
-%        Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1)
-%        lG
-%        lGr
-%        lGar
+        %        Z
+        %        Zcorr
+        %        Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1)
+        %        lG
+        %        lGr
+        %        lGar
         warning('Normalizing constant computations produced a floating-point range exception. Model is likely too large.');
     end
     

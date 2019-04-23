@@ -5,24 +5,30 @@ classdef Erlang < MarkovianDistribution
     % All rights reserved.
     
     methods
-
+        
         function self = Erlang(phaseRate, nphases)
+            % SELF = ERLANG(PHASERATE, NPHASES)
+            
             % Constructs an erlang distribution from the rate in each state
             % and the number of phases
             self@MarkovianDistribution('Erlang',2);
             setParam(self, 1, 'alpha', phaseRate, 'java.lang.Double'); % rate in each state
             setParam(self, 2, 'r', round(nphases), 'java.lang.Long'); % number of phases
-%            self.javaClass = 'jmt.engine.random.Erlang';
-%            self.javaParClass = 'jmt.engine.random.ErlangPar';
+            %            self.javaClass = 'jmt.engine.random.Erlang';
+            %            self.javaParClass = 'jmt.engine.random.ErlangPar';
         end
         
         function phases = getNumberOfPhases(self)
+            % PHASES = GETNUMBEROFPHASES(SELF)
+            
             % Get number of phases in the underpinnning phase-type
             % representation
             phases  = self.getParam(2).paramValue; %r
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             alpha = self.getParam(1).paramValue;
             r = self.getParam(2).paramValue;
@@ -30,13 +36,18 @@ classdef Erlang < MarkovianDistribution
         end
         
         function SCV = getSCV(self)
-            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+            % SCV = GETSCV(SELF)
+            % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             r = self.getParam(2).paramValue;
             SCV = 1/r;
         end
         
         function Ft = evalCDF(self,t)
+            % FT = EVALCDF(SELF,T)
+            
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             alpha = self.getParam(1).paramValue; % rate
             r = self.getParam(2).paramValue; % stages
             Ft = 1;
@@ -46,13 +57,19 @@ classdef Erlang < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
+            % PH = GETREPRESENTATION(SELF)
+            
             % Return the renewal process associated to the distribution
             r = self.getParam(2).paramValue;
             PH = map_erlang(self.getMean(),r);
         end
         
         function L = evalLaplaceTransform(self, s)
-            % Evaluate the Laplace transform of the distribution function at t            
+            % L = EVALLAPLACETRANSFORM(SELF, S)
+            
+            % Evaluate the Laplace transform of the distribution function at t
+            % AT T
+            
             alpha = self.getParam(1).paramValue; % rate
             r = self.getParam(2).paramValue; % stages
             L = (alpha / (alpha + s))^r;
@@ -61,8 +78,10 @@ classdef Erlang < MarkovianDistribution
     end
     
     methods(Static)
-
+        
         function er = fitCentral(MEAN, VAR, SKEW)
+            % ER = FITCENTRAL(MEAN, VAR, SKEW)
+            
             % Fit distribution from first three central moments (mean,
             % variance, skewness)
             SCV = VAR/MEAN^2;
@@ -70,18 +89,24 @@ classdef Erlang < MarkovianDistribution
         end
         
         function er = fitRate(RATE)
+            % ER = FITRATE(RATE)
+            
             % Fit distribution with given rate
             warning('The Erlang distribution is underspecified by the rate, setting the number of phases to 2.');
             er = Erlang.fitMeanAndOrder(1/RATE, 2);
         end
         
         function er = fitMean(MEAN)
+            % ER = FITMEAN(MEAN)
+            
             % Fit distribution with given mean
             warning('The Erlang distribution is underspecified by the mean, setting the number of phases to 2.');
             er = Erlang.fitMeanAndOrder(MEAN, 2);
         end
         
         function er = fitMeanAndSCV(MEAN, SCV)
+            % ER = FITMEANANDSCV(MEAN, SCV)
+            
             % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             r = ceil(1/SCV);
             alpha = r/MEAN;
@@ -89,6 +114,8 @@ classdef Erlang < MarkovianDistribution
         end
         
         function er = fitMeanAndOrder(MEAN, n)
+            % ER = FITMEANANDORDER(MEAN, N)
+            
             % Fit distribution with given mean and number of phases
             SCV = 1/n;
             r = ceil(1/SCV);

@@ -1,4 +1,6 @@
 function [Pnir,runtime,fname] = solver_ctmc_joint(qn, options)
+% [PNIR,RUNTIME,FNAME] = SOLVER_CTMC_JOINT(QN, OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -26,7 +28,7 @@ for i=1:qn.nstations
     end
 end
 
-[Q,SS,~,~,~,qn] = solver_ctmc(qn, options);
+[Q,SS,~,~,~,~,qn] = solver_ctmc(qn, options);
 if options.keep
     fname = tempname;
     save([fname,'.mat'],'Q','SSq')

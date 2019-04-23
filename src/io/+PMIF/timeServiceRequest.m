@@ -17,6 +17,8 @@ classdef timeServiceRequest
         
         %constructor
         function obj = timeServiceRequest(workloadName, serverID, serviceDemand, timeUnits)
+            % OBJ = TIMESERVICEREQUEST(WORKLOADNAME, SERVERID, SERVICEDEMAND, TIMEUNITS)
+            
             if(nargin > 0)
                 obj.workloadName = workloadName;
                 obj.serverID = serverID;
@@ -28,6 +30,8 @@ classdef timeServiceRequest
         end
         
         function obj = addTransit(obj, dest, prob)
+            % OBJ = ADDTRANSIT(OBJ, DEST, PROB)
+            
             if isempty(obj.transits)
                 obj.transits = cell(1,2);
                 obj.transits{1,1} = dest;

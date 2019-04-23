@@ -1,4 +1,6 @@
 function W=qsys_gig1_approx_klb(lambda,mu,ca,cs)
+% W=QSYS_GIG1_APPROX_KLB(LAMBDA,MU,CA,CS)
+
 % kramer-langenbach-belz formula
 rho=lambda/mu;
 if ca<=1

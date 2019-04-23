@@ -14,6 +14,8 @@ classdef ItemClass < NetworkElement
     
     methods
         function self = ItemClass(model, name, nitems, reference)
+            % SELF = ITEMCLASS(MODEL, NAME, NITEMS, REFERENCE)
+            
             self.name = name;
             self.nitems = nitems;
             self.index = 1;
@@ -26,14 +28,20 @@ classdef ItemClass < NetworkElement
         end
         
         function name = getName(self)
+            % NAME = GETNAME(SELF)
+            
             name = self.name;
         end
         
         function bool = hasReplicableItems(self)
+            % BOOL = HASREPLICABLEITEMS(SELF)
+            
             bool = self.replicable;
         end
         
         function ntypes = getNumberOfItems(self)
+            % NTYPES = GETNUMBEROFITEMS(SELF)
+            
             ntypes = self.nitems;
         end
     end

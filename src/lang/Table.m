@@ -1,4 +1,6 @@
 function t = Table(varargin)
+% T = TABLE(VARARGIN)
+
 if isoctave
     n = length(varargin{1});
     m = length(varargin);

@@ -1,4 +1,6 @@
 function [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode)
+% [SIMDOC, SECTION] = SAVENUMBEROFSERVERS(SELF, SIMDOC, SECTION, CURRENTNODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 sizeNode = simDoc.createElement('parameter');

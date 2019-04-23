@@ -17,6 +17,8 @@ classdef workUnitServer
         
         %constructor
         function obj = workUnitServer(name, quantity, scheduling, serviceTime, timeUnits)
+            % OBJ = WORKUNITSERVER(NAME, QUANTITY, SCHEDULING, SERVICETIME, TIMEUNITS)
+            
             if(nargin > 0)
                 obj.name = name;
                 obj.quantity = quantity;

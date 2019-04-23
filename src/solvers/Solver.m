@@ -14,6 +14,7 @@ classdef Solver < handle
     methods (Hidden)
         %Constructor
         function self = Solver(model, name, options)
+            % SELF = SOLVER(MODEL, NAME, OPTIONS)
             if ~exist('options','var')
                 options = self.defaultOptions();
             end
@@ -25,22 +26,29 @@ classdef Solver < handle
     
     methods %(Abstract) % implemented with errors for Octave compatibility
         function bool = supports(self,model)
+            % BOOL = SUPPORTS(SELF,MODEL)
             % True if the input model is supported by the solver
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            
         end
         function runtime = run(self) % generic method to run the solver
+            % RUNTIME = RUN(SELF)
+            % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             % Solve the model
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            
         end
     end
     
     methods
         function out = getName(self)
+            % OUT = GETNAME(SELF)
             % Get solver name
             out = self.name;
         end
         
         function options = getDefaultOptions(self)
+            % OPTIONS = GETDEFAULTOPTIONS(SELF)
             % Get option data structure with default values
             options = Solver.defaultOptions;
         end
@@ -50,6 +58,7 @@ classdef Solver < handle
     methods
         
         function checkOptions(self, ~)
+            % CHECKOPTIONS(SELF, ~)
             % Check if input option data structure is valid for the given model
             if strcmp(self.options.method,'exact')
                 if ~self.model.hasProductFormSolution
@@ -59,26 +68,31 @@ classdef Solver < handle
         end
         
         function results = getResults(self)
+            % RESULTS = GETRESULTS(SELF)
             % Return results data structure
             results = self.result;
         end
         
         function bool = hasResults(self)
+            % BOOL = HASRESULTS(SELF)
             % Check if the model has been solved
             bool = ~isempty(self.result);
         end
         
         function options = getOptions(self)
+            % OPTIONS = GETOPTIONS(SELF)
             % Return options data structure
             options = self.options;
         end
         
         function reset(self)
+            % RESET(SELF)
             % Dispose previously stored results
             self.result = [];
         end
         
         function self = setOptions(self, options)
+            % SELF = SETOPTIONS(SELF, OPTIONS)
             % Set a new options data structure
             defaultOptions = self.defaultOptions;
             optList = Solver.listValidOptions();
@@ -94,20 +108,23 @@ classdef Solver < handle
     methods (Static)
         
         function resetRandomGeneratorSeed(seed)
+            % RESETRANDOMGENERATORSEED(SEED)
             % Assign a new seed to the random number generator
             if ~isoctave
                 warning('off','MATLAB:RandStream:ActivatingLegacyGenerators');
-                warning('off','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');             
+                warning('off','MATLAB:RandStream:ReadingInactiveLegacyGeneratorState');
             end
             rand('seed',seed);
         end
         
         function bool = isAvailable()
+            % BOOL = ISAVAILABLE()
             % Check if external dependencies are available for the solver
             bool = true;
         end
         
         function bool = isJavaAvailable()
+            % BOOL = ISJAVAAVAILABLE()
             % Check if Java dependencies are available for the solver
             bool = true;
             if ispc % windows
@@ -124,6 +141,7 @@ classdef Solver < handle
         end
         
         function fun = accurateStiffOdeSolver()
+            % FUN = ACCURATESTIFFODESOLVER()
             % Return default high-accuracy stiff solver
             if isoctave
                 %fun = @ode15s;
@@ -134,6 +152,7 @@ classdef Solver < handle
         end
         
         function fun = accurateOdeSolver()
+            % FUN = ACCURATEODESOLVER()
             % Return default high-accuracy non-stiff solver
             if isoctave
                 %fun = @ode15s;
@@ -144,6 +163,7 @@ classdef Solver < handle
         end
         
         function fun = fastStiffOdeSolver()
+            % FUN = FASTSTIFFODESOLVER()
             % Return default low-accuracy stiff solver
             if isoctave
                 %fun = @ode15s;
@@ -154,6 +174,7 @@ classdef Solver < handle
         end
         
         function fun = fastOdeSolver()
+            % FUN = FASTODESOLVER()
             % Return default low-accuracy non-stiff solver
             if isoctave
                 %fun = @ode15s;
@@ -164,6 +185,7 @@ classdef Solver < handle
         end
         
         %         function solver = suggestAnalytical(model)
+        % SOLVER = SUGGESTANALYTICAL(MODEL)
         %             qn = model.getStruct;
         %             modelFeat =  model.getUsedLangFeatures.list;
         %             solvers{1} = SolverMVA(model);
@@ -180,6 +202,7 @@ classdef Solver < handle
         %         end
         
         function optList = listValidOptions()
+            % OPTLIST = LISTVALIDOPTIONS()
             % List valid fields for options data structure
             optList = {'cache','cutoff','force','init_sol','iter_max','iter_tol','tol', ...
                 'keep','method','odesolvers','samples','seed','stiff', ...
@@ -187,11 +210,13 @@ classdef Solver < handle
         end
         
         function bool = isValidOption(optName)
+            % BOOL = ISVALIDOPTION(OPTNAME)
             % Check if the given option exists for the solver
             bool = any(cell2mat(findstring(optName, Solver.listValidOptions()))==1);
         end
         
         function options = defaultOptions()
+            % OPTIONS = DEFAULTOPTIONS()
             % Return default options
             options = struct();
             options.cache = true;
@@ -222,6 +247,7 @@ classdef Solver < handle
         end
         
         function options = parseOptions(varargin, defaultOptions)
+            % OPTIONS = PARSEOPTIONS(VARARGIN, DEFAULTOPTIONS)
             % Parse option parameters into options data structure
             if isempty(varargin)
                 options = defaultOptions;
@@ -242,11 +268,13 @@ classdef Solver < handle
         end
         
         function solver = get(chosenmethod, model, varargin)
+            % SOLVER = GET(CHOSENMETHOD, MODEL, VARARGIN)
             % Alias for Solver.method
             solver = Solver.method(chosenmethod, model, varargin);
         end
         
         function solver = method(chosenmethod, model, varargin)
+            % SOLVER = METHOD(CHOSENMETHOD, MODEL, VARARGIN)
             % Returns a solver configured to run the chosen method
             options = Solver.parseOptions(varargin, Solver.defaultOptions);
             options.method = chosenmethod;

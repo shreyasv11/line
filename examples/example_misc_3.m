@@ -5,7 +5,6 @@ node{1} = Delay(model, 'Delay');
 node{2} = Queue(model, 'Queue1', SchedStrategy.PS);
 node{3} = Queue(model, 'Queue2', SchedStrategy.DPS);
 
-
 jobclass{1} = ClosedClass(model, 'Class1', 2, node{1}, 0);
 jobclass{2} = ClosedClass(model, 'Class2', 1, node{1}, 0);
 
@@ -17,9 +16,11 @@ model.addLink(node{3}, node{1});
 node{1}.setService(jobclass{1}, Exp(3));
 node{1}.setService(jobclass{2}, Exp(0.5));
 
+% this is ignored since the node is PS
 w1 = 5; node{2}.setService(jobclass{1}, Exp(0.1), w1);
 w2 = 1; node{2}.setService(jobclass{2}, Exp(1), w2);
 
+% this is not ignored since the node is DPS
 w1 = 1; node{3}.setService(jobclass{1}, Exp(0.1), w1);
 w2 = 5; node{3}.setService(jobclass{2}, Exp(1), w2);
 

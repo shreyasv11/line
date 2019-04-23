@@ -1,4 +1,6 @@
 function [QNclass,UNclass,RNclass,TNclass] = getAvg(self,Q,U,R,T)
+% [QNCLASS,UNCLASS,RNCLASS,TNCLASS] = GETAVG(SELF,Q,U,R,T)
+
 % Return average station metrics at steady-state
 %
 % Copyright (c) 2012-2019, Imperial College London

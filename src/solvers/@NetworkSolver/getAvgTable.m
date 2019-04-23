@@ -1,8 +1,10 @@
 function [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled)
+% [AVGTABLE,QT,UT,RT,TT] = GETAVGTABLE(SELF,Q,U,R,T,KEEPDISABLED)
 % Return table of average station metrics
 %
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+
 if ~exist('keepDisabled','var')
     keepDisabled = false;
 end
@@ -12,7 +14,16 @@ K = self.model.getNumberOfClasses();
 if nargin == 1
     [Q,U,R,T] = self.model.getAvgHandles();
 end
-[QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
+if isfinite(self.getOptions.timespan(2))
+    [Qt,Ut,Tt] = self.model.getTranHandles();
+    [QNt,UNt,TNt] = self.getTranAvg(Qt,Ut,Tt);
+    QN = cellfun(@(c) c(end,1),QNt);
+    UN = cellfun(@(c) c(end,1),UNt);
+    TN = cellfun(@(c) c(end,1),TNt);
+    RN = zeros(size(QN));
+else
+    [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
+end
 if isempty(QN)
     AvgTable = Table();
     QT = Table();

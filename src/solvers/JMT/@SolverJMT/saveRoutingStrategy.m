@@ -1,4 +1,6 @@
 function [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode)
+% [SIMDOC, SECTION] = SAVEROUTINGSTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 strategyNode = simDoc.createElement('parameter');
@@ -26,7 +28,7 @@ for i=1:(numOfClasses)
         case RoutingStrategy.JSQ
             concStratNode = simDoc.createElement('subParameter');
             concStratNode.setAttribute('classPath', 'jmt.engine.NetStrategies.RoutingStrategies.ShortestQueueLengthRoutingStrategy');
-            concStratNode.setAttribute('name', 'Join the Shortest Queue (JSQ)');            
+            concStratNode.setAttribute('name', 'Join the Shortest Queue (JSQ)');
         case RoutingStrategy.PROB
             concStratNode = simDoc.createElement('subParameter');
             concStratNode.setAttribute('classPath', 'jmt.engine.NetStrategies.RoutingStrategies.EmpiricalStrategy');

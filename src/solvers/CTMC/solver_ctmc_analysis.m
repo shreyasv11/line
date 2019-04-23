@@ -1,10 +1,11 @@
-function [QN,UN,RN,TN,CN,XN,runtime,fname] = solver_ctmc_analysis(qn, options)
+function [QN,UN,RN,TN,CN,XN,InfGen,StateSpace,StateSpaceAggr,EventFiltration,runtime,fname] = solver_ctmc_analysis(qn, options)
+% [QN,UN,RN,TN,CN,XN,INFGEN,STATESPACE,STATESPACEAGGR,EVENTFILTRATION,RUNTIME,FNAME] = SOLVER_CTMC_ANALYSIS(QN, OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
-fname = '';
 rt = qn.rt;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
@@ -31,9 +32,16 @@ for i=1:M
     end
 end
 
-[Q,SS,SSq,arvRates,depRates] = solver_ctmc(qn, options);
+[InfGen,StateSpace,StateSpaceAggr,EventFiltration,arvRates,depRates,qn] = solver_ctmc(qn, options); % qn is updated with the state space
 
-pi = ctmc_solve(Q, options);
+if options.keep
+    fname = tempname;
+    save([fname,'.mat'],'InfGen','StateSpace','StateSpaceAggr','EventFiltration')
+    fprintf(1,'CTMC infinitesimal generator and state space saved in: ');
+    disp([fname, '.mat'])
+end
+
+pi = ctmc_solve(InfGen, options);
 pi(pi<1e-14)=0;
 pi = pi/sum(pi);
 
@@ -50,14 +58,11 @@ for k=1:K
     for i=1:M
         isf = qn.stationToStateful(i);
         TN(i,k) = pi*depRates(:,isf,k);
-        QN(i,k) = pi*SSq(:,(i-1)*K+k);
+        QN(i,k) = pi*StateSpaceAggr(:,(i-1)*K+k);
         switch sched{i}
             case SchedStrategy.INF
                 UN(i,k) = QN(i,k);
             otherwise
-                % we use Little's law, otherwise there are issues in
-                % estimating the fraction of time assigned to class k (to
-                % recheck)
                 if ~isempty(PH{i,k})
                     UN(i,k) = pi*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
                 end

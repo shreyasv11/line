@@ -6,6 +6,8 @@ classdef SolverLQNS < LayeredNetworkSolver
     
     methods
         function self = SolverLQNS(model, varargin)
+            % SELF = SOLVERLQNS(MODEL, VARARGIN)
+            
             self@LayeredNetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~SolverLQNS.isAvailable()
@@ -14,6 +16,9 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function runtime = run(self)
+            % RUNTIME = RUN(SELF)
+            % Run the solver
+            
             tic;
             options = self.getOptions;
             filename = [tempname,'.lqnx'];
@@ -42,10 +47,14 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function reset(self)
+            % RESET(SELF)
+            
             model.reset;
         end
         
         function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)
+            % [QN,UN,RN,TN] = GETAVG(SELF,~,~,~,~)
+            
             self.run();
             QN = self.result.Avg.QLen;
             UN = self.result.Avg.Util;
@@ -54,6 +63,8 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function [result, iterations] = parseXMLResults(self, filename)
+            % [RESULT, ITERATIONS] = PARSEXMLRESULTS(SELF, FILENAME)
+            
             import javax.xml.parsers.*;
             import org.w3c.dom.*;
             import java.io.*;
@@ -255,6 +266,8 @@ classdef SolverLQNS < LayeredNetworkSolver
     
     methods (Static)
         function [bool, featSupported] = supports(model)
+            % [BOOL, FEATSUPPORTED] = SUPPORTS(MODEL)
+            
             featUsed = model.getUsedLangFeatures();
             featSupported = SolverFeatureSet;
             featSupported.setTrue({'Sink','Source','Queue',...
@@ -268,12 +281,16 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function options = defaultOptions(self)
+            % OPTIONS = DEFAULTOPTIONS(SELF)
+            
             options = EnsembleSolver.defaultOptions();
             options.timespan = [Inf,Inf];
             options.keep = false;
         end
         
         function bool = isAvailable()
+            % BOOL = ISAVAILABLE()
+            
             bool = true;
             if ispc % windows
                 [~,ret] = dos('lqns -V -H');
@@ -281,8 +298,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                     bool = false;
                 end
                 if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                || contains(ret,'Version 1')  
+                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
+                        || contains(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
@@ -292,8 +309,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                     bool = false;
                 end
                 if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                || contains(ret,'Version 1')  
+                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
+                        || contains(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
@@ -304,8 +321,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                     bool = false;
                 end
                 if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                || contains(ret,'Version 1')  
+                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
+                        || contains(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
@@ -315,8 +332,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                     bool = false;
                 end
                 if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                || contains(ret,'Version 1')  
+                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
+                        || contains(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end

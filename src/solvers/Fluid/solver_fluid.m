@@ -1,4 +1,6 @@
 function [QN,ymean,QNt,UNt,ymean_t,t,iters,runtime] = solver_fluid(qn, options)
+% [QN,YMEAN,QNT,UNT,YMEAN_T,T,ITERS,RUNTIME] = SOLVER_FLUID(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -84,7 +86,7 @@ if isempty(options.init_sol)
     ydefault = y0(:)'; % not used in this case
 else
     ymean{iters +1} = options.init_sol(:)';
-    ydefault = y0(:)'; % default solution if init_sol fails    
+    ydefault = y0(:)'; % default solution if init_sol fails
 end
 
 %% solve ode

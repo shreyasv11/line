@@ -1,4 +1,6 @@
 function isValid = isValid(qn, n, s, options)
+% ISVALID = ISVALID(QN, N, S, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -35,7 +37,7 @@ for ist=1:qn.nstations
         K(r) = qn.phases(ist,r);
         if ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) && n(ist,r)>0 % if disabled
             isValid = false;
-%            error('Chain %d is initialized with an incorrect number of jobs: %f instead of %d.', nc, statejobs_chain, njobs_chain);
+            %            error('Chain %d is initialized with an incorrect number of jobs: %f instead of %d.', nc, statejobs_chain, njobs_chain);
             return
         end
     end

@@ -1,4 +1,6 @@
 function [Q,U,R,T,C,X] = solver_lib(qn, options)
+% [Q,U,R,T,C,X] = SOLVER_LIB(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -42,7 +44,7 @@ if M==2 && K==1 && qn.nclosedjobs == 0
             W=qsys_gig1_approx_marchal(lambda,mu,ca,cs);
         case {'gm1', 'gim1'}
             % sigma = Load at arrival instants (Laplace transform of the inter-arrival times)
-            PH = qn.ph{source_ist}; 
+            PH = qn.ph{source_ist};
             pie = map_pie(PH);
             A = PH{1};
             e = ones(length(pie),1);

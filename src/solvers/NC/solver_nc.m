@@ -1,4 +1,6 @@
 function [Qchain,Uchain,Rchain,Tchain,Cchain,Xchain] = solver_nc(STchain, Vchain, Nchain, S, gamma, refstatchain, options)
+% [QCHAIN,UCHAIN,RCHAIN,TCHAIN,CCHAIN,XCHAIN] = SOLVER_NC(STCHAIN, VCHAIN, NCHAIN, S, GAMMA, REFSTATCHAIN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -19,9 +21,9 @@ Nt = sum(Nchain(isfinite(Nchain)));
 
 G = pfqn_gmva(L,Nchain,Z);
 for r=1:K
-    Xchain(r) = pfqn_gmva(L,oner(Nchain,r),Z) / G;        
+    Xchain(r) = pfqn_gmva(L,oner(Nchain,r),Z) / G;
     for i=1:M
-        Qchain(i,r) = L(i,r) * pfqn_gmva(Ladd(L,i),oner(Nchain,r),Z) / G;        
+        Qchain(i,r) = L(i,r) * pfqn_gmva(Ladd(L,i),oner(Nchain,r),Z) / G;
     end
 end
 

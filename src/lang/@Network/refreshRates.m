@@ -1,4 +1,6 @@
 function [rates, scv] = refreshRates(self)
+% [RATES, SCV] = REFRESHRATES(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 

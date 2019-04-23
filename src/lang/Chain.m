@@ -16,19 +16,27 @@ classdef Chain < NetworkElement
     methods
         %Constructor
         function self = Chain(name)
+            % SELF = CHAIN(NAME)
+            
             self@NetworkElement(name);
         end
         
         function self = setName(self, name)
+            % SELF = SETNAME(SELF, NAME)
+            
             self.name = name;
         end
         
         function self = setVisits(self, class, v)
+            % SELF = SETVISITS(SELF, CLASS, V)
+            
             idx  = self.getClass(class.name);
             self.visits{idx} = v;
         end
         
         function self = addClass(self, class, v, index)
+            % SELF = ADDCLASS(SELF, CLASS, V, INDEX)
+            
             if ~exist('v','var')
                 v = [];
             end
@@ -49,6 +57,8 @@ classdef Chain < NetworkElement
         end
         
         function bool = hasClass(self, className)
+            % BOOL = HASCLASS(SELF, CLASSNAME)
+            
             bool = true;
             if getClass(self, className) == -1
                 bool = false;
@@ -56,6 +66,8 @@ classdef Chain < NetworkElement
         end
         
         function idx = getClass(self, className)
+            % IDX = GETCLASS(SELF, CLASSNAME)
+            
             idx = -1;
             if ~isempty(self.classes)
                 idx = find(cellfun(@(c) strcmpi(c.name,className), self.classes));

@@ -1,5 +1,7 @@
 % getAG : export model in agent representation
 function genAG(self)
+% GENAG(SELF)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -62,7 +64,7 @@ for i=1:M
                 rates(i,r) = 1/self.stations{i}.server.serviceProcess{r}{end}.getMean();
             end
         else
-            if isempty(self.stations{i}.input.sourceClasses{r}) || self.stations{i}.input.sourceClasses{r}{end}.isDisabled || self.stations{i}.input.sourceClasses{r}{end}.isImmediate 
+            if isempty(self.stations{i}.input.sourceClasses{r}) || self.stations{i}.input.sourceClasses{r}{end}.isDisabled || self.stations{i}.input.sourceClasses{r}{end}.isImmediate
                 rates(i,r) = NaN;
             else
                 rates(i,r) = 1/self.stations{i}.input.sourceClasses{r}{end}.getMean();

@@ -9,31 +9,43 @@ classdef Det < ContinuousDistrib & DiscreteDistrib
     
     methods
         function self = Det(t)
+            % SELF = DET(T)
+            
             % Construct a deterministic distribution with value t
             self@ContinuousDistrib('Det',1,[t,t]);
             self@DiscreteDistrib('Det',1,[t,t]);
             setParam(self, 1, 't', t, 'java.lang.Double');
-%            self.javaClass = 'jmt.engine.random.DeterministicDistr';
-%            self.javaParClass = 'jmt.engine.random.DeterministicDistrPar';
+            %            self.javaClass = 'jmt.engine.random.DeterministicDistr';
+            %            self.javaParClass = 'jmt.engine.random.DeterministicDistrPar';
         end
         
         function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             ex = self.getParam(1).paramValue;
         end
         
         function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             SCV = 0;
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             % Get n samples from the distribution
             X = self.getParam(1).paramValue * ones(n,1);
         end
         
         function Ft = evalCDF(self,t)
+            % FT = EVALCDF(SELF,T)
+            
             % Evaluate the cumulative distribution function at t
+            % AT T
+            
             if t < self.getParam(1).paramValue
                 Ft = 0;
             else

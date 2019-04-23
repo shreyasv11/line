@@ -1,4 +1,6 @@
 function lqnsSolve(filename, maxIter, wantExact)
+% LQNSSOLVE(FILENAME, MAXITER, WANTEXACT)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('wantExact','var')

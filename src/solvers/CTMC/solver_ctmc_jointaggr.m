@@ -1,4 +1,6 @@
 function [Pnir,runtime,fname] = solver_ctmc_jointaggr(qn, options)
+% [PNIR,RUNTIME,FNAME] = SOLVER_CTMC_JOINTAGGR(QN, OPTIONS)
+%
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -26,7 +28,7 @@ for i=1:qn.nstations
     end
 end
 
-[Q,~,SSq,~,~,qn] = solver_ctmc(qn, options);
+[Q,~,SSq,~,~,~,qn] = solver_ctmc(qn, options);
 if options.keep
     fname = tempname;
     save([fname,'.mat'],'Q','SSq')
@@ -41,7 +43,7 @@ nvec = [];
 for i=1:qn.nstations
     if qn.isstateful(i)
         isf = qn.stationToStateful(i);
-        [~,nir,~,~] = State.toMarginal(qn, isf, state{isf}, options);       
+        [~,nir,~,~] = State.toMarginal(qn, isf, state{isf}, options);
         nvec = [nvec, nir(:)'];
     end
 end

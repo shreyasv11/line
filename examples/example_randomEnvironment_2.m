@@ -35,4 +35,5 @@ soptions.timespan = [0,Inf];
 soptions.verbose = 0;
 models = {qn1, qn2, qn3, qn4};
 renvSolver = SolverEnv(models, env, @(model) SolverFluid(model, soptions),options);
-[QN,UN,TN] = renvSolver.getAvg()
+[QN,UN,TN] = renvSolver.getAvg();
+AvgTable = renvSolver.getAvgTable()

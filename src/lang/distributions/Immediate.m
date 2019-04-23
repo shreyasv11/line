@@ -7,34 +7,48 @@ classdef Immediate < Distrib
     methods (Hidden)
         %Constructor
         function self = Immediate()
+            % SELF = IMMEDIATE()
+            
             self@Distrib('Immediate', 0,[0,0]);
         end
     end
     
-    methods        
+    methods
         function bool = isDisabled(self)
+            % BOOL = ISDISABLED(SELF)
+            
             bool = false;
         end
         
         function X = sample(self, n)
+            % X = SAMPLE(SELF, N)
+            
             if ~exist('n','var'), n = 1; end
             X = zeros(n,1);
         end
         
-                function ex = getMean(self)
+        function ex = getMean(self)
+            % EX = GETMEAN(SELF)
+            
             % Get distribution mean
             ex = 0;
         end
         
-                function SCV = getSCV(self)
-% Get distribution squared coefficient of variation (SCV = variance / mean^2)
-
-
+        function SCV = getSCV(self)
+            % SCV = GETSCV(SELF)
+            
+            % Get distribution squared coefficient of variation (SCV = variance / mean^2)
+            
+            
             SCV = 0;
         end
         
         function Ft = evalCDF(self,t)
-% Evaluate the cumulative distribution function at t
+            % FT = EVALCDF(SELF,T)
+            
+            % Evaluate the cumulative distribution function at t
+            % AT T
+            
             Ft = 1;
         end
     end

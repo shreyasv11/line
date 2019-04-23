@@ -1,4 +1,6 @@
 function state = parseTranState(fileArv, fileDep, nodePreload)
+% STATE = PARSETRANSTATE(FILEARV, FILEDEP, NODEPRELOAD)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -7,7 +9,7 @@ load(fileDep,'jobDepClasses','jobDepTS','jobDepClassID');
 %% compute joint state at station
 nClasses = length(nodePreload);
 state = [jobArvTS,zeros(length(jobArvTS),nClasses);
-		 jobDepTS,zeros(length(jobDepTS),nClasses)];
+    jobDepTS,zeros(length(jobDepTS),nClasses)];
 for i=1:size(jobArvTS,1)
     state(i,1+jobArvClassID(i))=+1;
 end
