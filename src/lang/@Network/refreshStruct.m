@@ -1,5 +1,5 @@
 function refreshStruct(self)
-% REFRESHSTRUCT(SELF)
+% REFRESHSTRUCT()
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 self.sanitize();

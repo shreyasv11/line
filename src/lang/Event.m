@@ -39,7 +39,7 @@ classdef Event < Copyable
         end
         
         function print(self)
-            % PRINT(SELF)
+            % PRINT()
             
             fprintf(1,'(%s: %d,%d)\n',Event.toText(self.event),self.node,self.class);
         end

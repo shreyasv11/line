@@ -9,6 +9,7 @@ classdef SolverJMT < NetworkSolver
         jmtPath;
         filePath;
         fileName;
+        maxSimulatedTime;
         maxSamples;
         seed;
     end
@@ -46,7 +47,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -82,27 +83,27 @@ classdef SolverJMT < NetworkSolver
         end
         
         function fileName = getFileName(self)
-            % FILENAME = GETFILENAME(SELF)
+            % FILENAME = GETFILENAME()
             
             fileName = self.fileName;
         end
         
         %Setter
         function self = setJMTJarPath(self, path)
-            % SELF = SETJMTJARPATH(SELF, PATH)
+            % SELF = SETJMTJARPATH(PATH)
             
             self.jmtPath = path;
         end
         
         % Getters
         function out = getJMTJarPath(self)
-            % OUT = GETJMTJARPATH(SELF)
+            % OUT = GETJMTJARPATH()
             
             out = self.jmtPath;
         end
         
         function out = getFilePath(self)
-            % OUT = GETFILEPATH(SELF)
+            % OUT = GETFILEPATH()
             
             out = self.filePath;
         end
@@ -116,7 +117,7 @@ classdef SolverJMT < NetworkSolver
         [outputFileName] = writeJSIM(self, outputFileName)
         
         function [result, parsed] = getResults(self)
-            % [RESULT, PARSED] = GETRESULTS(SELF)
+            % [RESULT, PARSED] = GETRESULTS()
             
             options = self.getOptions;
             switch options.method
@@ -134,14 +135,14 @@ classdef SolverJMT < NetworkSolver
     %Private methods.
     methods (Access = 'private')
         function out = getJSIMTempPath(self)
-            % OUT = GETJSIMTEMPPATH(SELF)
+            % OUT = GETJSIMTEMPPATH()
             
             fname = [self.getFileName(), ['.', 'jsimg']];
             out = [self.filePath,'jsimg',filesep, fname];
         end
         
         function out = getJMVATempPath(self)
-            % OUT = GETJMVATEMPPATH(SELF)
+            % OUT = GETJMVATEMPPATH()
             
             fname = [self.getFileName(), ['.', 'jmva']];
             out = [self.filePath,'jmva',filesep, fname];
@@ -151,7 +152,7 @@ classdef SolverJMT < NetworkSolver
     %Private methods.
     methods (Access = 'protected')
         function bool = hasAvgResults(self)
-            % BOOL = HASAVGRESULTS(SELF)
+            % BOOL = HASAVGRESULTS()
             
             bool = self.hasResults();
         end
@@ -265,7 +266,7 @@ classdef SolverJMT < NetworkSolver
     
     methods
         function lNormConst = getProbNormConst(self)
-            % LNORMCONST = GETPROBNORMCONST(SELF)
+            % LNORMCONST = GETPROBNORMCONST()
             
             switch self.options.method
                 case {'jmva','jmva.recal','jmva.comom','jmva.ls'}
@@ -280,7 +281,7 @@ classdef SolverJMT < NetworkSolver
         %% StateAggr methods
         
         function Pr = getProbStateAggr(self, node, state_a)
-            % PR = GETPROBSTATEAGGR(SELF, NODE, STATE_A)
+            % PR = GETPROBSTATEAGGR(NODE, STATE_A)
             
             if ~exist('state_a','var')
                 state_a = self.model.getState{self.model.getStationIndex(node)};
@@ -294,7 +295,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         function sysStateAggr = getTranSysStateAggr(self)
-            % SYSSTATEAGGR = GETTRANSYSSTATEAGGR(SELF)
+            % SYSSTATEAGGR = GETTRANSYSSTATEAGGR()
             
             statStateAggr =  self.getTranStateAggr();
             tranSysStateAggr = cell(1,1+self.model.getNumberOfStations);
@@ -325,7 +326,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         function ProbSysStateAggr = getProbSysStateAggr(self)
-            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR(SELF)
+            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR()
             
             TranSysStateAggr = self.getTranSysStateAggr;
             TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);
@@ -348,7 +349,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         function stationStateAggr = getTranStateAggr(self, node)
-            % STATIONSTATEAGGR = GETTRANSTATEAGGR(SELF, NODE)
+            % STATIONSTATEAGGR = GETTRANSTATEAGGR(NODE)
             
             Q = self.model.getAvgQLenHandles();
             stationStateAggr = cell(self.model.getNumberOfStations,1);
@@ -404,7 +405,7 @@ classdef SolverJMT < NetworkSolver
         %% Cdf methods
         
         function RD = getCdfRespT(self, R)
-            % RD = GETCDFRESPT(SELF, R)
+            % RD = GETCDFRESPT(R)
             
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
@@ -457,7 +458,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         function RD = getTranCdfRespT(self, R)
-            % RD = GETTRANCDFRESPT(SELF, R)
+            % RD = GETTRANCDFRESPT(R)
             
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
@@ -495,7 +496,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         function RD = getTranCdfPassT(self, R)
-            % RD = GETTRANCDFPASST(SELF, R)
+            % RD = GETTRANCDFPASST(R)
             
             if ~exist('R','var')
                 R = self.model.getAvgRespTHandles();
@@ -538,9 +539,9 @@ classdef SolverJMT < NetworkSolver
             % CHECKOPTIONS(OPTIONS)
             
             solverName = mfilename;
-            if isfield(options,'timespan')  && isfinite(options.timespan(2))
-                error('Finite timespan not supported in %s',solverName);
-            end
+%             if isfield(options,'timespan')  && isfinite(options.timespan(2))
+%                 error('Finite timespan not supported in %s',solverName);
+%             end
         end
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()

@@ -1,5 +1,5 @@
 function sanitize(self)
-% SANITIZE(SELF)
+% SANITIZE()
 
 % Preprocess model to ensure consistent parameterization.
 %

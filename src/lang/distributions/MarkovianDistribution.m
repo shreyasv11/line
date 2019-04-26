@@ -15,7 +15,7 @@ classdef MarkovianDistribution < ContinuousDistrib
     
     methods
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
@@ -23,7 +23,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function EXn = getRawMoments(self, n)
-            % EXN = GETRAWMOMENTS(SELF, N)
+            % EXN = GETRAWMOMENTS(N)
             
             if ~exist('n','var'), n = 3; end
             PH = self.getRepresentation;
@@ -31,19 +31,19 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function MEAN = getMean(self)
-            % MEAN = GETMEAN(SELF)
+            % MEAN = GETMEAN()
             
             MEAN = map_mean(self.getRepresentation);
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             SCV = map_scv(self.getRepresentation);
         end
         
         function SKEW = getSkewness(self)
-            % SKEW = GETSKEWNESS(SELF)
+            % SKEW = GETSKEWNESS()
             
             SKEW = map_skew(self.getRepresentation);
         end
@@ -84,7 +84,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function self = updateMeanAndVar(self, MEAN, VAR)
-            % SELF = UPDATEMEANANDVAR(SELF, MEAN, VAR)
+            % SELF = UPDATEMEANANDVAR(MEAN, VAR)
             
             % Update distribution with given mean and variance
             SCV = VAR / MEAN^2;
@@ -92,7 +92,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function self = updateMeanAndSCV(self, MEAN, SCV)
-            % SELF = UPDATEMEANANDSCV(SELF, MEAN, SCV)
+            % SELF = UPDATEMEANANDSCV(MEAN, SCV)
             
             % Update distribution with given mean and squared coefficient of
             % variation (SCV=variance/mean^2)
@@ -101,7 +101,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function phases = getNumberOfPhases(self)
-            % PHASES = GETNUMBEROFPHASES(SELF)
+            % PHASES = GETNUMBEROFPHASES()
             
             % Return number of phases in the distribution
             PH = self.getRepresentation;
@@ -109,7 +109,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function PH = getRepresentation(self)
-            % PH = GETREPRESENTATION(SELF)
+            % PH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
@@ -117,7 +117,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function L = evalLaplaceTransform(self, s)
-            % L = EVALLAPLACETRANSFORM(SELF, S)
+            % L = EVALLAPLACETRANSFORM(S)
             
             % Evaluate the Laplace transform of the distribution function at t
             % AT T
@@ -130,7 +130,7 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function plot(self)
-            % PLOT(SELF)
+            % PLOT()
             
             PH = self.getRepresentation;
             s = []; % source node

@@ -30,7 +30,7 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             % Get distribution mean
             if self.getNumberOfPhases == 2
                 p = self.getParam(1).paramValue;
@@ -43,7 +43,7 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             if self.getNumberOfPhases == 2
                 p = self.getParam(1).paramValue;
@@ -71,7 +71,7 @@ classdef HyperExp < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
-            % PH = GETREPRESENTATION(SELF)
+            % PH = GETREPRESENTATION()
             % Return the renewal process associated to the distribution
             p = self.getParam(1).paramValue;
             n = length(p);

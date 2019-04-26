@@ -1,5 +1,5 @@
 function sched = getStationScheduling(self)
-% SCHED = GETSTATIONSCHEDULING(SELF)
+% SCHED = GETSTATIONSCHEDULING()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

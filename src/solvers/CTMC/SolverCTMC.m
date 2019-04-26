@@ -13,7 +13,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -29,7 +29,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             T0=tic;
@@ -106,7 +106,7 @@ classdef SolverCTMC < NetworkSolver
                         self.result.eventFilt = Dfilt;
                         qn.space = SS;
                         setTranProb(self,t,pit,SS,runtime_t);
-                        if isempty(self.result) || ~isfield(self.result,'TranAvg') || ~isfield(self.result.Tran.Avg,'Q')
+                        if isempty(self.result) || ~isfield(self.result,'Tran') || ~isfield(self.result.Tran,'Avg') || ~isfield(self.result.Tran.Avg,'Q')
                             self.result.Tran.Avg.Q = cell(M,K);
                             self.result.Tran.Avg.U = cell(M,K);
                             self.result.Tran.Avg.T = cell(M,K);
@@ -124,7 +124,6 @@ classdef SolverCTMC < NetworkSolver
                                     dataOld = interp1(self.result.Tran.Avg.Q{i,r}(:,2),self.result.Tran.Avg.Q{i,r}(:,1),tunion);
                                     dataNew = interp1(t,QNt{i,r},tunion);
                                     self.result.Tran.Avg.Q{i,r} = [dataOld+s0prior_val*dataNew,tunion];
-                                    
                                     dataOld = interp1(self.result.Tran.Avg.U{i,r}(:,2),self.result.Tran.Avg.U{i,r}(:,1),tunion);
                                     dataNew = interp1(t,UNt{i,r},tunion);
                                     self.result.Tran.Avg.U{i,r} = [dataOld+s0prior_val*dataNew,tunion];
@@ -146,7 +145,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pnir = getProbState(self, node, state)
-            % PNIR = GETPROBSTATE(SELF, NODE, STATE)
+            % PNIR = GETPROBSTATE(NODE, STATE)
             
             if ~exist('node','var')
                 error('getProbState requires to pass a parameter the station of interest.');
@@ -176,7 +175,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pn = getProbSysState(self)
-            % PN = GETPROBSYSSTATE(SELF)
+            % PN = GETPROBSYSSTATE()
             
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
@@ -195,7 +194,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pnir = getProbStateAggr(self, ist)
-            % PNIR = GETPROBSTATEAGGR(SELF, IST)
+            % PNIR = GETPROBSTATEAGGR(IST)
             
             if ~exist('ist','var')
                 error('getProbState requires to pass a parameter the station of interest.');
@@ -223,7 +222,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function Pn = getProbSysStateAggr(self)
-            % PN = GETPROBSYSSTATEAGGR(SELF)
+            % PN = GETPROBSYSSTATEAGGR()
             
             if ~isfield(self.options,'keep')
                 self.options.keep = false;
@@ -242,7 +241,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function [Pi_t, SSsysa] = getTranProbSysStateAggr(self)
-            % [PI_T, SSSYSA] = GETTRANPROBSYSSTATEAGGR(SELF)
+            % [PI_T, SSSYSA] = GETTRANPROBSYSSTATEAGGR()
             
             options = self.getOptions;
             if isfield(options,'timespan')  && isfinite(options.timespan(2))
@@ -255,7 +254,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function [Pi_t, SSnode_a] = getTranProbStateAggr(self, node)
-            % [PI_T, SSNODE_A] = GETTRANPROBSTATEAGGR(SELF, NODE)
+            % [PI_T, SSNODE_A] = GETTRANPROBSTATEAGGR(NODE)
             
             options = self.getOptions;
             if isfield(options,'timespan')  && isfinite(options.timespan(2))
@@ -270,7 +269,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function [Pi_t, SSsys] = getTranProbSysState(self)
-            % [PI_T, SSSYS] = GETTRANPROBSYSSTATE(SELF)
+            % [PI_T, SSSYS] = GETTRANPROBSYSSTATE()
             
             options = self.getOptions;
             if isfield(options,'timespan')  && isfinite(options.timespan(2))
@@ -283,7 +282,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function [Pi_t, SSnode] = getTranProbState(self, node)
-            % [PI_T, SSNODE] = GETTRANPROBSTATE(SELF, NODE)
+            % [PI_T, SSNODE] = GETTRANPROBSTATE(NODE)
             
             options = self.getOptions;
             if isfield(options,'timespan')  && isfinite(options.timespan(2))
@@ -306,7 +305,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function stateSpace = getStateSpace(self)
-            % STATESPACE = GETSTATESPACE(SELF)
+            % STATESPACE = GETSTATESPACE()
             
             options = self.getOptions;
             if options.force
@@ -321,7 +320,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function stateSpaceAggr = getStateSpaceAggr(self)
-            % STATESPACEAGGR = GETSTATESPACEAGGR(SELF)
+            % STATESPACEAGGR = GETSTATESPACEAGGR()
             
             options = self.getOptions;
             if options.force
@@ -336,7 +335,7 @@ classdef SolverCTMC < NetworkSolver
         end
         
         function [infGen, eventFilt] = getGenerator(self)
-            % [INFGEN, EVENTFILT] = GETGENERATOR(SELF)
+            % [INFGEN, EVENTFILT] = GETGENERATOR()
             
             % [infGen, eventFilt] = getGenerator(self)
             % returns the infinitesimal generator of the CTMC and the

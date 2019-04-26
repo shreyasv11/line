@@ -1,5 +1,5 @@
 function ensemble = getEnsemble(self)
-% ENSEMBLE = GETENSEMBLE(SELF)
+% ENSEMBLE = GETENSEMBLE()
 
 if isempty(self.ensemble)
     self.updateEnsemble(true);

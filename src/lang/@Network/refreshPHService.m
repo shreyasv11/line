@@ -1,5 +1,5 @@
 function [ph, phases] = refreshPHService(self)
-% [PH, PHASES] = REFRESHPHSERVICE(SELF)
+% [PH, PHASES] = REFRESHPHSERVICE()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

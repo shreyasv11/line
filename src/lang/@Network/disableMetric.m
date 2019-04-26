@@ -1,5 +1,5 @@
 function self = disableMetric(self, Y)
-% SELF = DISABLEMETRIC(SELF, Y)
+% SELF = DISABLEMETRIC(Y)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

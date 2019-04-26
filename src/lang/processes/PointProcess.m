@@ -11,37 +11,37 @@ classdef PointProcess < Copyable
     
     methods %(Abstract) % implemented with errors for Octave compatibility
         function X = sample(self)
-            % X = SAMPLE(SELF)
+            % X = SAMPLE()
             
             % Sample a value from the inter-arrival time distribution
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Returns the mean of the inter-arrival times
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get squared coefficient of variation of the interarrival times (SCV = variance / mean^2)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function SKEW = getSkewness(self)
-            % SKEW = GETSKEWNESS(SELF)
+            % SKEW = GETSKEWNESS()
             
             % Get skewness of the interarrival times
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function ID = getID(self)
-            % ID = GETID(SELF)
+            % ID = GETID()
             
             % Return the asymptotic index of dispersion
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function lambda = getRate(self)
-            % LAMBDA = GETRATE(SELF)
+            % LAMBDA = GETRATE()
             
             % Return the inter-arrival rate
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
@@ -67,13 +67,13 @@ classdef PointProcess < Copyable
         end
         
         function nParam = getNumParams(self)
-            % NPARAM = GETNUMPARAMS(SELF)
+            % NPARAM = GETNUMPARAMS()
             
             nParam = length(self.params);
         end
         
         function setParam(self, id, name, value,typeClass)
-            % SETPARAM(SELF, ID, NAME, VALUE,TYPECLASS)
+            % SETPARAM(ID, NAME, VALUE,TYPECLASS)
             
             self.params{id}.paramName=name;
             self.params{id}.paramValue=value;
@@ -81,13 +81,13 @@ classdef PointProcess < Copyable
         end
         
         function bool = isDisabled(self)
-            % BOOL = ISDISABLED(SELF)
+            % BOOL = ISDISABLED()
             
             bool = any(cellfun(@(c) ifthenelse(isstruct(c),false,isnan(c.paramValue)), self.params));
         end
         
         function bool = isImmediate(self)
-            % BOOL = ISIMMEDIATE(SELF)
+            % BOOL = ISIMMEDIATE()
             
             bool = self.getMean() == 0;
         end

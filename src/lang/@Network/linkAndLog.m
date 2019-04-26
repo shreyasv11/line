@@ -1,6 +1,6 @@
 % this macro will need refactoring to decouple the observation from the Model class
 function [loggerBefore,loggerAfter] = linkAndLog(self, P, isNodeLogged, logPath)
-% [LOGGERBEFORE,LOGGERAFTER] = LINKANDLOG(SELF, P, ISNODELOGGED, LOGPATH)
+% [LOGGERBEFORE,LOGGERAFTER] = LINKANDLOG(P, ISNODELOGGED, LOGPATH)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

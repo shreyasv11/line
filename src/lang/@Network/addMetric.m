@@ -1,10 +1,10 @@
 function addMetric(self, perfIndex)
-% ADDMETRIC(SELF, PERFINDEX)
+% ADDMETRIC(PERFINDEX)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 switch perfIndex.type
-    case {Metric.TranQLen, Metric.TranUtil, Metric.TranTput}
+    case {Metric.TranQLen, Metric.TranUtil, Metric.TranTput, Metric.TranRespT}
         self.perfIndex.Tran{end+1, 1} = perfIndex;
     otherwise
         self.perfIndex.Avg{end+1, 1} = perfIndex;

@@ -22,7 +22,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function bool = converged(self, it) % convergence test at iteration it
-            % BOOL = CONVERGED(SELF, IT) % CONVERGENCE TEST AT ITERATION IT
+            % BOOL = CONVERGED(IT) % CONVERGENCE TEST AT ITERATION IT
             
             bool = false;
             if it>1
@@ -42,19 +42,19 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function init(self) % operations before starting to iterate
-            % INIT(SELF) % OPERATIONS BEFORE STARTING TO ITERATE
+            % INIT() % OPERATIONS BEFORE STARTING TO ITERATE
             
             %nop
         end
         
         function pre(self, it) % operations before an iteration
-            % PRE(SELF, IT) % OPERATIONS BEFORE AN ITERATION
+            % PRE(IT) % OPERATIONS BEFORE AN ITERATION
             
             %nop
         end
         
         function [result, runtime] = analyze(self, it, e)
-            % [RESULT, RUNTIME] = ANALYZE(SELF, IT, E)
+            % [RESULT, RUNTIME] = ANALYZE(IT, E)
             
             T0 = tic;
             self.solvers{e}.reset();
@@ -63,7 +63,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function post(self, it) % operations after an iteration
-            % POST(SELF, IT) % OPERATIONS AFTER AN ITERATION
+            % POST(IT) % OPERATIONS AFTER AN ITERATION
             
             for post_it = 1:2 % do elevator up and down
                 self.model.updateParam({self.results{it,:}});
@@ -72,7 +72,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function finish(self) % operations after interations are completed
-            % FINISH(SELF) % OPERATIONS AFTER INTERATIONS ARE COMPLETED
+            % FINISH() % OPERATIONS AFTER INTERATIONS ARE COMPLETED
             
             %nop
         end
@@ -155,7 +155,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     
     methods (Static)
         function options = defaultOptions(self)
-            % OPTIONS = DEFAULTOPTIONS(SELF)
+            % OPTIONS = DEFAULTOPTIONS()
             
             options = EnsembleSolver.defaultOptions();
             options.timespan = [Inf,Inf];

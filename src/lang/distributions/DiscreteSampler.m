@@ -26,7 +26,7 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             p = self.getParam(1).paramValue;
@@ -35,7 +35,7 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             
@@ -48,7 +48,7 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             f = self.getParam(3).paramValue;
             r = rand(n,1);
@@ -67,7 +67,7 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function pk = evalPMF(self, v)
-            % PK = EVALPMF(SELF, V)
+            % PK = EVALPMF(V)
             
             p = self.getParam(1).paramValue;
             x = self.getParam(2).paramValue;
@@ -81,7 +81,7 @@ classdef DiscreteSampler < DiscreteDistrib
         end
         
         function bool = isDisabled(self)
-            % BOOL = ISDISABLED(SELF)
+            % BOOL = ISDISABLED()
             
             p = self.getParam(1).paramValue;
             bool = any(isnan(p));

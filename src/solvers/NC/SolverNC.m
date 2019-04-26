@@ -13,7 +13,7 @@ classdef SolverNC < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -21,7 +21,7 @@ classdef SolverNC < NetworkSolver
         end
         
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             T0=tic;
@@ -44,7 +44,7 @@ classdef SolverNC < NetworkSolver
         end
         
         function Pnir = getProbStateAggr(self, node, state_a)
-            % PNIR = GETPROBSTATEAGGR(SELF, NODE, STATE_A)
+            % PNIR = GETPROBSTATEAGGR(NODE, STATE_A)
             
             if ~exist('state_a','var')
                 state_a = self.model.getState{self.model.getStatefulNodeIndex(node)};
@@ -64,7 +64,7 @@ classdef SolverNC < NetworkSolver
         end
         
         function Pn = getProbSysState(self)
-            % PN = GETPROBSYSSTATE(SELF)
+            % PN = GETPROBSYSSTATE()
             
             T0 = tic;
             qn = self.model.getStruct;
@@ -78,7 +78,7 @@ classdef SolverNC < NetworkSolver
         end
         
         function Pn = getProbSysStateAggr(self)
-            % PN = GETPROBSYSSTATEAGGR(SELF)
+            % PN = GETPROBSYSSTATEAGGR()
             
             T0 = tic;
             qn = self.model.getStruct;
@@ -92,7 +92,7 @@ classdef SolverNC < NetworkSolver
         end
         
         function [lNormConst] = getProbNormConst(self)
-            % [LNORMCONST] = GETPROBNORMCONST(SELF)
+            % [LNORMCONST] = GETPROBNORMCONST()
             
             self.run();
             lNormConst = self.result.Prob.logNormConst;

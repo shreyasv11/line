@@ -28,7 +28,7 @@ classdef Source < Station
         end
         
         function setArrival(self, class, distribution)
-            % SETARRIVAL(SELF, CLASS, DISTRIBUTION)
+            % SETARRIVAL(CLASS, DISTRIBUTION)
             
             self.input.sourceClasses{1, class.index}{2} = ServiceStrategy.LI;
             self.input.sourceClasses{1, class.index}{3} = distribution;
@@ -40,7 +40,7 @@ classdef Source < Station
         end
         
         function sections = getSections(self)
-            % SECTIONS = GETSECTIONS(SELF)
+            % SECTIONS = GETSECTIONS()
             
             sections = {self.input, self.server, self.output};
         end

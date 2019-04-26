@@ -39,7 +39,7 @@ classdef Coxian < MarkovianDistribution
     
     methods
         function phases = getNumberOfPhases(self)
-            % PHASES = GETNUMBEROFPHASES(SELF)
+            % PHASES = GETNUMBEROFPHASES()
             % Return number of phases in the distribution
             if length(self.params) == 2
                 phases  = length(self.getParam(1).paramValue);
@@ -49,7 +49,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             % Get distribution mean
             if length(self.params) == 2
                 mu = self.getMu();
@@ -65,7 +65,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             if length(self.params) == 2
                 mu = self.getMu();
@@ -82,7 +82,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
-            % PH = GETREPRESENTATION(SELF)
+            % PH = GETREPRESENTATION()
             % Return the renewal process associated to the distribution
             if length(self.params) == 2
                 mu = self.getMu();
@@ -97,7 +97,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function mu = getMu(self)
-            % MU = GETMU(SELF)
+            % MU = GETMU()
             % Get vector of rates
             if length(self.params) == 2
                 mu = self.getParam(1).paramValue(:);
@@ -109,7 +109,7 @@ classdef Coxian < MarkovianDistribution
         end
         
         function phi = getPhi(self)
-            % PHI = GETPHI(SELF)
+            % PHI = GETPHI()
             % Get vector of completion probabilities
             if length(self.params) == 2
                 phi = self.getParam(2).paramValue(:);

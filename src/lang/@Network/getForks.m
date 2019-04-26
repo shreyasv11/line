@@ -1,5 +1,5 @@
 function ft = getForks(self, rt)
-% FT = GETFORKS(SELF, RT)
+% FT = GETFORKS(RT)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

@@ -1,5 +1,5 @@
 function [capacity, classcap] = refreshCapacity(self)
-% [CAPACITY, CLASSCAP] = REFRESHCAPACITY(SELF)
+% [CAPACITY, CLASSCAP] = REFRESHCAPACITY()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

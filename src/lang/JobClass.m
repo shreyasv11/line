@@ -26,20 +26,20 @@ classdef JobClass < NetworkElement
         end
         
         function self = setReferenceStation(self, source)
-            % SELF = SETREFERENCESTATION(SELF, SOURCE)
+            % SELF = SETREFERENCESTATION(SOURCE)
             
             self.reference = source;
         end
         
         function boolIsa = isReferenceStation(self, node)
-            % BOOLISA = ISREFERENCESTATION(SELF, NODE)
+            % BOOLISA = ISREFERENCESTATION(NODE)
             
             boolIsa = strcmp(self.reference.name,node.name);
         end
         
         
         %         function self = set.priority(self, priority)
-        % SELF = SET.PRIORITY(SELF, PRIORITY)
+        % SELF = SET.PRIORITY(PRIORITY)
         
         %             if ~(rem(priority,1) == 0 && priority >= 0)
         %                 error('Priority must be an integer.\n');
@@ -50,7 +50,7 @@ classdef JobClass < NetworkElement
     
     methods (Access=public)
         function ind = subsindex(self)
-            % IND = SUBSINDEX(SELF)
+            % IND = SUBSINDEX()
             
             ind = double(self.index)-1; % 0 based
         end

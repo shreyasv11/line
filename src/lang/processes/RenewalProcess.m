@@ -20,7 +20,7 @@ classdef RenewalProcess < SinkProcess
     
     methods
         function mt = getMeanT(self, t, steps)
-            % MT = GETMEANT(SELF, T, STEPS)
+            % MT = GETMEANT(T, STEPS)
             
             distrib =  self.getParam(1).paramValue;
             if ~exist('steps','var')
@@ -46,7 +46,7 @@ classdef RenewalProcess < SinkProcess
         end
         
         function mean = getMean(self)
-            % MEAN = GETMEAN(SELF)
+            % MEAN = GETMEAN()
             
             distrib =  self.getParam(1).paramValue;
             mean = distrib.getMean;

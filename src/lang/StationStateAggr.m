@@ -20,13 +20,13 @@ classdef StationStateAggr
         end
         
         function state = getTimestamps(self)
-            % STATE = GETTIMESTAMPS(SELF)
+            % STATE = GETTIMESTAMPS()
             
             state = self.t;
         end
         
         function state = getStateAggr(self)
-            % STATE = GETSTATEAGGR(SELF)
+            % STATE = GETSTATEAGGR()
             
             state = self.state;
         end

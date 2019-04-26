@@ -20,19 +20,19 @@ classdef NodeState
         end
         
         function state = getTimestamps(self)
-            % STATE = GETTIMESTAMPS(SELF)
+            % STATE = GETTIMESTAMPS()
             
             state = self.t;
         end
         
         function state = getState(self)
-            % STATE = GETSTATE(SELF)
+            % STATE = GETSTATE()
             
             state = self.state;
         end
         
         function buf = getBufferState(self)
-            % BUF = GETBUFFERSTATE(SELF)
+            % BUF = GETBUFFERSTATE()
             
             qn = self.node.model.getStruct;
             ind = self.node.model.getNodeIndex(self.node);
@@ -42,7 +42,7 @@ classdef NodeState
         end
         
         function var = getLocalVarState(self)
-            % VAR = GETLOCALVARSTATE(SELF)
+            % VAR = GETLOCALVARSTATE()
             
             qn = self.node.model.getStruct;
             ind = self.node.model.getNodeIndex(self.node);
@@ -50,7 +50,7 @@ classdef NodeState
         end
         
         function srv = getServerState(self)
-            % SRV = GETSERVERSTATE(SELF)
+            % SRV = GETSERVERSTATE()
             
             qn = self.node.model.getStruct;
             ind = self.node.model.getNodeIndex(self.node);

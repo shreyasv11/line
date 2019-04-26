@@ -85,7 +85,7 @@ classdef SolverFeatureSet < handle
         end
         
         function self = setTrue(self, feature)
-            % SELF = SETTRUE(SELF, FEATURE)
+            % SELF = SETTRUE(FEATURE)
             
             if iscell(feature)
                 for c=1:length(feature)
@@ -99,7 +99,7 @@ classdef SolverFeatureSet < handle
         end
         
         function self = setFalse(self, feature)
-            % SELF = SETFALSE(SELF, FEATURE)
+            % SELF = SETFALSE(FEATURE)
             
             if iscell(feature)
                 for c=1:length(feature)

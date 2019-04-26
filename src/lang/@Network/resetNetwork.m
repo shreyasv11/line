@@ -1,5 +1,5 @@
 function nodes = resetNetwork(self, deleteCSNodes) % resets network topology
-% NODES = RESETNETWORK(SELF, DELETECSNODES) % RESETS NETWORK TOPOLOGY
+% NODES = RESETNETWORK(DELETECSNODES) % RESETS NETWORK TOPOLOGY
 
 M = self.getNumberOfStations;
 %R = self.getNumberOfClasses;

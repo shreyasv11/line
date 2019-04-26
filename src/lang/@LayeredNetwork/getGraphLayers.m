@@ -1,5 +1,5 @@
 function [submodels, levels] = getGraphLayers(self, lqnGraph, taskGraph)
-% [SUBMODELS, LEVELS] = GETGRAPHLAYERS(SELF, LQNGRAPH, TASKGRAPH)
+% [SUBMODELS, LEVELS] = GETGRAPHLAYERS(LQNGRAPH, TASKGRAPH)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

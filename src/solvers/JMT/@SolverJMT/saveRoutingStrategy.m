@@ -1,5 +1,5 @@
 function [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode)
-% [SIMDOC, SECTION] = SAVEROUTINGSTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+% [SIMDOC, SECTION] = SAVEROUTINGSTRATEGY(SIMDOC, SECTION, CURRENTNODE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

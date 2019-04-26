@@ -1,5 +1,5 @@
 function [simDoc, section] = savePreemptiveStrategy(self, simDoc, section, currentNode)
-% [SIMDOC, SECTION] = SAVEPREEMPTIVESTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+% [SIMDOC, SECTION] = SAVEPREEMPTIVESTRATEGY(SIMDOC, SECTION, CURRENTNODE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

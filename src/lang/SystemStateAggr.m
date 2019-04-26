@@ -20,13 +20,13 @@ classdef SystemStateAggr
         end
         
         function state = getTimestamps(self)
-            % STATE = GETTIMESTAMPS(SELF)
+            % STATE = GETTIMESTAMPS()
             
             state = self.t;
         end
         
         function state = getJointStateAggr(self)
-            % STATE = GETJOINTSTATEAGGR(SELF)
+            % STATE = GETJOINTSTATEAGGR()
             
             state = cell2mat(self.state);
         end

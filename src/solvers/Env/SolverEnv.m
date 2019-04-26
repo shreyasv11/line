@@ -39,7 +39,7 @@ classdef SolverEnv < EnsembleSolver
         end
         
         function bool = converged(self, it) % convergence test at iteration it
-            % BOOL = CONVERGED(SELF, IT) % CONVERGENCE TEST AT ITERATION IT
+            % BOOL = CONVERGED(IT) % CONVERGENCE TEST AT ITERATION IT
             
             bool = false;
             E = self.getNumberOfModels;
@@ -68,7 +68,7 @@ classdef SolverEnv < EnsembleSolver
         
         
         function init(self)
-            % INIT(SELF)
+            % INIT()
             
             options = self.options;
             
@@ -133,7 +133,7 @@ classdef SolverEnv < EnsembleSolver
         end
         
         function pre(self, it)
-            % PRE(SELF, IT)
+            % PRE(IT)
             
             if it==1
                 for e=self.list()
@@ -145,10 +145,11 @@ classdef SolverEnv < EnsembleSolver
         
         % solves model in stage e
         function [results_e, runtime] = analyze(self, it, e)
-            % [RESULTS_E, RUNTIME] = ANALYZE(SELF, IT, E)
+            % [RESULTS_E, RUNTIME] = ANALYZE(IT, E)
             
             results_e = struct();
-            results_e.('TranAvg') = [];
+            results_e.('Tran') = struct();
+            results_e.Tran.('Avg') = [];
             T0 = tic;
             runtime = toc(T0);
             %% initialize
@@ -158,7 +159,7 @@ classdef SolverEnv < EnsembleSolver
         end
         
         function post(self, it)
-            % POST(SELF, IT)
+            % POST(IT)
             
             E = self.getNumberOfModels;
             for e=1:E
@@ -196,7 +197,7 @@ classdef SolverEnv < EnsembleSolver
         end
         
         function finish(self)
-            % FINISH(SELF)
+            % FINISH()
             
             it = size(self.results,1); % use last iteration
             E = self.getNumberOfModels;
@@ -245,13 +246,13 @@ classdef SolverEnv < EnsembleSolver
         end
         
         function name = getName(self)
-            % NAME = GETNAME(SELF)
+            % NAME = GETNAME()
             
             name = mfilename;
         end
         
         function [QNclass, UNclass, TNclass] = getAvg(self)
-            % [QNCLASS, UNCLASS, TNCLASS] = GETAVG(SELF)
+            % [QNCLASS, UNCLASS, TNCLASS] = GETAVG()
             
             if isempty(self.result) || (isfield(self.options,'force') && self.options.force)
                 self.run();

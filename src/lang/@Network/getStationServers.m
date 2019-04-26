@@ -1,5 +1,5 @@
 function S = getStationServers(self)
-% S = GETSTATIONSERVERS(SELF)
+% S = GETSTATIONSERVERS()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

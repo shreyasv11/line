@@ -1,5 +1,5 @@
 function node = getSink(self)
-% NODE = GETSINK(SELF)
+% NODE = GETSINK()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

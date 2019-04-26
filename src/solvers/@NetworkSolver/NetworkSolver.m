@@ -28,7 +28,7 @@ classdef NetworkSolver < Solver
     
     methods (Access = 'protected')
         function bool = hasAvgResults(self)
-            % BOOL = HASAVGRESULTS(SELF)
+            % BOOL = HASAVGRESULTS()
             
             % Returns true if the solver has computed steady-state average metrics.
             bool = false;
@@ -40,7 +40,7 @@ classdef NetworkSolver < Solver
         end
         
         function bool = hasTranResults(self)
-            % BOOL = HASTRANRESULTS(SELF)
+            % BOOL = HASTRANRESULTS()
             
             % Return true if the solver has computed transient average metrics.
             bool = false;
@@ -50,7 +50,7 @@ classdef NetworkSolver < Solver
         end
         
         function bool = hasDistribResults(self)
-            % BOOL = HASDISTRIBRESULTS(SELF)
+            % BOOL = HASDISTRIBRESULTS()
             
             % Return true if the solver has computed steady-state distribution metrics.
             bool = false;
@@ -62,28 +62,28 @@ classdef NetworkSolver < Solver
     
     methods
         function self = updateModel(self, model)
-            % SELF = UPDATEMODEL(SELF, MODEL)
+            % SELF = UPDATEMODEL(MODEL)
             
             % Assign the model to be solved.
             self.model = model;
         end
         
         function ag = getAG(self)
-            % AG = GETAG(SELF)
+            % AG = GETAG()
             
             % Get agent representation
             ag = self.model.getAG();
         end
         
         function qn = getStruct(self)
-            % QN = GETSTRUCT(SELF)
+            % QN = GETSTRUCT()
             
             % Get data structure summarizing the model
             qn = self.model.getStruct();
         end
         
         function QN = getAvgQLen(self)
-            % QN = GETAVGQLEN(SELF)
+            % QN = GETAVGQLEN()
             
             % Compute average queue-lengths at steady-state
             Q = self.model.getAvgQLenHandles();
@@ -91,7 +91,7 @@ classdef NetworkSolver < Solver
         end
         
         function UN = getAvgUtil(self)
-            % UN = GETAVGUTIL(SELF)
+            % UN = GETAVGUTIL()
             
             % Compute average utilizations at steady-state
             U = self.model.getAvgUtilHandles();
@@ -99,7 +99,7 @@ classdef NetworkSolver < Solver
         end
         
         function RN = getAvgRespT(self)
-            % RN = GETAVGRESPT(SELF)
+            % RN = GETAVGRESPT()
             
             % Compute average response times at steady-state
             R = self.model.getAvgRespTHandles();
@@ -107,7 +107,7 @@ classdef NetworkSolver < Solver
         end
         
         function TN = getAvgTput(self)
-            % TN = GETAVGTPUT(SELF)
+            % TN = GETAVGTPUT()
             
             % Compute average throughputs at steady-state
             T = self.model.getAvgTputHandles();
@@ -115,7 +115,7 @@ classdef NetworkSolver < Solver
         end
         
         function AN = getAvgArvR(self)
-            % AN = GETAVGARVR(SELF)
+            % AN = GETAVGARVR()
             
             % Compute average arrival rate at steady-state
             M = self.model.getNumberOfStations;
@@ -137,12 +137,12 @@ classdef NetworkSolver < Solver
             end
         end
         
-        function [QNn,UNn,RNn,TNn] = getNodeAvg(self, Q, U, R, T)
-            % [QNN,UNN,RNN,TNN] = GETNODEAVG(SELF, Q, U, R, T)
+        function [QNn,UNn,RNn,TNn,ANn] = getNodeAvg(self, Q, U, R, T, A)
+            % [QNN,UNN,RNN,TNN] = GETNODEAVG(Q, U, R, T, A)
             
             % Compute average utilizations at steady-state for all nodes
             if nargin == 1 % no parameter
-                if isempty(self.model.handles) || ~isfield(self.model.handles,'Q') || ~isfield(self.model.handles,'U') || ~isfield(self.model.handles,'R') || ~isfield(self.model.handles,'T')
+                if isempty(self.model.handles) || ~isfield(self.model.handles,'Q') || ~isfield(self.model.handles,'U') || ~isfield(self.model.handles,'R') || ~isfield(self.model.handles,'T') || ~isfield(self.model.handles,'A')
                     self.reset(); % reset in case there are partial results saved
                 end
                 [Q,U,R,T] = self.model.getAvgHandles;
@@ -163,51 +163,71 @@ classdef NetworkSolver < Solver
             UNn = zeros(I,R);
             RNn = zeros(I,R);
             TNn = zeros(I,R);
+            ANn = zeros(I,R);
             for ist=1:M
                 ind = qn.stationToNode(ist);
                 QNn(ind,:) = QN(ist,:);
                 UNn(ind,:) = UN(ist,:);
                 RNn(ind,:) = RN(ist,:);
                 TNn(ind,:) = TN(ist,:);
+                ANn(ind,:) = TN(ist,:);
             end
+
+            if any(qn.isstatedep(:,3)) || any(qn.nodetype == NodeType.Cache)
+                warning('Node-level metrics not available in models with state-dependent routing. Returning station-level metrics.');
+                return
+            end
+            
             % update tputs for all nodes but the sink and the joins
             for ind=1:I
-                if qn.nodetype(ind) ~= NodeType.Sink && qn.nodetype(ind) ~= NodeType.Join
-                    if qn.isstatedep(ist,3) % if state-dep routing
-                        error('getNodeAvg does not support models with state-dependent routing.');
-                    else
-                        for c = 1:C
-                            inchain = find(qn.chains(c,:));
-                            for r = inchain
-                                anystat = find(qn.visits{c}(:,r));
-                                if ~isempty(anystat)
-                                    anystat = anystat(1);
-                                    TNn(ind, r) =  (qn.nodevisits{c}(ind,r) / qn.visits{c}(anystat,r)) * TN(anystat,r);
+                for c = 1:C
+                    inchain = find(qn.chains(c,:));
+                    for r = inchain
+                        anystat = find(qn.visits{c}(:,r));
+                        if ~isempty(anystat)
+                            if qn.nodetype(ind) ~= NodeType.Source
+                                %if qn.isstation(ind)
+                                %    ist = qn.nodeToStation(ind);
+                                %    ANn(ind, r) =  TN(ist,r);
+                                %else
+                                ANn(ind, r) =  (qn.nodevisits{c}(ind,r) / qn.visits{c}(anystat,r)) * TN(anystat,r);
+                                %end
+                            end
+                        end
+                    end
+                end
+            end
+            
+            for ind=1:I
+                for c = 1:C
+                    inchain = find(qn.chains(c,:));
+                    for r = inchain
+                        anystat = find(qn.visits{c}(:,r));
+                        if ~isempty(anystat)
+                            if qn.nodetype(ind) ~= NodeType.Sink && qn.nodetype(ind) ~= NodeType.Join
+                                for s = inchain
+                                    for jnd=1:I
+                                        if qn.nodetype(ind) ~= NodeType.Source
+                                            TNn(ind, s) = TNn(ind, s) + ANn(ind, r) * qn.rtnodes((ind-1)*R+r, (jnd-1)*R+s);
+                                        else
+                                            ist = qn.nodeToStation(ind);
+                                            TNn(ind, s) = TN(ist,s);
+                                        end
+                                    end
                                 end
                             end
                         end
                     end
-                    TNn(isnan(TNn)) = 0;
                 end
             end
-            % now update sink
-            for ind=1:I
-                if qn.nodetype(ind) == NodeType.Sink
-                    for jnd=1:I
-                        for k=1:R
-                            for r=1:R
-                                TNn(ind, k) = TNn(ind, k) + TNn(jnd,r)*qn.rtnodes((jnd-1)*R+r, (ind-1)*R+k);
-                            end
-                        end
-                    end
-                end
-            end
+            ANn(isnan(ANn)) = 0;
+            TNn(isnan(TNn)) = 0;            
         end
         
         % also accepts a cell array with the handlers in it
-        [QN,UN,RN,TN]       = getAvg(self,Q,U,R,T);
+        [QN,UN,RN,TN,AN]       = getAvg(self,Q,U,R,T,A);
         
-        [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled);
+        [AvgTable,QT,UT,RT,TT,AT] = getAvgTable(self,Q,U,R,T,A,keepDisabled);
         [AvgTable,QT] = getAvgQLenTable(self,Q,keepDisabled);
         [AvgTable,UT] = getAvgUtilTable(self,U,keepDisabled);
         [AvgTable,RT] = getAvgRespTTable(self,R,keepDisabled);
@@ -310,84 +330,84 @@ classdef NetworkSolver < Solver
         end
         
         function [lNormConst] = getProbNormConst(self)
-            % [LNORMCONST] = GETPROBNORMCONST(SELF)
+            % [LNORMCONST] = GETPROBNORMCONST()
             
             % Return normalizing constant of state probabilities
             error('getProbNormConst is not supported by this solver.');
         end
         
         function Pstate = getProbState(self, node, state)
-            % PSTATE = GETPROBSTATE(SELF, NODE, STATE)
+            % PSTATE = GETPROBSTATE(NODE, STATE)
             
             % Return marginal state probability for station ist state
             error('getProbState is not supported by this solver.');
         end
         
         function Psysstate = getProbSysState(self)
-            % PSYSSTATE = GETPROBSYSSTATE(SELF)
+            % PSYSSTATE = GETPROBSYSSTATE()
             
             % Return joint state probability
             error('getProbSysState is not supported by this solver.');
         end
         
         function Pnir = getProbStateAggr(self, node, state_a)
-            % PNIR = GETPROBSTATEAGGR(SELF, NODE, STATE_A)
+            % PNIR = GETPROBSTATEAGGR(NODE, STATE_A)
             
             % Return marginal state probability for station ist state
             error('getProbStateAggr is not supported by this solver.');
         end
         
         function Pnjoint = getProbSysStateAggr(self)
-            % PNJOINT = GETPROBSYSSTATEAGGR(SELF)
+            % PNJOINT = GETPROBSYSSTATEAGGR()
             
             % Return joint state probability
             error('getProbSysStateAggr is not supported by this solver.');
         end
         
         function tstate = getTranState(self, node, state)
-            % TSTATE = GETTRANSTATE(SELF, NODE, STATE)
+            % TSTATE = GETTRANSTATE(NODE, STATE)
             
             % Return marginal state probability for station ist state
             error('getTranState is not supported by this solver.');
         end
         
         function tnir = getTranStateAggr(self, node, state_a)
-            % TNIR = GETTRANSTATEAGGR(SELF, NODE, STATE_A)
+            % TNIR = GETTRANSTATEAGGR(NODE, STATE_A)
             
             % Return marginal state probability for station ist state
             error('getTranStateAggr is not supported by this solver.');
         end
         
         function tsysstate = getTranSysState(self)
-            % TSYSSTATE = GETTRANSYSSTATE(SELF)
+            % TSYSSTATE = GETTRANSYSSTATE()
             
             % Return joint state probability
             error('getTranSysState is not supported by this solver.');
         end
         
         function tnjoint = getTranSysStateAggr(self)
-            % TNJOINT = GETTRANSYSSTATEAGGR(SELF)
+            % TNJOINT = GETTRANSYSSTATEAGGR()
             
             % Return joint state probability
             error('getTranSysStateAggr is not supported by this solver.');
         end
         
         function RD = getCdfRespT(self, R)
-            % RD = GETCDFRESPT(SELF, R)
+            % RD = GETCDFRESPT(R)
             
             % Return cumulative distribution of response times at steady-state
             error('getCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfRespT(self, R)
-            % RD = GETTRANCDFRESPT(SELF, R)
+            % RD = GETTRANCDFRESPT(R)
             
             % Return cumulative distribution of response times during transient
             error('getTranCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfPassT(self, R)
-            % RD = GETTRANCDFPASST(SELF, R)
+            % RD = GETTRANCDFPASST(R)
             
             % Return cumulative distribution of passage times at steady-state
             error('getTranCdfPassT is not supported by this solver.');

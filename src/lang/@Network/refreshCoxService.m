@@ -1,5 +1,5 @@
 function [mu, phi, phases] = refreshCoxService(self)
-% [MU, PHI, PHASES] = REFRESHCOXSERVICE(SELF)
+% [MU, PHI, PHASES] = REFRESHCOXSERVICE()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

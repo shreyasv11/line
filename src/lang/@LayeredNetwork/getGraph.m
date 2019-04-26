@@ -1,5 +1,5 @@
 function [lqnGraph,taskGraph]=getGraph(self)
-% [LQNGRAPH,TASKGRAPH]=GETGRAPH(SELF)
+% [LQNGRAPH,TASKGRAPH]=GETGRAPH()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

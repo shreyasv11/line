@@ -32,7 +32,7 @@ classdef SolverAuto < NetworkSolver
     
     methods
         function bool = supports(self, model)
-            % BOOL = SUPPORTS(SELF, MODEL)
+            % BOOL = SUPPORTS(MODEL)
             
             if isempty(self.candidates)
                 bool = false;
@@ -42,7 +42,7 @@ classdef SolverAuto < NetworkSolver
         end
         
         function runtime = run(self) % generic method to run the solver
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             
             T0 = tic;
@@ -101,7 +101,7 @@ classdef SolverAuto < NetworkSolver
         
         % chooseStatic: choses a solver from static properties of the model
         function solver = chooseSolver(self)
-            % SOLVER = CHOOSESOLVER(SELF)
+            % SOLVER = CHOOSESOLVER()
             
             model = self.model;
             if model.hasProductFormSolution

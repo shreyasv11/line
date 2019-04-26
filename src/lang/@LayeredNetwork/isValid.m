@@ -1,5 +1,5 @@
 function bool = isValid(self)
-% BOOL = ISVALID(SELF)
+% BOOL = ISVALID()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

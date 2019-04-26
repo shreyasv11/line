@@ -1,6 +1,6 @@
 % getAG : export model in agent representation
 function ag = getAG(self)
-% AG = GETAG(SELF)
+% AG = GETAG()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

@@ -17,7 +17,7 @@ classdef APH < MarkovianDistribution
     
     methods
         function alpha = getInitProb(self)
-            % ALPHA = GETINITPROB(SELF)
+            % ALPHA = GETINITPROB()
             
             % Get vector of initial probabilities
             alpha = self.getParam(1).paramValue(:);
@@ -25,14 +25,14 @@ classdef APH < MarkovianDistribution
         end
         
         function T = getGenerator(self)
-            % T = GETGENERATOR(SELF)
+            % T = GETGENERATOR()
             
             % Get generator
             T = self.getParam(2).paramValue;
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
@@ -71,7 +71,7 @@ classdef APH < MarkovianDistribution
         end
         
         function updateMeanAndSCV(self, MEAN, VAR)
-            % UPDATEMEANANDSCV(SELF, MEAN, VAR)
+            % UPDATEMEANANDSCV(MEAN, VAR)
             
             % Fit phase-type distribution with given mean and squared coefficient of
             % variation (SCV=variance/mean^2)
@@ -84,7 +84,7 @@ classdef APH < MarkovianDistribution
         end
         
         function APH = getRepresentation(self)
-            % APH = GETREPRESENTATION(SELF)
+            % APH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
             T = self.getGenerator;

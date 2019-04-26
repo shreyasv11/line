@@ -1,5 +1,5 @@
 function Tsim = run(self)
-% TSIM = RUN(SELF)
+% TSIM = RUN()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
@@ -51,6 +51,8 @@ self.seed = options.seed;
 
 if ~isfield(options,'timespan')
     options.timespan = [0,Inf];
+else
+    self.maxSimulatedTime = options.timespan(2);
 end
 
 if ~self.model.hasInitState

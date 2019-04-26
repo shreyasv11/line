@@ -46,14 +46,14 @@ classdef Cache < StatefulNode
         end
         
         %         function setMissTime(self, distribution)
-        % SETMISSTIME(SELF, DISTRIBUTION)
+        % SETMISSTIME(DISTRIBUTION)
         
         %             itemclass = self.items;
         %             self.server.serviceProcess{1, itemclass.index} = {[], ServiceStrategy.ID_SD, distribution};
         %         end
         %
         %         function setHitTime(self, distribution, level)
-        % SETHITTIME(SELF, DISTRIBUTION, LEVEL)
+        % SETHITTIME(DISTRIBUTION, LEVEL)
         
         %             itemclass = self.items;
         %             if ~exist('level','var')
@@ -67,19 +67,19 @@ classdef Cache < StatefulNode
         %         end
         
         function setHitClass(self, jobinclass, joboutclass)
-            % SETHITCLASS(SELF, JOBINCLASS, JOBOUTCLASS)
+            % SETHITCLASS(JOBINCLASS, JOBOUTCLASS)
             
             self.server.hitClass(jobinclass.index) = joboutclass.index;
         end
         
         function setMissClass(self, jobinclass, joboutclass)
-            % SETMISSCLASS(SELF, JOBINCLASS, JOBOUTCLASS)
+            % SETMISSCLASS(JOBINCLASS, JOBOUTCLASS)
             
             self.server.missClass(jobinclass.index) = joboutclass.index;
         end
         
         function setRead(self, jobclass, distribution)
-            % SETREAD(SELF, JOBCLASS, DISTRIBUTION)
+            % SETREAD(JOBCLASS, DISTRIBUTION)
             
             itemclass = self.items;
             if distribution.isDiscrete
@@ -98,19 +98,19 @@ classdef Cache < StatefulNode
         end
         
         function setAccessCosts(self, R)
-            % SETACCESSCOSTS(SELF, R)
+            % SETACCESSCOSTS(R)
             
             self.accessCost = R;
         end
         
         function setProbRouting(self, class, destination, probability)
-            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            % SETPROBROUTING(CLASS, DESTINATION, PROBABILITY)
             
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function sections = getSections(self)
-            % SECTIONS = GETSECTIONS(SELF)
+            % SECTIONS = GETSECTIONS()
             
             sections = {self.input, self.server, self.output};
         end

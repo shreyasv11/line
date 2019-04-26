@@ -17,7 +17,7 @@ classdef Exp < MarkovianDistribution
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             lambda = self.getParam(1).paramValue;
@@ -25,7 +25,7 @@ classdef Exp < MarkovianDistribution
         end
         
         function phases = getNumberOfPhases(self)
-            % PHASES = GETNUMBEROFPHASES(SELF)
+            % PHASES = GETNUMBEROFPHASES()
             
             % Get number of phases in the underpinnning phase-type
             % representation
@@ -43,7 +43,7 @@ classdef Exp < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
-            % PH = GETREPRESENTATION(SELF)
+            % PH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
             lambda = self.getParam(1).paramValue;
@@ -51,7 +51,7 @@ classdef Exp < MarkovianDistribution
         end
         
         function L = evalLaplaceTransform(self, s)
-            % L = EVALLAPLACETRANSFORM(SELF, S)
+            % L = EVALLAPLACETRANSFORM(S)
             
             % Evaluate the Laplace transform of the distribution function at t
             % AT T

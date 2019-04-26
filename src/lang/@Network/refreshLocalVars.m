@@ -1,5 +1,5 @@
 function nvars = refreshLocalVars(self)
-% NVARS = REFRESHLOCALVARS(SELF)
+% NVARS = REFRESHLOCALVARS()
 
 nvars = zeros(self.getNumberOfNodes, 1);
 varsparam = cell(self.getNumberOfNodes, 1);

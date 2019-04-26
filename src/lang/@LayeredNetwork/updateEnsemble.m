@@ -1,5 +1,5 @@
 function self = updateEnsemble(self, isBuild, deepUpdate)
-% SELF = UPDATEENSEMBLE(SELF, ISBUILD, DEEPUPDATE)
+% SELF = UPDATEENSEMBLE(ISBUILD, DEEPUPDATE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

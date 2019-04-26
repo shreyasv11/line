@@ -1,6 +1,6 @@
 % R(i,r): mean response time of class r at node i (summed across visits)
 function R = getAvgRespTHandles(self)
-% R = GETAVGRESPTHANDLES(SELF)
+% R = GETAVGRESPTHANDLES()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

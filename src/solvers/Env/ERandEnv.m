@@ -21,7 +21,7 @@
 %         end
 %
 %         function runtime = run(self)
-% RUNTIME = RUN(SELF)
+% RUNTIME = RUN()
 % Run the solver
 
 %             tic;
@@ -162,13 +162,13 @@
 %         end
 %
 %         function name = getName(self)
-% NAME = GETNAME(SELF)
+% NAME = GETNAME()
 
 %             name = mfilename;
 %         end
 %
 %         function [results,runtime] = solve(self, options)
-% [RESULTS,RUNTIME] = SOLVE(SELF, OPTIONS)
+% [RESULTS,RUNTIME] = SOLVE(OPTIONS)
 
 %             %            try
 %                 options = self.getOptions;
@@ -180,7 +180,7 @@
 %         end
 %
 %         function [QNclass, UNclass, TNclass] = getAvg(self)
-% [QNCLASS, UNCLASS, TNCLASS] = GETAVG(SELF)
+% [QNCLASS, UNCLASS, TNCLASS] = GETAVG()
 
 %             if isempty(self.result) || (isfield(self.options,'force') && self.options.force)
 %                 self.solve(self.options);

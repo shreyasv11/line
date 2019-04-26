@@ -1,5 +1,5 @@
 function [simElem,simDoc] = saveXMLHeader(self, logPath)
-% [SIMELEM,SIMDOC] = SAVEXMLHEADER(SELF, LOGPATH)
+% [SIMELEM,SIMDOC] = SAVEXMLHEADER(LOGPATH)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
@@ -30,6 +30,9 @@ simElem.setAttribute('logDelimiter', ';');
 simElem.setAttribute('logPath', logPath);
 simElem.setAttribute('logReplaceMode', '0');
 simElem.setAttribute('maxSamples', int2str(self.maxSamples));
+if ~isinf(self.maxSimulatedTime)
+    simElem.setAttribute('maxSimulated', num2str(self.maxSimulatedTime,'%.3f'));
+end
 simElem.setAttribute('polling', '1.0');
 simElem.setAttribute('seed', int2str(self.options.seed));
 end

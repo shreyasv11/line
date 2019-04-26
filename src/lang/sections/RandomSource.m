@@ -24,7 +24,7 @@ classdef RandomSource < InputSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
-            % CLONE = COPYELEMENT(SELF)
+            % CLONE = COPYELEMENT()
             
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);

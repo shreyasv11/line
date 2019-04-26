@@ -19,7 +19,7 @@ classdef Erlang < MarkovianDistribution
         end
         
         function phases = getNumberOfPhases(self)
-            % PHASES = GETNUMBEROFPHASES(SELF)
+            % PHASES = GETNUMBEROFPHASES()
             
             % Get number of phases in the underpinnning phase-type
             % representation
@@ -27,7 +27,7 @@ classdef Erlang < MarkovianDistribution
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             alpha = self.getParam(1).paramValue;
@@ -36,7 +36,7 @@ classdef Erlang < MarkovianDistribution
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
             r = self.getParam(2).paramValue;
             SCV = 1/r;
@@ -57,7 +57,7 @@ classdef Erlang < MarkovianDistribution
         end
         
         function PH = getRepresentation(self)
-            % PH = GETREPRESENTATION(SELF)
+            % PH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
             r = self.getParam(2).paramValue;
@@ -65,7 +65,7 @@ classdef Erlang < MarkovianDistribution
         end
         
         function L = evalLaplaceTransform(self, s)
-            % L = EVALLAPLACETRANSFORM(SELF, S)
+            % L = EVALLAPLACETRANSFORM(S)
             
             % Evaluate the Laplace transform of the distribution function at t
             % AT T

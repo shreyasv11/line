@@ -32,7 +32,7 @@ classdef Solver < handle
             
         end
         function runtime = run(self) % generic method to run the solver
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             % Solve the model
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
@@ -42,13 +42,13 @@ classdef Solver < handle
     
     methods
         function out = getName(self)
-            % OUT = GETNAME(SELF)
+            % OUT = GETNAME()
             % Get solver name
             out = self.name;
         end
         
         function options = getDefaultOptions(self)
-            % OPTIONS = GETDEFAULTOPTIONS(SELF)
+            % OPTIONS = GETDEFAULTOPTIONS()
             % Get option data structure with default values
             options = Solver.defaultOptions;
         end
@@ -58,7 +58,7 @@ classdef Solver < handle
     methods
         
         function checkOptions(self, ~)
-            % CHECKOPTIONS(SELF, ~)
+            % CHECKOPTIONS(~)
             % Check if input option data structure is valid for the given model
             if strcmp(self.options.method,'exact')
                 if ~self.model.hasProductFormSolution
@@ -68,31 +68,31 @@ classdef Solver < handle
         end
         
         function results = getResults(self)
-            % RESULTS = GETRESULTS(SELF)
+            % RESULTS = GETRESULTS()
             % Return results data structure
             results = self.result;
         end
         
         function bool = hasResults(self)
-            % BOOL = HASRESULTS(SELF)
+            % BOOL = HASRESULTS()
             % Check if the model has been solved
             bool = ~isempty(self.result);
         end
         
         function options = getOptions(self)
-            % OPTIONS = GETOPTIONS(SELF)
+            % OPTIONS = GETOPTIONS()
             % Return options data structure
             options = self.options;
         end
         
         function reset(self)
-            % RESET(SELF)
+            % RESET()
             % Dispose previously stored results
             self.result = [];
         end
         
         function self = setOptions(self, options)
-            % SELF = SETOPTIONS(SELF, OPTIONS)
+            % SELF = SETOPTIONS(OPTIONS)
             % Set a new options data structure
             defaultOptions = self.defaultOptions;
             optList = Solver.listValidOptions();

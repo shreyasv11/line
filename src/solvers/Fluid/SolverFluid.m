@@ -13,7 +13,7 @@ classdef SolverFluid < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -21,7 +21,7 @@ classdef SolverFluid < NetworkSolver
         end
         
         function RD = getTranCdfPassT(self, R)
-            % RD = GETTRANCDFPASST(SELF, R)
+            % RD = GETTRANCDFPASST(R)
             
             T0 = tic;
             if ~exist('R','var')
@@ -47,7 +47,7 @@ classdef SolverFluid < NetworkSolver
         end
         
         function [Pnir,logPnir] = getProbStateAggr(self, ist)
-            % [PNIR,LOGPNIR] = GETPROBSTATEAGGR(SELF, IST)
+            % [PNIR,LOGPNIR] = GETPROBSTATEAGGR(IST)
             
             if ~exist('ist','var')
                 error('getProbStateAggr requires to pass a parameter the station of interest.');
@@ -80,7 +80,7 @@ classdef SolverFluid < NetworkSolver
         
         
         function RD = getCdfRespT(self, R)
-            % RD = GETCDFRESPT(SELF, R)
+            % RD = GETCDFRESPT(R)
             
             T0 = tic;
             if ~exist('R','var')
@@ -105,7 +105,7 @@ classdef SolverFluid < NetworkSolver
         
         % solve method is supplied by Solver superclass
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             self.reset();

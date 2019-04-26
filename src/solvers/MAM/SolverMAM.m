@@ -13,7 +13,7 @@ classdef SolverMAM < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -21,7 +21,7 @@ classdef SolverMAM < NetworkSolver
         end
         
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             T0=tic;
@@ -46,7 +46,7 @@ classdef SolverMAM < NetworkSolver
         end
         
         function RD = getCdfRespT(self, R)
-            % RD = GETCDFRESPT(SELF, R)
+            % RD = GETCDFRESPT(R)
             
             T0 = tic;
             if ~exist('R','var')

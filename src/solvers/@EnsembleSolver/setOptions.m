@@ -1,5 +1,5 @@
 function self = setOptions(self, eoptions)
-% SELF = SETOPTIONS(SELF, EOPTIONS)
+% SELF = SETOPTIONS(EOPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

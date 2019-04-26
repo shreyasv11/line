@@ -1,5 +1,5 @@
 function [result, parsed] = getResultsJMVA(self)
-% [RESULT, PARSED] = GETRESULTSJMVA(SELF)
+% [RESULT, PARSED] = GETRESULTSJMVA()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

@@ -1,5 +1,5 @@
 function sync = refreshSync(self)
-% SYNC = REFRESHSYNC(SELF)
+% SYNC = REFRESHSYNC()
 
 qn = self.qn;
 local = self.getNumberOfNodes+1;

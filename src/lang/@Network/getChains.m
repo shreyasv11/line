@@ -1,5 +1,5 @@
 function [qnchains,chains] = getChains(self, rt)
-% [QNCHAINS,CHAINS] = GETCHAINS(SELF, RT)
+% [QNCHAINS,CHAINS] = GETCHAINS(RT)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

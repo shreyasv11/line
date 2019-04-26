@@ -55,7 +55,7 @@ if ~isempty(Qt)
     %RNclass_t = cell(M,K);
     TNclass_t = cell(M,K);
     for k=1:K
-        for i=1:M
+        for i=1:M            
             QNclass_t{i,k} = Qt{i,k}.get(self.result,self.model);
             UNclass_t{i,k} = Ut{i,k}.get(self.result,self.model);
             %                            RNclass_t{i,k} = R{i,k}.get(self.result,self.model);

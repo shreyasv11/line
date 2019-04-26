@@ -1,5 +1,5 @@
 function addJobClass(self, customerClass)
-% ADDJOBCLASS(SELF, CUSTOMERCLASS)
+% ADDJOBCLASS(CUSTOMERCLASS)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

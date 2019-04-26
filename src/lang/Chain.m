@@ -22,20 +22,20 @@ classdef Chain < NetworkElement
         end
         
         function self = setName(self, name)
-            % SELF = SETNAME(SELF, NAME)
+            % SELF = SETNAME(NAME)
             
             self.name = name;
         end
         
         function self = setVisits(self, class, v)
-            % SELF = SETVISITS(SELF, CLASS, V)
+            % SELF = SETVISITS(CLASS, V)
             
             idx  = self.getClass(class.name);
             self.visits{idx} = v;
         end
         
         function self = addClass(self, class, v, index)
-            % SELF = ADDCLASS(SELF, CLASS, V, INDEX)
+            % SELF = ADDCLASS(CLASS, V, INDEX)
             
             if ~exist('v','var')
                 v = [];
@@ -57,7 +57,7 @@ classdef Chain < NetworkElement
         end
         
         function bool = hasClass(self, className)
-            % BOOL = HASCLASS(SELF, CLASSNAME)
+            % BOOL = HASCLASS(CLASSNAME)
             
             bool = true;
             if getClass(self, className) == -1
@@ -66,7 +66,7 @@ classdef Chain < NetworkElement
         end
         
         function idx = getClass(self, className)
-            % IDX = GETCLASS(SELF, CLASSNAME)
+            % IDX = GETCLASS(CLASSNAME)
             
             idx = -1;
             if ~isempty(self.classes)

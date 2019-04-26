@@ -25,7 +25,7 @@ classdef Zipf < DiscreteDistrib
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             s = self.getParam(3).paramValue;
@@ -34,7 +34,7 @@ classdef Zipf < DiscreteDistrib
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             s = self.getParam(3).paramValue;
@@ -45,7 +45,7 @@ classdef Zipf < DiscreteDistrib
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             X = self.getParam(3).paramValue * ones(n,1);
@@ -63,7 +63,7 @@ classdef Zipf < DiscreteDistrib
         end
         
         function p = evalPMF(self, k)
-            % P = EVALPMF(SELF, K)
+            % P = EVALPMF(K)
             
             % Evaluate the probability mass function at k
             % AT K

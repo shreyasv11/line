@@ -49,17 +49,18 @@ classdef Network < Model
         self = link(self, P)
         [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath)
         function self = linkNetwork(self, P) % obsolete - old name
-            % SELF = LINKNETWORK(SELF, P) % OBSOLETE - OLD NAME
+            % SELF = LINKNETWORK(P) % OBSOLETE - OLD NAME
             
             self = link(self,  P);
         end
         function [loggerBefore,loggerAfter] = linkNetworkAndLog(self, nodes, classes, P, wantLogger, logPath)% obsolete - old name
-            % [LOGGERBEFORE,LOGGERAFTER] = LINKNETWORKANDLOG(SELF, NODES, CLASSES, P, WANTLOGGER, LOGPATH)% OBSOLETE - OLD NAME
+            % [LOGGERBEFORE,LOGGERAFTER] = LINKNETWORKANDLOG(NODES, CLASSES, P, WANTLOGGER, LOGPATH)% OBSOLETE - OLD NAME
             
             [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath);
         end
         
-        [Q,U,R,T] = getAvgHandles(self)
+        [Q,U,R,T,A] = getAvgHandles(self)
+        A = getAvgArvRHandles(self);
         T = getAvgTputHandles(self);
         Q = getAvgQLenHandles(self);
         R = getAvgRespTHandles(self);
@@ -80,7 +81,7 @@ classdef Network < Model
         classprio = refreshPriorities(self);
         [sched, schedid, schedparam] = refreshScheduling(self, rates);
         function [rates, mu, phi, phases] = refreshArrival(self) % LINE treats arrival distributions as service distributions of the Source object
-            % [RATES, MU, PHI, PHASES] = REFRESHARRIVAL(SELF) % LINE TREATS ARRIVAL DISTRIBUTIONS AS SERVICE DISTRIBUTIONS OF THE SOURCE OBJECT
+            % [RATES, MU, PHI, PHASES] = REFRESHARRIVAL() % LINE TREATS ARRIVAL DISTRIBUTIONS AS SERVICE DISTRIBUTIONS OF THE SOURCE OBJECT
             
             [rates, mu, phi, phases] = self.refreshService();
         end
@@ -114,13 +115,13 @@ classdef Network < Model
         end
         
         function nodes = getNodes(self)
-            % NODES = GETNODES(SELF)
+            % NODES = GETNODES()
             
             nodes = self.nodes;
         end
         
         function P = getLinkedRoutingMatrix(self)
-            % P = GETLINKEDROUTINGMATRIX(SELF)
+            % P = GETLINKEDROUTINGMATRIX()
             
             if isempty(self.linkedP)
                 error('Unsupported. To use this function the model topology must have been linked with the link() method.');
@@ -132,19 +133,19 @@ classdef Network < Model
         end
         
         function logPath = getLogPath(self)
-            % LOGPATH = GETLOGPATH(SELF)
+            % LOGPATH = GETLOGPATH()
             
             logPath = self.logPath;
         end
         
         function setLogPath(self, logPath)
-            % SETLOGPATH(SELF, LOGPATH)
+            % SETLOGPATH(LOGPATH)
             
             self.logPath = logPath;
         end
         
         function bool = hasInitState(self)
-            % BOOL = HASINITSTATE(SELF)
+            % BOOL = HASINITSTATE()
             
             bool = true;
             if ~self.isInitialized % check if all stations are initialized
@@ -157,7 +158,7 @@ classdef Network < Model
         end
         
         function reset(self)
-            % RESET(SELF)
+            % RESET()
             
             self.perfIndex.Avg = {};
             self.perfIndex.Tran = {};
@@ -169,44 +170,44 @@ classdef Network < Model
         refreshStruct(self);
         
         function [M,R] = getSize(self)
-            % [M,R] = GETSIZE(SELF)
+            % [M,R] = GETSIZE()
             
             M = self.getNumberOfNodes;
             R = self.getNumberOfClasses;
         end
         
         function bool = hasOpenClasses(self)
-            % BOOL = HASOPENCLASSES(SELF)
+            % BOOL = HASOPENCLASSES()
             
             bool = any(isinf(self.getNumberOfJobs()));
         end
         
         function bool = hasClassSwitch(self)
-            % BOOL = HASCLASSSWITCH(SELF)
+            % BOOL = HASCLASSSWITCH()
             
             bool = any(cellfun(@(c) isa(c,'ClassSwitch'), self.nodes));
         end
         
         function bool = hasClosedClasses(self)
-            % BOOL = HASCLOSEDCLASSES(SELF)
+            % BOOL = HASCLOSEDCLASSES()
             
             bool = any(isfinite(self.getNumberOfJobs()));
         end
         
         function index = getIndexOpenClasses(self)
-            % INDEX = GETINDEXOPENCLASSES(SELF)
+            % INDEX = GETINDEXOPENCLASSES()
             
             index = find(isinf(self.getNumberOfJobs()))';
         end
         
         function index = getIndexClosedClasses(self)
-            % INDEX = GETINDEXCLOSEDCLASSES(SELF)
+            % INDEX = GETINDEXCLOSEDCLASSES()
             
             index = find(isfinite(self.getNumberOfJobs()))';
         end
         
         function c = getClassChain(self, className)
-            % C = GETCLASSCHAIN(SELF, CLASSNAME)
+            % C = GETCLASSCHAIN(CLASSNAME)
             
             chains = self.getChains;
             if ischar(className)
@@ -226,7 +227,7 @@ classdef Network < Model
         end
         
         function classnames = getClassNames(self)
-            % CLASSNAMES = GETCLASSNAMES(SELF)
+            % CLASSNAMES = GETCLASSNAMES()
             
             for r=1:getNumberOfClasses(self)
                 classnames{r,1}=self.classes{r}.name;
@@ -234,7 +235,7 @@ classdef Network < Model
         end
         
         function nodeNames = getNodeNames(self)
-            % NODENAMES = GETNODENAMES(SELF)
+            % NODENAMES = GETNODENAMES()
             
             for i=1:getNumberOfNodes(self)
                 nodeNames{i,1} = self.nodes{i}.name;
@@ -242,7 +243,7 @@ classdef Network < Model
         end
         
         function nodeTypes = getNodeTypes(self)
-            % NODETYPES = GETNODETYPES(SELF)
+            % NODETYPES = GETNODETYPES()
             
             nodeTypes = zeros(self.getNumberOfNodes,1);
             for i=1:self.getNumberOfNodes
@@ -274,7 +275,7 @@ classdef Network < Model
         end
         
         function P = initRoutingMatrix(self)
-            % P = INITROUTINGMATRIX(SELF)
+            % P = INITROUTINGMATRIX()
             
             M = self.getNumberOfNodes;
             K = self.getNumberOfClasses;
@@ -282,7 +283,7 @@ classdef Network < Model
         end
         
         function rtTypes = getRoutingStrategies(self)
-            % RTTYPES = GETROUTINGSTRATEGIES(SELF)
+            % RTTYPES = GETROUTINGSTRATEGIES()
             
             rtTypes = zeros(self.getNumberOfNodes,self.getNumberOfClasses);
             for ind=1:self.getNumberOfNodes
@@ -304,7 +305,7 @@ classdef Network < Model
         end
         
         function nodeIndex = getNodeIndex(self, name)
-            % NODEINDEX = GETNODEINDEX(SELF, NAME)
+            % NODEINDEX = GETNODEINDEX(NAME)
             
             if isa(name,'Node')
                 node = name;
@@ -314,7 +315,7 @@ classdef Network < Model
         end
         
         function stationIndex = getStationIndex(self, name)
-            % STATIONINDEX = GETSTATIONINDEX(SELF, NAME)
+            % STATIONINDEX = GETSTATIONINDEX(NAME)
             
             if isa(name,'Node')
                 node = name;
@@ -324,7 +325,7 @@ classdef Network < Model
         end
         
         function statefulIndex = getStatefulNodeIndex(self, name)
-            % STATEFULINDEX = GETSTATEFULNODEINDEX(SELF, NAME)
+            % STATEFULINDEX = GETSTATEFULNODEINDEX(NAME)
             
             if isa(name,'Node')
                 node = name;
@@ -334,13 +335,13 @@ classdef Network < Model
         end
         
         function classIndex = getClassIndex(self, name)
-            % CLASSINDEX = GETCLASSINDEX(SELF, NAME)
+            % CLASSINDEX = GETCLASSINDEX(NAME)
             
             classIndex = find(cellfun(@(c) strcmp(c,name),self.getClassNames));
         end
         
         function stationnames = getStationNames(self)
-            % STATIONNAMES = GETSTATIONNAMES(SELF)
+            % STATIONNAMES = GETSTATIONNAMES()
             
             stationnames = {};
             for i=self.getIndexStations
@@ -349,7 +350,7 @@ classdef Network < Model
         end
         
         function summary(self)
-            % SUMMARY(SELF)
+            % SUMMARY()
             
             for i=1:self.getNumberOfNodes
                 self.nodes{i}.summary();
@@ -357,7 +358,7 @@ classdef Network < Model
         end
         
         function [lambda,D,N,Z,mu,S]= getProductFormParameters(self)
-            % [LAMBDA,D,N,Z,MU,S]= GETPRODUCTFORMPARAMETERS(SELF)
+            % [LAMBDA,D,N,Z,MU,S]= GETPRODUCTFORMPARAMETERS()
             
             % mu also returns max(S) elements after population |N| as this is
             % required by MVALDMX
@@ -397,7 +398,7 @@ classdef Network < Model
         end
         
         function statefulnames = getStatefulNodeNames(self)
-            % STATEFULNAMES = GETSTATEFULNODENAMES(SELF)
+            % STATEFULNAMES = GETSTATEFULNODENAMES()
             
             statefulnames = {};
             for i=1:self.getNumberOfNodes
@@ -408,38 +409,38 @@ classdef Network < Model
         end
         
         function M = getNumberOfNodes(self)
-            % M = GETNUMBEROFNODES(SELF)
+            % M = GETNUMBEROFNODES()
             
             M = length(self.nodes);
         end
         
         function S = getNumberOfStatefulNodes(self)
-            % S = GETNUMBEROFSTATEFULNODES(SELF)
+            % S = GETNUMBEROFSTATEFULNODES()
             
             S = sum(cellisa(self.nodes,'StatefulNode'));
         end
         
         function M = getNumberOfStations(self)
-            % M = GETNUMBEROFSTATIONS(SELF)
+            % M = GETNUMBEROFSTATIONS()
             
             M = length(self.stations);
         end
         
         function R = getNumberOfClasses(self)
-            % R = GETNUMBEROFCLASSES(SELF)
+            % R = GETNUMBEROFCLASSES()
             
             R = length(self.classes);
         end
         
         function C = getNumberOfChains(self)
-            % C = GETNUMBEROFCHAINS(SELF)
+            % C = GETNUMBEROFCHAINS()
             
             qn = self.getStruct;
             C = qn.nchains;
         end
         
         function Dchain = getDemandsChain(self)
-            % DCHAIN = GETDEMANDSCHAIN(SELF)
+            % DCHAIN = GETDEMANDSCHAIN()
             
             qn = self.getStruct;
             M = qn.nstations;    %number of stations
@@ -517,20 +518,20 @@ classdef Network < Model
         node = getSink(self);
         
         function list = getDummys(self)
-            % LIST = GETDUMMYS(SELF)
+            % LIST = GETDUMMYS()
             
             list = find(cellisa(self.nodes, 'Passage'))';
         end
         
         function list = getIndexStations(self)
-            % LIST = GETINDEXSTATIONS(SELF)
+            % LIST = GETINDEXSTATIONS()
             
             % returns the ids of nodes that are stations
             list = find(cellisa(self.nodes, 'Station'))';
         end
         
         function list = getIndexStatefulNodes(self)
-            % LIST = GETINDEXSTATEFULNODES(SELF)
+            % LIST = GETINDEXSTATEFULNODES()
             
             % returns the ids of nodes that are stations
             list = find(cellisa(self.nodes, 'StatefulNode'))';
@@ -539,7 +540,7 @@ classdef Network < Model
         %% Analysis of model features and available solvers
         
         %         function listAvailableSolvers(self)
-        % LISTAVAILABLESOLVERS(SELF)
+        % LISTAVAILABLESOLVERS()
         
         %             fprintf(1,'This model can be analyzed by the following solvers:\n');
         %             if SolverMVA.supports(self)
@@ -569,19 +570,19 @@ classdef Network < Model
         S = getStationServers(self);
         
         function jsimwView(self)
-            % JSIMWVIEW(SELF)
+            % JSIMWVIEW()
             
             s=SolverJMT(self,Solver.defaultOptions,jmtGetPath); s.jsimwView;
         end
         
         function jsimgView(self)
-            % JSIMGVIEW(SELF)
+            % JSIMGVIEW()
             
             s=SolverJMT(self,Solver.defaultOptions,jmtGetPath); s.jsimgView;
         end
         
         function [ni, nir, sir, kir] = initToMarginal(self)
-            % [NI, NIR, SIR, KIR] = INITTOMARGINAL(SELF)
+            % [NI, NIR, SIR, KIR] = INITTOMARGINAL()
             
             ni = {}; nir = {}; sir = {}; kir = {};
             qn = self.getStruct;
@@ -593,7 +594,7 @@ classdef Network < Model
         end
         
         function [isvalid] = isStateValid(self)
-            % [ISVALID] = ISSTATEVALID(SELF)
+            % [ISVALID] = ISSTATEVALID()
             
             qn = self.getStruct;
             nir = [];
@@ -606,7 +607,7 @@ classdef Network < Model
         end
         
         function [initialStateAggr] = getStateAggr(self) % get initial state
-            % [INITIALSTATEAGGR] = GETSTATEAGGR(SELF) % GET INITIAL STATE
+            % [INITIALSTATEAGGR] = GETSTATEAGGR() % GET INITIAL STATE
             
             initialState = getState(self);
             initialStateAggr = cell(size(initialState));
@@ -618,7 +619,7 @@ classdef Network < Model
         end
         
         function [initialState, priorInitialState] = getState(self) % get initial state
-            % [INITIALSTATE, PRIORINITIALSTATE] = GETSTATE(SELF) % GET INITIAL STATE
+            % [INITIALSTATE, PRIORINITIALSTATE] = GETSTATE() % GET INITIAL STATE
             
             if ~self.hasInitState
                 self.initDefault;
@@ -634,7 +635,7 @@ classdef Network < Model
         end
         
         function initFromAvgQLen(self, AvgQLen)
-            % INITFROMAVGQLEN(SELF, AVGQLEN)
+            % INITFROMAVGQLEN(AVGQLEN)
             
             n = round(AvgQLen);
             njobs = sum(n,1);
@@ -651,7 +652,7 @@ classdef Network < Model
         end
         
         function initDefault(self, nodes)
-            % INITDEFAULT(SELF, NODES)
+            % INITDEFAULT(NODES)
             
             % open classes empty
             % closed classes initialized at ref station
@@ -714,7 +715,7 @@ classdef Network < Model
         end
         
         function initFromMarginal(self, n, options) % n(i,r) : number of jobs of class r in node i
-            % INITFROMMARGINAL(SELF, N, OPTIONS) % N(I,R) : NUMBER OF JOBS OF CLASS R IN NODE I
+            % INITFROMMARGINAL(N, OPTIONS) % N(I,R) : NUMBER OF JOBS OF CLASS R IN NODE I
             
             qn = self.getStruct();
             if ~exist('options','var')
@@ -737,7 +738,7 @@ classdef Network < Model
         end
         
         function initFromMarginalAndRunning(self, n, s, options) % n(i,r) : number of jobs of class r in node i
-            % INITFROMMARGINALANDRUNNING(SELF, N, S, OPTIONS) % N(I,R) : NUMBER OF JOBS OF CLASS R IN NODE I
+            % INITFROMMARGINALANDRUNNING(N, S, OPTIONS) % N(I,R) : NUMBER OF JOBS OF CLASS R IN NODE I
             
             qn = self.getStruct();
             [isvalidn] = State.isValid(qn, n, s);
@@ -756,7 +757,7 @@ classdef Network < Model
         end
         
         function initFromMarginalAndStarted(self, n, s, options) % n(i,r) : number of jobs of class r in node i
-            % INITFROMMARGINALANDSTARTED(SELF, N, S, OPTIONS) % N(I,R) : NUMBER OF JOBS OF CLASS R IN NODE I
+            % INITFROMMARGINALANDSTARTED(N, S, OPTIONS) % N(I,R) : NUMBER OF JOBS OF CLASS R IN NODE I
             
             qn = self.getStruct();
             [isvalidn] = State.isValid(qn, n, s);
@@ -776,7 +777,7 @@ classdef Network < Model
         end
         
         function [H,G] = getGraph(self)
-            % [H,G] = GETGRAPH(SELF)
+            % [H,G] = GETGRAPH()
             
             G = digraph(); TG = Table();
             M = self.getNumberOfNodes;
@@ -864,13 +865,13 @@ classdef Network < Model
         end
         
         function mask = getClassSwitchingMask(self)
-            % MASK = GETCLASSSWITCHINGMASK(SELF)
+            % MASK = GETCLASSSWITCHINGMASK()
             
             mask = self.getStruct.csmask;
         end
         
         function printRoutingMatrix(self)
-            % PRINTROUTINGMATRIX(SELF)
+            % PRINTROUTINGMATRIX()
             
             node_names = self.getNodeNames;
             classnames = self.getClassNames;
@@ -891,19 +892,19 @@ classdef Network < Model
         end
         
         %        function self = isValid(self)
-        % SELF = ISVALID(SELF)
+        % SELF = ISVALID()
         
         %% todo
         %        end
         
         function self = update(self)
-            % SELF = UPDATE(SELF)
+            % SELF = UPDATE()
             
             self.refreshStruct();
         end
         
         function self = refresh(self)
-            % SELF = REFRESH(SELF)
+            % SELF = REFRESH()
             
             self.refreshStruct();
         end
@@ -914,13 +915,13 @@ classdef Network < Model
     methods (Access = 'private')
         
         function out = getModelNameExtension(self)
-            % OUT = GETMODELNAMEEXTENSION(SELF)
+            % OUT = GETMODELNAMEEXTENSION()
             
             out = [getModelName(self), ['.', self.fileFormat]];
         end
         
         function self = initUsedFeatures(self)
-            % SELF = INITUSEDFEATURES(SELF)
+            % SELF = INITUSEDFEATURES()
             
             % The list includes all classes but Model and Hidden or
             % Constant or Abstract or Solvers
@@ -931,7 +932,7 @@ classdef Network < Model
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
-            % CLONE = COPYELEMENT(SELF)
+            % CLONE = COPYELEMENT()
             
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);
@@ -969,7 +970,7 @@ classdef Network < Model
     
     methods
         function bool = hasFCFS(self)
-            % BOOL = HASFCFS(SELF)
+            % BOOL = HASFCFS()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.FCFS);
@@ -977,13 +978,13 @@ classdef Network < Model
         end
         
         function bool = hasHomogeneousScheduling(self, strategy)
-            % BOOL = HASHOMOGENEOUSSCHEDULING(SELF, STRATEGY)
+            % BOOL = HASHOMOGENEOUSSCHEDULING(STRATEGY)
             
             bool = length(findstring(self.getStruct.sched,strategy)) == self.getStruct.nstations;
         end
         
         function bool = hasDPS(self)
-            % BOOL = HASDPS(SELF)
+            % BOOL = HASDPS()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.DPS);
@@ -991,7 +992,7 @@ classdef Network < Model
         end
         
         function bool = hasGPS(self)
-            % BOOL = HASGPS(SELF)
+            % BOOL = HASGPS()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.GPS);
@@ -999,7 +1000,7 @@ classdef Network < Model
         end
         
         function bool = hasINF(self)
-            % BOOL = HASINF(SELF)
+            % BOOL = HASINF()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.INF);
@@ -1007,7 +1008,7 @@ classdef Network < Model
         end
         
         function bool = hasPS(self)
-            % BOOL = HASPS(SELF)
+            % BOOL = HASPS()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.PS);
@@ -1015,7 +1016,7 @@ classdef Network < Model
         end
         
         function bool = hasRAND(self)
-            % BOOL = HASRAND(SELF)
+            % BOOL = HASRAND()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.RAND);
@@ -1023,7 +1024,7 @@ classdef Network < Model
         end
         
         function bool = hasHOL(self)
-            % BOOL = HASHOL(SELF)
+            % BOOL = HASHOL()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.HOL);
@@ -1031,7 +1032,7 @@ classdef Network < Model
         end
         
         function bool = hasLCFS(self)
-            % BOOL = HASLCFS(SELF)
+            % BOOL = HASLCFS()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.LCFS);
@@ -1039,7 +1040,7 @@ classdef Network < Model
         end
         
         function bool = hasSEPT(self)
-            % BOOL = HASSEPT(SELF)
+            % BOOL = HASSEPT()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.SEPT);
@@ -1047,7 +1048,7 @@ classdef Network < Model
         end
         
         function bool = hasLEPT(self)
-            % BOOL = HASLEPT(SELF)
+            % BOOL = HASLEPT()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.LEPT);
@@ -1055,7 +1056,7 @@ classdef Network < Model
         end
         
         function bool = hasSJF(self)
-            % BOOL = HASSJF(SELF)
+            % BOOL = HASSJF()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.SJF);
@@ -1063,7 +1064,7 @@ classdef Network < Model
         end
         
         function bool = hasLJF(self)
-            % BOOL = HASLJF(SELF)
+            % BOOL = HASLJF()
             
             bool = false;
             i = findstring(self.getStruct.sched,SchedStrategy.LJF);
@@ -1071,7 +1072,7 @@ classdef Network < Model
         end
         
         function bool = hasMultiClassFCFS(self)
-            % BOOL = HASMULTICLASSFCFS(SELF)
+            % BOOL = HASMULTICLASSFCFS()
             
             i = findstring(self.getStruct.sched,SchedStrategy.FCFS);
             if i > 0
@@ -1082,37 +1083,37 @@ classdef Network < Model
         end
         
         function bool = hasMultiServer(self)
-            % BOOL = HASMULTISERVER(SELF)
+            % BOOL = HASMULTISERVER()
             
             bool = any(self.getStruct.nservers(isfinite(self.getStruct.nservers)) > 1);
         end
         
         function bool = hasSingleChain(self)
-            % BOOL = HASSINGLECHAIN(SELF)
+            % BOOL = HASSINGLECHAIN()
             
             bool = self.getNumberOfChains == 1;
         end
         
         function bool = hasMultiChain(self)
-            % BOOL = HASMULTICHAIN(SELF)
+            % BOOL = HASMULTICHAIN()
             
             bool = self.getNumberOfChains > 1;
         end
         
         function bool = hasSingleClass(self)
-            % BOOL = HASSINGLECLASS(SELF)
+            % BOOL = HASSINGLECLASS()
             
             bool = self.getNumberOfClasses == 1;
         end
         
         function bool = hasMultiClass(self)
-            % BOOL = HASMULTICLASS(SELF)
+            % BOOL = HASMULTICLASS()
             
             bool = self.getNumberOfClasses > 1;
         end
         
         function bool = hasProductFormSolution(self)
-            % BOOL = HASPRODUCTFORMSOLUTION(SELF)
+            % BOOL = HASPRODUCTFORMSOLUTION()
             
             bool = true;
             % language features
@@ -1140,7 +1141,7 @@ classdef Network < Model
         
         
         function addItemSet(self, itemSet)
-            % ADDITEMSET(SELF, ITEMSET)
+            % ADDITEMSET(ITEMSET)
             
             if sum(cellfun(@(x) strcmp(x.name, itemSet.name), self.items))>0
                 error('An item type with name %s already exists.\n', itemSet.name);

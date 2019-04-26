@@ -54,43 +54,43 @@ classdef Logger < Node
         end
         
         function ret = getStartTime(self)
-            % RET = GETSTARTTIME(SELF)
+            % RET = GETSTARTTIME()
             
             ret = self.wantStartTime;
         end
         function ret = getLoggerName(self)
-            % RET = GETLOGGERNAME(SELF)
+            % RET = GETLOGGERNAME()
             
             ret = self.wantLoggerName;
         end
         function ret = getTimestamp(self)
-            % RET = GETTIMESTAMP(SELF)
+            % RET = GETTIMESTAMP()
             
             ret = self.wantTimestamp;
         end
         function ret = getJobID(self)
-            % RET = GETJOBID(SELF)
+            % RET = GETJOBID()
             
             ret = self.wantJobID;
         end
         function ret = getJobClass(self)
-            % RET = GETJOBCLASS(SELF)
+            % RET = GETJOBCLASS()
             
             ret = self.wantJobClass;
         end
         function ret = getTimeSameClass(self)
-            % RET = GETTIMESAMECLASS(SELF)
+            % RET = GETTIMESAMECLASS()
             
             ret = self.wantTimeSameClass;
         end
         function ret = getTimeAnyClass(self)
-            % RET = GETTIMEANYCLASS(SELF)
+            % RET = GETTIMEANYCLASS()
             
             ret = self.wantTimeAnyClass;
         end
         
         function setStartTime(self, bool)
-            % SETSTARTTIME(SELF, BOOL)
+            % SETSTARTTIME(BOOL)
             
             if bool
                 self.wantStartTime = 'true';
@@ -100,7 +100,7 @@ classdef Logger < Node
         end
         
         function setTimestamp(self, bool)
-            % SETTIMESTAMP(SELF, BOOL)
+            % SETTIMESTAMP(BOOL)
             
             if bool
                 self.wantTimestamp = 'true';
@@ -110,7 +110,7 @@ classdef Logger < Node
         end
         
         function setLoggerName(self, bool)
-            % SETLOGGERNAME(SELF, BOOL)
+            % SETLOGGERNAME(BOOL)
             
             if bool
                 self.wantLoggerName = 'true';
@@ -120,7 +120,7 @@ classdef Logger < Node
         end
         
         function setTimeSameClass(self, bool)
-            % SETTIMESAMECLASS(SELF, BOOL)
+            % SETTIMESAMECLASS(BOOL)
             
             if bool
                 self.wantTimeSameClass = 'true';
@@ -130,7 +130,7 @@ classdef Logger < Node
         end
         
         function setTimeAnyClass(self, bool)
-            % SETTIMEANYCLASS(SELF, BOOL)
+            % SETTIMEANYCLASS(BOOL)
             
             if bool
                 self.wantTimeAnyClass = 'true';
@@ -140,7 +140,7 @@ classdef Logger < Node
         end
         
         function setJobID(self, bool)
-            % SETJOBID(SELF, BOOL)
+            % SETJOBID(BOOL)
             
             if bool
                 self.wantJobID = 'true';
@@ -150,7 +150,7 @@ classdef Logger < Node
         end
         
         function setJobClass(self, bool)
-            % SETJOBCLASS(SELF, BOOL)
+            % SETJOBCLASS(BOOL)
             
             if bool
                 self.wantJobClass = 'true';
@@ -160,19 +160,19 @@ classdef Logger < Node
         end
         
         function setProbRouting(self, class, destination, probability)
-            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            % SETPROBROUTING(CLASS, DESTINATION, PROBABILITY)
             
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function setScheduling(self, class, strategy)
-            % SETSCHEDULING(SELF, CLASS, STRATEGY)
+            % SETSCHEDULING(CLASS, STRATEGY)
             
             self.input.inputJobClasses{1, class.index}{2} = strategy;
         end
         
         function sections = getSections(self)
-            % SECTIONS = GETSECTIONS(SELF)
+            % SECTIONS = GETSECTIONS()
             
             sections = {self.input, self.server, self.output};
         end

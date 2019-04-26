@@ -20,19 +20,19 @@ classdef SystemState
         end
         
         function state = getTimestamps(self)
-            % STATE = GETTIMESTAMPS(SELF)
+            % STATE = GETTIMESTAMPS()
             
             state = self.t;
         end
         
         function state = getJointState(self)
-            % STATE = GETJOINTSTATE(SELF)
+            % STATE = GETJOINTSTATE()
             
             state = cell2mat(self.state);
         end
         
         function buf = getBufferState(self, node)
-            % BUF = GETBUFFERSTATE(SELF, NODE)
+            % BUF = GETBUFFERSTATE(NODE)
             
             if exist('node','var')
                 qn = self.model.getStruct;
@@ -47,7 +47,7 @@ classdef SystemState
         end
         
         function var = getLocalVarState(self, node)
-            % VAR = GETLOCALVARSTATE(SELF, NODE)
+            % VAR = GETLOCALVARSTATE(NODE)
             
             if exist('node','var')
                 qn = self.model.getStruct;
@@ -60,7 +60,7 @@ classdef SystemState
         end
         
         function srv = getServerState(self, node)
-            % SRV = GETSERVERSTATE(SELF, NODE)
+            % SRV = GETSERVERSTATE(NODE)
             
             if exist('node','var')
                 qn = self.model.getStruct;

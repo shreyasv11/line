@@ -1,5 +1,5 @@
 function [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates)
-% [RT, RTFUN, CSMASK, RTNODES] = REFRESHROUTINGMATRIX(SELF, RATES)
+% [RT, RTFUN, CSMASK, RTNODES] = REFRESHROUTINGMATRIX(RATES)
 %
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

@@ -15,27 +15,27 @@ classdef Immediate < Distrib
     
     methods
         function bool = isDisabled(self)
-            % BOOL = ISDISABLED(SELF)
+            % BOOL = ISDISABLED()
             
             bool = false;
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             if ~exist('n','var'), n = 1; end
             X = zeros(n,1);
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             ex = 0;
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             

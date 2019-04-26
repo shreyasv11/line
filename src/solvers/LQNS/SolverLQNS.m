@@ -16,7 +16,7 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             tic;
@@ -47,7 +47,7 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function reset(self)
-            % RESET(SELF)
+            % RESET()
             
             model.reset;
         end
@@ -63,7 +63,7 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function [result, iterations] = parseXMLResults(self, filename)
-            % [RESULT, ITERATIONS] = PARSEXMLRESULTS(SELF, FILENAME)
+            % [RESULT, ITERATIONS] = PARSEXMLRESULTS(FILENAME)
             
             import javax.xml.parsers.*;
             import org.w3c.dom.*;
@@ -281,7 +281,7 @@ classdef SolverLQNS < LayeredNetworkSolver
         end
         
         function options = defaultOptions(self)
-            % OPTIONS = DEFAULTOPTIONS(SELF)
+            % OPTIONS = DEFAULTOPTIONS()
             
             options = EnsembleSolver.defaultOptions();
             options.timespan = [Inf,Inf];

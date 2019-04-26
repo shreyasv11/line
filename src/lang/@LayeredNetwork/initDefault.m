@@ -1,5 +1,5 @@
 function self = initDefault(self)
-% SELF = INITDEFAULT(SELF)
+% SELF = INITDEFAULT()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

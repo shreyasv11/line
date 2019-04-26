@@ -10,9 +10,9 @@ end
 cmd = ['java  --illegal-access=permit -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];
 %        rt = java.lang.Runtime.getRuntime();
 %        rt.exec(cmd)
-[status,result] = system(cmd);
+[status, result] = system(cmd);
 if  status > 0
-    cmd = ['java  -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];
-    system(cmd);
+    %cmd = ['java  -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];
+    %system(cmd);
 end
 end

@@ -27,19 +27,19 @@ classdef ItemSet < NetworkElement
         end
         
         function name = getName(self)
-            % NAME = GETNAME(SELF)
+            % NAME = GETNAME()
             
             name = self.name;
         end
         
         function bool = hasReplicableItems(self)
-            % BOOL = HASREPLICABLEITEMS(SELF)
+            % BOOL = HASREPLICABLEITEMS()
             
             bool = self.replicable;
         end
         
         function ntypes = getNumberOfItems(self)
-            % NTYPES = GETNUMBEROFITEMS(SELF)
+            % NTYPES = GETNUMBEROFITEMS()
             
             ntypes = self.nitems;
         end

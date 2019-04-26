@@ -53,13 +53,13 @@ classdef Queue < Station
         end
         
         function setNumberOfServers(self, value)
-            % SETNUMBEROFSERVERS(SELF, VALUE)
+            % SETNUMBEROFSERVERS(VALUE)
             
             self.setNumServers(value);
         end
         
         function setNumServers(self, value)
-            % SETNUMSERVERS(SELF, VALUE)
+            % SETNUMSERVERS(VALUE)
             
             switch self.schedStrategy
                 case {SchedStrategy.DPS, SchedStrategy.GPS}
@@ -72,13 +72,13 @@ classdef Queue < Station
         end
         
         function self = setStrategyParam(self, class, weight)
-            % SELF = SETSTRATEGYPARAM(SELF, CLASS, WEIGHT)
+            % SELF = SETSTRATEGYPARAM(CLASS, WEIGHT)
             
             self.schedStrategyPar(class.index) = weight;
         end
         
         function distribution = getService(self, class)
-            % DISTRIBUTION = GETSERVICE(SELF, CLASS)
+            % DISTRIBUTION = GETSERVICE(CLASS)
             
             % return the service distribution assigned to the given class
             if ~exist('class','var')
@@ -93,7 +93,7 @@ classdef Queue < Station
         end
         
         function setService(self, class, distribution, weight)
-            % SETSERVICE(SELF, CLASS, DISTRIBUTION, WEIGHT)
+            % SETSERVICE(CLASS, DISTRIBUTION, WEIGHT)
             if ~exist('weight','var')
                 weight=1.0;
             end
@@ -122,7 +122,7 @@ classdef Queue < Station
         end
         
         function sections = getSections(self)
-            % SECTIONS = GETSECTIONS(SELF)
+            % SECTIONS = GETSECTIONS()
             
             sections = {self.input, self.server, self.output};
         end

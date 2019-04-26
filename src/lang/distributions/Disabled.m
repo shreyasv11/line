@@ -17,21 +17,21 @@ classdef Disabled < ContinuousDistrib & DiscreteDistrib
     
     methods
         function bool = isContinuous(self)
-            % BOOL = ISCONTINUOUS(SELF)
+            % BOOL = ISCONTINUOUS()
             
             % Returns true is the distribution is continuous
             bool = true;
         end
         
         function bool = isDiscrete(self)
-            % BOOL = ISDISCRETE(SELF)
+            % BOOL = ISDISCRETE()
             
             % Returns true is the distribution is discrete
             bool = true;
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
@@ -39,14 +39,14 @@ classdef Disabled < ContinuousDistrib & DiscreteDistrib
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             ex = NaN;
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             SCV = NaN;
@@ -62,7 +62,7 @@ classdef Disabled < ContinuousDistrib & DiscreteDistrib
         end
         
         function p = evalPMF(self, k)
-            % P = EVALPMF(SELF, K)
+            % P = EVALPMF(K)
             
             % Evaluate the probability mass function at k
             % AT K

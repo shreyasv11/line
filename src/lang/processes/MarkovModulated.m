@@ -15,7 +15,7 @@ classdef MarkovModulated < PointProcess
     
     methods
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             if ~exist('n','var'), n = 1; end
             X = map_sample(self.getRepresentation,n);
@@ -24,12 +24,12 @@ classdef MarkovModulated < PointProcess
     
     methods %(Abstract) % implemented with errors for Octave compatibility
         function phases = getNumberOfPhases(self)
-            % PHASES = GETNUMBEROFPHASES(SELF)
+            % PHASES = GETNUMBEROFPHASES()
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         function MAP = getRepresentation(self)
-            % MAP = GETREPRESENTATION(SELF)
+            % MAP = GETREPRESENTATION()
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end

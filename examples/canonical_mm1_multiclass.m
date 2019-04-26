@@ -1,3 +1,4 @@
+function model = canonical_mm1_multiclass
 model = Network('M[2]/M[2]/1');
 %% Block 1: nodes
 source = Source(model, 'mySource');
@@ -16,3 +17,4 @@ P = model.initRoutingMatrix;
 P{1} = Network.serialRouting(source,queue,sink);
 P{2} = Network.serialRouting(source,queue,sink);
 model.link(P);
+end

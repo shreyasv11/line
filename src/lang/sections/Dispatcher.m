@@ -17,7 +17,7 @@ classdef Dispatcher < OutputSection
     
     methods
         function initDispatcherJobClasses(self, customerClasses)
-            % INITDISPATCHERJOBCLASSES(SELF, CUSTOMERCLASSES)
+            % INITDISPATCHERJOBCLASSES(CUSTOMERCLASSES)
             
             for r = 1 : length(customerClasses)
                 self.outputStrategy{r} = {customerClasses{r}.name, RoutingStrategy.ID_RAND};
@@ -25,7 +25,7 @@ classdef Dispatcher < OutputSection
         end
         
         function setStrategy(self, customerClasses, strategy)
-            % SETSTRATEGY(SELF, CUSTOMERCLASSES, STRATEGY)
+            % SETSTRATEGY(CUSTOMERCLASSES, STRATEGY)
             
             if length(strategy) == 1
                 self.outputStrategy{customerClasses{r}.index} = {customerClasses{r}.name, strategy};

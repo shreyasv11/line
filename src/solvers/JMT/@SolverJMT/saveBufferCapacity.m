@@ -1,5 +1,5 @@
 function [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode)
-% [SIMDOC, SECTION] = SAVEBUFFERCAPACITY(SELF, SIMDOC, SECTION, CURRENTNODE)
+% [SIMDOC, SECTION] = SAVEBUFFERCAPACITY(SIMDOC, SECTION, CURRENTNODE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

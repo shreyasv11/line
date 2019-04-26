@@ -1,5 +1,5 @@
 function [simDoc, section] = savePutStrategy(self, simDoc, section, currentNode)
-% [SIMDOC, SECTION] = SAVEPUTSTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+% [SIMDOC, SECTION] = SAVEPUTSTRATEGY(SIMDOC, SECTION, CURRENTNODE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

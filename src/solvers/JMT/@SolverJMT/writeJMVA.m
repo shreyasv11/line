@@ -1,5 +1,5 @@
 function [outputFileName] = writeJMVA(self, outputFileName)
-% [OUTPUTFILENAME] = WRITEJMVA(SELF, OUTPUTFILENAME)
+% [OUTPUTFILENAME] = WRITEJMVA(OUTPUTFILENAME)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

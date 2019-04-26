@@ -24,20 +24,20 @@ classdef Joiner < InputSection
     methods (Access = 'public')
         
         function setRequired(self, customerClass, nJobs)
-            % SETREQUIRED(SELF, CUSTOMERCLASS, NJOBS)
+            % SETREQUIRED(CUSTOMERCLASS, NJOBS)
             
             self.joinRequired{customerClass.index} = nJobs;
         end
         
         function setStrategy(self, customerClass, joinStrat)
-            % SETSTRATEGY(SELF, CUSTOMERCLASS, JOINSTRAT)
+            % SETSTRATEGY(CUSTOMERCLASS, JOINSTRAT)
             
             self.joinJobClasses{customerClass.index} = customerClass;
             self.joinStrategy{customerClass.index} = joinStrat;
         end
         
         function initJoinJobClasses(self, customerClasses)
-            % INITJOINJOBCLASSES(SELF, CUSTOMERCLASSES)
+            % INITJOINJOBCLASSES(CUSTOMERCLASSES)
             
             for i = 1 : length(customerClasses)
                 self.joinJobClasses{i} = customerClasses{i};
@@ -50,7 +50,7 @@ classdef Joiner < InputSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
-            % CLONE = COPYELEMENT(SELF)
+            % CLONE = COPYELEMENT()
             
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);

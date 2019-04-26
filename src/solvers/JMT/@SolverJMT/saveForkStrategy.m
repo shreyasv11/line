@@ -1,5 +1,5 @@
 function [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode)
-% [SIMDOC, SECTION] = SAVEFORKSTRATEGY(SELF, SIMDOC, SECTION, CURRENTNODE)
+% [SIMDOC, SECTION] = SAVEFORKSTRATEGY(SIMDOC, SECTION, CURRENTNODE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

@@ -27,49 +27,49 @@ classdef EnsembleSolver < Solver
     
     methods %(Abstract) % implemented with errors for Octave compatibility
         function bool = supports(self, model) % true if model is supported by the solver
-            % BOOL = SUPPORTS(SELF, MODEL) % TRUE IF MODEL IS SUPPORTED BY THE SOLVER
+            % BOOL = SUPPORTS(MODEL) % TRUE IF MODEL IS SUPPORTED BY THE SOLVER
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function [QN,UN,RT,TT] = getAvg(self)
-            % [QN,UN,RT,TT] = GETAVG(SELF)
+            % [QN,UN,RT,TT] = GETAVG()
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function init(self) % operations before starting to iterate
-            % INIT(SELF) % OPERATIONS BEFORE STARTING TO ITERATE
+            % INIT() % OPERATIONS BEFORE STARTING TO ITERATE
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function pre(self, it) % operations before an iteration
-            % PRE(SELF, IT) % OPERATIONS BEFORE AN ITERATION
+            % PRE(IT) % OPERATIONS BEFORE AN ITERATION
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function [results, runtime] = analyze(self, e) % operations within an iteration
-            % [RESULTS, RUNTIME] = ANALYZE(SELF, E) % OPERATIONS WITHIN AN ITERATION
+            % [RESULTS, RUNTIME] = ANALYZE(E) % OPERATIONS WITHIN AN ITERATION
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function post(self, it) % operations after an iteration
-            % POST(SELF, IT) % OPERATIONS AFTER AN ITERATION
+            % POST(IT) % OPERATIONS AFTER AN ITERATION
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function finish(self) % operations after interations are completed
-            % FINISH(SELF) % OPERATIONS AFTER INTERATIONS ARE COMPLETED
+            % FINISH() % OPERATIONS AFTER INTERATIONS ARE COMPLETED
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
         function bool = converged(self, it) % convergence test at iteration it
-            % BOOL = CONVERGED(SELF, IT) % CONVERGENCE TEST AT ITERATION IT
+            % BOOL = CONVERGED(IT) % CONVERGENCE TEST AT ITERATION IT
             
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
@@ -78,14 +78,14 @@ classdef EnsembleSolver < Solver
     
     methods % default implementations
         function submodels = list(self, it)
-            % SUBMODELS = LIST(SELF, IT)
+            % SUBMODELS = LIST(IT)
             
             % submodels to be considered at iteration it
             submodels = 1:self.getNumberOfModels;
         end
         
         function it = getIteration(self)
-            % IT = GETITERATION(SELF)
+            % IT = GETITERATION()
             
             it = size(results,1);
         end
@@ -93,7 +93,7 @@ classdef EnsembleSolver < Solver
     
     methods
         function solver = getSolver(self, e) % solver for ensemble model e
-            % SOLVER = GETSOLVER(SELF, E) % SOLVER FOR ENSEMBLE MODEL E
+            % SOLVER = GETSOLVER(E) % SOLVER FOR ENSEMBLE MODEL E
             
             solver = self.solvers{e};
         end
@@ -102,7 +102,7 @@ classdef EnsembleSolver < Solver
         % setSolver(solver) : solver is assigned to all stages
         % setSolver(solver, e) : solver is assigned to stage e
         function solver = setSolver(self, solver, e)
-            % SOLVER = SETSOLVER(SELF, SOLVER, E)
+            % SOLVER = SETSOLVER(SOLVER, E)
             
             if iscell(solver)
                 self.solvers = solver;
@@ -118,13 +118,13 @@ classdef EnsembleSolver < Solver
         end
         
         function E = getNumberOfModels(self)
-            % E = GETNUMBEROFMODELS(SELF)
+            % E = GETNUMBEROFMODELS()
             
             E = length(self.ensemble);
         end
         
         function [runtime, sruntime, results] = run(self)
-            % [RUNTIME, SRUNTIME, RESULTS] = RUN(SELF)
+            % [RUNTIME, SRUNTIME, RESULTS] = RUN()
             
             T0 = tic;
             it = 0;

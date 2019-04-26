@@ -1,5 +1,6 @@
 function [Qfull, Ufull, Rfull, Tfull, Cfull, Xfull, t, Qfull_t, Ufull_t, Tfull_t, lastSolution] = solver_fluid_analysis(qn, options)
-	% [QFULL, UFULL, RFULL, TFULL, CFULL, XFULL, T, QFULL_T, UFULL_T, TFULL_T, LASTSOLUTION] = SOLVER_FLUID_ANALYSIS(QN, OPTIONS)	
+% [QFULL, UFULL, RFULL, TFULL, CFULL, XFULL, T, QFULL_T, UFULL_T, TFULL_T, LASTSOLUTION] = SOLVER_FLUID_ANALYSIS(QN, OPTIONS)
+
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
@@ -45,12 +46,12 @@ if findstring(qn.sched, SchedStrategy.FCFS) ~= -1 % if there are FCFS stations
     
     while max(abs(1-eta./eta_1)) > tol && iter <= options.iter_max
         iter = iter + 1;
-        eta_1 = eta;        
+        eta_1 = eta;
         eta= zeros(1,M);
         cs = ones(M,1);
         for i=1:M
             B(i) = min(sum(Qfull(i,:)),S(i)); % number of busy servers
-        end        
+        end
         for i=1:M
             sd = rates0(i,:)>0;
             Ufull(i,sd) = Tfull(i,sd) ./ rates0(i,sd);

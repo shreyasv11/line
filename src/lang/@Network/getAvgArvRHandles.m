@@ -1,35 +1,30 @@
-function [Q] = getAvgQLenHandles(self)
-% [Q] = GETAVGQLENHANDLES()
+% A(i,r): mean arrival rate of class r at station i
+function [A] = getAvgArvRHandles(self)
+% [T] = GETAVGARVRHANDLES()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % The method returns the handles to the performance indices but
 % they are optional to collect
-if isempty(self.handles) || ~isfield(self.handles,'Q')
+if isempty(self.handles) || ~isfield(self.handles,'A')
     M = self.getNumberOfStations();
     K = self.getNumberOfClasses();
     
-    Q = cell(M,K); % queue-length
+    A = cell(1,K); % arrival rate
     for i=1:M
         for r=1:K
-            Q{i,r} = Metric(Metric.QLen, self.classes{r}, self.stations{i});
-            self.addMetric(Q{i,r});
-            if isa(self.stations{i},'Source')
-                Q{i,r}.disable();
-            end
-            if isa(self.stations{i},'Sink')
-                Q{i,r}.disable();
-            end
+            A{i,r} = Metric(Metric.ArvR, self.classes{r}, self.stations{i});
+            %self.addMetric(A{i,r}); % not supported by JMT
             if ~strcmpi(class(self.stations{i}.server),'ServiceTunnel')
                 if isempty(self.stations{i}.server.serviceProcess{r}) || strcmpi(class(self.stations{i}.server.serviceProcess{r}{end}),'Disabled')
-                    Q{i,r}.disable();
+                    A{i,r}.disable();
                 end
             end
         end
     end
-    self.handles.Q = Q;
+    self.handles.A = A;
 else
-    Q = self.handles.Q;
+    A = self.handles.A;
 end
 end

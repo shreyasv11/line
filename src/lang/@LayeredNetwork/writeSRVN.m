@@ -1,5 +1,5 @@
 function writeSRVN(self, filename)
-% WRITESRVN(SELF, FILENAME)
+% WRITESRVN(FILENAME)
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 fid = fopen(filename,'w+');

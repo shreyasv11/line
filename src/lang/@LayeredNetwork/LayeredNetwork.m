@@ -63,7 +63,7 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         function self = init(self)
-            % SELF = INIT(SELF)
+            % SELF = INIT()
             
             self.generateGraph;
             self.initDefault;
@@ -84,7 +84,7 @@ classdef LayeredNetwork < Model & Ensemble
         [subgraphs, levels] = getGraphLayers(self, lqnGraph, taskGraph)
         
         function G = summary(self)
-            % G = SUMMARY(SELF)
+            % G = SUMMARY()
             
             G = self.getGraph;
         end
@@ -119,12 +119,12 @@ classdef LayeredNetwork < Model & Ensemble
     
     methods
         function E = getNumberOfLayers(self)
-            % E = GETNUMBEROFLAYERS(SELF)
+            % E = GETNUMBEROFLAYERS()
             
             E = self.getNumberOfModels();
         end
         function E = getNumberOfModels(self)
-            % E = GETNUMBEROFMODELS(SELF)
+            % E = GETNUMBEROFMODELS()
             
             if isempty(self.ensemble)
                 self.ensemble = self.getEnsemble();
@@ -133,7 +133,7 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         function layers = getLayers(self)
-            % LAYERS = GETLAYERS(SELF)
+            % LAYERS = GETLAYERS()
             
             layers = self.getEnsemble();
         end
@@ -146,7 +146,7 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         function self = initUsedFeatures(self)
-            % SELF = INITUSEDFEATURES(SELF)
+            % SELF = INITUSEDFEATURES()
             
             for e=1:self.getNumberOfModels()
                 self.usedFeatures{e} = SolverFeatureSet;
@@ -154,7 +154,7 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         function usedFeatures = getUsedLangFeatures(self)
-            % USEDFEATURES = GETUSEDLANGFEATURES(SELF)
+            % USEDFEATURES = GETUSEDLANGFEATURES()
             
             E = self.getNumberOfLayers();
             usedFeatures = cell(1,E);

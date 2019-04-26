@@ -20,7 +20,7 @@ classdef Section < NetworkElement
     
     methods
         function summary(self)
-            % SUMMARY(SELF)
+            % SUMMARY()
             
             %            fprintf('\n%s',class(self));
         end

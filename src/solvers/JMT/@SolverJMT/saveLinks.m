@@ -1,5 +1,5 @@
 function [simElem, simDoc] = saveLinks(self, simElem, simDoc)
-% [SIMELEM, SIMDOC] = SAVELINKS(SELF, SIMELEM, SIMDOC)
+% [SIMELEM, SIMDOC] = SAVELINKS(SIMELEM, SIMDOC)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

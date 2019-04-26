@@ -4,7 +4,7 @@
 % R{i,r}: timeseries of mean response time of class r at node i (summed across visits)
 % T{i,r}: timeseries of mean throughput of class r at node i
 function [Qt,Ut,Tt] = getTranHandles(self)
-% [QT,UT,TT] = GETTRANHANDLES(SELF)
+% [QT,UT,TT] = GETTRANHANDLES()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

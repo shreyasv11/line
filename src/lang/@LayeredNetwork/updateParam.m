@@ -1,5 +1,5 @@
 function self = updateParam(self, AvgTable)
-% SELF = UPDATEPARAM(SELF, AVGTABLE)
+% SELF = UPDATEPARAM(AVGTABLE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

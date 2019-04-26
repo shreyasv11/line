@@ -20,7 +20,7 @@ classdef Gamma < ContinuousDistrib
     
     methods
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             shape = self.getParam(1).paramValue;
@@ -29,7 +29,7 @@ classdef Gamma < ContinuousDistrib
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             
@@ -38,7 +38,7 @@ classdef Gamma < ContinuousDistrib
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end
@@ -59,7 +59,7 @@ classdef Gamma < ContinuousDistrib
         end
         
         function L = evalLaplaceTransform(self, s)
-            % L = EVALLAPLACETRANSFORM(SELF, S)
+            % L = EVALLAPLACETRANSFORM(S)
             
             % Evaluate the Laplace transform of the distribution function at t
             % AT T

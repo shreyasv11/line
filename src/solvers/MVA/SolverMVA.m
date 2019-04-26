@@ -13,7 +13,7 @@ classdef SolverMVA < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -21,7 +21,7 @@ classdef SolverMVA < NetworkSolver
         end
         
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             T0=tic;
@@ -43,7 +43,7 @@ classdef SolverMVA < NetworkSolver
         end
         
         function [lNormConst] = getProbNormConst(self)
-            % [LNORMCONST] = GETPROBNORMCONST(SELF)
+            % [LNORMCONST] = GETPROBNORMCONST()
             
             if ~isempty(self.result)
                 lNormConst = self.result.Prob.logNormConst;
@@ -56,7 +56,7 @@ classdef SolverMVA < NetworkSolver
         end
         
         function [Pnir,logPnir] = getProbStateAggr(self, ist)
-            % [PNIR,LOGPNIR] = GETPROBSTATEAGGR(SELF, IST)
+            % [PNIR,LOGPNIR] = GETPROBSTATEAGGR(IST)
             
             if ~exist('ist','var')
                 error('getProbStateAggr requires to pass a parameter the station of interest.');
@@ -93,7 +93,7 @@ classdef SolverMVA < NetworkSolver
         end
         
         function [Pnir,logPn] = getProbSysStateAggr(self)
-            % [PNIR,LOGPN] = GETPROBSYSSTATEAGGR(SELF)
+            % [PNIR,LOGPN] = GETPROBSYSSTATEAGGR()
             
             if isempty(self.result)
                 self.run;
@@ -164,7 +164,7 @@ classdef SolverMVA < NetworkSolver
             end
         end
         function options = defaultOptions(self)
-            % OPTIONS = DEFAULTOPTIONS(SELF)
+            % OPTIONS = DEFAULTOPTIONS()
             
             options = Solver.defaultOptions();
             options.iter_max = 10^3;

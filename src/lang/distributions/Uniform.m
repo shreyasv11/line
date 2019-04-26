@@ -18,14 +18,14 @@ classdef Uniform < ContinuousDistrib
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             ex = (self.getParam(2).paramValue+self.getParam(1).paramValue) / 2;
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             var = (self.getParam(2).paramValue-self.getParam(1).paramValue)^2 / 12;
@@ -50,7 +50,7 @@ classdef Uniform < ContinuousDistrib
         end
         
         function X = sample(self, n)
-            % X = SAMPLE(SELF, N)
+            % X = SAMPLE(N)
             
             % Get n samples from the distribution
             if ~exist('n','var'), n = 1; end

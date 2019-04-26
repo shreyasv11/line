@@ -1,5 +1,5 @@
 function index = getIndexSourceStation(self)
-% INDEX = GETINDEXSOURCESTATION(SELF)
+% INDEX = GETINDEXSOURCESTATION()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

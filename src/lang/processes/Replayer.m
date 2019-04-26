@@ -28,7 +28,7 @@ classdef Replayer < TimeSeries
         end
         
         function load(self)
-            % LOAD(SELF)
+            % LOAD()
             
             fileName = self.getParam(1).paramValue;
             self.data = load(fileName);
@@ -36,13 +36,13 @@ classdef Replayer < TimeSeries
         end
         
         function unload(self)
-            % UNLOAD(SELF)
+            % UNLOAD()
             
             self.data = [];
         end
         
         function ex = getMean(self)
-            % EX = GETMEAN(SELF)
+            % EX = GETMEAN()
             
             % Get distribution mean
             if isempty(self.data)
@@ -52,7 +52,7 @@ classdef Replayer < TimeSeries
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             if isempty(self.data)
@@ -62,7 +62,7 @@ classdef Replayer < TimeSeries
         end
         
         function SKEW = getSkewness(self)
-            % SKEW = GETSKEWNESS(SELF)
+            % SKEW = GETSKEWNESS()
             
             % Get distribution skewness
             if isempty(self.data)
@@ -72,19 +72,19 @@ classdef Replayer < TimeSeries
         end
         
         function distr = fitExp(self)
-            % DISTR = FITEXP(SELF)
+            % DISTR = FITEXP()
             
             distr = Exp.fitMean(self.getMean);
         end
         
         function distr = fitAPH(self)
-            % DISTR = FITAPH(SELF)
+            % DISTR = FITAPH()
             
             distr = APH.fitCentral(self.getMean, self.getVariance, self.getSkewness);
         end
         
         function distr = fitCoxian(self)
-            % DISTR = FITCOXIAN(SELF)
+            % DISTR = FITCOXIAN()
             
             distr = Cox2.fitCentral(self.getMean, self.getVariance, self.getSkewness);
         end

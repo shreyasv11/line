@@ -29,13 +29,13 @@ classdef ClassSwitch < Node
         end
         
         function setProbRouting(self, class, destination, probability)
-            % SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            % SETPROBROUTING(CLASS, DESTINATION, PROBABILITY)
             
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end
         
         function sections = getSections(self)
-            % SECTIONS = GETSECTIONS(SELF)
+            % SECTIONS = GETSECTIONS()
             
             sections = {self.input, self.server, self.output};
         end

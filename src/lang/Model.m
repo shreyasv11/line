@@ -17,13 +17,13 @@ classdef Model < Copyable
         end
         
         function out = getName(self)
-            % OUT = GETNAME(SELF)
+            % OUT = GETNAME()
             
             out = self.name;
         end
         
         function self = setName(self, name)
-            % SELF = SETNAME(SELF, NAME)
+            % SELF = SETNAME(NAME)
             
             self.name = name;
         end

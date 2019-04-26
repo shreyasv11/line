@@ -21,11 +21,13 @@ classdef Metric < Copyable
         SysRespT = 'System Response Time';
         SysTput = 'System Throughput';
         Tput = 'Throughput';
+        ArvR = 'Arrival Rate';
         TputSink = 'Throughput per Sink';
         Util = 'Utilization';
         TranQLen = 'Tran Number of Customers';
         TranUtil = 'Tran Utilization';
         TranTput = 'Tran Throughput';
+        TranRespT = 'Tran Response Time';
     end
     
     
@@ -71,37 +73,37 @@ classdef Metric < Copyable
     
     methods
         function self = setTran(self, bool)
-            % SELF = SETTRAN(SELF, BOOL)
+            % SELF = SETTRAN(BOOL)
             
             self.transient = bool;
         end
         
         function bool = isTran(self)
-            % BOOL = ISTRAN(SELF)
+            % BOOL = ISTRAN()
             
             bool = self.transient;
         end
         
         function bool = isDisabled(self)
-            % BOOL = ISDISABLED(SELF)
+            % BOOL = ISDISABLED()
             
             bool = self.disabled;
         end
         
         function self = disable(self)
-            % SELF = DISABLE(SELF)
+            % SELF = DISABLE()
             
             self.disabled = 1;
         end
         
         function self = enable(self)
-            % SELF = ENABLE(SELF)
+            % SELF = ENABLE()
             
             self.disabled = 0;
         end
         
         function value = get(self, results, model)
-            % VALUE = GET(SELF, RESULTS, MODEL)
+            % VALUE = GET(RESULTS, MODEL)
             
             if self.disabled == 1
                 value = NaN;
@@ -111,7 +113,18 @@ classdef Metric < Copyable
             switch results.solver
                 case 'SolverJMT'
                     for i=1:length(results.metric)
-                        if strcmp(results.metric{i}.class, self.class.name) && strcmp(results.metric{i}.measureType,self.type) && strcmp(results.metric{i}.station, self.station.name)
+                        type = self.type;
+                        switch self.type
+                            case Metric.TranQLen
+                                type = Metric.QLen;
+                            case Metric.TranUtil
+                                type = Metric.Util;
+                            case Metric.TranTput
+                                type = Metric.Tput;
+                            case Metric.TranRespT
+                                type = Metric.RespT;
+                        end
+                        if strcmp(results.metric{i}.class, self.class.name) && strcmp(results.metric{i}.measureType,type) && strcmp(results.metric{i}.station, self.station.name)
                             chain = model.getChains{model.getClassChain(self.class.name)};
                             switch self.class.type
                                 case 'closed'
@@ -131,7 +144,7 @@ classdef Metric < Copyable
                             break;
                         end
                     end
-                otherwise % assume a LINE solver
+                otherwise % another LINE solver
                     if ~exist('model','var')
                         error('Wrong syntax, use Metric.get(results,model).\n');
                     end
@@ -164,6 +177,10 @@ classdef Metric < Copyable
                             %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
                             %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.Tran.Avg.Q{i,r};
+                        case Metric.TranRespT
+                            %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
+                            %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.R{i,r};
                     end
             end
         end

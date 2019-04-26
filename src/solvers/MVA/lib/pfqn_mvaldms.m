@@ -1,5 +1,6 @@
 function [XN,QN,UN,CN] = pfqn_mvaldms(lambda,D,N,Z,S)
-	% [XN,QN,UN,CN] = PFQN_MVALDMS(LAMBDA,D,N,Z,S)	
+% [XN,QN,UN,CN] = PFQN_MVALDMS(LAMBDA,D,N,Z,S)
+
 % this differs from mvaldmx only in the computation of utilizations, which is based on little's law since each server is constant-rate
 [M,R] = size(D);
 Nct = sum(N(isfinite(N)));
@@ -68,14 +69,14 @@ while nvec>=0
         Pc(i, 1 + 0, hnvec) = max(eps,1-sum(Pc(i, 1 + (1:nc), hnvec)));
     end
     
-%     % now compute the normalizing constant
-%     last_nnz = find(nvec>0, 1, 'last' );
-%     if sum(nvec(1:last_nnz-1)) == sum(Nc(1:last_nnz-1)) && sum(nvec((last_nnz+1):C))==0
-%         logX = log(XN(last_nnz));
-%         if ~isempty(logX)
-%             lGN = lGN - logX;
-%         end
-%     end
+    %     % now compute the normalizing constant
+    %     last_nnz = find(nvec>0, 1, 'last' );
+    %     if sum(nvec(1:last_nnz-1)) == sum(Nc(1:last_nnz-1)) && sum(nvec((last_nnz+1):C))==0
+    %         logX = log(XN(last_nnz));
+    %         if ~isempty(logX)
+    %             lGN = lGN - logX;
+    %         end
+    %     end
     
     nvec = pprod(nvec, Nc);
 end
@@ -86,10 +87,10 @@ for c=1:C
     hnvec_c = hashpop(oner(Nc,c),Nc,C,prods);
     for i=1:M
         u(i,c) = 0;
-              for n=1:sum(Nc) % closed class utilization
-%                  u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n-1, hnvec_c)
-%                  u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n-1, hnvec_c);
-              end
+        for n=1:sum(Nc) % closed class utilization
+            %                  u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n-1, hnvec_c)
+            %                  u(i,c) = u(i,c) + Dc(i,c) * x(c,hnvec) * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n-1, hnvec_c);
+        end
         u(i,c) = Dc(i,c) * x(c,hnvec) / S(i);
     end
 end
@@ -119,7 +120,7 @@ for r=openClasses
         % match simulation, this appears to be simly lambda_r*D_{ir}
         UN(i,r) = 0;
         %for n=0:sum(Nc)
-            UN(i,r) = UN(i,r) + lambda(r) * D(i,r)/S(i);% * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n, hnvec);
+        UN(i,r) = UN(i,r) + lambda(r) * D(i,r)/S(i);% * Eprime(i,1+n+1) / E(i,1+n+1) * Pc(i, 1+n, hnvec);
         %end
     end
 end

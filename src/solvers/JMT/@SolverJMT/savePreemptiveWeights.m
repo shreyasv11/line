@@ -1,5 +1,5 @@
 function [simDoc, section] = savePreemptiveWeights(self, simDoc, section, currentNode)
-% [SIMDOC, SECTION] = SAVEPREEMPTIVEWEIGHTS(SELF, SIMDOC, SECTION, CURRENTNODE)
+% [SIMDOC, SECTION] = SAVEPREEMPTIVEWEIGHTS(SIMDOC, SECTION, CURRENTNODE)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

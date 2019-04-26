@@ -1,5 +1,5 @@
 function jsimgView(self, options)
-% JSIMGVIEW(SELF, OPTIONS)
+% JSIMGVIEW(OPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

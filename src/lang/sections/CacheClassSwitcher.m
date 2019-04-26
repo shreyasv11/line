@@ -33,7 +33,7 @@ classdef CacheClassSwitcher < StatefulClassSwitcher
     
     methods
         function prob = simpleHitMiss(self, r, s, state, statep)
-            % PROB = SIMPLEHITMISS(SELF, R, S, STATE, STATEP)
+            % PROB = SIMPLEHITMISS(R, S, STATE, STATEP)
             
             if nargin <= 3
                 state = []; %local server state

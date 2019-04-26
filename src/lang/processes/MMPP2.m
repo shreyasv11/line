@@ -51,7 +51,7 @@ classdef MMPP2 < MarkovModulated
         
         % inter-arrival time properties
         function mean = getMean(self)
-            % MEAN = GETMEAN(SELF)
+            % MEAN = GETMEAN()
             
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
@@ -62,7 +62,7 @@ classdef MMPP2 < MarkovModulated
         end
         
         function scv = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
@@ -72,7 +72,7 @@ classdef MMPP2 < MarkovModulated
         end
         
         function id = getID(self) % asymptotic index of dispersion
-            % ID = GETID(SELF) % ASYMPTOTIC INDEX OF DISPERSION
+            % ID = GETID() % ASYMPTOTIC INDEX OF DISPERSION
             
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
@@ -82,13 +82,13 @@ classdef MMPP2 < MarkovModulated
         end
         
         function PH = getRepresentation(self)
-            % PH = GETREPRESENTATION(SELF)
+            % PH = GETREPRESENTATION()
             
             PH = map_renewal(self.getProcess(self));
         end
         
         function MAP = getProcess(self)
-            % MAP = GETPROCESS(SELF)
+            % MAP = GETPROCESS()
             
             lambda0 =  self.getParam(1).paramValue;
             lambda1 =  self.getParam(2).paramValue;
@@ -100,13 +100,13 @@ classdef MMPP2 < MarkovModulated
         end
         
         function n = getNumberOfPhases(self)
-            % N = GETNUMBEROFPHASES(SELF)
+            % N = GETNUMBEROFPHASES()
             
             n = 2;
         end
         
         function bool = isImmmediate(self)
-            % BOOL = ISIMMMEDIATE(SELF)
+            % BOOL = ISIMMMEDIATE()
             
             bool = self.getMean() == 0;
         end

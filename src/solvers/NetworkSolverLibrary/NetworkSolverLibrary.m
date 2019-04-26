@@ -16,7 +16,7 @@ classdef NetworkSolverLibrary < NetworkSolver
         end
         
         function runtime = run(self)
-            % RUNTIME = RUN(SELF)
+            % RUNTIME = RUN()
             % Run the solver
             
             T0=tic;

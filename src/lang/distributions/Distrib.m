@@ -22,31 +22,31 @@ classdef Distrib < Copyable
     methods %(Abstract)
         
         function X = sample(self)
-            % X = SAMPLE(SELF)
+            % X = SAMPLE()
             % Get n samples from the distribution
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
         function MEAN = getMean(self)
-            % MEAN = GETMEAN(SELF)
+            % MEAN = GETMEAN()
             % Get distribution mean
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
         function SCV = getSCV(self)
-            % SCV = GETSCV(SELF)
+            % SCV = GETSCV()
             % Get distribution squared coefficient of variation (SCV = variance / mean^2)
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
         function VAR = getVariance(self)
-            % VAR = GETVARIANCE(SELF)
+            % VAR = GETVARIANCE()
             % Get distribution variance
             VAR = self.getSCV()*self.getMean()^2;
         end
         
         function SKEW = getSkewness(self)
-            % SKEW = GETSKEWNESS(SELF)
+            % SKEW = GETSKEWNESS()
             % Get distribution skewness
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
@@ -58,7 +58,7 @@ classdef Distrib < Copyable
         end
         
         function L = evalLaplaceTransform(self, s)
-            % L = EVALLAPLACETRANSFORM(SELF, S)
+            % L = EVALLAPLACETRANSFORM(S)
             % Evaluate the Laplace transform of the distribution function at t
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
@@ -78,7 +78,7 @@ classdef Distrib < Copyable
     
     methods
         function nParam = setNumParams(self, numParam)
-            % NPARAM = SETNUMPARAMS(SELF, NUMPARAM)
+            % NPARAM = SETNUMPARAMS(NUMPARAM)
             % Initializes the parameters
             self.params = cell(1,numParam);
             for i=1:numParam
@@ -87,13 +87,13 @@ classdef Distrib < Copyable
         end
         
         function nParam = getNumParams(self)
-            % NPARAM = GETNUMPARAMS(SELF)
+            % NPARAM = GETNUMPARAMS()
             % Returns the number of parameters needed to specify the distribution
             nParam = length(self.params);
         end
         
         function setParam(self, id, name, value, typeClass)
-            % SETPARAM(SELF, ID, NAME, VALUE, TYPECLASS)
+            % SETPARAM(ID, NAME, VALUE, TYPECLASS)
             % Set a distribution parameter given id, name, value, Java
             % class type (for JMT translation)
             self.params{id}.paramName=name;
@@ -108,7 +108,7 @@ classdef Distrib < Copyable
         end
         
         function bool = isDisabled(self)
-            % BOOL = ISDISABLED(SELF)
+            % BOOL = ISDISABLED()
             % Check if the distribution is equivalent to a Disabled
             % distribution
             %bool = cellfun(@(c) isnan(c.paramValue), self.params)
@@ -116,20 +116,20 @@ classdef Distrib < Copyable
         end
         
         function bool = isImmediate(self)
-            % BOOL = ISIMMEDIATE(SELF)
+            % BOOL = ISIMMEDIATE()
             % Check if the distribution is equivalent to an Immediate
             % distribution
             bool = self.getMean() == 0 || isa(self,'Immediate');
         end
         
         function bool = isContinuous(self)
-            % BOOL = ISCONTINUOUS(SELF)
+            % BOOL = ISCONTINUOUS()
             % Check if the distribution is discrete
             bool = isa(self,'ContinuousDistrib');
         end
         
         function bool = isDiscrete(self)
-            % BOOL = ISDISCRETE(SELF)
+            % BOOL = ISDISCRETE()
             % Check if the distribution is discrete
             bool = isa(self,'DiscreteDistrib');
         end

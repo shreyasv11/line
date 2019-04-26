@@ -1,6 +1,6 @@
 % getAG : export model in agent representation
 function genAG(self)
-% GENAG(SELF)
+% GENAG()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

@@ -18,7 +18,7 @@ classdef Server < ServiceSection
     
     methods (Access = 'private')
         function initServers(self, classes)
-            % INITSERVERS(SELF, CLASSES)
+            % INITSERVERS(CLASSES)
             
             for i = 1 : length(classes)
                 self.serviceProcess{1, i} = {classes{i}.name, ServiceStrategy.ID_LI, Exp(0.0)};
@@ -29,7 +29,7 @@ classdef Server < ServiceSection
     methods(Access = protected)
         % Override copyElement method:
         function clone = copyElement(self)
-            % CLONE = COPYELEMENT(SELF)
+            % CLONE = COPYELEMENT()
             
             % Make a shallow copy of all properties
             clone = copyElement@Copyable(self);

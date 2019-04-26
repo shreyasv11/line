@@ -91,6 +91,7 @@ classdef NetworkStruct <handle
                     switch self.nodetype(ind)
                         case NodeType.Cache
                             self.isstatedep(ind,2) = true; % state dependent service
+%                            self.isstatedep(ind,3) = true; % state dependent routing
                     end
                     for r=1:self.nclasses
                         switch self.routing(ind,r)
@@ -122,7 +123,7 @@ classdef NetworkStruct <handle
         end
         
         function reindex(self)
-            % REINDEX(SELF)
+            % REINDEX()
             
             for ind=1:self.nnodes
                 self.nodeToStateful(ind) = self.nd2sf(ind);
@@ -138,7 +139,7 @@ classdef NetworkStruct <handle
         end
         
         function setChains(self, chains, visits, rt, nodes_visits)
-            % SETCHAINS(SELF, CHAINS, VISITS, RT, NODES_VISITS)
+            % SETCHAINS(CHAINS, VISITS, RT, NODES_VISITS)
             
             self.chains = logical(chains);
             self.visits = visits;
@@ -148,7 +149,7 @@ classdef NetworkStruct <handle
         end
         
         function setSched(self, sched, schedparam)
-            % SETSCHED(SELF, SCHED, SCHEDPARAM)
+            % SETSCHED(SCHED, SCHEDPARAM)
             
             self.sched = sched;
             self.schedparam = schedparam;
@@ -159,14 +160,14 @@ classdef NetworkStruct <handle
         end
         
         function setService(self, rates, scv)
-            % SETSERVICE(SELF, RATES, SCV)
+            % SETSERVICE(RATES, SCV)
             
             self.rates = rates;
             self.scv = scv;
         end
         
         function setPHService(self, ph, phases)
-            % SETPHSERVICE(SELF, PH, PHASES)
+            % SETPHSERVICE(PH, PHASES)
             
             self.ph = ph;
             self.phases = phases;
@@ -175,7 +176,7 @@ classdef NetworkStruct <handle
         end
         
         function setCoxService(self, mu, phi, phases)
-            % SETCOXSERVICE(SELF, MU, PHI, PHASES)
+            % SETCOXSERVICE(MU, PHI, PHASES)
             
             self.mu = mu;
             self.phi = phi;
@@ -185,33 +186,33 @@ classdef NetworkStruct <handle
         end
         
         function setCapacity(self, cap, classcap)
-            % SETCAPACITY(SELF, CAP, CLASSCAP)
+            % SETCAPACITY(CAP, CLASSCAP)
             
             self.cap = cap;
             self.classcap = classcap;
         end
         
         function setPrio(self, prio)
-            % SETPRIO(SELF, PRIO)
+            % SETPRIO(PRIO)
             
             self.classprio = prio;
         end
         
         function setSync(self, sync)
-            % SETSYNC(SELF, SYNC)
+            % SETSYNC(SYNC)
             
             self.sync = sync;
         end
         
         function setLocalVars(self, nvars, varsparam)
-            % SETLOCALVARS(SELF, NVARS, VARSPARAM)
+            % SETLOCALVARS(NVARS, VARSPARAM)
             
             self.nvars = nvars;
             self.varsparam = varsparam;
         end
         
         function setRoutingFunction(self, rtfun, csmask)
-            %(SELF, RTFUN, CSMASK)
+            %(RTFUN, CSMASK)
             
             self.rtfun = rtfun;
             self.csmask = csmask;
@@ -228,7 +229,7 @@ classdef NetworkStruct <handle
     
     methods % index conversion
         function stat_idx = nd2st(self, node_idx)
-            % STAT_IDX = ND2ST(SELF, NODE_IDX)
+            % STAT_IDX = ND2ST(NODE_IDX)
             
             if self.isstation(node_idx)
                 stat_idx = at(cumsum(self.isstation),node_idx);
@@ -255,7 +256,7 @@ classdef NetworkStruct <handle
         end
         
         function sful_idx = nd2sf(self, node_idx)
-            % SFUL_IDX = ND2SF(SELF, NODE_IDX)
+            % SFUL_IDX = ND2SF(NODE_IDX)
             
             if self.isstateful(node_idx)
                 sful_idx = at(cumsum(self.isstateful),node_idx);

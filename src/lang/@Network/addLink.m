@@ -1,5 +1,5 @@
 function addLink(self, nodeA, nodeB)
-% ADDLINK(SELF, NODEA, NODEB)
+% ADDLINK(NODEA, NODEB)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

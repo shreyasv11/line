@@ -35,19 +35,19 @@ classdef Join < Station
     
     methods
         function self = setStrategy(self, class, strategy)
-            % SELF = SETSTRATEGY(SELF, CLASS, STRATEGY)
+            % SELF = SETSTRATEGY(CLASS, STRATEGY)
             
             self.input.setStrategy(class,strategy);
         end
         
         function self = setRequired(self, class, njobs)
-            % SELF = SETREQUIRED(SELF, CLASS, NJOBS)
+            % SELF = SETREQUIRED(CLASS, NJOBS)
             
             self.input.setRequired(class,njobs);
         end
         
         function self = setProbRouting(self, class, destination, probability)
-            % SELF = SETPROBROUTING(SELF, CLASS, DESTINATION, PROBABILITY)
+            % SELF = SETPROBROUTING(CLASS, DESTINATION, PROBABILITY)
             
             setRouting(self, class, RoutingStrategy.PROB, destination, probability);
         end

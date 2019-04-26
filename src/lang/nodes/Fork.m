@@ -28,7 +28,7 @@ classdef Fork < Node
         end
         
         function setTasksPerLink(self, nTasks)
-            % SETTASKSPERLINK(SELF, NTASKS)
+            % SETTASKSPERLINK(NTASKS)
             
             self.output.tasksPerLink = nTasks;
         end

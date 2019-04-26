@@ -1,5 +1,5 @@
 function addLinks(self, nodesList)
-% ADDLINKS(SELF, NODESLIST)
+% ADDLINKS(NODESLIST)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

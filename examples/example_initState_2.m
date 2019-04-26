@@ -27,7 +27,7 @@ options = Solver.defaultOptions;
 options.verbose=1;
 options.samples=1e4;
 options.stiff=true;
-options.timespan = [0,15];
+options.timespan = [0,5];
 %% This part illustrates the execution of different solvers
 solver={};
 solver{end+1} = SolverCTMC(model,options);
@@ -35,7 +35,8 @@ solver{end+1} = SolverCTMC(model,options);
 %solver{end+1} = SolverSSA(model,options);
 solver{end+1} = SolverFluid(model,options);
 %solver{end+1} = SolverMVA(model,options);
-dashing = {'-','+'};
+dashing = {'-','--'};
+
 %%
 model.initDefault;
 disp('Prior 1: prior all on default initialization')
@@ -51,13 +52,13 @@ for s=1:length(solver)
 end
 title('Prior on default state');
 ylabel('QLen- station 2, class 1');
-ylim([0,3])
+ylim([0,5])
 xlabel('Time t');
 xlim(options.timespan)
 legend('ctmc','fluid')
 %%
 model.initFromMarginal([0,0;4,1]);
-disp('Prior 2: prior all on first found state with given marginal')
+disp('Prior 2: prior all on first found state with the same number of jobs')
 disp('Initial state is:')
 state=model.getState();
 [state{1}(1,:),state{2}(1,:)]
@@ -69,14 +70,14 @@ for s=1:length(solver)
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
     solver{s}.reset();
 end
-title('Prior on first state with given marginal');
+title('Prior on first state with the same number of jobs');
 ylabel('QLen- station 2, class 1');
-ylim([0,3])
+ylim([0,5])
 xlabel('Time t');
 xlim(options.timespan)
 legend('ctmc','fluid')
 %%
-disp('Prior 3: uniform prior over all states with given marginal')
+disp('Prior 3: uniform prior over all states with the same number of jobs')
 model.initFromMarginal([0,0;4,1]);
 disp('Initial states are:')
 state=model.getState();
@@ -91,9 +92,9 @@ for s=1:length(solver)
     subplot(3,1,3);
     plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
 end
-title('Uniform prior on states with given marginal');
+title('Uniform prior on states with the same number of jobs');
 ylabel('QLen- station 2, class 1');
-ylim([0,3])
+ylim([0,5])
 xlabel('Time t');
 xlim(options.timespan)
 legend('ctmc','fluid')

@@ -1,5 +1,5 @@
 function refstat = getReferenceStations(self)
-% REFSTAT = GETREFERENCESTATIONS(SELF)
+% REFSTAT = GETREFERENCESTATIONS()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.

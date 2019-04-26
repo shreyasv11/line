@@ -13,7 +13,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function setOptions(self, options)
-            % SETOPTIONS(SELF, OPTIONS)
+            % SETOPTIONS(OPTIONS)
             % Assign the solver options
             
             self.checkOptions(options);
@@ -29,7 +29,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function [runtime, tranSysState] = run(self)
-            % [RUNTIME, TRANSYSSTATE] = RUN(SELF)
+            % [RUNTIME, TRANSYSSTATE] = RUN()
             
             T0=tic;
             options = self.getOptions;
@@ -56,7 +56,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function ProbState = getProbState(self, node, state)
-            % PROBSTATE = GETPROBSTATE(SELF, NODE, STATE)
+            % PROBSTATE = GETPROBSTATE(NODE, STATE)
             
             % we do not use probSysState as that is for joint states
             [~, tranSysState] = self.run;
@@ -76,7 +76,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function ProbStateAggr = getProbStateAggr(self, node, state)
-            % PROBSTATEAGGR = GETPROBSTATEAGGR(SELF, NODE, STATE)
+            % PROBSTATEAGGR = GETPROBSTATEAGGR(NODE, STATE)
             
             % we do not use probSysState as that is for joint states
             TranSysStateAggr = self.getTranSysStateAggr;
@@ -96,7 +96,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function ProbSysState = getProbSysState(self)
-            % PROBSYSSTATE = GETPROBSYSSTATE(SELF)
+            % PROBSYSSTATE = GETPROBSYSSTATE()
             
             TranSysState = self.getTranSysState;
             TSS = cell2mat([TranSysState.t,TranSysState.state(:)']);
@@ -112,7 +112,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function ProbSysStateAggr = getProbSysStateAggr(self)
-            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR(SELF)
+            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR()
             
             TranSysStateAggr = self.getTranSysStateAggr;
             TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);
@@ -135,7 +135,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranNodeState = getTranState(self, node)
-            % TRANNODESTATE = GETTRANSTATE(SELF, NODE)
+            % TRANNODESTATE = GETTRANSTATE(NODE)
             
             options = self.getOptions;
             switch options.method
@@ -152,7 +152,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranNodeStateAggr = getTranStateAggr(self, node)
-            % TRANNODESTATEAGGR = GETTRANSTATEAGGR(SELF, NODE)
+            % TRANNODESTATEAGGR = GETTRANSTATEAGGR(NODE)
             
             options = self.getOptions;
             switch options.method
@@ -171,7 +171,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranSysStateAggr = getTranSysStateAggr(self)
-            % TRANSYSSTATEAGGR = GETTRANSYSSTATEAGGR(SELF)
+            % TRANSYSSTATEAGGR = GETTRANSYSSTATEAGGR()
             
             options = self.getOptions;
             switch options.method
@@ -190,7 +190,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         function TranSysState = getTranSysState(self)
-            % TRANSYSSTATE = GETTRANSYSSTATE(SELF)
+            % TRANSYSSTATE = GETTRANSYSSTATE()
             
             options = self.getOptions;
             switch options.method

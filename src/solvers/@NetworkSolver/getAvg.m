@@ -7,7 +7,7 @@ function [QNclass,UNclass,RNclass,TNclass] = getAvg(self,Q,U,R,T)
 % All rights reserved.
 
 if nargin == 1 % no parameter
-    if isempty(self.model.handles) || ~isfield(self.model.handles,'Q') || ~isfield(self.model.handles,'U') || ~isfield(self.model.handles,'R') || ~isfield(self.model.handles,'T')
+    if isempty(self.model.handles) || ~isfield(self.model.handles,'Q') || ~isfield(self.model.handles,'U') || ~isfield(self.model.handles,'R') || ~isfield(self.model.handles,'T') || ~isfield(self.model.handles,'A')
         self.reset(); % reset in case there are partial results saved
     end
     [Q,U,R,T] = self.model.getAvgHandles;
@@ -32,6 +32,7 @@ if ~self.hasAvgResults || ~self.options.cache
                 UNclass=[];
                 RNclass=[];
                 TNclass=[];
+                ANclass=[];
                 return
             otherwise
                 rethrow(ME)
@@ -45,7 +46,6 @@ QNclass = [];
 UNclass = [];
 RNclass = [];
 TNclass = [];
-%ANclass = [];
 
 if ~isempty(Q)
     QNclass = zeros(M,K);
@@ -71,6 +71,7 @@ if ~isempty(R)
         end
     end
 end
+
 if ~isempty(T)
     TNclass = zeros(M,K);
     for k=1:K
@@ -79,6 +80,7 @@ if ~isempty(T)
         end
     end
 end
+
 
 %% nan values indicate that a metric is disabled
 QNclass(isnan(QNclass))=0;
@@ -90,5 +92,4 @@ TNclass(isnan(TNclass))=0;
 QNclass(RNclass < 10/Distrib.InfRate)=0;
 UNclass(RNclass < 10/Distrib.InfRate)=0;
 RNclass(RNclass < 10/Distrib.InfRate)=0;
-
 end
