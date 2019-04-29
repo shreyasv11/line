@@ -17,9 +17,9 @@ end
 if isfinite(self.getOptions.timespan(2))
     [Qt,Ut,Tt] = self.model.getTranHandles();
     [QNt,UNt,TNt] = self.getTranAvg(Qt,Ut,Tt);
-    QN = cellfun(@(c) c(end,1),QNt);
-    UN = cellfun(@(c) c(end,1),UNt);
-    TN = cellfun(@(c) c(end,1),TNt);
+    QN = cellfun(@(c) c.metric(end),QNt);
+    UN = cellfun(@(c) c.metric(end),UNt);
+    TN = cellfun(@(c) c.metric(end),TNt);
     RN = zeros(size(QN));
 else
     [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);

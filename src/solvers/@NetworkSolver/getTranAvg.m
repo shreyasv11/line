@@ -27,7 +27,7 @@ minrate = min(qn.rates(isfinite(qn.rates)));
 %if isempty(self.result) || isa(self.result.Avg.Q,double) || (isfield(self.options,'force') && self.options.force)
 if ~self.hasTranResults()
     if isinf(self.options.timespan(1)) && isinf(self.options.timespan(2))
-         self.options.timespan = [0,30/minrate];
+        self.options.timespan = [0,30/minrate];
         warning('Timespan of transient analysis unspecified, setting the timespan option to [0, %d]. Use %s(model,''timespan'',[0,T]) to customize.',self.options.timespan(2),class(self));
     end
     if isinf(self.options.timespan(1))
@@ -40,7 +40,7 @@ if ~self.hasTranResults()
         warning('End time of transient analysis unspecified, setting the timespan option to [%d,%d]. Use %s(model,''timespan'',[0,T]) to customize.',self.options.timespan(1),self.options.timespan(2),class(self));
         %error('Please specify the transient range using the timespan option, e.g., SolverCTMC(model,''timespan'',[0,T]).getTranAvg()');
     end
-    self.run();    
+    self.run();
 end
 %    if isempty(self.result)
 %        return
@@ -55,11 +55,31 @@ if ~isempty(Qt)
     %RNclass_t = cell(M,K);
     TNclass_t = cell(M,K);
     for k=1:K
-        for i=1:M            
-            QNclass_t{i,k} = Qt{i,k}.get(self.result,self.model);
-            UNclass_t{i,k} = Ut{i,k}.get(self.result,self.model);
-            %                            RNclass_t{i,k} = R{i,k}.get(self.result,self.model);
-            TNclass_t{i,k} = Tt{i,k}.get(self.result,self.model);
+        for i=1:M
+            ret = Qt{i,k}.get(self.result,self.model);
+            metricVal = struct();
+            metricVal.handle = {self.model.stations{i}, self.model.classes{k}};
+            metricVal.t = ret(:,2);
+            metricVal.metric = ret(:,1);
+            metricVal.aggregate = true;
+            QNclass_t{i,k} = metricVal;
+            
+            
+            ret = Ut{i,k}.get(self.result,self.model);
+            metricVal = struct();
+            metricVal.handle = {self.model.stations{i}, self.model.classes{k}};
+            metricVal.t = ret(:,2);
+            metricVal.metric = ret(:,1);
+            metricVal.aggregate = true;
+            UNclass_t{i,k} = metricVal;
+            
+            ret = Tt{i,k}.get(self.result,self.model);
+            metricVal = struct();
+            metricVal.handle = {self.model.stations{i}, self.model.classes{k}};
+            metricVal.t = ret(:,2);
+            metricVal.metric = ret(:,1);
+            metricVal.aggregate = true;
+            TNclass_t{i,k} = metricVal;
         end
     end
 end

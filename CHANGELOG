@@ -1,4 +1,4 @@
-2.0.0 (October 2018)
+2.0.0 (2019)
 - Major tool overhaul and refactoring, not retrocompatible with 0.x.x and 1.0.x versions.
 - New solver-agnostic modelling language to describe extended queueing networks and layered models.
 - New engine featuring solvers for extended queueing networks (CTMC, MVA, SSA, JMT, FLUID) and layered queueing models (LQNS, LN).

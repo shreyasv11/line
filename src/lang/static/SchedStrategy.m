@@ -19,7 +19,7 @@ classdef (Sealed) SchedStrategy
         HOL = 'hol';
         FORK = 'fork';
         EXT = 'ext'; % external world (open arrival source and sink)
-        REF = 'ref'; % reference node in LayeredNetworks
+        REF = 'ref'; % reference node in LayeredNetworks        
         
         ID_INF = 0;
         ID_FCFS = 1;
@@ -35,7 +35,7 @@ classdef (Sealed) SchedStrategy
         ID_HOL = 11;
         ID_FORK = 12;
         ID_EXT = 13;
-        ID_REF = 14;
+        ID_REF = 14;        
     end
     
     methods (Static)

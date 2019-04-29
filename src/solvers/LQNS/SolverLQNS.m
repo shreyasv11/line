@@ -93,7 +93,7 @@ classdef SolverLQNS < LayeredNetworkSolver
                 resultFilename = [fpath,filesep,fname,'.lqxo'];
                 if verbose > 0
                     w = warning('query');
-                    warning off;
+                    %warning off;
                     fprintf(1,'Parsing LQNS result file: %s\n', resultFilename);
                     warning(w);
                 end

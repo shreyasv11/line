@@ -121,12 +121,15 @@ classdef Network < Model
         end
         
         function P = getLinkedRoutingMatrix(self)
-            % P = GETLINKEDROUTINGMATRIX()
-            
+            % P = GETLINKEDROUTINGMATRIX()            
             if isempty(self.linkedP)
-                error('Unsupported. To use this function the model topology must have been linked with the link() method.');
-                % THE MODEL TOPOLOGY MUST HAVE BEEN LINKED WITH THE LINK() METHOD.');
-                
+                warning('Unsupported: getLinkedRoutingMatrix() reqyires that the model topology has been instantiated with the link() method. Attempting auto-recovery.');
+                fname = tempname;
+                QN2SCRIPT(self,self.name,fname);
+                run(fname);
+                delete(fname);
+                P = model.getLinkedRoutingMatrix();                
+                % THE MODEL TOPOLOGY MUST HAVE BEEN LINKED WITH THE LINK() METHOD.');                
             else
                 P = self.linkedP;
             end
@@ -395,6 +398,15 @@ classdef Network < Model
                     Z(i,r) = qn.visits{c}(delayIndices(i),r) / qn.rates(delayIndices(i),r);
                 end
             end
+        end
+        
+        function statefulnodes = getStatefulNodes(self)
+            statefulnodes = {};
+            for i=1:self.getNumberOfNodes
+                if self.nodes{i}.isStateful
+                    statefulnodes{end+1,1} = self.nodes{i};
+                end
+            end            
         end
         
         function statefulnames = getStatefulNodeNames(self)

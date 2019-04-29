@@ -83,8 +83,7 @@ classdef MMPP2 < MarkovModulated
         
         function PH = getRepresentation(self)
             % PH = GETREPRESENTATION()
-            
-            PH = map_renewal(self.getProcess(self));
+            PH = map_renewal(self.getProcess());
         end
         
         function MAP = getProcess(self)
@@ -94,7 +93,7 @@ classdef MMPP2 < MarkovModulated
             lambda1 =  self.getParam(2).paramValue;
             sigma0 =  self.getParam(3).paramValue;
             sigma1 =  self.getParam(4).paramValue;
-            D0 = [-sigma0,sigma0;sigma1,-sigma1];
+            D0 = [-sigma0-lambda0,sigma0;sigma1,-sigma1-lambda1];
             D1 = [lambda0,0;0,lambda1];
             MAP = {D0,D1};
         end

@@ -41,7 +41,7 @@ for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(1,2,1);
-    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on default state');
@@ -62,7 +62,7 @@ for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(1,2,2);
-    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on state with 3 jobs in station 2');

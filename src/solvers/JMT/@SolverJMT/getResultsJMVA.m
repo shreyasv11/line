@@ -24,12 +24,12 @@ try
     % exception
     switch class(parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue)
         case 'double'
-            self.result.Prob.logNormConst = parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue;
+            self.result.Prob.logNormConstAggr = parsed.solutions.algorithm.normconst.ATTRIBUTE.logValue;
         otherwise
-            self.result.Prob.logNormConst = NaN;
+            self.result.Prob.logNormConstAggr = NaN;
     end
 catch
-    self.result.Prob.logNormConst = NaN;
+    self.result.Prob.logNormConstAggr = NaN;
 end
 
 qn = self.model.getStruct;

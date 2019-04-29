@@ -93,7 +93,7 @@ for k=1:K
             otherwise
                 if ~isempty(PH{i,k})
                     ind = qn.stationToNode(i);
-                    warning('Transient utilization not support yet for station %s, returning an approximation.',qn.nodenodes{ind});
+                    warning('Transient utilization not support yet for station %s, returning an approximation.',qn.nodenames{ind});
                     UNt{i,k} = pit*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
                 end
         end

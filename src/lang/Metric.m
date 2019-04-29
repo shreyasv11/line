@@ -112,6 +112,37 @@ classdef Metric < Copyable
             
             switch results.solver
                 case 'SolverJMT'
+                    
+                    if ~exist('model','var')
+                        error('Wrong syntax, use Metric.get(results,model).\n');
+                    end
+                    classnames = model.getClassNames();
+                    stationnames = model.getStationNames();
+                    i = findstring(stationnames,self.station.name);
+                    r = findstring(classnames,self.class.name);
+                    switch self.type
+                        case Metric.TranTput
+                            %results.Tran.Avg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);
+                            %results.Tran.Avg.T{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.T{i,r};
+                            return
+                        case Metric.TranUtil
+                            %results.Tran.Avg.U{i,r}.Name = sprintf('Utilization (station %d, class %d)',i,r);
+                            %results.Tran.Avg.U{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.U{i,r};
+                            return
+                        case Metric.TranQLen
+                            %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
+                            %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.Q{i,r};
+                            return
+                        case Metric.TranRespT
+                            %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
+                            %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
+                            value = results.Tran.Avg.R{i,r};
+                            return
+                    end
+                    
                     for i=1:length(results.metric)
                         type = self.type;
                         switch self.type

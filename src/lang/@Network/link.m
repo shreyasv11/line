@@ -18,13 +18,17 @@ if ~iscell(P) && R>1
 end
 
 isLinearP = true;
-for s=2:R
-    for r=1:R
-        if nnz(P{r,s})>0
-            isLinearP = false;
+if size(P,1) == size(P,2)
+    for s=2:R
+        for r=1:R
+            if nnz(P{r,s})>0
+                isLinearP = false;
+                break;
+            end
         end
     end
 end
+
 
 for i=self.getDummys
     for r=1:R
@@ -42,10 +46,20 @@ end
 
 % This block is to make sure that P = model.initRoutingMatrix; P{2} writes
 % into P{2,2} rather than being interpreted as P{2,1}.
-if isLinearP
-    for r=2:R
-        P{r,r} = P{r,1};
-        P{r,1} = 0*P{r,1};
+if isLinearP 
+    Ptmp = P;
+    P = cell(R,R);
+    for r=1:R
+        if iscell(Ptmp)
+            P{r,r} = Ptmp{r};
+        else
+            P{r,r} = Ptmp;
+        end
+        for s=1:R        
+            if s~=r
+                P{r,s} = 0*Ptmp{r};
+            end
+        end
     end
 end
 

@@ -11,7 +11,7 @@ nclasses = qn.nclasses;
 sync = qn.sync;
 csmask = qn.csmask;
 if isoctave
-    warning off;
+    %warning off;
 end
 
 [SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);

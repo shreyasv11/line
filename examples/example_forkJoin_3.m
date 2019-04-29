@@ -42,7 +42,7 @@ P{jobclass2,jobclass2}(join1,join11) = 1.0;
 P{jobclass2,jobclass2}(join11,delay) = 1.0;
 
 model.link(P);
-SolverJMT(model,'keep',true).getNodeAvgTable
+SolverJMT(model,'keep',true).getAvgNodeTable
 
 %% Corresponding open model
 % model = Network('model');
@@ -89,4 +89,4 @@ SolverJMT(model,'keep',true).getNodeAvgTable
 % P{jobclass2,jobclass2}(join11,sink) = 1.0;
 %
 % model.link(P);
-% SolverJMT(model,'keep',true).getNodeAvgTable
+% SolverJMT(model,'keep',true).getAvgNodeTable

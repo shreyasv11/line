@@ -1,4 +1,4 @@
-function Tsim = run(self)
+function Trun = run(self)
 % TSIM = RUN()
 
 % Copyright (c) 2012-2019, Imperial College London
@@ -63,35 +63,74 @@ self.maxSamples = options.samples;
 
 switch options.method
     case {'jsim','default'}
-        self.writeJSIM;
-        cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
-        if options.verbose
-            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
-            fprintf(1,'JMT Command: %s\n',cmd);
+        if isinf(options.timespan(2)) || ((options.timespan(2)) == (options.timespan(1)))
+            self.writeJSIM;
+            cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
+            if options.verbose
+                fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
+                fprintf(1,'JMT Command: %s\n',cmd);
+            end
+            [~, result] = system(cmd);
+            Trun = toc(T0);
+            if ~options.keep
+                delete([self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
+                
+            end
+            self.getResults;
+        else            
+            options = self.getOptions;
+            initSeed = self.options.seed;
+            initTimeSpan = self.options.timespan;
+            self.options.timespan(1) = self.options.timespan(2);
+            if isfield(options,'timespan')  && isfinite(options.timespan(2))
+                qn = self.getStruct;
+                tu = [];
+                stateu = {};
+                for it=1:options.iter_max
+                    self.options.seed = initSeed + it -1;
+                    TranSysStateAggr{it} = self.sampleSysAggr;
+                    tu = union(tu, TranSysStateAggr{it}.t);
+                end
+                QNt = cellzeros(qn.nstations,qn.nclasses,length(tu),2);
+                M = qn.nstations;
+                K = qn.nclasses;
+                for j=1:M
+                    for r=1:K
+                        QNt{j,r}(:,2) = tu;
+                        for it=1:options.iter_max
+                            QNt{j,r}(:,1) = QNt{j,r}(:,1) + (1/options.iter_max) * floor(interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}(:,r), tu));
+                        end
+                    end
+                end
+                Trun = toc(T0);
+                UNt = [];
+                RNt = [];
+                TNt = [];
+                CNt = [];
+                XNt = [];
+                self.setTranAvgResults(QNt,UNt,RNt,TNt,CNt,XNt,Trun);
+                self.result.Tran.Avg.U = cell(M,K);
+                self.result.Tran.Avg.T = cell(M,K);                
+                self.result.Tran.Avg.Q = QNt;
+            end
+            self.options.seed = initSeed;
+            self.options.timespan = initTimeSpan;
+            self.result.('solver') = self.getName();
+            self.result.runtime = Trun;
         end
-    otherwise
+    otherwise % jmva methods
         fname = self.writeJMVA([self.getFilePath(),'jmva',filesep, self.getFileName(),'.jmva']);
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed), ' --illegal-access=permit'];
         if options.verbose
             fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
             fprintf(1,'JMT Command: %s\n',cmd);
         end
-end
-[~, result] = system(cmd);
-Tsim = toc(T0);
-
-%if options.verbose
-%    fprintf(1,sprintf('JMT analysis completed in %.6f sec \n',Tsim));
-%end
-
-if ~options.keep
-    switch options.method
-        case {'jsim','default'}
-            delete([self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
-        otherwise % covers all JMVA submethods
+        [~, result] = system(cmd);
+        Trun = toc(T0);
+        
+        if ~options.keep
             delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
-    end
+        end        
+        self.getResults;
 end
-
-self.getResults;
 end

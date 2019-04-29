@@ -9,6 +9,9 @@ end
 if ~exist('fid','var')
     fid=1;
 end
+if ischar(fid)
+    fid = fopen(fid,'w');
+end
 qn = model.getStruct;
 %% initialization
 fprintf(fid,'model = Network(''%s'');\n',modelName);
@@ -31,7 +34,9 @@ for i= 1:qn.nnodes
             fprintf(fid,'node{%d} = DelayStation(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Queue
             fprintf(fid,'node{%d} = Queue(model, ''%s'', SchedStrategy.%s); ', i, qn.nodenames{i}, SchedStrategy.toProperty(qn.sched{qn.nodeToStation(i)}));
-            fprintf(fid,'node{%d}.setNumServers(%d);\n', i, qn.nservers(qn.nodeToStation(i)));
+            if qn.nservers(qn.nodeToStation(i))>1
+                fprintf(fid,'node{%d}.setNumServers(%d);\n', i, qn.nservers(qn.nodeToStation(i)));
+            end
         case NodeType.Router
             fprintf(fid,'node{%d} = Router(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Sink
@@ -58,7 +63,7 @@ for i= 1:qn.nnodes
     end
 end
 %% write classes
-fprintf(fid,'\n%%%% Block 2: classes\n');
+fprintf(fid,'\n\n%%%% Block 2: classes\n');
 for k = 1:qn.nclasses
     if qn.njobs(k)>0
         if isinf(qn.njobs(k))
@@ -167,5 +172,7 @@ for k = 1:qn.nclasses
 end
 
 fprintf(fid,'model.link(P);\n');
-
+if fid~=1
+    fclose(fid);
+end
 end

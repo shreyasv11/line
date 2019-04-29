@@ -76,10 +76,10 @@ end
 state = model.getState;
 
 solver = SolverCTMC(model,options);
-Pr_ctmc = solver.getProbSysStateAggr()
+Pr_ctmc = solver.getProbSysAggr()
 
 solver = SolverNC(model,options);
-Pr_nc = solver.getProbSysStateAggr()
+Pr_nc = solver.getProbSysAggr()
 
 solver = SolverJMT(model,options,'samples',5e3);
-Pr_jmt = solver.getProbSysStateAggr()
+Pr_jmt = solver.getProbSysAggr()

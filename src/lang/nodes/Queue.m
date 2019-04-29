@@ -82,13 +82,17 @@ classdef Queue < Station
             
             % return the service distribution assigned to the given class
             if ~exist('class','var')
-                error('getService requires in input a class object.');
-            end
-            try
-                distribution = self.server.serviceProcess{1, class.index}{3};
-            catch ME
-                distribution = [];
-                warning('No distribution is available for the specified class');
+                for s = 1:length(self.model.classes)
+                    distribution{s} = self.server.serviceProcess{1, self.model.classes{s}}{3};
+                end
+                
+            else
+                try
+                    distribution = self.server.serviceProcess{1, class.index}{3};
+                catch ME
+                    distribution = [];
+                    warning('No distribution is available for the specified class');
+                end
             end
         end
         

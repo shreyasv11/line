@@ -8,7 +8,7 @@ M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 N = qn.nclosedjobs;    %population
 Lambda = qn.mu;
-Pi = qn.phi;
+Phi = qn.phi;
 PH = qn.ph;
 sched = qn.sched;
 rt = qn.rt;
@@ -20,7 +20,7 @@ for i = 1:M
     for k = 1:K
         if isnan(Lambda{i,k})
             Lambda{i,k} = [];
-            Pi{i,k}=[];
+            Phi{i,k}=[];
         end
         match(i,k) = sum(rt(:, (i-1)*K+k)) > 0;
     end
@@ -90,7 +90,7 @@ else
 end
 
 %% solve ode
-[ymean, ymean_t, t, iters] = solver_fluid_iteration(qn, N, Lambda, Pi, PH, rt, S, ymean, ydefault, slowrate, Tstart, max_time, options);
+[ymean, ymean_t, t, iters] = solver_fluid_iteration(qn, N, Lambda, Phi, PH, rt, S, ymean, ydefault, slowrate, Tstart, max_time, options);
 
 runtime = toc(Tstart);
 % if options.verbose >= 2

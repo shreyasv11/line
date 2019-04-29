@@ -46,14 +46,6 @@ classdef SolverJMT < NetworkSolver
             self.fileName = fileName;
         end
         
-        function setOptions(self, options)
-            % SETOPTIONS(OPTIONS)
-            % Assign the solver options
-            
-            self.checkOptions(options);
-            setOptions@Solver(self,options);
-        end
-        
         [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode)
         [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode)
         [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode)
@@ -73,14 +65,6 @@ classdef SolverJMT < NetworkSolver
         [simElem, simDoc] = saveLinks(self, simElem, simDoc)
         [simElem, simDoc] = saveMetrics(self, simElem, simDoc)
         [simElem, simDoc] = saveXMLHeader(self, logPath)
-        
-        function supported = getSupported(self,supported)
-            % SUPPORTED = GETSUPPORTED(SELF,SUPPORTED)
-            
-            if ~exist('supported','var')
-                supported=struct();
-            end
-        end
         
         function fileName = getFileName(self)
             % FILENAME = GETFILENAME()
@@ -114,20 +98,8 @@ classdef SolverJMT < NetworkSolver
         jsimgView(self, options)
         
         [outputFileName] = writeJMVA(self, outputFileName)
-        [outputFileName] = writeJSIM(self, outputFileName)
-        
-        function [result, parsed] = getResults(self)
-            % [RESULT, PARSED] = GETRESULTS()
-            
-            options = self.getOptions;
-            switch options.method
-                case {'jsim','default'}
-                    [result, parsed] = self.getResultsJSIM;
-                otherwise
-                    [result, parsed] = self.getResultsJMVA;
-            end
-        end
-        
+        [outputFileName] = writeJSIM(self, outputFileName)        
+        [result, parsed] = getResults(self)        
         [result, parsed] = getResultsJSIM(self)
         [result, parsed] = getResultsJMVA(self)
     end
@@ -157,6 +129,22 @@ classdef SolverJMT < NetworkSolver
             bool = self.hasResults();
         end
     end
+    
+    
+    methods (Access = 'public')
+        getProbNormConstAggr(self); % jmva
+        %% StateAggr methods
+        Pr = getProbAggr(self, node, state_a);
+        sysStateAggr = sampleSysAggr(self);
+        [Pi_t, SSnode_a] = getTranProbAggr(self, node);
+        probSysStateAggr = getProbSysAggr(self);
+        stationStateAggr = sampleAggr(self, node);
+        %% Cdf methods
+        RD = getCdfRespT(self, R);
+        RD = getTranCdfRespT(self, R);
+        RD = getTranCdfPassT(self, R);
+    end
+    
     
     methods (Static)
         
@@ -234,9 +222,7 @@ classdef SolverJMT < NetworkSolver
             featSupported = SolverJMT.getFeatureSet();
             bool = SolverFeatureSet.supports(featSupported, featUsed);
         end
-    end
-    
-    methods (Static)
+        
         function jsimgOpen(filename)
             % JSIMGOPEN(FILENAME)
             
@@ -262,286 +248,14 @@ classdef SolverJMT < NetworkSolver
         dataSet = parseLogs(model, isNodeLogged, metric);
         state = parseTranState(fileArv, fileDep, nodePreload);
         [classResT, jobResT, jobResTArvTS, classResTJobID] = parseTranRespT(fileArv, fileDep);
-    end
-    
-    methods
-        function lNormConst = getProbNormConst(self)
-            % LNORMCONST = GETPROBNORMCONST()
-            
-            switch self.options.method
-                case {'jmva','jmva.recal','jmva.comom','jmva.ls'}
-                    self.run();
-                    lNormConst = self.result.Prob.logNormConst;
-                otherwise
-                    lNormConst = NaN; %#ok<NASGU>
-                    error('Selected solver method does not compute normalizing constants. Choose either jmva.recal, jmva.comom, or jmva.ls.');
-            end
-        end
         
-        %% StateAggr methods
-        
-        function Pr = getProbStateAggr(self, node, state_a)
-            % PR = GETPROBSTATEAGGR(NODE, STATE_A)
-            
-            if ~exist('state_a','var')
-                state_a = self.model.getState{self.model.getStationIndex(node)};
-            end
-            stationStateAggr = self.getTranStateAggr(node);
-            ist = self.model.getStationIndex(node);
-            rows = findrows(stationStateAggr{ist}.state, state_a);
-            t = stationStateAggr{ist}.t;
-            dt = [t(1);diff(t)];
-            Pr = sum(dt(rows))/sum(dt);
-        end
-        
-        function sysStateAggr = getTranSysStateAggr(self)
-            % SYSSTATEAGGR = GETTRANSYSSTATEAGGR()
-            
-            statStateAggr =  self.getTranStateAggr();
-            tranSysStateAggr = cell(1,1+self.model.getNumberOfStations);
-            
-            tranSysStateAggr{1} = []; % timestamps
-            for i=1:self.model.getNumberOfStations % stations
-                tranSysStateAggr{1} = union(tranSysStateAggr{1}, statStateAggr{i}.t);
-            end
-            
-            for i=1:self.model.getNumberOfStations % stations
-                tranSysStateAggr{1+i} = [];
-                [~,uniqTS] = unique(statStateAggr{i}.t);
-                for j=1:self.model.getNumberOfClasses % classes
-                    % we floor the interpolation as we hold the last state
-                    if ~isempty(uniqTS)
-                        Qijt = floor(interp1(statStateAggr{i}.t(uniqTS), statStateAggr{i}.state(uniqTS,j), tranSysStateAggr{1}));
-                        if isnan(Qijt(end))
-                            Qijt(end)=Qijt(end-1);
-                        end
-                        tranSysStateAggr{1+i} = [tranSysStateAggr{1+i}, Qijt];
-                    else
-                        Qijt = NaN*ones(length(tranSysStateAggr{1}),1);
-                        tranSysStateAggr{1+i} = [tranSysStateAggr{1+i}, Qijt];
-                    end
-                end
-            end
-            sysStateAggr = SystemStateAggr(self.model, tranSysStateAggr);
-        end
-        
-        function ProbSysStateAggr = getProbSysStateAggr(self)
-            % PROBSYSSTATEAGGR = GETPROBSYSSTATEAGGR()
-            
-            TranSysStateAggr = self.getTranSysStateAggr;
-            TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);
-            TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
-            state = self.model.getState;
-            qn = self.model.getStruct;
-            nir = zeros(qn.nstateful,qn.nclasses);
-            for isf=1:qn.nstateful
-                ind = qn.statefulToNode(isf);
-                [~,nir(isf,:)] = State.toMarginal(qn, ind, state{isf});
-            end
-            nir = nir';
-            rows = findrows(TSS(:,2:end), nir(:)');
-            if ~isempty(rows)
-                ProbSysStateAggr = sum(TSS(rows,1))/sum(TSS(:,1));
-            else
-                warning('The state was not seen during the simulation.');
-                ProbSysStateAggr = 0;
-            end
-        end
-        
-        function stationStateAggr = getTranStateAggr(self, node)
-            % STATIONSTATEAGGR = GETTRANSTATEAGGR(NODE)
-            
-            Q = self.model.getAvgQLenHandles();
-            stationStateAggr = cell(self.model.getNumberOfStations,1);
-            % create a temp model
-            modelCopy = self.model.copy;
-            modelCopy.resetNetwork;
-            
-            % determine the nodes to logs
-            isNodeClassLogged = false(modelCopy.getNumberOfNodes, modelCopy.getNumberOfClasses);
-            for i= 1:modelCopy.getNumberOfStations
-                for r=1:modelCopy.getNumberOfClasses
-                    if ~Q{i,r}.disabled && nargin == 1
-                        ind = self.model.getNodeIndex(modelCopy.getStationNames{i});
-                        isNodeClassLogged(ind,r) = true;
-                    else
-                        isNodeClassLogged(node,r) = true;
-                    end
-                end
-            end
-            % apply logging to the copied model
-            Plinked = self.model.getLinkedRoutingMatrix();
-            isNodeLogged = max(isNodeClassLogged,[],2);
-            logpath = tempdir;
-            modelCopy.linkAndLog(Plinked, isNodeLogged, logpath);
-            % simulate the model copy and retrieve log data
-            SolverJMT(modelCopy, self.getOptions).getAvg(); % log data
-            logData = SolverJMT.parseLogs(modelCopy, isNodeLogged, Metric.QLen);
-            
-            % from here convert from nodes in logData to stations
-            qn = modelCopy.getStruct;
-            for ist= 1:qn.nstations
-                isf = qn.stationToStateful(ist);
-                t = [];
-                nir = cell(1,qn.nclasses);
-                for r=1:qn.nclasses
-                    if ~isempty(logData{isf,r})
-                        [~,uniqTS] = unique(logData{isf,r}.t);
-                        if isNodeClassLogged(isf,r)
-                            if ~isempty(logData{isf,r})
-                                t = logData{isf,r}.t(uniqTS);
-                                t = [t(2:end);t(end)];
-                                nir{r} = logData{isf,r}.QLen(uniqTS);
-                            end
-                        end
-                    else
-                        nir{r} = [];
-                    end
-                end
-                stationStateAggr{ist} = StationStateAggr(self.model.stations{ist},t,cell2mat(nir));
-            end
-        end
-        
-        %% Cdf methods
-        
-        function RD = getCdfRespT(self, R)
-            % RD = GETCDFRESPT(R)
-            
-            if ~exist('R','var')
-                R = self.model.getAvgRespTHandles();
-            end
-            RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
-            QN = self.getAvgQLen(); % steady-state qlen
-            qn = self.getStruct;
-            n = QN;
-            for r=1:qn.nclasses
-                if isinf(qn.njobs(r))
-                    n(:,r) = floor(QN(:,r));
-                else
-                    n(:,r) = floor(QN(:,r));
-                    if sum(n(:,r)) < qn.njobs(r)
-                        imax = maxpos(n(:,r)); % put jobs on the bottleneck
-                        n(imax,r) = qn.njobs(r) - sum(n(:,r));
-                    end
-                end
-            end
-            cdfmodel = self.model.copy;
-            %            cdfmodel.resetNetwork;
-            cdfmodel.initFromMarginal(n);
-            isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
-            for i= 1:cdfmodel.getNumberOfStations
-                for r=1:cdfmodel.getNumberOfClasses
-                    if ~R{i,r}.disabled
-                        ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
-                        isNodeClassLogged(ni,r) = true;
-                    end
-                end
-            end
-            Plinked = self.model.getLinkedRoutingMatrix();
-            isNodeLogged = max(isNodeClassLogged,[],2);
-            logpath = tempdir;
-            cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
-            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
-            logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);
-            % from here convert from nodes in logData to stations
-            for i= 1:cdfmodel.getNumberOfStations
-                ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
-                for r=1:cdfmodel.getNumberOfClasses
-                    if isNodeClassLogged(ni,r)
-                        if ~isempty(logData{ni,r})
-                            [F,X] = ecdf(logData{ni,r}.RespT);
-                            RD{i,r} = [F,X];
-                        end
-                    end
-                end
-            end
-        end
-        
-        function RD = getTranCdfRespT(self, R)
-            % RD = GETTRANCDFRESPT(R)
-            
-            if ~exist('R','var')
-                R = self.model.getAvgRespTHandles();
-            end
-            RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
-            cdfmodel = self.model.copy;
-            cdfmodel.resetNetwork;
-            isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
-            for i= 1:cdfmodel.getNumberOfStations
-                for r=1:cdfmodel.getNumberOfClasses
-                    if ~R{i,r}.disabled
-                        ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
-                        isNodeClassLogged(ni,r) = true;
-                    end
-                end
-            end
-            Plinked = self.model.getLinkedRoutingMatrix();
-            isNodeLogged = max(isNodeClassLogged,[],2);
-            logpath = tempdir;
-            cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
-            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
-            logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);
-            % from here convert from nodes in logData to stations
-            for i= 1:cdfmodel.getNumberOfStations
-                ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
-                for r=1:cdfmodel.getNumberOfClasses
-                    if isNodeClassLogged(ni,r)
-                        if ~isempty(logData{ni,r})
-                            [F,X] = ecdf(logData{ni,r}.RespT);
-                            RD{i,r} = [F,X];
-                        end
-                    end
-                end
-            end
-        end
-        
-        function RD = getTranCdfPassT(self, R)
-            % RD = GETTRANCDFPASST(R)
-            
-            if ~exist('R','var')
-                R = self.model.getAvgRespTHandles();
-            end
-            RD = cell(self.model.getNumberOfStations, self.model.getNumberOfClasses);
-            cdfmodel = self.model.copy;
-            cdfmodel.resetNetwork;
-            isNodeClassLogged = false(cdfmodel.getNumberOfNodes, cdfmodel.getNumberOfClasses);
-            for i= 1:cdfmodel.getNumberOfStations
-                for r=1:cdfmodel.getNumberOfClasses
-                    if ~R{i,r}.disabled
-                        ni = self.model.getNodeIndex(cdfmodel.getStationNames{i});
-                        isNodeClassLogged(ni,r) = true;
-                    end
-                end
-            end
-            Plinked = self.model.getLinkedRoutingMatrix();
-            isNodeLogged = max(isNodeClassLogged,[],2);
-            logpath = tempdir;
-            cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
-            SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
-            logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);
-            % from here convert from nodes in logData to stations
-            for i= 1:cdfmodel.getNumberOfStations
-                ni = cdfmodel.getNodeIndex(cdfmodel.getStationNames{i});
-                for r=1:cdfmodel.getNumberOfClasses
-                    if isNodeClassLogged(ni,r)
-                        if ~isempty(logData{ni,r})
-                            [F,X] = ecdf(logData{ni,r}.RespT);
-                            RD{i,r} = [F,X];
-                        end
-                    end
-                end
-            end
-        end
-    end
-    
-    methods (Static)
         function checkOptions(options)
             % CHECKOPTIONS(OPTIONS)
             
             solverName = mfilename;
-%             if isfield(options,'timespan')  && isfinite(options.timespan(2))
-%                 error('Finite timespan not supported in %s',solverName);
-%             end
+            %             if isfield(options,'timespan')  && isfinite(options.timespan(2))
+            %                 error('Finite timespan not supported in %s',solverName);
+            %             end
         end
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()

@@ -19,6 +19,14 @@ elseif nargin == 2
     T=handlers{4};
 end
 
+if isfield(self.options,'timespan')
+    if isfinite(self.options.timespan(2))
+        error('The getAvg method does not support the timespan option, use the getTranAvg method instead.');
+    end
+else
+    self.options.timespan = [0,Inf];
+end
+
 if ~self.hasAvgResults || ~self.options.cache
     try
         self.run();

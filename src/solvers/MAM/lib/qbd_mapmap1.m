@@ -21,7 +21,7 @@ A0dt = A0/alpha+eye(size(A0));
 A_1dt = A_1/alpha;
 A1dt = A1/alpha;
 [eta] = QBD_Caudal(A_1dt,A0dt,A1dt);
-%warning off;
+%%warning off;
 pqueue = QBD_pi(A_1,A0bar,R);
 
 if na == 1 && ns == 1

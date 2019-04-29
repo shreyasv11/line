@@ -1,7 +1,8 @@
 if ~isoctave(), clearvars -except exampleName; end 
 figure;
 label = {};
-nJobs = [1,2,4,8,16];
+nJobs = [1,4,8];
+plotColors = {'k';'b--';'r-.'};
 for N = nJobs
     model = Network('model');
     
@@ -39,14 +40,14 @@ for N = nJobs
     end
     for i=2
         for c=1:model.getNumberOfClasses
-            plot(FC{i,c}(:,2),FC{i,c}(:,1)); hold all;
+            semilogx(FC{i,c}(:,2),FC{i,c}(:,1),plotColors{find(N==nJobs)}); hold all;
         end
     end
     AvgRespTfromCDF
     %SqCoeffOfVariationRespTfromCDF
     label{end+1} = ['N=', num2str(N),' jobs'];
 end
-legend(label);
+legend(label,'Location','SouthEast');
 xlim([0,200])
 title('Response time CDF at station 3 under increasing populations')
 ylabel('Pr[RespT < t]')

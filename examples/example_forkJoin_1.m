@@ -22,4 +22,4 @@ P(queue2,join) = 1.0;
 P(join,sink) = 1.0;
 
 model.link(P);
-SolverJMT(model,'keep',true).getNodeAvgTable
+SolverJMT(model,'keep',true).getAvgNodeTable

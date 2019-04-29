@@ -20,7 +20,7 @@ classdef SolverAuto < NetworkSolver
             % solvers sorted from fastest to slowest
             solvers = {SolverMAM(model), SolverMVA(model), SolverNC(model), SolverFluid(model), SolverJMT(model), SolverSSA(model), SolverCTMC(model)};
             wstatus = warning('query');
-            warning off;
+            %warning off;
             boolSolver = [];
             for s=1:length(solvers)
                 boolSolver(s) = solvers{s}.supports(self.model);

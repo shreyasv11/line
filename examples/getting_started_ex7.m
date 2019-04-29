@@ -15,7 +15,7 @@ model.link(Network.serialRouting(node{1},node{2}));
 
 % Block 4: solution
 RDfluid = SolverFluid(model).getCdfRespT();
-RDsim = SolverJMT(model,'seed',23000,'samples',1e4).getTranCdfRespT();
+RDsim = SolverJMT(model,'seed',23000,'samples',1e4).getCdfRespT();
 
 %% Plot results
 semilogx(RDsim{2,1}(:,2),1-RDsim{2,1}(:,1),'r'); hold all;

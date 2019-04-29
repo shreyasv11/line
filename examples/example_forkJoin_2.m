@@ -35,4 +35,4 @@ P{jobclass2,jobclass2}(queue2,join) = 1.0;
 P{jobclass2,jobclass2}(join,sink) = 1.0;
 
 model.link(P);
-SolverJMT(model,'keep',true).getNodeAvgTable
+SolverJMT(model,'keep',true).getAvgNodeTable

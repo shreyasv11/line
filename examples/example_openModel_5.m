@@ -34,6 +34,6 @@ P{ocl2}(vsink2,sink) = 1.0;
 
 model.link(P);
 
-% We use getNodeAvgTable to see the throuhgputs of sink1 and sink2
+% We use getAvgNodeTable to see the throuhgputs of sink1 and sink2
 SolverMVA(model).getAvgTable
-SolverMVA(model).getNodeAvgTable
+SolverMVA(model).getAvgNodeTable

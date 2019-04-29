@@ -47,7 +47,7 @@ for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,1);
-    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on default state');
@@ -67,7 +67,7 @@ for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,2);
-    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on first state with the same number of jobs');
@@ -90,7 +90,7 @@ for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
     [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,3);
-    plot(QNt{2,1}(:,2),QNt{2,1}(:,1),dashing{s}); hold all
+    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
 end
 title('Uniform prior on states with the same number of jobs');
 ylabel('QLen- station 2, class 1');

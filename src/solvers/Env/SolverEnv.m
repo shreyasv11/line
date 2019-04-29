@@ -49,7 +49,7 @@ classdef SolverEnv < EnsembleSolver
                     for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                         for j=1:size(self.results{it,e}.Tran.Avg.Q,2)
                             % error is calculated only on entry value (t=0)
-                            mapes(e) = max(mapes(e), mape(self.results{it,e}.Tran.Avg.Q{i,j}(1,1), self.results{it-1,e}.Tran.Avg.Q{i,j}(1,1)));
+                            mapes(e) = max(mapes(e), mape(self.results{it,e}.Tran.Avg.Q{i,j}.metric(1), self.results{it-1,e}.Tran.Avg.Q{i,j}.metric(1)));
                         end
                     end
                 end
@@ -155,7 +155,11 @@ classdef SolverEnv < EnsembleSolver
             %% initialize
             [Qt,Ut,Tt] = self.ensemble{e}.getTranHandles;
             %[results_e.Avg.Q, results_e.Avg.U, results_e.Avg.R, results_e.Avg.T] = self.solvers{e}.getAvg();       
-            [results_e.Tran.Avg.Q, results_e.Tran.Avg.U, results_e.Tran.Avg.T] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);
+            [QNt,UNt,TNt] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);
+            results_e.Tran.Avg.Q = QNt; %cellfun(@(c) c.metric, QNt,'UniformOutput',false);
+            results_e.Tran.Avg.U = UNt; %cellfun(@(c) c.metric, UNt,'UniformOutput',false);
+            results_e.Tran.Avg.T = TNt; %cellfun(@(c) c.metric, TNt,'UniformOutput',false);
+            %[results_e.Tran.Avg.Q, results_e.Tran.Avg.U, results_e.Tran.Avg.T] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);
         end
         
         function post(self, it)
@@ -166,17 +170,17 @@ classdef SolverEnv < EnsembleSolver
                 QExit{e}=[];
                 for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                     for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                        w{e} = [0, map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}(2:end,2)) - map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}(1:end-1,2))]';
-                        QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}(:,1)'*w{e}/sum(w{e});
+                        w{e} = [0, map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
+                        QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.t'*w{e}/sum(w{e});
                     end
                 end
                 for h = 1:E
                     QE{e,h} = zeros(size(self.results{it,e}.Tran.Avg.Q));
                     for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                         for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                            w{e,h} = [0, map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}(2:end,2)) - map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}(1:end-1,2))]';
+                            w{e,h} = [0, map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
                             if ~isnan(w{e,h})
-                                QE{e,h}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}(:,1)'*w{e,h}/sum(w{e,h});
+                                QE{e,h}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e,h}/sum(w{e,h});
                             else
                                 QE{e,h}(i,r) = 0;
                             end
@@ -207,10 +211,10 @@ classdef SolverEnv < EnsembleSolver
                 TExit{e}=[];
                 for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                     for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                        w{e} = [0, map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}(2:end,2)) - map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}(1:end-1,2))]';
-                        QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}(:,1)'*w{e}/sum(w{e});
-                        UExit{e}(i,r) = self.results{it,e}.Tran.Avg.U{i,r}(:,1)'*w{e}/sum(w{e});
-                        TExit{e}(i,r) = self.results{it,e}.Tran.Avg.T{i,r}(:,1)'*w{e}/sum(w{e});
+                        w{e} = [0, map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
+                        QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e}/sum(w{e});
+                        UExit{e}(i,r) = self.results{it,e}.Tran.Avg.U{i,r}.metric'*w{e}/sum(w{e});
+                        TExit{e}(i,r) = self.results{it,e}.Tran.Avg.T{i,r}.metric'*w{e}/sum(w{e});
                     end
                 end
                 %                 for h = 1:E

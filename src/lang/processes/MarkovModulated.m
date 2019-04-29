@@ -18,7 +18,12 @@ classdef MarkovModulated < PointProcess
             % X = SAMPLE(N)
             
             if ~exist('n','var'), n = 1; end
-            X = map_sample(self.getRepresentation,n);
+            MAP = self.getRepresentation;
+            if map_isfeasible(MAP)
+                X = map_sample(MAP,n);
+            else
+                error('This process is infeasible (negative rates).');
+            end
         end
     end
     

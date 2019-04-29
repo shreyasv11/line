@@ -27,7 +27,7 @@ for ind=1:qn.nnodes
                         end
                     end
                 end
-            case {SchedStrategy.FCFS, SchedStrategy.PS, SchedStrategy.INF, SchedStrategy.DPS}
+            case {SchedStrategy.FCFS, SchedStrategy.PS, SchedStrategy.INF, SchedStrategy.DPS, SchedStrategy.HOL}
                 for r=1:size(kir_i,2)
                     for k=1:length(qn.mu{ist,r})
                         if k==1

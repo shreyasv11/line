@@ -116,7 +116,7 @@ for i = 1:qn.nstations
             end
             
             %setup the ODEs for the new QN
-            [newOde_h, ~] = solver_fluid_odes(N, reshape({newLambda{:,:}},M,Knew), reshape({newPi{:,:}},M,Knew), newPH, new_rt, S, qn.sched);
+            [newOde_h, ~] = solver_fluid_odes(N, reshape({newLambda{:,:}},M,Knew), reshape({newPi{:,:}},M,Knew), newPH, new_rt, S, qn.sched, qn.schedparam, options);
             
             newY0 = zeros(1, sum(sum(newPhases(:,:))));
             newFluid = 0;
