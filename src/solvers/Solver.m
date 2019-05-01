@@ -267,14 +267,8 @@ classdef Solver < handle
             end
         end
         
-        function solver = get(chosenmethod, model, varargin)
-            % SOLVER = GET(CHOSENMETHOD, MODEL, VARARGIN)
-            % Alias for Solver.method
-            solver = Solver.method(chosenmethod, model, varargin);
-        end
-        
-        function solver = method(chosenmethod, model, varargin)
-            % SOLVER = METHOD(CHOSENMETHOD, MODEL, VARARGIN)
+        function solver = load(chosenmethod, model, varargin)
+            % SOLVER = LOAD(CHOSENMETHOD, MODEL, VARARGIN)
             % Returns a solver configured to run the chosen method
             options = Solver.parseOptions(varargin, Solver.defaultOptions);
             options.method = chosenmethod;

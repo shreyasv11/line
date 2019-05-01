@@ -11,7 +11,6 @@ classdef SolverFluid < NetworkSolver
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end       
-
     end
     
     methods
