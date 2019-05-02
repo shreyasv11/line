@@ -221,6 +221,7 @@ classdef Solver < handle
             options = struct();
             options.cache = true;
             options.cutoff = Inf;
+            options.config = {};
             options.force = false;
             options.init_sol = [];
             options.iter_max = 10;

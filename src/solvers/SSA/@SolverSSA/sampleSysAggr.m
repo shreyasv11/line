@@ -1,5 +1,9 @@
-function sysStateAggr = sampleSysAggr(self)
-% TRANSYSSTATEAGGR = GETTRANSYSSTATEAGGR()
+function sysStateAggr = sampleSysAggr(self, NUMSAMPLES)
+% TRANSYSSTATEAGGR = sampleSysAggr(NUMSAMPLES)
+if exist('numsamples','var')
+    warning('SolveSSA does not support the numsamples parameter, use instead the samples option upon instantiating the solver.');
+end
+
 
 options = self.getOptions;
 switch options.method
@@ -15,7 +19,7 @@ switch options.method
         sysStateAggr.handle = self.model.stations';
         sysStateAggr.t = tranSystemState{1};
         sysStateAggr.state = {tranSystemState{2:end}};
-        sysStateAggr.aggregate = true;   
+        sysStateAggr.isaggregate = true;   
     otherwise
         error('sampleSys is not available in SolverSSA with the chosen method.');
 end

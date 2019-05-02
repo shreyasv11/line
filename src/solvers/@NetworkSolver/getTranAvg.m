@@ -61,7 +61,7 @@ if ~isempty(Qt)
             metricVal.handle = {self.model.stations{i}, self.model.classes{k}};
             metricVal.t = ret(:,2);
             metricVal.metric = ret(:,1);
-            metricVal.aggregate = true;
+            metricVal.isaggregate = true;
             QNclass_t{i,k} = metricVal;
             
             
@@ -70,7 +70,7 @@ if ~isempty(Qt)
             metricVal.handle = {self.model.stations{i}, self.model.classes{k}};
             metricVal.t = ret(:,2);
             metricVal.metric = ret(:,1);
-            metricVal.aggregate = true;
+            metricVal.isaggregate = true;
             UNclass_t{i,k} = metricVal;
             
             ret = Tt{i,k}.get(self.result,self.model);
@@ -78,7 +78,7 @@ if ~isempty(Qt)
             metricVal.handle = {self.model.stations{i}, self.model.classes{k}};
             metricVal.t = ret(:,2);
             metricVal.metric = ret(:,1);
-            metricVal.aggregate = true;
+            metricVal.isaggregate = true;
             TNclass_t{i,k} = metricVal;
         end
     end

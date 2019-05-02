@@ -1,8 +1,11 @@
-function stationStateAggr = sampleAggr(self, node)
-% STATIONSTATEAGGR = SAMPLEAGGR(NODE)
+function stationStateAggr = sampleAggr(self, node, numEvents)
+% STATIONSTATEAGGR = SAMPLEAGGR(NODE, NUMEVENTS)
 
-if ~exist('station','var')
-    error('sampleAggr requires to specify a station.');
+if ~exist('node','var')
+    error('sampleAggr requires to specify a node.');
+end
+if ~exist('numEvents','var')
+    numEvents = -1;
 end
 
 Q = self.model.getAvgQLenHandles();
@@ -22,27 +25,29 @@ isNodeLogged = max(isNodeClassLogged,[],2);
 logpath = tempdir;
 modelCopy.linkAndLog(Plinked, isNodeLogged, logpath);
 % simulate the model copy and retrieve log data
-SolverJMT(modelCopy, self.getOptions).getAvg(); % log data
+solverjmt = SolverJMT(modelCopy, self.getOptions);
+solverjmt.maxEvents = numEvents;
+solverjmt.getAvg(); % log data
 logData = SolverJMT.parseLogs(modelCopy, isNodeLogged, Metric.QLen);
 
 % from here convert from nodes in logData to stations
 qn = modelCopy.getStruct;
-ist = self.model.getStationIndex(node.getName);
-isf = qn.stationToStateful(ist);
+ind = self.model.getNodeIndex(node.getName);
+isf = qn.nodeToStateful(ind);
 t = [];
 nir = cell(1,qn.nclasses);
 for r=1:qn.nclasses
-    if ~isempty(logData{isf,r})
-        [~,uniqTS] = unique(logData{isf,r}.t);
+    if isempty(logData{ind,r})
+        nir{r} = [];
+    else
+        [~,uniqTS] = unique(logData{ind,r}.t);
         if isNodeClassLogged(isf,r)
-            if ~isempty(logData{isf,r})
-                t = logData{isf,r}.t(uniqTS);
+            if ~isempty(logData{ind,r})
+                t = logData{ind,r}.t(uniqTS);
                 t = [t(2:end);t(end)];
-                nir{r} = logData{isf,r}.QLen(uniqTS);
+                nir{r} = logData{ind,r}.QLen(uniqTS);
             end
         end
-    else
-        nir{r} = [];
     end
 end
 if isfinite(self.options.timespan(2))
@@ -58,5 +63,5 @@ stationStateAggr = struct();
 stationStateAggr.handle = node;
 stationStateAggr.t = t;
 stationStateAggr.state = cell2mat(nir);
-stationStateAggr.aggregate = true;
+stationStateAggr.isaggregate = true;
 end

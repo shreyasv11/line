@@ -106,7 +106,9 @@ classdef Erlang < MarkovianDistribution
         
         function er = fitMeanAndSCV(MEAN, SCV)
             % ER = FITMEANANDSCV(MEAN, SCV)
-            
+            if SCV>1
+                error('The Erlang distribution requires squared coefficient of vairation <= 1.');
+            end
             % Fit distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             r = ceil(1/SCV);
             alpha = r/MEAN;

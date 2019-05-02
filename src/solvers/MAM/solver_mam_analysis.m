@@ -9,9 +9,28 @@ K = qn.nclasses;    %number of classes
 
 Tstart = tic;
 
-PH = qn.ph;
-
-[QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
+switch options.method
+    case 'srvscaling'
+        % service distributuion per class scaled by utilization used as 
+        % departure process
+        PH = qn.ph;
+        [QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
+    case {'default', 'arvscaling'}
+        % arrival process per chain rescaled by visits at each node
+        PH = qn.ph;
+        [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, PH, options);
+    case 'poisson'
+        % analyze the network with Poisson streams
+        POI = cell(M,K);
+        for i=1:M
+            for k=1:K
+                POI{i,k} = map_exponential(1/qn.rates(i,k));
+            end
+        end
+        [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, POI, options);
+    otherwise
+        error('Unknown method.');
+end
 
 QN(isnan(QN))=0;
 CN(isnan(CN))=0;

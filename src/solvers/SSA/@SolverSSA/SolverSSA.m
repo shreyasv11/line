@@ -18,10 +18,10 @@ classdef SolverSSA < NetworkSolver
         ProbAggr = getProbAggr(self, node, state);
         ProbSys = getProbSys(self);
         ProbSysAggr = getProbSysAggr(self);
-        tranNodeState = sample(self, node);
-        tranNodeStateAggr = sampleAggr(self, node);
-        tranSysStateAggr = sampleSysAggr(self);
-        tranSysState = sampleSys(self);
+        tranNodeState = sample(self, node, numsamples);
+        tranNodeStateAggr = sampleAggr(self, node, numsamples);
+        tranSysStateAggr = sampleSysAggr(self, numsamples);
+        tranSysState = sampleSys(self, numsamples);
     end
     
     methods (Static)

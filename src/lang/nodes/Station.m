@@ -6,7 +6,6 @@ classdef Station < StatefulNode
     
     properties
         numberOfServers;
-        numberOfServerPhases;
         cap;
         classCap;
     end
@@ -18,8 +17,7 @@ classdef Station < StatefulNode
             
             self@StatefulNode(name);
             self.cap = Inf;
-            self.classCap = [];
-            self.numberOfServerPhases = [];
+            self.classCap = [];            
         end
     end
     
@@ -73,21 +71,7 @@ classdef Station < StatefulNode
             end
             self.cap = min(sum(self.classCap(self.classCap>0)), self.cap);
         end
-        
-        function K = getNumberOfServerPhases(self)
-            % K = GETNUMBEROFSERVERPHASES()
-            
-            R = size(self.server.serviceProcess,2);
-            if isempty(self.numberOfServerPhases)
-                K = zeros(1,R);
-                for r=1:R
-                    K(r) = self.server.serviceProcess{1,r}{end}.getNumberOfPhases();
-                end
-                self.numberOfServerPhases = K;
-            else
-                K = self.numberOfServerPhases;
-            end
-        end
+
         
         function isD = isServiceDisabled(self, class)
             % ISD = ISSERVICEDISABLED(CLASS)
@@ -111,15 +95,7 @@ classdef Station < StatefulNode
             
             R = size(self.server.serviceProcess,2);
         end
-        
-        function [R,K,S] = getStationParams(self)
-            % [R,K,S] = GETSTATIONPARAMS()
-            
-            R = self.getNumberOfServiceClasses();
-            K = self.getNumberOfServerPhases();
-            S = self.numberOfServers;
-        end
-        
+                
         function [p] = getSelfLoopProbabilities(self)
             % [P] = GETSELFLOOPPROBABILITIES()
             

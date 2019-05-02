@@ -6,6 +6,7 @@ classdef Source < Station
     
     properties
         schedStrategy;
+        arrivalProcess;
     end
     
     methods
@@ -32,6 +33,7 @@ classdef Source < Station
             
             self.input.sourceClasses{1, class.index}{2} = ServiceStrategy.LI;
             self.input.sourceClasses{1, class.index}{3} = distribution;
+            self.arrivalProcess{1,class.index} = distribution;
             if distribution.isDisabled()
                 self.classCap(class.index) = 0;
             else

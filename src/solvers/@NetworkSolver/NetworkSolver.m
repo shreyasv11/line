@@ -288,29 +288,29 @@ classdef NetworkSolver < Solver
             error('getProbSysAggr is not supported by this solver.');
         end
         
-        function tstate = sample(self, node)
-            % TSTATE = SAMPLE(NODE)
+        function tstate = sample(self, node, numevents)
+            % TSTATE = SAMPLE(NODE, NUMEVENTS)
             
             % Return marginal state probability for station ist state
             error('sample is not supported by this solver.');
         end
         
-        function tstate = sampleAggr(self, node)
-            % TSTATE = SAMPLEAGGR(NODE)
+        function tstate = sampleAggr(self, node, numevents)
+            % TSTATE = SAMPLEAGGR(NODE, NUMEVENTS)
             
             % Return marginal state probability for station ist state
             error('sampleAggr is not supported by this solver.');
         end
         
-        function tstate = sampleSys(self)
-            % TSTATE = SAMPLESYS()
+        function tstate = sampleSys(self, numevents)
+            % TSTATE = SAMPLESYS(NUMEVENTS)
             
             % Return joint state probability
             error('sampleSys is not supported by this solver.');
         end
         
-        function tstate = sampleSysAggr(self)
-            % TSTATE = SAMPLESYSAGGR()
+        function tstate = sampleSysAggr(self, numevents)
+            % TSTATE = SAMPLESYSAGGR(NUMEVENTS)
             
             % Return joint state probability
             error('sampleSysAggr is not supported by this solver.');

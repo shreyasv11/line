@@ -30,6 +30,7 @@ simElem.setAttribute('logDelimiter', ';');
 simElem.setAttribute('logPath', logPath);
 simElem.setAttribute('logReplaceMode', '0');
 simElem.setAttribute('maxSamples', int2str(self.maxSamples));
+simElem.setAttribute('maxEvents', int2str(self.maxEvents));
 if ~isinf(self.maxSimulatedTime)
     simElem.setAttribute('maxSimulated', num2str(self.maxSimulatedTime,'%.3f'));
 end

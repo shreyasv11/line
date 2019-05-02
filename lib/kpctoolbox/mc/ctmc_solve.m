@@ -20,7 +20,13 @@ if size(Q)==1
     p = 1;
     return
 end
+
 n = length(Q);
+if all(Q==0)
+    p = ones(1,n)/n;
+    return
+end
+
 zerocol=find(sum(abs(Q),1)==0);
 nnzcol = setdiff(1:n, zerocol);
 p = zeros(1,n);

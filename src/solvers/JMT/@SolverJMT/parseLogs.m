@@ -6,7 +6,7 @@ function logData = parseLogs(model,isNodeLogged, metric)
 
 qn = model.getStruct;
 nclasses = qn.nclasses;
-logData = cell(qn.nstateful,qn.nclasses);
+logData = cell(qn.nnodes,qn.nclasses);
 nodePreload = model.getStateAggr;
 for ind=1:qn.nnodes
     if qn.isstateful(ind) && isNodeLogged(ind)
