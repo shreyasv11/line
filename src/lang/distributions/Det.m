@@ -33,6 +33,16 @@ classdef Det < ContinuousDistrib & DiscreteDistrib
             SCV = 0;
         end
         
+        function L = evalLST(self, s)
+            % L = EVALST(S)
+            
+            % Evaluate the Laplace-Stieltjes transform of the distribution function at t            
+            
+            t = self.getParam(1).paramValue;
+            
+            L = exp(-s*t);
+        end
+        
         function X = sample(self, n)
             % X = SAMPLE(N)
             

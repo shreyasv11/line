@@ -51,6 +51,14 @@ classdef Immediate < Distrib
             
             Ft = 1;
         end
+        
+        function L = evalLST(self, s)
+            % L = EVALST(S)
+            
+            % Evaluate the Laplace-Stieltjes transform of the distribution function at t            
+            
+            L = 1; % as in Det(0)
+        end        
     end
     
 end

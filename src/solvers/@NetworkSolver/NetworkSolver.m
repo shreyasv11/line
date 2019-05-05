@@ -116,6 +116,20 @@ classdef NetworkSolver < Solver
             [~,~,RN,~] = self.getAvg([],[],R,[]);
         end
         
+        function WN = getAvgWaitT(self)
+            % RN = GETAVGWAITT()           
+            % Compute average waiting time in queue excluding service
+            R = self.model.getAvgRespTHandles();
+            [~,~,RN,~] = self.getAvg([],[],R,[]);
+            if isempty(RN)
+                WN = [];
+                return
+            end
+            qn = self.model.getStruct;
+            WN = RN - 1./ qn.rates(:);
+            WN(qn.nodetype==NodeType.Source) = 0;
+        end
+        
         function TN = getAvgTput(self)
             % TN = GETAVGTPUT()
             
@@ -375,6 +389,9 @@ classdef NetworkSolver < Solver
             end
             if SolverFluid.supports(model)
                 solvers{end+1} = SolverFluid(model, options);
+            end
+            if SolverGen.supports(model)
+                solvers{end+1} = SolverGen(model, options);
             end
             if SolverMAM.supports(model)
                 solvers{end+1} = SolverMAM(model, options);

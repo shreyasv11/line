@@ -131,7 +131,9 @@ classdef Station < StatefulNode
                 elseif ~self.input.sourceClasses{r}{end}.isDisabled()
                     switch class(self.input.sourceClasses{r}{end})
                         case 'Replayer'
-                            [mu{r}, phi{r}] = self.input.sourceClasses{r}{end}.fitCoxian();
+                            cx = self.input.sourceClasses{r}{end}.fitCoxian();
+                            mu{r} = cx.getMu;
+                            phi{r} = cx.getPhi;
                         case 'Exp'
                             mu{r} = self.input.sourceClasses{r}{end}.params{1}.paramValue;
                             phi{r} = 1;
@@ -183,7 +185,7 @@ classdef Station < StatefulNode
                 elseif ~self.input.sourceClasses{r}{end}.isDisabled()
                     switch class(self.input.sourceClasses{r}{end})
                         case 'Replayer'
-                            ph{r} = self.input.sourceClasses{r}{end}.fitPhaseType.getRepresentation();
+                            ph{r} = self.input.sourceClasses{r}{end}.fitCoxian.getRepresentation();
                         case {'Exp','Coxian','Erlang','HyperExp','MarkovianDistribution','APH'}
                             ph{r} = self.input.sourceClasses{r}{end}.getRepresentation;
                     end

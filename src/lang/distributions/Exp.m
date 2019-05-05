@@ -50,10 +50,10 @@ classdef Exp < MarkovianDistribution
             PH = {[-lambda],[lambda]};
         end
         
-        function L = evalLaplaceTransform(self, s)
-            % L = EVALLAPLACETRANSFORM(S)
+        function L = evalLST(self, s)
+            % L = EVALST(S)
             
-            % Evaluate the Laplace transform of the distribution function at t
+            % Evaluate the Laplace-Stieltjes transform of the distribution function at t
             % AT T
             
             lambda = self.getParam(1).paramValue;

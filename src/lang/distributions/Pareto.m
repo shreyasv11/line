@@ -64,6 +64,27 @@ classdef Pareto < ContinuousDistrib
             sigma = scale * k;
             Ft = gpcdf(t, k, sigma, sigma/k);
         end
+        
+        
+        function L = evalLST(self, sl)
+            % L = EVALST(S)
+            % Evaluate the Laplace-Stieltjes transform of the distribution function at t
+            
+            % Saralees Nadarajah · Samuel Kotz. 
+            % On the Laplace transform of the Pareto distribution
+            % Queueing Syst (2006) 54:243–244
+            % DOI 10.1007/s11134-006-0299-1                                   
+            L = [];
+            for s=sl(:)'
+                alpha = self.getParam(1).paramValue;
+                k = self.getParam(2).paramValue;            
+                IL = integral(@(t)t.^(-alpha-1).*exp(-t),s*k,Inf); 
+                L(end+1) = alpha*k^alpha*IL*s^(1+alpha)/s;
+                %a = shape; b = scale; L = integral(@(x) a*b^a*exp(-s*x)./(x).^(a+1),b,1e6);
+            end
+        end
+        
+        
     end
     
     methods (Static)

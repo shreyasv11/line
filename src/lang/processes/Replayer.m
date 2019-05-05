@@ -12,19 +12,10 @@ classdef Replayer < TimeSeries
         %Constructor
         function self = Replayer(fileName)
             % SELF = REPLAYER(FILENAME)
-            
+            fileName = which(fileName);
             self@TimeSeries('Replayer',1);
             setParam(self, 1, 'fileName', fileName, 'java.lang.String');
-            if ischar(fileName)
-                self.data = [];
-                % JMT requires full file
-                javaFileObj = java.io.File(fileName);
-                if ~javaFileObj.isAbsolute()
-                    fileName = fullfile(pwd,fileName); %#ok<NASGU>
-                end
-                %                self.javaClass = 'jmt.engine.random.Replayer';
-                %                self.javaParClass = 'jmt.engine.random.ReplayerPar';
-            end
+            self.data = [];
         end
         
         function load(self)
@@ -87,6 +78,16 @@ classdef Replayer < TimeSeries
             % DISTR = FITCOXIAN()
             
             distr = Cox2.fitCentral(self.getMean, self.getVariance, self.getSkewness);
+            
+        end
+        
+        function L = evalLST(self, s)
+            % L = EVALST(S)
+            % Evaluate the Laplace-Stieltjes transform of the distribution function at t
+            if isempty(self.data)
+                self.load();
+            end
+            L = mean(exp(-s*self.data));
         end
     end
 end

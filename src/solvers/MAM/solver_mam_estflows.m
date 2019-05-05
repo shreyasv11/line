@@ -29,10 +29,11 @@ MMAP = DEP; % PH renewal process initially in (D0,D1) format
 % We now bring into MMAP format with a single class
 for ist=1:size(MMAP,1)
     for r=1:size(MMAP,2)
-        if isnan(MMAP{ist,r}{1})
-            MMAP{ist,r} = map_exponential(Inf); % no arrivals from this class
+        if isempty(MMAP{ist,r}) || any(any(isnan(MMAP{ist,r}{1})))
+            MMAP{ist,r} = {[0],[0],[0]}; % no arrivals from this class
+        else
+            MMAP{ist,r}{3} = MMAP{ist,r}{2};
         end
-        MMAP{ist,r}{3} = MMAP{ist,r}{2};
     end
 end
 
@@ -48,8 +49,11 @@ for ind=1:I
                 ist = qn.nodeToStation(ind);
                 
                 % obtain departure maps
-                DEP{inc} = mmap_super({MMAP{ist,1:R}});
-                
+                if R>1
+                    DEP{inc} = mmap_super({MMAP{ist,1:R}});
+                else
+                    DEP{inc} = MMAP{ist,1};
+                end
                 Psplit = zeros(R,Inc*R);
                 for r=1:R % superpose all classes
                     for jnd = 1:I %to
@@ -61,22 +65,34 @@ for ind=1:I
                         end
                     end
                 end
+                
                 [Fsplit{1:Inc}] = estflows_split_cs(DEP{inc}, Psplit, config);
                 for jnc=1:Inc
                     LINKS{inc,jnc} = Fsplit{jnc};
+                    LINKS{inc,jnc} = mmap_normalize(LINKS{inc,jnc});
                 end
         end
     end
 end
-
 % then we determine all incoming flows from all stations
 for ind=1:I
-    if isNCS(ind)
+    FLOWS={};
+    if isNCS(ind) && qn.nodetype(ind) ~= NodeType.Source
         inc = nodeToNCS(ind);
-        ARV{ind} = estflows_merge({LINKS{1:Inc,inc}}, config);               
+        for jnd=1:Inc
+            if ~isempty(LINKS{jnd,inc}) && sum(mmap_lambda(LINKS{jnd,inc}))>1e-6
+                FLOWS{end+1} = LINKS{jnd,inc};
+            end
+        end
+        if length(FLOWS)>1
+            ARV{ind} = estflows_merge(FLOWS, config);
+        elseif length(FLOWS)==1
+            ARV{ind} = FLOWS{1};
+        else %length(FLOWS)==0
+            ARV{ind} = LINKS{jnd,1}; % all links are zeros, take one
+        end
     else
         ARV{ind} = [];
     end
 end
-
 end

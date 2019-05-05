@@ -57,7 +57,7 @@ classdef Distrib < Copyable
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
         end
         
-        function L = evalLaplaceTransform(self, s)
+        function L = evalLST(self, s)
             % L = EVALLAPLACETRANSFORM(S)
             % Evaluate the Laplace transform of the distribution function at t
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');

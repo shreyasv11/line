@@ -10,11 +10,11 @@ K = qn.nclasses;    %number of classes
 Tstart = tic;
 
 switch options.method
-    case 'srvscaling'
+    %case 'srvscaling'
         % service distributuion per class scaled by utilization used as 
         % departure process
-        PH = qn.ph;
-        [QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
+        %PH = qn.ph;
+        %[QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
     case {'default', 'arvscaling'}
         % arrival process per chain rescaled by visits at each node
         PH = qn.ph;

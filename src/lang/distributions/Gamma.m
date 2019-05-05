@@ -58,17 +58,14 @@ classdef Gamma < ContinuousDistrib
             Ft = gamcdf(t,shape,scale);
         end
         
-        function L = evalLaplaceTransform(self, s)
+        function L = evalLST(self, s)
             % L = EVALLAPLACETRANSFORM(S)
             
             % Evaluate the Laplace transform of the distribution function at t
-            % AT T
             
-            
-            % Evaluate the Laplace transform of the distribution at s
-            shape = self.getParam(1).paramValue; % shape
-            lambda = 1 / self.getMean; %
-            L = (lambda / (lambda + s))^shape;
+            shape = self.getParam(1).paramValue; %alpha
+            scale = self.getParam(2).paramValue; %beta
+            L = ((1/scale) / (s+1/scale))^shape;
         end
     end
     

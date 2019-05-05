@@ -73,6 +73,7 @@ classdef Network < Model
         [mu, phi, phases] = refreshCoxService(self);
         [ph, phases] = refreshPHService(self);
         [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates);
+        [lt] = refreshLST(self);
         sync = refreshSync(self);
         sanitize(self);
     end

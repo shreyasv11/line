@@ -64,7 +64,7 @@ classdef Erlang < MarkovianDistribution
             PH = map_erlang(self.getMean(),r);
         end
         
-        function L = evalLaplaceTransform(self, s)
+        function L = evalLST(self, s)
             % L = EVALLAPLACETRANSFORM(S)
             
             % Evaluate the Laplace transform of the distribution function at t

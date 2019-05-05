@@ -18,7 +18,7 @@ classdef SolverAuto < NetworkSolver
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             
             % solvers sorted from fastest to slowest
-            solvers = {SolverMAM(model), SolverMVA(model), SolverNC(model), SolverFluid(model), SolverJMT(model), SolverSSA(model), SolverCTMC(model)};
+            solvers = {SolverGen(model), SolverMAM(model), SolverMVA(model), SolverNC(model), SolverFluid(model), SolverJMT(model), SolverSSA(model), SolverCTMC(model)};
             wstatus = warning('query');
             %warning off;
             boolSolver = [];

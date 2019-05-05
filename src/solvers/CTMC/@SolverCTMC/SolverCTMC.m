@@ -31,7 +31,7 @@ classdef SolverCTMC < NetworkSolver
                 self.run;
             end
             if isempty(self.result) || ~isfield(self.result,'space')
-                warning('The model has not been solved yet. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpace()');
+                warning('The model has not been cached. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpace()');
                 stateSpace = [];
             else
                 stateSpace = self.result.space;
@@ -46,7 +46,7 @@ classdef SolverCTMC < NetworkSolver
                 self.run;
             end
             if isempty(self.result) || ~isfield(self.result,'spaceAggr')
-                warning('The model has not been solved yet. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpaceAggr()');
+                warning('The model has not been cached. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpaceAggr()');
                 stateSpaceAggr = [];
             else
                 stateSpaceAggr = self.result.spaceAggr;
@@ -64,7 +64,7 @@ classdef SolverCTMC < NetworkSolver
                 self.run;
             end
             if isempty(self.result) || ~isfield(self.result,'infGen')
-                warning('The model has not been solved yet. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getGenerator()');
+                warning('The model has not been cached. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getGenerator()');
                 infGen = [];
                 eventFilt = [];
             else

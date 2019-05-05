@@ -17,6 +17,7 @@ classdef NetworkStruct <handle
         isstatedep; % state dependent routing
         isstation; % element i is true if node i is a station
         isstateful; % element i is true if node i is stateful
+        lst; % laplace-stieltjes transform
         mu;          % service rate in each service phase, for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
         ph;     % cell matrix of PH representations for each station and class
@@ -78,6 +79,7 @@ classdef NetworkStruct <handle
             self.space = cell(self.nstations,1);
             self.routing = routing;
             self.chains = [];
+            self.lst = {};
             if exist('nvars','var') && ~isempty(nvars)
                 self.nvars = nvars;
             end
@@ -91,7 +93,7 @@ classdef NetworkStruct <handle
                     switch self.nodetype(ind)
                         case NodeType.Cache
                             self.isstatedep(ind,2) = true; % state dependent service
-%                            self.isstatedep(ind,3) = true; % state dependent routing
+                            %                            self.isstatedep(ind,3) = true; % state dependent routing
                     end
                     for r=1:self.nclasses
                         switch self.routing(ind,r)
@@ -157,6 +159,11 @@ classdef NetworkStruct <handle
             for i=1:self.nstations
                 self.schedid(i) = SchedStrategy.toId(sched{i});
             end
+        end
+        
+        function setLSTs(self, lst)
+            % SETLAPLACETRANSFORMS(LT)
+            self.lst = lst;
         end
         
         function setService(self, rates, scv)
@@ -289,6 +296,7 @@ classdef NetworkStruct <handle
             newObj.isstatedep = obj.isstatedep; % state dependent routing
             newObj.isstation = obj.isstation; % element i is true if node i is a station
             newObj.isstateful = obj.isstateful; % element i is true if node i is stateful
+            newObj.lst = obj.lst;          % function handle to Laplace-Stieltjes transform for each service or arrival distribution
             newObj.mu = obj.mu;          % service rate in each service phase, for each job class in each station
             newObj.nchains = obj.nchains;           % number of chains (int)
             newObj.nclasses = obj.nclasses;          % number of classes (int)

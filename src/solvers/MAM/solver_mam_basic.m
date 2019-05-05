@@ -31,7 +31,7 @@ for c=1:C
     lambda(inchain) = sum(lambdas_inchain);
 end
 
-if M>=2 && all(isinf(N))
+if M>=2 && qn.nclosedjobs == 0
     % open queueing system (one node is the external world)
     BuToolsVerbose = false;
     BuToolsCheckInput = true;

@@ -1,6 +1,8 @@
 function SMMAP = estflows_merge(MMAP, config)
 %Given a cell array of n MMAPs with arrivals of R classes, produces a new
 %MMAP after flow merging
+empty = cellfun(@isempty, MMAP);
+MMAP(empty)=[];
 n = length(MMAP);
 
 if ~exist('config','var')
@@ -35,18 +37,17 @@ else
                 if ~isempty(MMAP{j})
                     FLOW{end+1} = m3pp2m_fit_count_theoretical(MMAP{j}, 'exact_delta', 1, 1e6);
                 end
-            end            
+            end
             SMMAP = m3pp2m_interleave(FLOW);
         otherwise
             error('Unsupported configuration for merge.');
     end
     
     switch config.compress
-        case {'default','none'}
+        case 'none'
             % do nothing
-        case 'mamap2'
-            SMMAP = mmap_normalize(SMMAP);
-            SMMAP = mamap2m_fit_mmap(SMMAP);
+        case 'default'
+            SMMAP = mmap_compress(SMMAP);
     end
 end
 SMMAP = mmap_normalize(SMMAP);

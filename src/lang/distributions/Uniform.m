@@ -49,6 +49,17 @@ classdef Uniform < ContinuousDistrib
             end
         end
         
+        function L = evalLST(self, s)
+            % L = EVALST(S)
+            
+            % Evaluate the Laplace-Stieltjes transform of the distribution function at t
+            
+            minVal = self.getParam(1).paramValue;
+            maxVal = self.getParam(2).paramValue;
+            
+            L = ( exp(-s*minVal) - exp(-s*maxVal) )/(s*(maxVal - minVal));
+        end
+        
         function X = sample(self, n)
             % X = SAMPLE(N)
             

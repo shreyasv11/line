@@ -184,23 +184,6 @@ classdef Solver < handle
             end
         end
         
-        %         function solver = suggestAnalytical(model)
-        % SOLVER = SUGGESTANALYTICAL(MODEL)
-        %             qn = model.getStruct;
-        %             modelFeat =  model.getUsedLangFeatures.list;
-        %             solvers{1} = SolverMVA(model);
-        %             solvers{2} = SolverFluid(model);
-        %             solvers{3} = SolverMAM(model);
-        %             solvers{4} = SolverNC(model);
-        %
-        %             featUsed = model.getUsedLangFeatures();
-        %
-        %             for s=1:length(solvers)
-        %                 features{s,1} = solvers{s}.getFeatureSet;
-        %                 supports(s) = SolverFeatureSet.supports(features{s,1}, featUsed);
-        %             end
-        %         end
-        
         function optList = listValidOptions()
             % OPTLIST = LISTVALIDOPTIONS()
             % List valid fields for options data structure
