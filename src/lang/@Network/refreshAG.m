@@ -134,12 +134,12 @@ for i=1:M
             sync{end}.active{1}.('node') = i;
             sync{end}.passive{1}.('node') = eps;
             sync{end}.active{1}.('class') = r;
-            sync{end}.active{1}.('event') = Event.PHASE;
+            sync{end}.active{1}.('event') = EventType.PHASE;
             sync{end}.passive{1}.('class') = r;
             sync{end}.passive{1}.('event') = [];
             sync{end}.passive{1}.('prob') = 1; % probability to sync
         end
-        %L(end+1,:) = [i, r, eps, r, Event.PHASE, 0 ];
+        %L(end+1,:) = [i, r, eps, r, EventType.PHASE, 0 ];
         for j=1:M
             for s=1:R
                 state_prob = rt((i-1)*R+r,(j-1)*R+s);
@@ -150,11 +150,11 @@ for i=1:M
                     sync{end}.active{1}.('node') = i;
                     sync{end}.passive{1}.('node') = j;
                     sync{end}.active{1}.('class') = r;
-                    sync{end}.active{1}.('event') = Event.DEP;
+                    sync{end}.active{1}.('event') = EventType.DEP;
                     sync{end}.passive{1}.('class') = s;
-                    sync{end}.passive{1}.('event') = Event.ARV;
+                    sync{end}.passive{1}.('event') = EventType.ARV;
                     sync{end}.passive{1}.('prob') = state_prob; % probability to sync
-                    actionTable(end+1,:) = [i, r, j, s, Event.DEP, Event.ARV];
+                    actionTable(end+1,:) = [i, r, j, s, EventType.DEP, EventType.ARV];
                 end
             end
         end

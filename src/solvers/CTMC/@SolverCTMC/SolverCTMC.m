@@ -12,7 +12,7 @@ classdef SolverCTMC < NetworkSolver
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
-        runtime = run(self)
+        runtime = run(self, options)
         Pnir = getProb(self, node, state)
         Pn = getProbSys(self)
         Pnir = getProbAggr(self, ist)

@@ -1,4 +1,4 @@
-function [QN,UN,RN,TN,CN,XN,runtime,tranSysState] = solver_ssa_analysis(qn, options)
+function [QN,UN,RN,TN,CN,XN,runtime,tranSysState,tranSync] = solver_ssa_analysis(qn, options)
 % [QN,UN,RN,TN,CN,XN,RUNTIME,TRANSYSSTATE] = SOLVER_SSA_ANALYSIS(QN, OPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
@@ -14,11 +14,12 @@ Tstart = tic;
 
 PH = qn.ph;
 tranSysState = [];
-probSysState = [];
+tranSync = [];
 
 qnc = qn.copy;
 switch options.method
     case {'serial.hash','serial.hashed','hashed'}
+        options.samples = options.samples + 1;
         [probSysState,SSq,arvRates,depRates] = solver_ssa_hashed(qnc, options);
         qn.space = qnc.space;
         XN = NaN*zeros(1,K);
@@ -67,7 +68,8 @@ switch options.method
         TN(isnan(TN))=0;
         
     case {'default','serial'}
-        [probSysState,SSq,arvRates,depRates,tranSysState] = solver_ssa(qnc, options);
+        options.samples = options.samples + 1;
+        [probSysState,SSq,arvRates,depRates,tranSysState, tranSync] = solver_ssa(qnc, options);
         qn.space = qnc.space;
         XN = NaN*zeros(1,K);
         UN = NaN*zeros(M,K);

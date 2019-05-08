@@ -1,10 +1,13 @@
-function runtime = run(self)
+function runtime = run(self, options)
 % RUNTIME = RUN()
 % Run the solver
 
 self.reset();
 T0=tic;
-options=self.options;
+if ~exist('options','var')
+    options = self.getOptions;
+end
+
 
 if isinf(options.timespan(1))
     if options.verbose  == 2

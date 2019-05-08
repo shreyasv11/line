@@ -31,7 +31,8 @@ classdef Solver < handle
             error('An abstract method was invoked. The function needs to be overridden by a subclass.');
             
         end
-        function runtime = run(self) % generic method to run the solver
+        
+        function runtime = run(self, options) % generic method to run the solver
             % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             % Solve the model

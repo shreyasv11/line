@@ -5,7 +5,9 @@ function Trun = run(self)
 % All rights reserved.
 
 T0=tic;
-options = self.getOptions;
+if ~exist('options','var')
+    options = self.getOptions;
+end
 
 if ~isfield(options,'verbose')
     options.verbose = 0;
@@ -21,7 +23,7 @@ end
 
 if ~self.supports(self.model)
     %    if options.verbose
-    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the JMT solver.');
     %    end
     %    runtime = toc(T0);
     %    return

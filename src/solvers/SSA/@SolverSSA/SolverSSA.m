@@ -13,7 +13,7 @@ classdef SolverSSA < NetworkSolver
         end
         
         
-        [runtime, tranSysState] = run(self);        
+        [runtime, tranSysState, tranSync] = run(self, options);        
         Prob = getProb(self, node, state);
         ProbAggr = getProbAggr(self, node, state);
         ProbSys = getProbSys(self);

@@ -12,7 +12,7 @@ classdef SolverNC < NetworkSolver
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
-        runtime = run(self)        
+        runtime = run(self, options)
         Pnir = getProbAggr(self, node, state_a)
         Pn   = getProbSys(self)        
         Pn   = getProbSysAggr(self)

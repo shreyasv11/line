@@ -12,7 +12,7 @@ classdef SolverMVA < NetworkSolver
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end
         
-        runtime = run(self);        
+        runtime = run(self, options);        
         [lNormConst] = getProbNormConstAggr(self);        
         [Pnir,logPnir] = getProbAggr(self, ist);        
         [Pnir,logPn] = getProbSysAggr(self);

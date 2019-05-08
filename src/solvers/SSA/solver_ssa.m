@@ -1,4 +1,4 @@
-function [pi,SSq,arvRates,depRates,tranSysState]=solver_ssa(qn,options)
+function [pi,SSq,arvRates,depRates,tranSysState,tranSync]=solver_ssa(qn,options)
 % [PI,SSQ,ARVRATES,DEPRATES,TRANSYSSTATE]=SOLVER_SSA(QN,OPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
@@ -89,6 +89,7 @@ for ind=1:qn.nnodes
 end
 
 state = cell2mat(stateCell');
+tranSync = zeros(samples_collected,1);
 tranState = zeros(1+length(state),samples_collected);
 tranState(1:(1+length(state)),1) = [0, state]';
 samples_collected = 1;
@@ -112,8 +113,8 @@ cur_time = 0;
 while samples_collected < options.samples && cur_time <= options.timespan(2)
     %samples_collected
     ctr = 1;
-    enabled_action = {}; % row is action label, col1=rate, col2=new state
-    enabled_new_state = {};
+    enabled_sync = {}; % row is action label, col1=rate, col2=new state
+    %enabled_new_state = {};
     enabled_rates = [];
     for act=1:A
         update_cond_a = true; %((node_a{act} == last_node_a || node_a{act} == last_node_p));
@@ -131,7 +132,7 @@ while samples_collected < options.samples && cur_time <= options.timespan(2)
             if newStateCell{act}{qn.nodeToStateful(node_a{act})}(ia,:) == -1 % hash not found
                 continue
             end
-            update_cond_p = ((node_p{act} == last_node_a || node_p{act} == last_node_p)) || isempty(outprob_p{act});
+            %update_cond_p = ((node_p{act} == last_node_a || node_p{act} == last_node_p)) || isempty(outprob_p{act});
             update_cond = true; %update_cond_a || update_cond_p;
             if rate_a{act}(ia)>0
                 if node_p{act} ~= local
@@ -160,21 +161,22 @@ while samples_collected < options.samples && cur_time <= options.timespan(2)
                     end
                     if ~isnan(rate_a{act})
                         if all(~cellfun(@isempty,newStateCell{act}))
-                            if event_a{act} == Event.DEP
+                            if event_a{act} == EventType.DEP
                                 node_a_sf{act} = qn.nodeToStateful(node_a{act});
                                 node_p_sf{act} = qn.nodeToStateful(node_p{act});
                                 depRatesSamples(samples_collected,node_a_sf{act},class_a{act}) = depRatesSamples(samples_collected,node_a_sf{act},class_a{act}) + outprob_a{act} * outprob_p{act} * rate_a{act}(ia) * prob_sync_p{act};
                                 arvRatesSamples(samples_collected,node_p_sf{act},class_p{act}) = arvRatesSamples(samples_collected,node_p_sf{act},class_p{act}) + outprob_a{act} * outprob_p{act} * rate_a{act}(ia) * prob_sync_p{act};
                             end
-                            if any(~cellfun(@isequal,newStateCell{act},stateCell))
-                                if node_p{act} < local && ~csmask(class_a{act}, class_p{act}) && qn.nodetype(node_p{act})~=NodeType.Source && (rate_a{act}(ia) * prob_sync_p{act} >0)
-                                    error('Fatal error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a{act}, node_a{act}, node_p{act}, class_a{act}, class_p{act});
-                                end
-                                enabled_rates(ctr) = rate_a{act}(ia) * prob_sync_p{act};
-                                enabled_action{ctr} = act;
-                                %enabled_new_state{ctr} = new_state;
-                                ctr = ctr + 1;
+                            % simulate also self-loops as we need to log them
+                            %if any(~cellfun(@isequal,newStateCell{act},stateCell))
+                            if node_p{act} < local && ~csmask(class_a{act}, class_p{act}) && qn.nodetype(node_p{act})~=NodeType.Source && (rate_a{act}(ia) * prob_sync_p{act} >0)
+                                error('Fatal error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a{act}, node_a{act}, node_p{act}, class_a{act}, class_p{act});
                             end
+                            enabled_rates(ctr) = rate_a{act}(ia) * prob_sync_p{act};
+                            enabled_sync{ctr} = act;
+                            %enabled_new_state{ctr} = new_state;
+                            ctr = ctr + 1;
+                            %end
                         end
                     end
                 end
@@ -185,12 +187,13 @@ while samples_collected < options.samples && cur_time <= options.timespan(2)
     tot_rate = sum(enabled_rates);
     cum_rate = cumsum(enabled_rates) / tot_rate;
     firing_ctr = 1 + max([0,find( rand > cum_rate )]); % select action
-    last_node_a = node_a{enabled_action{firing_ctr}};
-    last_node_p = node_p{enabled_action{firing_ctr}};
+    last_node_a = node_a{enabled_sync{firing_ctr}};
+    last_node_p = node_p{enabled_sync{firing_ctr}};
     state = cell2mat(stateCell');
     dt = -(log(rand)/tot_rate);
     cur_time = cur_time + dt;
     tranState(1:(1+length(state)),samples_collected) = [dt, state]';
+    tranSync(samples_collected,1) = enabled_sync{firing_ctr};
     
     for ind=1:qn.nnodes
         if qn.isstation(ind)
@@ -203,7 +206,7 @@ while samples_collected < options.samples && cur_time <= options.timespan(2)
     SSq(:,samples_collected) = cell2mat(nir');
     
     samples_collected = samples_collected + 1;
-    stateCell = newStateCell{enabled_action{firing_ctr}};
+    stateCell = newStateCell{enabled_sync{firing_ctr}};
     if options.verbose
         if samples_collected == 1e2
             fprintf(1,sprintf('SSA samples: %6d',samples_collected));

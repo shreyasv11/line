@@ -1,10 +1,12 @@
-function runtime = run(self)
+function runtime = run(self, options)
 % RUNTIME = RUN()
 % Run the solver
 
 T0=tic;
 
-options = self.getOptions;
+if ~exist('options','var')
+    options = self.getOptions;
+end
 
 if ~isinf(options.timespan(1)) && (options.timespan(1) == options.timespan(2))
     warning('%s: timespan is a single point, spacing by options.tol (%e).\n',mfilename, options.tol);

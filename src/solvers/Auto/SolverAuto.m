@@ -18,7 +18,7 @@ classdef SolverAuto < NetworkSolver
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             
             % solvers sorted from fastest to slowest
-            solvers = {SolverGen(model), SolverMAM(model), SolverMVA(model), SolverNC(model), SolverFluid(model), SolverJMT(model), SolverSSA(model), SolverCTMC(model)};
+            solvers = {SolverMAM(model), SolverMVA(model), SolverNC(model), SolverFluid(model), SolverJMT(model), SolverSSA(model), SolverCTMC(model)};
             wstatus = warning('query');
             %warning off;
             boolSolver = [];
@@ -41,7 +41,7 @@ classdef SolverAuto < NetworkSolver
             end
         end
         
-        function runtime = run(self) % generic method to run the solver
+        function runtime = run(self, options) % generic method to run the solver
             % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             

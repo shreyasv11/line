@@ -5,13 +5,6 @@ classdef Event < Copyable
     % All rights reserved.
     
     % event major classification
-    properties (Constant)
-        LOCAL = 0;
-        ARV = 1; % job arrival
-        DEP = 2; % job departure
-        PHASE = 3; % service advances to next phase, without departure
-        READ = 4; % read cache item
-    end
     
     properties
         node;
@@ -41,25 +34,9 @@ classdef Event < Copyable
         function print(self)
             % PRINT()
             
-            fprintf(1,'(%s: %d,%d)\n',Event.toText(self.event),self.node,self.class);
+            fprintf(1,'(%s: %d,%d)\n',EventType.toText(self.event),self.node,self.class);
         end
     end
     
-    methods(Static)
-        function text = toText(type)
-            % TEXT = TOTEXT(TYPE)
-            
-            switch type
-                case Event.ARV
-                    text = 'arv';
-                case Event.DEP
-                    text = 'dep';
-                case Event.PHASE
-                    text = 'phase';
-                case Event.READ
-                    text = 'read';
-            end
-        end
-    end
     
 end

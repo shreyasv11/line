@@ -81,6 +81,7 @@ for ind=1:qn.nnodes
         stateCell{isf} = qn.space{isf}(state(isf),:);
     end
 end
+tranSync = zeros(samples_collected,1);
 tranState = zeros(samples_collected,1+length(init_state_hashed));
 tranState(1,:) = [0,init_state_hashed];
 local = qn.nnodes+1;
@@ -100,7 +101,7 @@ end
 while samples_collected < options.samples
     %samples_collected
     ctr = 1;
-    enabled_action = {}; % row is action label, col1=rate, col2=new state
+    enabled_sync = {}; % row is action label, col1=rate, col2=new state
     enabled_new_state = {};
     enabled_rates = [];
     for act=1:A
@@ -119,8 +120,8 @@ while samples_collected < options.samples
             if new_state_a{act}(ia) == -1 % hash not found
                 continue
             end
-            update_cond_p = ((node_p{act} == last_node_a || node_p{act} == last_node_p)) || isempty(outprob_p{act});
-            update_cond = update_cond_a || update_cond_p;
+            %update_cond_p = ((node_p{act} == last_node_a || node_p{act} == last_node_p)) || isempty(outprob_p{act});
+            update_cond = true; %update_cond_a || update_cond_p;
             if rate_a{act}(ia)>0
                 if node_p{act} ~= local
                     state_p{act} = state(qn.nodeToStateful(node_p{act}));
@@ -158,21 +159,22 @@ while samples_collected < options.samples
                     end
                     if ~isnan(rate_a{act})
                         if all(new_state>0)
-                            if event_a{act} == Event.DEP
+                            if event_a{act} == EventType.DEP
                                 node_a_sf{act} = qn.nodeToStateful(node_a{act});
                                 node_p_sf{act} = qn.nodeToStateful(node_p{act});
                                 depRatesSamples(samples_collected,node_a_sf{act},class_a{act}) = depRatesSamples(samples_collected,node_a_sf{act},class_a{act}) + outprob_a{act} * outprob_p{act} * rate_a{act}(ia) * prob_sync_p{act};
                                 arvRatesSamples(samples_collected,node_p_sf{act},class_p{act}) = arvRatesSamples(samples_collected,node_p_sf{act},class_p{act}) + outprob_a{act} * outprob_p{act} * rate_a{act}(ia) * prob_sync_p{act};
                             end
-                            if any(new_state ~= state)
+                            % simulate also self-loops as we need to log them
+                            %if any(new_state ~= state)
                                 if node_p{act} < local && ~csmask(class_a{act}, class_p{act}) && qn.nodetype(node_p{act})~=NodeType.Source && (rate_a{act}(ia) * prob_sync_p{act} >0)
                                     error('Fatal error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a{act}, node_a{act}, node_p{act}, class_a{act}, class_p{act});
                                 end
                                 enabled_rates(ctr) = rate_a{act}(ia) * prob_sync_p{act};
-                                enabled_action{ctr} = act;
+                                enabled_sync{ctr} = act;
                                 enabled_new_state{ctr} = new_state;
                                 ctr = ctr + 1;
-                            end
+                            %end
                         end
                     end
                 end
@@ -182,10 +184,12 @@ while samples_collected < options.samples
     tot_rate = sum(enabled_rates);
     cum_rate = cumsum(enabled_rates) / tot_rate;
     firing_ctr = 1 + max([0,find( rand > cum_rate )]); % select action
-    last_node_a = node_a{enabled_action{firing_ctr}};
-    last_node_p = node_p{enabled_action{firing_ctr}};
+    last_node_a = node_a{enabled_sync{firing_ctr}};
+    last_node_p = node_p{enabled_sync{firing_ctr}};
     next_state = enabled_new_state{firing_ctr};
     tranState(1+samples_collected, :) = [-(log(rand)/tot_rate), state];
+    tranSync(ctr) = enabled_sync{firing_ctr};
+    
     samples_collected = samples_collected + 1;
     state = next_state;
     if options.verbose

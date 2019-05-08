@@ -1,9 +1,12 @@
-function runtime = run(self)
+function runtime = run(self, options)
 % RUNTIME = RUN()
 % Run the solver
 
 T0=tic;
-options = self.getOptions;
+if ~exist('options','var')
+    options = self.getOptions;
+end
+
 if ~self.supports(self.model)
     error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
 end

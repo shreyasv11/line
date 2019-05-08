@@ -94,7 +94,7 @@ classdef SolverJMT < NetworkSolver
             out = self.filePath;
         end
         
-        Tsim = run(self)
+        Tsim = run(self, options)
         
         jwatView(self, options)
         jsimgView(self, options)
