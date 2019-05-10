@@ -51,7 +51,7 @@ solver{end+1} = SolverCTMC(model,options); % CTMC is infinite on this model
 solver{end+1} = SolverJMT(model,'samples',1e5);
 solver{end+1} = SolverSSA(model,options);
 %solver{end+1} = SolverFluid(model,options);
-solver{end+1} = SolverMVA(model,'method','exact');
+solver{end+1} = SolverMVA(model,'exact');
 %solver{end+1} = SolverNC(model,options);
 for s=1:length(solver)
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());

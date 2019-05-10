@@ -8,7 +8,7 @@ if ~exist('options','var')
 end
 
 if ~self.supports(self.model)
-    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the %s solver.',mfilename);
+    error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the solver.');
 end
 Solver.resetRandomGeneratorSeed(options.seed);
 

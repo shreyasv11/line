@@ -15,7 +15,7 @@ switch options.method
         % departure process
         %PH = qn.ph;
         %[QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
-    case {'default', 'arvscaling'}
+    case {'default', 'arvscaling', 'srvscaling'}
         % arrival process per chain rescaled by visits at each node
         PH = qn.ph;
         [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, PH, options);

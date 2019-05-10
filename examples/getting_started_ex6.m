@@ -33,5 +33,5 @@ model.linkNetwork(P);
 
 % Block 4: solution
 AvgTable = SolverSSA(model,'samples',2e4,'seed',1,'verbose',true).getAvgTable
-AvgTable = SolverSSA(model,'samples',2e4,'seed',1,'verbose',true,'method','parallel').getAvgTable
-AvgTable = SolverSSA(model,'samples',2e4,'seed',1,'verbose',true,'method','parallel').getAvgTable
+AvgTable = SolverSSA(model,'samples',2e4,'seed',1,'verbose',true,'parallel').getAvgTable
+AvgTable = SolverSSA(model,'samples',2e4,'seed',1,'verbose',true,'parallel').getAvgTable

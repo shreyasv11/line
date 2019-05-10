@@ -19,7 +19,7 @@ P{cclass}(queue2, delay) = 1.0;
         P{cclass}(delay, queue1) = p;
         P{cclass}(delay, queue2) = 1-p;
         model.link(P);
-        R = SolverMVA(model,'method','exact','verbose',false).getAvgSysRespT;
+        R = SolverMVA(model,'exact','verbose',false).getAvgSysRespT;
     end
 p_opt = fminbnd(@(p) objFun(p), 0,1)
 

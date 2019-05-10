@@ -21,11 +21,11 @@ classdef LayeredNetworkSolver < Solver
     methods %(Abstract) % implemented with errors for Octave compatibility
         function bool = supports(self, model) % true if model is supported by the solver
             % BOOL = SUPPORTS(MODEL) % TRUE IF MODEL IS SUPPORTED BY THE SOLVER
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
         end
         function [QN,UN,RN,TN] = getAvg(self)
             % [QN,UN,RN,TN] = GETAVG()
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
         end
     end
     

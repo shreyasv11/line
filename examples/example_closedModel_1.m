@@ -1,3 +1,4 @@
+
 if ~isoctave(), clearvars -except exampleName; end
 model = Network('model');
 
@@ -18,11 +19,10 @@ model.link(P);
 solver = {};
 solver{end+1} = SolverCTMC(model,'keep',true);
 solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true,'keep',true);
-%solver{end+1} = SolverJMT(model,'seed',23000,'verbose',true,'method','jmva','keep',true);
 solver{end+1} = SolverSSA(model,'seed',23000,'verbose',true,'samples',5e3);
 solver{end+1} = SolverFluid(model);
 solver{end+1} = SolverMVA(model);
-solver{end+1} = SolverNC(model,'method','exact');
+solver{end+1} = SolverNC(model,'exact');
 solver{end+1} = SolverAuto(model);
 
 AvgTable = cell(1,length(solver));

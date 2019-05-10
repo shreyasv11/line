@@ -28,7 +28,7 @@ classdef Solver < handle
         function bool = supports(self,model)
             % BOOL = SUPPORTS(SELF,MODEL)
             % True if the input model is supported by the solver
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
         
@@ -36,7 +36,7 @@ classdef Solver < handle
             % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             % Solve the model
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
     end
@@ -185,50 +185,32 @@ classdef Solver < handle
             end
         end
         
-        function optList = listValidOptions()
+        function [optList, allOpt] = listValidOptions()
             % OPTLIST = LISTVALIDOPTIONS()
             % List valid fields for options data structure
             optList = {'cache','cutoff','force','init_sol','iter_max','iter_tol','tol', ...
-                'keep','method','odesolvers','samples','seed','stiff', ...
-                'timespan','verbose'};
+                'keep','method','odesolvers','samples','seed','stiff', 'timespan','verbose'};
+            allOpt = {'cache','cutoff','force','init_sol','iter_max','iter_tol','tol', ...
+                'keep','method','odesolvers','samples','seed','stiff', 'timespan','verbose', ...
+                'default','exact','auto','ctmc','ctmc.gpu','gpu','mva','mva.exact','amva','mva.amva',...
+                'ssa','ssa.serial.hash','ssa.para.hash','ssa.parallel.hash','ssa.serial','ssa.para','ssa.parallel','serial.hash','serial','para','parallel','para.hash','parallel.hash',...
+                'jmt','jsim','jmva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
+                'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls',...
+                'fluid','nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.mmint','mam','arvscaling','srvscaling',...
+                'mm1','mg1','gig1','gim1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b'};
         end
         
         function bool = isValidOption(optName)
             % BOOL = ISVALIDOPTION(OPTNAME)
             % Check if the given option exists for the solver
-            bool = any(cell2mat(findstring(optName, Solver.listValidOptions()))==1);
+            [~,allOpts] = Solver.listValidOptions();
+            bool = any(cell2mat(findstring(optName, allOpts))==1);
         end
         
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
             % Return default options
-            options = struct();
-            options.cache = true;
-            options.cutoff = Inf;
-            options.config = {};
-            options.force = false;
-            options.init_sol = [];
-            options.iter_max = 10;
-            options.iter_tol = 1e-4; % convergence tolerance to stop iterations
-            options.tol = 1e-4; % tolerance for all other uses
-            options.keep = false;
-            options.method = 'default';
-            odesfun = struct();
-            odesfun.fastOdeSolver = Solver.fastOdeSolver;
-            odesfun.accurateOdeSolver = Solver.accurateOdeSolver;
-            odesfun.fastStiffOdeSolver = Solver.fastStiffOdeSolver;
-            odesfun.accurateStiffOdeSolver = Solver.accurateStiffOdeSolver;
-            options.odesolvers = odesfun;
-            if isoctave
-                options.samples = 5e3;
-            else
-                options.samples = 1e4;
-            end
-            %options.seed = 23000;
-            options.seed = randi([1,1e6]);
-            options.stiff = true;
-            options.timespan = [Inf,Inf];
-            options.verbose = 1;
+            lineDefaults;
         end
         
         function options = parseOptions(varargin, defaultOptions)
@@ -240,9 +222,21 @@ classdef Solver < handle
                 options = varargin{1};
             elseif ischar(varargin{1})
                 options = defaultOptions;
-                for v=1:2:length(varargin)
+                for v=1:1:length(varargin)
                     if Solver.isValidOption(varargin{v})
-                        options.(varargin{v}) = varargin{v+1};
+                        switch varargin{v}
+                            case {'default','exact','auto','ctmc','ctmc.gpu','gpu','mva','mva.exact','amva','mva.amva',...
+                                    'ssa','ssa.serial.hash','ssa.para.hash','ssa.parallel.hash','ssa.serial','ssa.para','ssa.parallel','serial.hash','serial','para','parallel','para.hash','parallel.hash',...
+                                    'jmt','jsim','jmva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
+                                    'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls',...
+                                    'fluid','nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.mmint','mam','arvscaling','srvscaling',...
+                                    'mm1','mg1','gig1','gim1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b',...
+                                    'poisson'}
+                                options.method = varargin{v};                                
+                            otherwise
+                                options.(varargin{v}) = varargin{v+1};
+                                v = v+2;
+                        end
                     else
                         warning('Option "%s\" does not exist. Ignoring.',varargin{v});
                     end
@@ -286,7 +280,7 @@ classdef Solver < handle
                     if strcmp(options.method,'nc'), options.method='default'; end
                     options.method = erase(options.method,'nc.');
                     solver = SolverNC(model, options);
-                case 'mam'
+                case {'mam','mam.arvscaling','mam.srvscaling','mam.poisson'}
                     if strcmp(options.method,'mam'), options.method='default'; end
                     options.method = erase(options.method,'mam.');
                     solver = SolverMAM(model, options);

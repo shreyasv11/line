@@ -31,12 +31,12 @@ classdef MarkovModulated < PointProcess
         function phases = getNumberOfPhases(self)
             % PHASES = GETNUMBEROFPHASES()
             
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
         end
         function MAP = getRepresentation(self)
             % MAP = GETREPRESENTATION()
             
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
         end
     end
     
@@ -44,7 +44,7 @@ classdef MarkovModulated < PointProcess
         function cx = fit(MEAN, SCV)
             % CX = FIT(MEAN, SCV)
             
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
         end
     end
     

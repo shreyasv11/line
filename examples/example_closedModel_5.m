@@ -4,8 +4,8 @@ D = [10,5; 5,9]; % S(i,r) - mean service time of class r at station i
 N = [1,2]; % N(r) - number of jobs of class r
 Z = [91,92; 93,94]; % Z(r)  mean service time of class r at delay station i
 try
-    SolverMVA(Network.cyclicPsInf(N,D,Z), 'method', 'exact').getAvgTable
+    SolverMVA(Network.cyclicPsInf(N,D,Z), 'exact').getAvgTable
 catch % pre-2018a MATLAB versions don't support this notation
-    s = SolverMVA(Network.cyclicPsInf(N,D,Z), 'method', 'exact');
+    s = SolverMVA(Network.cyclicPsInf(N,D,Z), 'exact');
     s.getAvgTable
 end

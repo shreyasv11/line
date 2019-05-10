@@ -64,7 +64,7 @@ classdef MarkovianDistribution < ContinuousDistrib
             % UPDATE(SELF,VARARGIN)
             
             % Update parameters to match given moments
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
         
@@ -72,7 +72,7 @@ classdef MarkovianDistribution < ContinuousDistrib
             % UPDATEMEAN(SELF,MEAN)
             
             % Update parameters to match a given mean
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
         
@@ -96,7 +96,7 @@ classdef MarkovianDistribution < ContinuousDistrib
             
             % Update distribution with given mean and squared coefficient of
             % variation (SCV=variance/mean^2)
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
         
@@ -112,7 +112,7 @@ classdef MarkovianDistribution < ContinuousDistrib
             % PH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
-            error('An abstract method was invoked. The function needs to be overridden by a subclass.');
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
         

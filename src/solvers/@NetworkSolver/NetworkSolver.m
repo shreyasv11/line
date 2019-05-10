@@ -271,84 +271,84 @@ classdef NetworkSolver < Solver
             % [LNORMCONST] = GETPROBNORMCONST()
             
             % Return normalizing constant of state probabilities
-            error('getProbNormConstAggr is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getProbNormConstAggr is not supported by this solver.');
         end
         
         function Pstate = getProb(self, node, state)
             % PSTATE = GETPROBSTATE(NODE, STATE)
             
             % Return marginal state probability for station ist state
-            error('getProb is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getProb is not supported by this solver.');
         end
         
         function Psysstate = getProbSys(self)
             % PSYSSTATE = GETPROBSYSSTATE()
             
             % Return joint state probability
-            error('getProbSys is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getProbSys is not supported by this solver.');
         end
         
         function Pnir = getProbAggr(self, node, state_a)
             % PNIR = GETPROBSTATEAGGR(NODE, STATE_A)
             
             % Return marginal state probability for station ist state
-            error('getProbAggr is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getProbAggr is not supported by this solver.');
         end
         
         function Pnjoint = getProbSysAggr(self)
             % PNJOINT = GETPROBSYSSTATEAGGR()
             
             % Return joint state probability
-            error('getProbSysAggr is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getProbSysAggr is not supported by this solver.');
         end
         
         function tstate = sample(self, node, numevents)
             % TSTATE = SAMPLE(NODE, NUMEVENTS)
             
             % Return marginal state probability for station ist state
-            error('sample is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','sample is not supported by this solver.');
         end
         
         function tstate = sampleAggr(self, node, numevents)
             % TSTATE = SAMPLEAGGR(NODE, NUMEVENTS)
             
             % Return marginal state probability for station ist state
-            error('sampleAggr is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','sampleAggr is not supported by this solver.');
         end
         
         function tstate = sampleSys(self, numevents)
             % TSTATE = SAMPLESYS(NUMEVENTS)
             
             % Return joint state probability
-            error('sampleSys is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','sampleSys is not supported by this solver.');
         end
         
         function tstate = sampleSysAggr(self, numevents)
             % TSTATE = SAMPLESYSAGGR(NUMEVENTS)
             
             % Return joint state probability
-            error('sampleSysAggr is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','sampleSysAggr is not supported by this solver.');
         end
         
         function RD = getCdfRespT(self, R)
             % RD = GETCDFRESPT(R)
             
             % Return cumulative distribution of response times at steady-state
-            error('getCdfRespT is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfRespT(self, R)
             % RD = GETTRANCDFRESPT(R)
             
             % Return cumulative distribution of response times during transient
-            error('getTranCdfRespT is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getTranCdfRespT is not supported by this solver.');
         end
         
         function RD = getTranCdfPassT(self, R)
             % RD = GETTRANCDFPASST(R)
             
             % Return cumulative distribution of passage times at steady-state
-            error('getTranCdfPassT is not supported by this solver.');
+            error('Line:FeatureNotSupportedBySolver','getTranCdfPassT is not supported by this solver.');
         end
     end
     methods (Static)
