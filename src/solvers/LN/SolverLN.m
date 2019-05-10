@@ -154,13 +154,9 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     end
     
     methods (Static)
-        function options = defaultOptions(self)
+        function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = EnsembleSolver.defaultOptions();
-            options.timespan = [Inf,Inf];
-            options.keep = false;
-            options.verbose = 2;
+            options = lineDefaults('LN');
         end
     end
 end

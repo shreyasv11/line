@@ -280,13 +280,11 @@ classdef SolverLQNS < LayeredNetworkSolver
             end
         end
         
-        function options = defaultOptions(self)
+        function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = EnsembleSolver.defaultOptions();
-            options.timespan = [Inf,Inf];
-            options.keep = false;
+            options = lineDefaults('LQNS');
         end
+        
         
         function bool = isAvailable()
             % BOOL = ISAVAILABLE()

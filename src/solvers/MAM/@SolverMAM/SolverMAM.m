@@ -57,9 +57,7 @@ classdef SolverMAM < NetworkSolver
         
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions();
-            options.timespan = [Inf,Inf];
+            options = lineDefaults('MAM');
         end
     end
 end

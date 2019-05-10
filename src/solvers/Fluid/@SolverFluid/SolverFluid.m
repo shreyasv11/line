@@ -52,13 +52,10 @@ classdef SolverFluid < NetworkSolver
             
             % do nothing
         end
+        
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions();
-            options.iter_max = 50;
-            options.stiff = true;
-            options.timespan = [0,Inf];
+            options = lineDefaults('Fluid');
         end
     end
 end

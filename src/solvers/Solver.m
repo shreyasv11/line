@@ -210,7 +210,7 @@ classdef Solver < handle
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
             % Return default options
-            lineDefaults;
+            options = lineDefaults('Solver');
         end
         
         function options = parseOptions(varargin, defaultOptions)

@@ -54,10 +54,7 @@ classdef SolverNC < NetworkSolver
         
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions();
-            options.samples = 1e6;
-            options.timespan = [Inf,Inf];
+            options = lineDefaults('NC');
         end
     end
 end

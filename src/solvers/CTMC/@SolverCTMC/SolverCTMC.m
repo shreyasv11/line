@@ -111,9 +111,7 @@ classdef SolverCTMC < NetworkSolver
         
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions();
-            options.timespan = [Inf,Inf];
+            options = lineDefaults('CTMC');
         end
         
         function printInfGen(Q,SS)

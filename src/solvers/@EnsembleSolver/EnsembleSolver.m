@@ -170,14 +170,7 @@ classdef EnsembleSolver < Solver
         % ensemble solver options
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions;
-            options.method = 'default';
-            options.init_sol = [];
-            options.iter_max = 100;
-            options.iter_tol = 1e-4;
-            options.tol = 1e-4;
-            options.verbose = 0;
+            options = lineDefaults('Ensemble');
         end
     end
 end

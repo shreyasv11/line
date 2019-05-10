@@ -260,11 +260,11 @@ classdef SolverJMT < NetworkSolver
             %                 error('Finite timespan not supported in %s',solverName);
             %             end
         end
+        
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions();
-        end
+            options = lineDefaults('JMT');
+        end        
     end
     
 end

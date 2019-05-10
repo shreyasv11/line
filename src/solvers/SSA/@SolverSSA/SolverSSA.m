@@ -61,13 +61,11 @@ classdef SolverSSA < NetworkSolver
                 error('Finite timespan not supported in %s',solverName);
             end
         end
-        
+               
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
-            
-            options = Solver.defaultOptions();
-            options.timespan = [0,Inf];
-            options.verbose = true;
+            options = lineDefaults('SSA');
         end
+        
     end
 end
