@@ -75,7 +75,8 @@ for a=1:A
         state_a = state(qn.nodeToStateful(node_a));
         class_a = sync{a}.active{1}.class;
         event_a = sync{a}.active{1}.event;
-        [new_state_a, rate_a] = State.afterEventHashed( qn, node_a, state_a, event_a, class_a);
+        [new_state_a, rate_a] = State.afterEventHashed( qn, node_a, state_a, event_a, class_a);        
+        
         if new_state_a == -1 % hash not found
             continue
         end

@@ -21,11 +21,25 @@ for i=1:M
                 else
                     switch sched{i}
                         case SchedStrategy.SEPT
-                            [~,~,rnk] = unique(1./rates(i,:));
-                            schedparam(i,:)=rnk';
+                            svcTime = zeros(1,K);
+                            for k=1:K
+                                svcTime(k) = self.nodes{i}.serviceProcess{k}.getMean;
+                            end
+                            [svcTimeSorted] = sort(unique(svcTime));
+                            self.nodes{i}.schedStrategyPar = zeros(1,K);
+                            for k=1:K
+                                self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                            end
                         case SchedStrategy.LEPT
-                            [~,~,rnk] = unique(rates(i,:));
-                            schedparam(i,:)=rnk';
+                            svcTime = zeros(1,K);
+                            for k=1:K
+                                svcTime(k) = self.nodes{i}.serviceProcess{k}.getMean;
+                            end
+                            [svcTimeSorted] = sort(unique(svcTime),'descend');
+                            self.nodes{i}.schedStrategyPar = zeros(1,K);
+                            for k=1:K
+                                self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                            end
                     end
                 end
         end

@@ -346,8 +346,9 @@ if qn.isstation(ind)
                                     % in SEPT, the scheduling parameter is the priority order of the class means
                                     % en_wbuf: states where the buffer is non-empty
                                     % sept_class: class to pick in service
-                                    [en_wbuf, first_row_nnz] = max(space_buf(:,qn.schedparam(ist,:))~=0, [], 2);
-                                    sept_class = qn.schedparam(ist,first_row_nnz); % this is different for sept and lept
+                                    [en_wbuf, first_class_inrow] = max(space_buf(:,qn.schedparam(ist,:))~=0, [], 2);
+                                    sept_class = qn.schedparam(ist,first_class_inrow); % this is different for sept and lept
+                                    
                                     space_buf(en_wbuf,sept_class) = space_buf(en_wbuf,sept_class) - 1; % remove from buffer
                                     pentry = map_pie(ph{ist,sept_class});
                                     for kentry=1:K(sept_class)

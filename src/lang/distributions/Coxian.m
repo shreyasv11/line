@@ -18,8 +18,8 @@ classdef Coxian < MarkovianDistribution
                 if abs(phi(end)-1)>Distrib.Tol && isfinite(phi(end))
                     error('The completion probability in the last Cox state must be 1.0 but it is %0.1f', phi(end));
                 end
-                self.setParam(1, 'mu', mu, 'java.lang.Double');
-                self.setParam(2, 'phi', phi, 'java.lang.Double');
+                setParam(self, 1, 'mu', mu, 'java.lang.Double');
+                setParam(self, 2, 'phi', phi, 'java.lang.Double'); % completion probability in phase 1
                 self.javaClass = ''; % mapped in JMT to phase-type
                 self.javaParClass = ''; % mapped in JMT to phase-type
             elseif length(varargin)==3

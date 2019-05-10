@@ -7,7 +7,6 @@ function [rateBase, eventIdx] = ode_rate_base(Phi, Mu, PH, M, K, enabled, q_indi
 rateBase = zeros(size(all_jumps,2),1);
 eventIdx = zeros(size(all_jumps,2),1);
 rateIdx = 0;
-
 for i = 1 : M   %state changes from departures in service phases 2...
     for c = 1:K
         if enabled(i,c)

@@ -1,5 +1,6 @@
+%if ~isoctave(), clearvars -except exampleName testName; end
 if ~isoctave(), clearvars -except exampleName; end 
-model = JMT2LINE('example_openModel_3.jsimg'); 
+model = JMT2LINE('example_openModel_3.jsimg');
 
 options = Solver.defaultOptions;
 options.keep = true;

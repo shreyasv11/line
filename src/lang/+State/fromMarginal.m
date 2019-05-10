@@ -133,7 +133,7 @@ switch qn.nodetype(ind)
                     end
                     %si = unique(si,'rows');
                     for k=1:size(si,1)
-                        % determine number of classs r jobs running in phase
+                        % determine number of class r jobs running in phase
                         % j in server state mi_srv(kjs,:) and build
                         % state
                         kstate=[];

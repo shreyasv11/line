@@ -1,12 +1,10 @@
 function tranSysState = sampleSys(self, numSamples)
 % TRANSYSSTATE = SAMPLESYS(NUMSAMPLES)
-if exist('numsamples','var')
-    warning('SolveSSA does not support the numsamples parameter, use instead the samples option upon instantiating the solver.');
-end
-
 options = self.getOptions;
 if exist('numSamples','var')
-options.samples = numSamples;    
+    options.samples = numSamples;
+else
+    numSamples = options.samples;
 end
 switch options.method
     case {'default','serial'}
@@ -16,10 +14,12 @@ switch options.method
         tranSysState.t = tranSystemState{1};
         tranSysState.state = {tranSystemState{2:end}};
         tranSysState.event = tranSync;
-        if size(tranSysState.state,1) > numSamples
-            tranSysState.t = tranSystemState{1}(1:numSamples);
-            tranSysState.state = tranSysState.state(1:numSamples,:);
-            tranSysState.event = tranSysState.event(1:numSamples);
+        for i=1:size(tranSysState.state,2)
+            if size(tranSysState.state{i},1) > numSamples
+                tranSysState.t = tranSystemState(1:numSamples);
+                tranSysState.state = tranSysState.state{i}(1:numSamples,:);
+                tranSysState.event = tranSysState.event{i}(1:numSamples);
+            end
         end
         tranSysState.isaggregate = false;
     otherwise

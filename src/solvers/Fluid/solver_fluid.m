@@ -7,7 +7,7 @@ function [QN,ymean,QNt,UNt,ymean_t,t,iters,runtime] = solver_fluid(qn, options)
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 N = qn.nclosedjobs;    %population
-Lambda = qn.mu;
+Mu = qn.mu;
 Phi = qn.phi;
 PH = qn.ph;
 sched = qn.sched;
@@ -18,8 +18,8 @@ NK = qn.njobs';  %initial population
 match = zeros(M,K); % indicates whether a class is served at a station
 for i = 1:M
     for k = 1:K
-        if isnan(Lambda{i,k})
-            Lambda{i,k} = [];
+        if isnan(Mu{i,k})
+            Mu{i,k} = [];
             Phi{i,k}=[];
         end
         match(i,k) = sum(rt(:, (i-1)*K+k)) > 0;
@@ -38,15 +38,15 @@ Tstart = tic;
 phases = zeros(M,K);
 for i = 1:M
     for k = 1:K
-        phases(i,k) = length(Lambda{i,k});
+        phases(i,k) = length(Mu{i,k});
     end
 end
 
 slowrate = zeros(M,K);
 for i = 1:M
     for k = 1:K
-        if ~isempty(Lambda{i,k})
-            slowrate(i,k) = min(Lambda{i,k}(:)); %service completion (exit) rates in each phase
+        if ~isempty(Mu{i,k})
+            slowrate(i,k) = min(Mu{i,k}(:)); %service completion (exit) rates in each phase
         else
             slowrate(i,k) = Inf;
         end
@@ -90,7 +90,7 @@ else
 end
 
 %% solve ode
-[ymean, ymean_t, t, iters] = solver_fluid_iteration(qn, N, Lambda, Phi, PH, rt, S, ymean, ydefault, slowrate, Tstart, max_time, options);
+[ymean, ymean_t, t, iters] = solver_fluid_iteration(qn, N, Mu, Phi, PH, rt, S, ymean, ydefault, slowrate, Tstart, max_time, options);
 
 runtime = toc(Tstart);
 % if options.verbose >= 2
@@ -100,6 +100,7 @@ runtime = toc(Tstart);
 %         fprintf(1,'Fluid analysis iteration completed in %0.6f sec [%d iterations]\n',runtime,iters);
 %     end
 % end
+
 % this part assumes PS, DPS, GPS scheduling
 QN = zeros(M,K);
 QNt = cell(M,K);
@@ -119,12 +120,12 @@ for i=1:M
 end
 
 for i=1:M
-    if qn.nservers(i) > 0
+    if qn.nservers(i) > 0 % not INF
         for k = 1:K
             UNt{i,k} = min(QNt{i,k} / S(i), QNt{i,k} ./ Qt{i}); % if not an infinite server then this is a number between 0 and 1
             UNt{i,k}(isnan(UNt{i,k})) = 0; % fix cases where qlen is 0
         end
-    else
+    else % infinite server
         for k = 1:K
             UNt{i,k} = QNt{i,k};
         end

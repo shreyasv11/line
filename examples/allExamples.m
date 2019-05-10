@@ -23,7 +23,7 @@ fprintf(1,'In this example we also calculate performance indexes by chain.\n')
 clear; example_closedModel_3; fprintf(1,'Pausing...'); pause(3.0);
 fprintf(1,'\n\nExample: <strong>example_closedModel_4</strong>\n');
 fprintf(1,'This example shows state space generation for a station.')
-clear; example_closedModel_4;  space, spaceRunning, spaceStarted, fprintf(1,'Pausing...'); pause(3.0);
+clear; example_closedModel_4;  fprintf(1,'Pausing...'); pause(3.0);
 fprintf(1,'\n\nExample: <strong>example_closedModel_5</strong>\n');
 fprintf(1,'This example shows a 1-line solution of a cyclic queueing network.\n');
 clear; example_closedModel_5; fprintf(1,'Pausing...'); pause(3.0);

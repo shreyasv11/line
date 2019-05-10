@@ -29,7 +29,7 @@ if ~self.supports(self.model)
     %                return
 end
 
-qn = self.model.getStruct();
+qn = self.model.getStruct().copy; % this gets modified later on so pass by copy
 M = self.model.getNumberOfStations;
 K = self.model.getNumberOfClasses;
 

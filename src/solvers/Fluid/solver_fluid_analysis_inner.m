@@ -6,7 +6,6 @@ function [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ymean_t,
 chains = qn.chains;
 
 % inner iteration of fluid analysis
-
 [Q,ymean,Qfull_t,Ufull_t,ymean_t,t,iters,runtime] = solver_fluid(qn, options);
 
 %% assumes the existence of a delay node through which all classes pass

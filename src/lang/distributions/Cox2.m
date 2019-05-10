@@ -35,6 +35,7 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
                 % if the second solution is feasible
                 cx = Coxian(mu1(2),mu2(2),phi);
             else
+                warning('Third moment could not be fitted exactly.');
                 % fit is not feasible
                 if SCV>=0.5
                     %warning('Infeasible combination of central moments, fitting only mean and squared coefficient of variation.');

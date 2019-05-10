@@ -110,11 +110,15 @@ switch options.method
                         case SchedStrategy.FCFS
                             for k=1:K
                                 if rates(i,k)>0
-                                    [cx,muik,phiik] = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
+                                    %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
+                                    %[cx,muik,phiik] = 
+                                    cx = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
                                     %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
                                     % we now handle the case that due to either numerical issues
                                     % or different relationship between scv and mean the size of
                                     % the phase-type representation has changed
+                                    muik = cx.getMu;
+                                    phiik = cx.getPhi;
                                     phases(i,k) = length(muik);
                                     if phases(i,k) ~= phases_last(i,k) % if number of phases changed
                                         % before we update qn we adjust the initial state
@@ -125,9 +129,9 @@ switch options.method
                                     %    keyboard
                                     %end
                                     qn.ph{i,k} = cx.getRepresentation;
-                                    qn.mu{i,k} = muik;
+                                    qn.mu{i,k} = muik;                                    
                                     qn.phi{i,k} = phiik;
-                                    qn.phases = phases;
+                                    qn.phases = phases;                                    
                                     if phases(i,k) ~= phases_last(i,k)
                                         isf = qn.stationToStateful(i);
                                         % we now initialize the new service process

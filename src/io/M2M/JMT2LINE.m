@@ -275,6 +275,22 @@ for i=1:length(node_name)
                 case 'Gamma'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Gamma(par(1).value, par(2).value));
+                case 'Phase-Type'
+                    par={xsvc_sec{i}{r}.subParameter}; par=par{2};
+                    alpha = [par(1).subParameter.subParameter.value];
+                    pars = {par(2).subParameter.subParameter};
+                    T = [];
+                    for c=1:length(pars)
+                        T = [T; pars{c}.value];
+                    end                    
+                    if any(any(tril(T,-1))>0) % not APH
+                        warning('The input model uses a general PH distribution, which is not yet supported in LINE. Fitting the first three moments into an APH distribution.');
+                        PH = {T,-T*ones(size(T,1),1)*alpha};                        
+                        ax = APH.fitCentral(map_mean(PH), map_var(PH), map_skew(PH));                        
+                    else % APH
+                        ax = APH(alpha, T);
+                    end
+                    node{i}.setService(jobclass{r}, ax);
                 case 'Uniform'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Uniform(par(1).value, par(2).value));
@@ -336,6 +352,8 @@ for from=1:length(node_name)
                     node{from}.setRouting(jobclass{r},RoutingStrategy.RR);
                 case 'Join the Shortest Queue (JSQ)'
                     node{from}.setRouting(jobclass{r},RoutingStrategy.JSQ);
+                case 'Disabled'
+                    node{from}.setRouting(jobclass{r},RoutingStrategy.DISABLED);
             end
         end
     end

@@ -79,7 +79,7 @@ switch options.method
                 
             end
             self.getResults;
-        else            
+        else
             options = self.getOptions;
             initSeed = self.options.seed;
             initTimeSpan = self.options.timespan;
@@ -112,7 +112,7 @@ switch options.method
                 XNt = [];
                 self.setTranAvgResults(QNt,UNt,RNt,TNt,CNt,XNt,Trun);
                 self.result.Tran.Avg.U = cell(M,K);
-                self.result.Tran.Avg.T = cell(M,K);                
+                self.result.Tran.Avg.T = cell(M,K);
                 self.result.Tran.Avg.Q = QNt;
             end
             self.options.seed = initSeed;
@@ -132,7 +132,7 @@ switch options.method
         
         if ~options.keep
             delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
-        end        
+        end
         self.getResults;
 end
 end

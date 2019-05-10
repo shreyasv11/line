@@ -6,7 +6,7 @@ function space = fromMarginalBounds(qn, ind, lb, ub, cap)
 
 % ind: node index
 ist = qn.nodeToStation(ind);
-isf = qn.nodeToStateful(ind);
+%isf = qn.nodeToStateful(ind);
 
 % returns all states lb<= x<= ub, where ub/lb are either a scalar (total
 % number of jobs) or a vector (per-class number of jobs)

@@ -26,16 +26,40 @@ if all(Q==0)
     p = ones(1,n)/n;
     return
 end
-
-zerocol=find(sum(abs(Q),1)==0);
-nnzcol = setdiff(1:n, zerocol);
 p = zeros(1,n);
 b = zeros(n,1);
-if length(zerocol)>=1
-    warning('ctmc_solve: the infinitesimal generator is reducible');
+
+nnzel = 1:n;
+Qnnz = Q; bnnz = b;
+Qnnz_1 = Qnnz; bnnz_1 = bnnz;
+
+goon = true;
+while goon
+    zerorow=find(sum(abs(Qnnz),2)==0);
+    if length(zerorow)>=1
+        warning('ctmc_solve: the infinitesimal generator is reducible (zero row)');
+    end
+    nnzrow = setdiff(nnzel, zerorow);
+    
+    zerocol=find(sum(abs(Qnnz),1)==0);
+    nnzcol = setdiff(nnzel, zerocol);
+    if length(zerocol)>=1
+        warning('ctmc_solve: the infinitesimal generator is reducible (zero column)');
+    end
+    nnzel = intersect(nnzrow, nnzcol);
+    Qnnz = Qnnz(nnzel, nnzel);
+    bnnz = bnnz(nnzel);
+    Qnnz = ctmc_makeinfgen(Qnnz);
+    if all(size(Qnnz_1(:)) == size(Qnnz(:))) && all(size(bnnz_1(:)) == size(bnnz(:)))
+        goon = false;
+    else
+        Qnnz_1 = Qnnz; bnnz_1 = bnnz; nnzel = 1:length(Qnnz);
+    end
 end
-Qnnz = Q(nnzcol, nnzcol);
-bnnz = b(nnzcol);
+if isempty(Qnnz)
+    p = ones(1,n)/n;
+    return
+end
 Qnnz(:,end) = 1;
 bnnz(end) = 1;
 
@@ -47,15 +71,15 @@ if exist('options','var')
                 gbnnz = gpuArray(bnnz);
                 pGPU = gQnnz \ gbnnz;
                 gathered_pGPU = gather(pGPU);
-                p(nnzcol) = gathered_pGPU; % transfer from GPU to local env                
+                p(nnzel) = gathered_pGPU; % transfer from GPU to local env
             catch
                 warning('ctmc_solve: GPU either not available or execution failed. Switching to default method.');
-                p(nnzcol) = Qnnz'\ bnnz;
+                p(nnzel) = Qnnz'\ bnnz;
             end
         otherwise
-            p(nnzcol)=Qnnz'\ bnnz;
+            p(nnzel)=Qnnz'\ bnnz;
     end
 else
-    p(nnzcol)=Qnnz'\ bnnz;    
+    p(nnzel)=Qnnz'\ bnnz;
 end
 end

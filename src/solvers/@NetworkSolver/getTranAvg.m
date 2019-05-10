@@ -62,8 +62,7 @@ if ~isempty(Qt)
             metricVal.t = ret(:,2);
             metricVal.metric = ret(:,1);
             metricVal.isaggregate = true;
-            QNclass_t{i,k} = metricVal;
-            
+            QNclass_t{i,k} = metricVal;            
             
             ret = Ut{i,k}.get(self.result,self.model);
             metricVal = struct();

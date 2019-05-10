@@ -30,7 +30,7 @@ for ist=1:M
     QNn(ind,:) = QN(ist,:);
     UNn(ind,:) = UN(ist,:);
     RNn(ind,:) = RN(ist,:);
-    TNn(ind,:) = TN(ist,:);
+    %TNn(ind,:) = TN(ist,:);
     ANn(ind,:) = TN(ist,:);
 end
 
@@ -44,17 +44,18 @@ for ind=1:I
     for c = 1:C
         inchain = find(qn.chains(c,:));
         for r = inchain
-            anystat = find(qn.visits{c}(:,r));
-            if ~isempty(anystat)
+            %anystat = find(qn.visits{c}(:,r));
+            refstat = qn.refstat(c);
+            %if ~isempty(anystat)
                 if qn.nodetype(ind) ~= NodeType.Source
                     %if qn.isstation(ind)
                     %    ist = qn.nodeToStation(ind);
                     %    ANn(ind, r) =  TN(ist,r);
                     %else
-                    ANn(ind, r) =  (qn.nodevisits{c}(ind,r) / qn.visits{c}(anystat,r)) * TN(anystat,r);
+                    ANn(ind, r) =  (qn.nodevisits{c}(ind,r) / qn.visits{c}(refstat,r)) * TN(refstat,r);
                     %end
                 end
-            end
+            %end
         end
     end
 end

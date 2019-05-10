@@ -33,8 +33,6 @@ for i = 1 : M
         cumsum = cumsum + numphases;
     end
 end
-nx = cumsum - 1;
-
 % to speed up convert sched strings in numerical values
 sched_id = zeros(1,M);
 for i = 1 : M

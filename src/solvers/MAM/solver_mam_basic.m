@@ -49,14 +49,15 @@ if M>=2 && qn.nclosedjobs == 0
                 chainArrivalAtSource = cell(1,C);
                 for c=1:C %for each chain
                     inchain = find(qn.chains(c,:))';
-                    chainArrivalAtSource{c} = {PH{ist,1}{1},PH{ist,1}{2},PH{ist,1}{2}};
+                    k = inchain(1);
+                    chainArrivalAtSource{c} = {PH{ist,k}{1},PH{ist,k}{2},PH{ist,k}{2}};
                     for ki=2:length(inchain)
                         k = inchain(ki);
                         if isnan(PH{ist,k}{1})
                             PH{ist,k} = map_exponential(Inf); % no arrivals from this class
                         end
                         chainArrivalAtSource{c} = mmap_super(chainArrivalAtSource{c},{PH{ist,k}{1},PH{ist,k}{2},PH{ist,k}{2}});
-                    end
+                    end                    
                     if c == 1
                         aggrArrivalAtSource = chainArrivalAtSource{1};
                     else
@@ -97,33 +98,34 @@ if M>=2 && qn.nclosedjobs == 0
                     end
                 case {SchedStrategy.FCFS, SchedStrategy.HOL}
                     Qret = {};
+                    chainArrivalAtNode = cell(1,C);
+                    Qret = {};
+                    rates = {};
+                    for c=1:C %for each chain                        
+                        rates{ist,c} = V(ist,:) .* map_lambda(chainArrivalAtSource{c});
+                        inchain = find(qn.chains(c,:))';
+                        chainArrivalAtNode{c} = mmap_mark(chainArrivalAtSource{c}, rates{ist,c}(inchain) / sum(rates{ist,c}(inchain)));
+                        chainArrivalAtNode{c} = mmap_scale(chainArrivalAtNode{c}, 1./rates{ist,c});
+                        if c == 1
+                            aggrArrivalAtNode = chainArrivalAtNode{1};
+                        else
+                            aggrArrivalAtNode = mmap_super(aggrArrivalAtNode,chainArrivalAtNode{c});
+                        end
+                    end
                     if any(qn.classprio ~= qn.classprio(1)) % if priorities are not identical
                         [uK,iK] = unique(qn.classprio);
                         if length(uK) == length(qn.classprio) % if all priorities are different
-                            [Qret{iK}] = MMAPPH1NPPR({aggrArrivalAtSource{[1;2+iK]}}, {pie{ist,iK}}, {D0{ist,iK}}, 'ncMoms', 1);
+                            [Qret{iK}] = MMAPPH1NPPR({aggrArrivalAtNode{[1;2+iK]}}, {pie{ist,iK}}, {D0{ist,iK}}, 'ncMoms', 1);
                         else
                             error('Solver MAM requires either identical priorities or all distinct priorities');
                         end
                     else
-                        chainArrivalAtNode = cell(1,C);
-                        rates_i = V(ist,:) .* map_lambda(aggrArrivalAtSource);
-                        for c=1:C %for each chain
-                            inchain = find(qn.chains(c,:))';
-                            chainArrivalAtNode{c} = mmap_mark(chainArrivalAtSource{c}, rates_i(inchain) / sum(rates_i(inchain)));
-                            chainArrivalAtNode{c} = mmap_scale(chainArrivalAtNode{c}, 1./rates_i);
-                            if c == 1
-                                aggrArrivalAtNode = chainArrivalAtNode{1};
-                            else
-                                aggrArrivalAtNode = mmap_super(aggrArrivalAtNode,chainArrivalAtNode{c});
-                            end
-                        end
-                        Qret = {};                        
-                        %sum(mmap_idc(aggrArrivalAtNode),2)
                         [Qret{1:K}] = MMAPPH1FCFS({aggrArrivalAtNode{[1,3:end]}}, {pie{ist,:}}, {D0{ist,:}}, 'ncMoms', 1);
                     end
                     QN(ist,:) = cell2mat(Qret);
                     for k=1:K
-                        TN(ist,k) = rates_i(k);
+                        c = find(qn.chains(:,k));
+                        TN(ist,k) = rates{ist,c}(k); 
                         UN(ist,k) = TN(ist,k) * map_mean(PH{ist,k});
                         % add number of jobs at the surrogate delay server
                         QN(ist,k) = QN(ist,k) + TN(ist,k)*(map_mean(PH{ist,k})*qn.nservers(ist)) * (qn.nservers(ist)-1)/qn.nservers(ist);
