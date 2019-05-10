@@ -11,8 +11,8 @@ function [p,Q]=ctmc_solve(Q,options)
 %  Examples:
 %  - ctmc_solve([-0.5,0.5;0.2,-0.2])
 
-if length(Q) > 6000 && ~options.force
-    fprintf(1,'the order of Q is greater than 6000, i.e., %d elements. Press key to continue.',length(Q));
+if length(Q) > 6000 && (nargin==1 || ~options.force)
+    fprintf(1,'ctmc_solve: the order of Q is greater than 6000, i.e., %d elements. Press key to continue.',length(Q));
     pause;
 end
 
@@ -20,6 +20,8 @@ if size(Q)==1
     p = 1;
     return
 end
+
+Q = ctmc_makeinfgen(Q); % so that spurious diagonal elements are set to 0
 
 n = length(Q);
 if all(Q==0)
@@ -33,18 +35,26 @@ nnzel = 1:n;
 Qnnz = Q; bnnz = b;
 Qnnz_1 = Qnnz; bnnz_1 = bnnz;
 
+isReducible = false;
 goon = true;
 while goon
     zerorow=find(sum(abs(Qnnz),2)==0);
     if length(zerorow)>=1
-        warning('ctmc_solve: the infinitesimal generator is reducible (zero row)');
+        if nargin==1 || options.verbose
+            %warning('ctmc_solve: the infinitesimal generator is reducible (zero row)');
+            fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
+            isReducible = true;
+        end
     end
     nnzrow = setdiff(nnzel, zerorow);
     
     zerocol=find(sum(abs(Qnnz),1)==0);
     nnzcol = setdiff(nnzel, zerocol);
     if length(zerocol)>=1
-        warning('ctmc_solve: the infinitesimal generator is reducible (zero column)');
+        if ~isReducible && (nargin==1 || options.verbose)
+            %warning('ctmc_solve: the infinitesimal generator is reducible (zero column)');
+            fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
+        end
     end
     nnzel = intersect(nnzrow, nnzcol);
     Qnnz = Qnnz(nnzel, nnzel);

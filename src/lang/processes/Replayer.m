@@ -69,14 +69,12 @@ classdef Replayer < TimeSeries
         end
         
         function distr = fitAPH(self)
-            % DISTR = FITAPH()
-            
+            % DISTR = FITAPH()            
             distr = APH.fitCentral(self.getMean, self.getVariance, self.getSkewness);
         end
         
         function distr = fitCoxian(self)
-            % DISTR = FITCOXIAN()
-            
+            % DISTR = FITCOXIAN()            
             distr = Cox2.fitCentral(self.getMean, self.getVariance, self.getSkewness);
             
         end
