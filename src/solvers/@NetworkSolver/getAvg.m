@@ -59,7 +59,7 @@ if ~isempty(Q)
     QNclass = zeros(M,K);
     for k=1:K
         for i=1:M
-            QNclass(i,k) = Q{i,k}.get(self.result,self.model);
+            QNclass(i,k) = Q{i,k}.get(self.result, self.model);
         end
     end
 end
@@ -67,7 +67,7 @@ if ~isempty(U)
     UNclass = zeros(M,K);
     for k=1:K
         for i=1:M
-            UNclass(i,k) = U{i,k}.get(self.result,self.model);
+            UNclass(i,k) = U{i,k}.get(self.result, self.model);
         end
     end
 end
@@ -75,7 +75,7 @@ if ~isempty(R)
     RNclass = zeros(M,K);
     for k=1:K
         for i=1:M
-            RNclass(i,k) = R{i,k}.get(self.result,self.model);
+            RNclass(i,k) = R{i,k}.get(self.result, self.model);
         end
     end
 end
@@ -84,7 +84,7 @@ if ~isempty(T)
     TNclass = zeros(M,K);
     for k=1:K
         for i=1:M
-            TNclass(i,k) = T{i,k}.get(self.result,self.model);
+            TNclass(i,k) = T{i,k}.get(self.result, self.model);
         end
     end
 end

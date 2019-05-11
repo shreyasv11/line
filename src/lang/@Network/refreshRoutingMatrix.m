@@ -46,13 +46,22 @@ for ind=1:M % from
 end
 
 csmask = false(K,K);
-for ind=1:M % source
-    for jnd=1:M % source
-        for r=1:K
-            for s=1:K
+for r=1:K
+    for s=1:K
+        for isf=1:length(stateful) % source
+            for jsf=1:length(stateful) % source
+                if rt((isf-1)*K+r, (jsf-1)*K+s) > 0
+                    % this is to ensure that we use rt, which is 
+                    % the stochastic complement taken over the stateful 
+                    % nodes, otherwise sequences of cs can produce a wrong
+                    % csmask
+                    csmask(r,s) = true;
+                end
                 if r==s
                     csmask(r,s) = true;
                 else
+                    % this is to ensure that also stateful cs like caches
+                    % are accounted
                     if isa(self.nodes{ind}.server,'ClassSwitcher')
                         if self.nodes{ind}.server.csFun(r,s,[],[])>0
                             csmask(r,s) = true;

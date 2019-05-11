@@ -89,11 +89,9 @@ classdef HyperExp < MarkovianDistribution
     end
     
     methods(Static)
-        function he = fitCentral(MEAN, VAR, SKEW)
-            % HE = FITCENTRAL(MEAN, VAR, SKEW)
-            % Fit distribution from first three central moments (mean,
-            % variance, skewness)
-            SCV = VAR/MEAN^2;
+        function he = fit(MEAN, SCV, SKEW)
+            % HE = FIT(MEAN, SCV, SKEW)
+            % Fit distribution from first three standard moments
             e1 = MEAN;
             e2 = (1+SCV)*e1^2;
             e3 = -(2*e1^3-3*e1*e2-SKEW*(e2-e1^2)^(3/2));
@@ -140,6 +138,9 @@ classdef HyperExp < MarkovianDistribution
                 mu1 = (2*(((SCV - 1)/(SCV + 1))^(1/2)/2 + 1/2))/MEAN;
             end
             mu2=(1-p)/p*mu1;
+            p = real(p);
+            mu1 = real(mu1);
+            mu2 = real(mu2);
             he = HyperExp(p, mu1, mu2);           
         end
         

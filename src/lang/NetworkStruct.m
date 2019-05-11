@@ -36,6 +36,7 @@ classdef NetworkStruct <handle
         phases; % number of phases in each service or arrival process
         phasessz; % shift for number of phases
         phaseshift; % shift for number of phases
+        pie;        % probability of entry in each each service phase
         phi;         % probability of service completion in each service phase,
         % for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
@@ -177,6 +178,17 @@ classdef NetworkStruct <handle
             % SETPHSERVICE(PH, PHASES)
             
             self.ph = ph;
+            self.pie = cell(size(ph));
+            for i=1:size(ph,1)
+                for r=1:size(ph,2)
+                    if ~isempty(ph{i,r}) 
+                        self.ph{i,r} = map_normalize(ph{i,r});
+                        self.pie{i,r} = map_pie(ph{i,r});
+                    else
+                        self.pie{i,r} = NaN;
+                    end
+                end
+            end
             self.phases = phases;
             self.phasessz = max(self.phases,ones(size(self.phases)));
             self.phaseshift = [zeros(size(phases,1),1),cumsum(self.phasessz,2)];
@@ -313,6 +325,7 @@ classdef NetworkStruct <handle
             newObj.phasessz = obj.phasessz; % number of phases in each service or arrival process
             newObj.phaseshift = obj.phaseshift; % number of phases in each service or arrival process
             newObj.phi = obj.phi;         % probability of service completion in each service phase,
+            newObj.pie = obj.pie;         % probability of service entry in each service phase,
             newObj.ph = obj.ph;         % probability of service completion in each service phase,
             newObj.rates = obj.rates;       % service rate for each job class in each station
             newObj.refstat = obj.refstat;    % index of the reference node for each request class (Kx1 int)

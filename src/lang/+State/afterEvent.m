@@ -14,6 +14,7 @@ R = qn.nclasses;
 S = qn.nservers;
 phasessz = qn.phasessz;
 phaseshift = qn.phaseshift;
+pie = qn.pie;
 outspace = [];
 outrate = [];
 outprob = 1;
@@ -60,8 +61,8 @@ if qn.isstation(ind)
         case EventType.ARV %% passive
             % return if there is no space to accept the arrival
             [ni,nir] = State.toMarginalAggr(qn,ind,inspace,K,Ks,space_buf,space_srv,space_var);
-            % otherwise check scheduling strategy
-            pentry = map_pie(ph{ist,class});
+            % otherwise check scheduling strategy            
+            pentry = pie{ist,class};
             outprob = [];
             outprob_k = [];
             for kentry = 1:K(class)
@@ -173,7 +174,7 @@ if qn.isstation(ind)
                             switch qn.schedid(ist)
                                 case SchedStrategy.ID_EXT % source, can produce an arrival from phase-k as long as it is from an open class
                                     if isinf(qn.njobs(class))
-                                        pentry = map_pie(ph{ist,class});
+                                        pentry = pie{ist,class};
                                         for kentry = 1:K(class)
                                             space_srv = inspace(:,(end-sum(K)-V+1):(end-V)); % server state
                                             space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; % record departure
@@ -236,7 +237,7 @@ if qn.isstation(ind)
                                         start_svc_class = space_buf(en_wbuf,end);
                                         if start_svc_class > 0
                                             space_buf(en_wbuf,:) = [zeros(sum(en_wbuf),1),space_buf(en_wbuf,1:end-1)];
-                                            pentry_svc_class = map_pie(ph{ist,start_svc_class});
+                                            pentry_svc_class = pie{ist,start_svc_class};
                                             for kentry = 1:K(start_svc_class)
                                                 space_srv(en_wbuf,Ks(start_svc_class)+kentry) = space_srv(en_wbuf,Ks(start_svc_class)+kentry) + 1;
                                                 outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
@@ -265,7 +266,7 @@ if qn.isstation(ind)
                                     outrate = [outrate; rate(en_wobuf,:)];
                                     outprob = [outprob; ones(size(rate(en_wobuf,:),1),1)];
                                     if start_svc_class > 0
-                                        pentry_svc_class = map_pie(ph{ist,start_svc_class});
+                                        pentry_svc_class = pie{ist,start_svc_class};
                                         for kentry = 1:K(start_svc_class)
                                             space_srv_k = space_srv;
                                             space_buf_k = space_buf;
@@ -295,7 +296,7 @@ if qn.isstation(ind)
                                         return
                                     end
                                     for kentry = 1:K(start_svc_class)
-                                        pentry_svc_class = map_pie(ph{ist,start_svc_class});
+                                        pentry_svc_class = pie{ist,start_svc_class};
                                         space_srv(en_wbuf,Ks(start_svc_class)+kentry) = space_srv(en_wbuf,Ks(start_svc_class)+kentry) + 1;
                                         % if state is unchanged, still add with rate 0
                                         outspace = [outspace; space_buf(en,:), space_srv(en,:), space_var(en,:)];
@@ -322,7 +323,7 @@ if qn.isstation(ind)
                                         en_wbuf = en & space_buf(en,r) > 0; % states where the buffer is non-empty
                                         space_buf(en_wbuf,r) = space_buf(en_wbuf,r) - 1; % remove from buffer
                                         space_srv_r = space_srv;
-                                        pentry_svc_class = map_pie(ph{ist,r});
+                                        pentry_svc_class = pie{ist,r};
                                         pick_prob = (nir(r)-sir(r)) / (ni-sum(sir));
                                         if pick_prob >= 0
                                             rate_r(en_wbuf,:) = rate_r(en_wbuf,:) * pick_prob;
@@ -350,7 +351,7 @@ if qn.isstation(ind)
                                     sept_class = qn.schedparam(ist,first_class_inrow); % this is different for sept and lept
                                     
                                     space_buf(en_wbuf,sept_class) = space_buf(en_wbuf,sept_class) - 1; % remove from buffer
-                                    pentry = map_pie(ph{ist,sept_class});
+                                    pentry = pie{ist,sept_class};
                                     for kentry=1:K(sept_class)
                                         space_srv(en_wbuf,Ks(sept_class)+kentry) = space_srv(en_wbuf,Ks(sept_class)+kentry) + 1; % bring job in service
                                         if isSimulation

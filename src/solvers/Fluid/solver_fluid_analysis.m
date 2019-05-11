@@ -53,34 +53,35 @@ switch options.method
                     switch qn.sched{i}
                         case SchedStrategy.FCFS
                             sd = rates0(i,:)>0;
-                            if range(rates0(i,sd))>0 % check if non-product-form
+                            %if range(rates0(i,sd))>0 % check if non-product-form
                                 rho(i) = sum(Ufull(i,sd))/S(i); % true utilization of each server
                                 if ~useSCV
                                     [~,eta(i)]=qsys_mm1(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i));% dimensionally a utilization, (diffusion approximation, Kobayashi JACM)                                    
                                 else
-                                    ca(i) = 0;
-                                    for j=1:M
-                                        for r=1:K
-                                            if rates0(j,r)>0
-                                                for s=1:K
-                                                    if rates0(i,s)>0
-                                                        pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
-                                                        ca(i) = ca(i) + (SCV(j,r))*Tfull(j,r)*pji_rs/sum(Tfull(i,sd));
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
+%                                     ca(i) = 0;
+%                                     for j=1:M
+%                                         for r=1:K
+%                                             if rates0(j,r)>0
+%                                                 for s=1:K
+%                                                     if rates0(i,s)>0
+%                                                         pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
+%                                                         ca(i) = ca(i) + (SCV(j,r))*Tfull(j,r)*pji_rs/sum(Tfull(i,sd));
+%                                                     end
+%                                                 end
+%                                             end
+%                                         end
+%                                     end
+                                    ca(i) = 1;
                                     cs(i) = (SCV(i,sd)*Tfull(i,sd)')/sum(Tfull(i,sd));
-                                    [~,eta(i)]=qsys_gig1_approx_kobayashi(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));% dimensionally a utilization, (diffusion approximation, Kobayashi JACM)
-                                    %[~,eta(i)]=qsys_mg1(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),cs(i));%
-                                    %[~,eta(i)]=qsys_gig1_approx_klb(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));
-                                    %[~,eta(i)]=qsys_gig1_approx_allencunneen(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));
-                                    %[~,eta(i)]=qsys_gig1_ubnd_kingman(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));
-                                    %[~,eta(i)]=qsys_gig1_approx_marchal(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));
-                                    %[~,eta(i)]=qsys_gig1_approx_heyman(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));
+                                    [~,eta(i)]=qsys_gig1_approx_kobayashi(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i))); % dimensionally a utilization, (diffusion approximation, Kobayashi JACM)
+                                    %[~,eta(i)]=qsys_mg1(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(cs(i)));%
+                                    %[~,eta(i)]=qsys_gig1_approx_klb(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
+                                    %[~,eta(i)]=qsys_gig1_approx_allencunneen(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
+                                    %[~,eta(i)]=qsys_gig1_ubnd_kingman(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
+                                    %[~,eta(i)]=qsys_gig1_approx_marchal(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
+                                    %[~,eta(i)]=qsys_gig1_approx_heyman(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
                                 end
-                            end
+                           %end
                     end
                 end
                 
@@ -88,7 +89,7 @@ switch options.method
                     switch qn.sched{i}
                         case SchedStrategy.FCFS
                             sd = rates0(i,:)>0;
-                            if range(rates0(i,sd))>0 % check if non-product-form
+                            %if range(rates0(i,sd))>0 % check if non-product-form
                                 for k=1:K
                                     if sum(Qfull(i,:)) < S(i)
                                         if Ufull(i,k) > 0
@@ -100,7 +101,7 @@ switch options.method
                                         end
                                     end
                                 end
-                            end
+                            %end
                     end
                 end
                 rates(isnan(rates))=0;
@@ -110,8 +111,7 @@ switch options.method
                         case SchedStrategy.FCFS
                             for k=1:K
                                 if rates(i,k)>0
-                                    %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
-                                    %[cx,muik,phiik] = 
+                                    %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));                                    
                                     cx = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
                                     %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
                                     % we now handle the case that due to either numerical issues
@@ -190,12 +190,11 @@ for i=1:M
     for k=sd
         switch qn.sched{i}
             case SchedStrategy.FCFS
-                mu = rates0(i,k);
-                lambda = Tfull(i,k);
-                rho = lambda/mu;
-                cs = SCV(i,k);
-                %Rfull(i,k) = Qfull(i,k) * 1/mu * (1+cs)/2 / S(i) + 1/mu;
-                %Rfull(i,k) = qsys_gig1_approx_klb(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),ca(i),cs(i));
+                %mu = rates0(i,k);
+                %lambda = Tfull(i,k);
+                %rho = lambda/mu;
+                %Rfull(i,k) = Qfull(i,k) * 1/mu * (1+SCV(i,k))/2 / S(i) + 1/mu;
+                %Rfull(i,k) = qsys_gig1_approx_klb(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
                 Rfull(i,k) = Qfull(i,k) / Tfull(i,k);
         end
     end

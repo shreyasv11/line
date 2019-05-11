@@ -59,7 +59,7 @@ classdef NetworkSolver < Solver
                 bool = isfield(self.result.Distrib,'C');
             end
         end
-    end
+    end       
     
     methods
         

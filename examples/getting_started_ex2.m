@@ -22,7 +22,7 @@ model.link(P);
 
 SolverJMT(model).getAvgTable
 
-queue.setService(jobclass2, Replayer([cwd,filesep,'example_trace.txt']).fitCoxian());
+queue.setService(jobclass2, Replayer([cwd,filesep,'example_trace.txt']).fitAPH());
 SolverCTMC(model,'cutoff',2,'verbose',true).getAvgTable
 SolverCTMC(model,'cutoff',4,'verbose',true).getAvgTable
 SolverMAM(model).getAvgTable

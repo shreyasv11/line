@@ -15,7 +15,7 @@ Solver.resetRandomGeneratorSeed(options.seed);
 [qn] = self.model.getStruct();
 
 if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && ~self.model.hasProductFormSolution
-    error('The exact method requires the model to have a product-form solution. This model does not have one. You can use the Network method hasProductFormSolution() to check in advance.');
+    error('The exact method requires the model to have a product-form solution. This model does not have one. You can use Network.hasProductFormSolution() to check before running the solver.');
 end
 
 [Q,U,R,T,C,X,lG,runtime] = solver_mva_analysis(qn, options);

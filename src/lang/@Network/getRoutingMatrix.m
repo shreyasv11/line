@@ -217,7 +217,7 @@ for i=1:self.getNumberOfNodes % source
         statefulNodesClasses(end+1:end+K)= ((i-1)*K+1):(i*K);
     end
     
-    % Hide the nodes that are not stations
+    % Hide the nodes that are not stateful
     rt = dtmc_stochcomp(rtNodes,statefulNodesClasses);
     if nargout >= 3
         M = self.getNumberOfNodes();

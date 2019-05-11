@@ -70,8 +70,7 @@ classdef Network < Model
     
     methods (Access = protected)
         [rates, scv] = refreshRates(self);
-        [mu, phi, phases] = refreshCoxService(self);
-        [ph, phases] = refreshPHService(self);
+        [ph, mu, phi, phases] = refreshServicePhases(self);
         [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates);
         [lt] = refreshLST(self);
         sync = refreshSync(self);
@@ -896,7 +895,7 @@ classdef Network < Model
                     for j=1:M
                         for s=1:K
                             if Pnodes((i-1)*K+r,(j-1)*K+s)>0
-                                fprintf('%s [class: %s] => %s [class: %s] : Pr=%f\n',node_names{i}, classnames{r}, node_names{j}, classnames{s},Pnodes((i-1)*K+r,(j-1)*K+s));
+                                fprintf('%s [%s] => %s [%s] : Pr=%f\n',node_names{i}, classnames{r}, node_names{j}, classnames{s},Pnodes((i-1)*K+r,(j-1)*K+s));
                             end
                         end
                     end

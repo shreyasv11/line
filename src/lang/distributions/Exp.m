@@ -66,7 +66,7 @@ classdef Exp < MarkovianDistribution
             % Update parameters to match the first n central moments
             % (n<=4)
             MEAN = varargin{1};
-            SCV = varargin{2}/MEAN^2;
+            SCV = varargin{2};
             SKEW = varargin{3};
             %            KURT = varargin{4};
             if abs(SCV-1) < Distrib.Tol
@@ -108,13 +108,13 @@ classdef Exp < MarkovianDistribution
     end
     
     methods (Static)
-        function ex = fitCentral(MEAN, VAR, SKEW)
-            % EX = FITCENTRAL(MEAN, VAR, SKEW)
+        function ex = fit(MEAN, SCV, SKEW)
+            % EX = FIT(MEAN, SCV, SKEW)
             
-            % Fit the distribution from first three central moments (mean,
-            % variance, skewness)
+            % Fit the distribution from three standard moments (mean,
+            % scv, skewness)
             ex = Exp(1);
-            ex.update(MEAN, VAR, SKEW);
+            ex.update(MEAN, SCV, SKEW);
         end
         
         function ex = fitMean(MEAN)

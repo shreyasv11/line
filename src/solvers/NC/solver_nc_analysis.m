@@ -162,12 +162,15 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             X(k) = Xchain(c) * alpha(qn.refstat(k),k);
             for i=1:qn.nstations
                 if isinf(S(i))
-                    U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);
+                    % critical for SCV+FCFS to use ST0 here instead of ST
+                    U(i,k) = ST0(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);
                 else
-                    U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);
+                    % critical for SCV+FCFS to use ST0 here instead of ST
+                    U(i,k) = ST0(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);
                 end
                 if Lchain(i,c) > 0
-                    Q(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
+                    % critical for SCV+FCFS to use ST0 here instead of ST
+                    Q(i,k) = Rchain(i,c) * ST0(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
                     T(i,k) = Tchain(i,c) * alpha(i,k);
                     R(i,k) = Q(i,k) / T(i,k);
                     %                R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');
@@ -185,45 +188,47 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     for i=1:M
         sd = ST0(i,:)>0;
         switch sched{i}
-            case 'fcfs'
-                if range(ST0(i,sd))>0 % check if non-product-form
-                    rho(i) = sum(U(i,:)); % true utilization of each server
-                    ca = 0;
-                    for j=1:M
-                        for r=1:K
-                            if ST0(j,r)>0
-                                for s=1:K
-                                    if ST0(i,s)>0
-                                        pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
-                                        ca = ca + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
-                                    end
-                                end
-                            end
-                        end
-                    end
-                    cs = (SCV(i,sd)*T(i,sd)')/sum(T(i,sd));
-                    % asymptotic decay rate (diffusion approximation, Kobayashi JACM)
-                    eta(i) = exp(-2*(1-rho(i))/(cs+ca*rho(i)));
-                end
+            case SchedStrategy.FCFS
+                %if range(ST0(i,sd))>0 % check if non-product-form
+                rho(i) = T(i,sd)*ST0(i,sd)'; % true utilization of each server, critical to use this
+                %                 ca = 0;
+                %                 for j=1:M
+                %                     for r=1:K
+                %                         if ST0(j,r)>0
+                %                             for s=1:K
+                %                                 if ST0(i,s)>0
+                %                                     pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
+                %                                     ca = ca + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
+                %                                 end
+                %                             end
+                %                         end
+                %                     end
+                %                 end
+                ca(i) = 1;
+                cs(i) = (SCV(i,sd)*T(i,sd)')/sum(T(i,sd));
+                % asymptotic decay rate (diffusion approximation, Kobayashi JACM)
+                eta(i) = exp(-2*(1-rho(i))/(cs(i)+ca(i)*rho(i)));
+                %end
         end
     end
     
     for i=1:M
+        sd = ST0(i,:)>0;
         switch sched{i}
-            case 'fcfs'
-                if range(ST0(i,sd))>0 % check if non-product-form
-                    for k=1:K
-                        if sum(Q(i,ST(i,:)>0)) < S(i)
-                            if ST0(i,k)>0
-                                ST(i,k) = ST0(i,k);
-                            end
-                        else
-                            if ST0(i,k)>0
-                                ST(i,k) = eta(i)*S(i)/sum(T(i,sd));
-                            end
+            case SchedStrategy.FCFS
+                %if range(ST0(i,sd))>0 % check if non-product-form
+                for k=1:K
+                    if sum(Q(i,ST(i,:)>0)) < S(i)
+                        if ST0(i,k)>0
+                            ST(i,k) = ST0(i,k);
+                        end
+                    else % sum(Q(i,ST(i,:)>0)) >= S(i)
+                        if ST0(i,k)>0
+                            ST(i,k) = eta(i)*S(i)/sum(T(i,sd));
                         end
                     end
                 end
+                %end
         end
     end
 end

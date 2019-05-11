@@ -56,6 +56,24 @@ classdef MarkovianDistribution < ContinuousDistrib
             
             Ft = map_cdf(self.getRepresentation,t);
         end
+        
+        function mu = getMu(self)
+            % MU = GETMU()
+            
+            % Return total outgoing rate from each state
+            aph = self.getRepresentation;
+            mu = - diag(aph{1});
+        end
+        
+        function phi = getPhi(self)
+            % PHI = GETPHI()
+            
+            % Return the probability that a transition out of a state is
+            % absorbing
+            aph = self.getRepresentation;
+            phi = - aph{2}*ones(size(aph{1},1),1) ./ diag(aph{1});
+        end
+        
     end
     
     methods %(Abstract) % implemented with errors for Octave compatibility

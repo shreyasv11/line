@@ -248,9 +248,15 @@ for i=1:length(node_name)
                 otherwise
                     xsvc_sec{i} = {xsvc{i}{3}.subParameter};
             end
-            xsvc_statdistrib{i}{r}={xsvc_sec{i}{r}.ATTRIBUTE};
+            if isempty(xsvc_sec{i}{r})
+                xsvc_statdistrib{i}{r}={struct('name','Disabled')};
+            else
+                xsvc_statdistrib{i}{r}={xsvc_sec{i}{r}.ATTRIBUTE};
+            end
             para_ir = schedparams{i}(r);
             switch xsvc_statdistrib{i}{r}{1}.name
+                case 'Disabled'
+                    node{i}.setService(jobclass{r}, Disabled());
                 case 'Replayer'
                     par={xsvc_sec{i}{r}.subParameter}; par=par{2};
                     node{i}.setService(jobclass{r}, Replayer(par.value), para_ir);

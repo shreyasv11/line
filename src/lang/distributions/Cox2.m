@@ -6,6 +6,12 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
     
     methods (Static)
         
+        function cx  = fit(MEAN,SCV,SKEW)
+            % CX = FIT(MEAN,SCV,SKEW)
+            
+            cx = Cox2.fitCentral(MEAN,SCV*MEAN^2,SKEW);
+        end
+        
         function cx = fitCentral(MEAN,VAR,SKEW)
             % CX = FITCENTRAL(MEAN,VAR,SKEW)
             
@@ -35,7 +41,7 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
                 % if the second solution is feasible
                 cx = Coxian(mu1(2),mu2(2),phi);
             else
-                warning('Third moment could not be fitted exactly.');
+                warning('Cox2.fitCentral: Third moment could not be fitted exactly.');
                 % fit is not feasible
                 if SCV>=0.5
                     %warning('Infeasible combination of central moments, fitting only mean and squared coefficient of variation.');

@@ -47,7 +47,7 @@ classdef APH < MarkovianDistribution
             % Update parameters to match the first n central moments
             % (n<=4)
             MEAN = varargin{1};
-            SCV = varargin{2}/MEAN^2;
+            SCV = varargin{2};
             SKEW = varargin{3};
             if length(varargin) > 3
                 warning('Warning: update in %s distributions can only handle 3 moments, ignoring higher-order moments.',class(self));
@@ -90,34 +90,26 @@ classdef APH < MarkovianDistribution
             T = self.getGenerator;
             APH = {T,-T*ones(length(T),1)*self.getInitProb};
         end
-        
-        function mu = getMu(self)
-            % MU = GETMU()
-            
-            % Return total outgoing rate from each state
-            aph = self.getRepresentation;
-            mu = - diag(aph{1});
-        end
-        
-        function phi = getPhi(self)
-            % PHI = GETPHI()
-            
-            % Return the probability that a transition out of a state is
-            % absorbing
-            aph = self.getRepresentation;
-            phi = - aph{2}*ones(size(aph{1},1),1) ./ diag(aph{1});
-        end
-        
+                
     end
     
     methods (Static)
+        function ex = fit(MEAN, SCV, SKEW)
+            % EX = FIT(MEAN, SCV, SKEW)
+            
+            % Fit the distribution from first three standard moments (mean,
+            % SCV, skewness)
+            ex = APH(1.0, [1]);
+            ex.update(MEAN, SCV, SKEW);
+        end        
+        
         function ex = fitCentral(MEAN, VAR, SKEW)
             % EX = FITCENTRAL(MEAN, VAR, SKEW)
             
             % Fit the distribution from first three central moments (mean,
             % variance, skewness)
             ex = APH(1.0, [1]);
-            ex.update(MEAN, VAR, SKEW);
+            ex.update(MEAN, VAR/MEAN^2, SKEW);
         end
         
         function ex = fitMeanAndSCV(MEAN, SCV)

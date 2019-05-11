@@ -48,7 +48,7 @@ for c=1:size(chains,1)
         end
     end
     Pchain = rt(cols,cols); % routing probability of the chain
-    visited = sum(Pchain,2) > 0;
+    visited = nansum(Pchain,2) > 0;
     
     %                Pchain(visited,visited)
     %                if ~dtmc_isfeasible(Pchain(visited,visited))
@@ -59,6 +59,7 @@ for c=1:size(chains,1)
     if max(alpha)>=1-1e-10
         error('One chain has an absorbing state.');
     end
+    
     visits{c} = zeros(M,K);
     for i=1:M
         for k=1:length(inchain)

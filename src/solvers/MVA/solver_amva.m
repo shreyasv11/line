@@ -122,13 +122,13 @@ while max(max(abs(Q-Q_1))) > tol
             if ST(k,r) == 0
                 W(k,r) = 0;
             else
-                if range(ST(k,:))==0 % product-form, same as PS
-                    if S(k)>1
-                        W(k,r) = ST(k,r) * g(k) * (1 + delta * (Q(k,r)+sum(Q(k,sd))));
-                    else
-                        W(k,r) = ST(k,r) * (1 + deltar(r) * Q(k,r) + sum(Q(k,sd)));
-                    end
-                else
+                %if range(ST(k,:))==0 % product-form, same as PS
+               %     if S(k)>1
+               %         W(k,r) = ST(k,r) * g(k) * (1 + delta * (Q(k,r)+sum(Q(k,sd))));
+               %     else
+               %         W(k,r) = ST(k,r) * (1 + deltar(r) * Q(k,r) + sum(Q(k,sd)));
+               %     end
+                %else
                     if S(k)>1
                         % Somewhat similar to Rolia-Sevcik -  method of layers - Sec IV.
                         B = ((deltar .* X .* V(k,:) .* ST(k,:)) / S(k)); % note: this is in 0-1 as a utilization
@@ -136,7 +136,7 @@ while max(max(abs(Q-Q_1))) > tol
                     else
                         W(k,r) = ST(k,r)/2 * (1 + SCV(k,r)) + ST(k,r) * deltar(r) * Q(k,r) + ST(k,sd)*Q(k,sd)';
                     end
-                end
+                %end
             end
         end
         

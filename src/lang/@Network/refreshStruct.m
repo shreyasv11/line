@@ -24,6 +24,10 @@ self.refreshLocalVars();
 self.refreshSync(); % this assumes that refreshChain is called before
 %self.qn.forks = self.getForks(self.qn.rt);
 
+for c=1:self.qn.nchains
+    self.qn.visits{c}(isnan(self.qn.visits{c})) = 0;
+end
+
 for r=1:self.qn.nclasses
     if all(self.qn.routing(:,r) == -1)
         error(sprintf('Routing strategy in class %d is unspecified at all nodes.',r));

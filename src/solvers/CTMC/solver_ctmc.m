@@ -123,7 +123,7 @@ for a=1:A
                             if ns>0
                                 if ~isnan(rate_a)
                                     if node_p < local && ~csmask(class_a, class_p) && rate_a(ia) * prob_sync_p >0 && (qn.nodetype(node_p)~=NodeType.Source)
-                                        error('Error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a, node_a, node_p, class_a, class_p);
+                                        error('Error: state-dependent routing at node %d (%s) violates the class switching mask (node %d -> node %d, class %d -> class %d).', node_a, qn.nodenames{node_a}, node_a, node_p, class_a, class_p);
                                     end
                                     if size(Dfilt{a}) >= [s,ns] % check needed as D{a} is a sparse matrix
                                         Dfilt{a}(s,ns) = Dfilt{a}(s,ns) + rate_a(ia) * prob_sync_p;

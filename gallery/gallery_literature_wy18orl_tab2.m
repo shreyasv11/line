@@ -1,4 +1,4 @@
-function model = gallery_paper_wy18orl_tab2()
+function model = gallery_literature_wy18orl_tab2()
 model = Network('WhittYou2018ORL_Table2');
 %% Block 1: nodes
 node{1} = Source(model, 'mySource');

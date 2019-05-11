@@ -156,11 +156,12 @@ classdef Metric < Copyable
                                 type = Metric.RespT;
                         end
                         if strcmp(results.metric{i}.class, self.class.name) && strcmp(results.metric{i}.measureType,type) && strcmp(results.metric{i}.station, self.station.name)
-                            chain = model.getChains{model.getClassChain(self.class.name)};
+                            chainIdx = find(cellfun(@any,strfind(model.qn.classnames,self.class.name)));
+                            %chain = model.getChains{chainIdx};
                             switch self.class.type
                                 case 'closed'
                                     N = model.getNumberOfJobs();
-                                    if results.metric{i}.analyzedSamples > sum(N(cell2mat(chain.index))) % for a class to be considered recurrent we ask more samples than jobs in the corresponding closed chain
+                                    if results.metric{i}.analyzedSamples > sum(N(chainIdx)) % for a class to be considered recurrent we ask more samples than jobs in the corresponding closed chain
                                         value = results.metric{i}.meanValue;
                                     else
                                         value = 0; % transient metric, long term avg is 0

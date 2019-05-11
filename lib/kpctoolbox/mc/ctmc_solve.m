@@ -38,25 +38,31 @@ Qnnz_1 = Qnnz; bnnz_1 = bnnz;
 isReducible = false;
 goon = true;
 while goon
-    zerorow=find(sum(abs(Qnnz),2)==0);
-    if length(zerorow)>=1
-        if nargin==1 || options.verbose
-            %warning('ctmc_solve: the infinitesimal generator is reducible (zero row)');
-            fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
-            isReducible = true;
-        end
-    end
-    nnzrow = setdiff(nnzel, zerorow);
+%     zerorow=find(sum(abs(Qnnz),2)==0);
+%         if length(zerorow)>=1
+%             if nargin==1 || options.verbose
+%                 %warning('ctmc_solve: the infinitesimal generator is reducible (zero row)');
+%                 fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
+%                 isReducible = true;
+%             end
+%         end
+%     nnzrow = setdiff(nnzel, zerorow);
+%     
+%     zerocol=find(sum(abs(Qnnz),1)==0);
+%     nnzcol = setdiff(nnzel, zerocol);
+%         if length(zerocol)>=1
+%             if ~isReducible && (nargin==1 || options.verbose)
+%                 %warning('ctmc_solve: the infinitesimal generator is reducible (zero column)');
+%                 fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
+%             end
+%         end
+%     nnzel = intersect(nnzrow, nnzcol);
     
-    zerocol=find(sum(abs(Qnnz),1)==0);
-    nnzcol = setdiff(nnzel, zerocol);
-    if length(zerocol)>=1
-        if ~isReducible && (nargin==1 || options.verbose)
-            %warning('ctmc_solve: the infinitesimal generator is reducible (zero column)');
-            fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
-        end
+    nnzel = find(sum(abs(Qnnz),1)~=0 & sum(abs(Qnnz),2)'~=0);
+    if length(nnzel) < n && ~isReducible
+        isReducible = true;
+        fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
     end
-    nnzel = intersect(nnzrow, nnzcol);
     Qnnz = Qnnz(nnzel, nnzel);
     bnnz = bnnz(nnzel);
     Qnnz = ctmc_makeinfgen(Qnnz);

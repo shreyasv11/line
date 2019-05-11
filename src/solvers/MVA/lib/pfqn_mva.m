@@ -1,6 +1,5 @@
 function [XN,QN,UN,CN,lGN] = pfqn_mva(L,N,Z,mi)
 % [XN,QN,UN,CN,LGN] = PFQN_MVA(L,N,Z,MI)
-
 % [XN,QN,UN,CN] = pfqn_mva(L,N,Z,mi)
 if isoctave
     %warning off;
@@ -18,6 +17,9 @@ end
 N=N(:)';
 if nargin<4
     mi=ones(1,M);
+end
+if isempty(Z)
+    Z = zeros(1,R);
 end
 if (~any(N))
     %warning('closed populations are empty');

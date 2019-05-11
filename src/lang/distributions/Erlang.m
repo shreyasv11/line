@@ -79,12 +79,11 @@ classdef Erlang < MarkovianDistribution
     
     methods(Static)
         
-        function er = fitCentral(MEAN, VAR, SKEW)
-            % ER = FITCENTRAL(MEAN, VAR, SKEW)
+        function er = fit(MEAN, SCV, SKEW)
+            % ER = FITCENTRAL(MEAN, SCV, SKEW)
             
             % Fit distribution from first three central moments (mean,
-            % variance, skewness)
-            SCV = VAR/MEAN^2;
+            % SCV, skewness)
             er = Erlang.fitMeanAndSCV(MEAN,SCV);
         end
         
@@ -128,4 +127,3 @@ classdef Erlang < MarkovianDistribution
     end
     
 end
-
