@@ -70,13 +70,12 @@ classdef APH < MarkovianDistribution
             self.setParam(2, 'T', APH{1}, 'java.lang.Double');
         end
         
-        function updateMeanAndSCV(self, MEAN, VAR)
-            % UPDATEMEANANDSCV(MEAN, VAR)
+        function updateMeanAndSCV(self, MEAN, SCV)
+            % UPDATEMEANANDSCV(MEAN, SCV)
             
             % Fit phase-type distribution with given mean and squared coefficient of
             % variation (SCV=variance/mean^2)
             e1 = MEAN;
-            SCV = VAR / MEAN^2;
             e2 = (1+SCV)*e1^2;
             [alpha,T] = APHFrom2Moments([e1,e2]);
             self.setParam(1, 'alpha', alpha, 'java.lang.Double');

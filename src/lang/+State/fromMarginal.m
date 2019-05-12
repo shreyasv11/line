@@ -32,10 +32,10 @@ end
 
 K = zeros(1,R);
 for r=1:R
-    if isempty(qn.ph{ist,r})
+    if isempty(qn.proc{ist,r})
         K(r) = 0;
     else
-        K(r) = length(qn.ph{ist,r}{1});
+        K(r) = length(qn.proc{ist,r}{1});
     end
 end
 if (qn.schedid(ist) ~= SchedStrategy.ID_EXT) && any(n>qn.classcap(ist,:))
@@ -48,7 +48,7 @@ switch qn.nodetype(ind)
         switch qn.sched{ist}
             case SchedStrategy.EXT
                 for r=1:R
-                    if ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) % disabled
+                    if ~isempty(qn.proc) && ~isempty(qn.proc{ist,r}) && any(any(isnan(qn.proc{ist,r}{1}))) % disabled
                         init = 0*ones(1,K(r));
                     else
                         init = State.spaceClosedSingle(K(r),1);

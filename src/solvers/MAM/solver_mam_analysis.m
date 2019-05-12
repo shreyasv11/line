@@ -13,11 +13,11 @@ switch options.method
     %case 'srvscaling'
     % service distributuion per class scaled by utilization used as
     % departure process
-    %PH = qn.ph;
+    %PH = qn.proc;
     %[QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
     case {'default', 'arvscaling', 'srvscaling'}
         % arrival process per chain rescaled by visits at each node
-        PH = qn.ph;
+        PH = qn.proc;
         [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, PH, options);
     case 'poisson'
         % analyze the network with Poisson streams

@@ -127,7 +127,7 @@ sync = {};
 actionTable=[];
 for i=1:M
     for r=1:R
-        if length(qn.ph{i,r})>1
+        if length(qn.proc{i,r})>1
             sync{end+1} = struct('active',cell(1),'passive',cell(1));
             sync{end}.active{1} = struct('node',NaN,'class',NaN,'event',NaN);
             sync{end}.passive{1} = struct('node',NaN,'class',NaN,'event',NaN);

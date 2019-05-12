@@ -28,7 +28,7 @@ for ind=1:qn.nnodes
             c = find(qn.chains(:,r));
             if ~isempty(qn.visits{c}) && qn.visits{c}(ist,r) == 0
                 capacityc(ind,r) = 0;
-            elseif ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) % disabled
+            elseif ~isempty(qn.proc) && ~isempty(qn.proc{ist,r}) && any(any(isnan(qn.proc{ist,r}{1}))) % disabled
                 capacityc(ind,r) = 0;
             else
                 if isinf(N(r))

@@ -26,7 +26,7 @@ phases_last = phases;
 
 % This parameter determines if the approximation uses the SCV of arrival
 % and service times at FCFS nodes or not
-useSCV = false; 
+useSCV = false;
 
 %%
 switch options.method
@@ -54,34 +54,28 @@ switch options.method
                         case SchedStrategy.FCFS
                             sd = rates0(i,:)>0;
                             %if range(rates0(i,sd))>0 % check if non-product-form
-                                rho(i) = sum(Ufull(i,sd))/S(i); % true utilization of each server
-                                if ~useSCV
-                                    [~,eta(i)]=qsys_mm1(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i));% dimensionally a utilization, (diffusion approximation, Kobayashi JACM)                                    
-                                else
-%                                     ca(i) = 0;
-%                                     for j=1:M
-%                                         for r=1:K
-%                                             if rates0(j,r)>0
-%                                                 for s=1:K
-%                                                     if rates0(i,s)>0
-%                                                         pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
-%                                                         ca(i) = ca(i) + (SCV(j,r))*Tfull(j,r)*pji_rs/sum(Tfull(i,sd));
-%                                                     end
-%                                                 end
-%                                             end
-%                                         end
-%                                     end
-                                    ca(i) = 1;
-                                    cs(i) = (SCV(i,sd)*Tfull(i,sd)')/sum(Tfull(i,sd));
-                                    [~,eta(i)]=qsys_gig1_approx_kobayashi(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i))); % dimensionally a utilization, (diffusion approximation, Kobayashi JACM)
-                                    %[~,eta(i)]=qsys_mg1(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(cs(i)));%
-                                    %[~,eta(i)]=qsys_gig1_approx_klb(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
-                                    %[~,eta(i)]=qsys_gig1_approx_allencunneen(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
-                                    %[~,eta(i)]=qsys_gig1_ubnd_kingman(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
-                                    %[~,eta(i)]=qsys_gig1_approx_marchal(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
-                                    %[~,eta(i)]=qsys_gig1_approx_heyman(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i),sqrt(ca(i)),sqrt(cs(i)));
-                                end
-                           %end
+                            rho(i) = sum(Ufull(i,sd))/S(i); % true utilization of each server
+                            if ~useSCV
+                                [~,eta(i)]=qsys_mm1(sum(rates0(i,sd)),sum(rates0(i,sd))/rho(i));% dimensionally a utilization, (diffusion approximation, Kobayashi JACM)
+                            else
+                                %                                     ca(i) = 0;
+                                %                                     for j=1:M
+                                %                                         for r=1:K
+                                %                                             if rates0(j,r)>0
+                                %                                                 for s=1:K
+                                %                                                     if rates0(i,s)>0
+                                %                                                         pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
+                                %                                                         ca(i) = ca(i) + (SCV(j,r))*Tfull(j,r)*pji_rs/sum(Tfull(i,sd));
+                                %                                                     end
+                                %                                                 end
+                                %                                             end
+                                %                                         end
+                                %                                     end
+                                ca(i) = 1;
+                                cs(i) = (SCV(i,sd)*Tfull(i,sd)')/sum(Tfull(i,sd));
+                                eta(i) = exp(-2*(1-rho(i))/(cs(i)+ca(i)*rho(i)));  % dimensionally a utilization, (diffusion approximation, Kobayashi JACM)
+                            end
+                            %end
                     end
                 end
                 
@@ -90,17 +84,17 @@ switch options.method
                         case SchedStrategy.FCFS
                             sd = rates0(i,:)>0;
                             %if range(rates0(i,sd))>0 % check if non-product-form
-                                for k=1:K
-                                    if sum(Qfull(i,:)) < S(i)
-                                        if Ufull(i,k) > 0
-                                            rates(i,k) = rates0(i,k);
-                                        end
-                                    else
-                                        if rates(i,k) > 0
-                                            rates(i,k) = sum(Tfull(i,rates(i,:)>0))/(eta(i)*S(i));
-                                        end
+                            for k=1:K
+                                if sum(Qfull(i,:)) < S(i)
+                                    if Ufull(i,k) > 0
+                                        rates(i,k) = rates0(i,k);
+                                    end
+                                else
+                                    if rates(i,k) > 0
+                                        rates(i,k) = sum(Tfull(i,rates(i,:)>0))/(eta(i)*S(i));
                                     end
                                 end
+                            end
                             %end
                     end
                 end
@@ -111,7 +105,7 @@ switch options.method
                         case SchedStrategy.FCFS
                             for k=1:K
                                 if rates(i,k)>0
-                                    %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));                                    
+                                    %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
                                     cx = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
                                     %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
                                     % we now handle the case that due to either numerical issues
@@ -128,10 +122,10 @@ switch options.method
                                     %if any(muik > 0.01+ qn.mu{i,k} * rates(i,k) / rates0(i,k))
                                     %    keyboard
                                     %end
-                                    qn.ph{i,k} = cx.getRepresentation;
-                                    qn.mu{i,k} = muik;                                    
+                                    qn.proc{i,k} = cx.getRepresentation;
+                                    qn.mu{i,k} = muik;
                                     qn.phi{i,k} = phiik;
-                                    qn.phases = phases;                                    
+                                    qn.phases = phases;
                                     if phases(i,k) ~= phases_last(i,k)
                                         isf = qn.stationToStateful(i);
                                         % we now initialize the new service process

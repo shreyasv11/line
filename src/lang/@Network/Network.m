@@ -459,7 +459,7 @@ classdef Network < Model
             K = qn.nclasses;    %number of classes
             C = qn.nchains;
             
-            PH=qn.ph;
+            PH=qn.proc;
             
             % determine service times
             ST = zeros(M,K);

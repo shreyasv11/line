@@ -20,7 +20,6 @@ classdef NetworkStruct <handle
         lst; % laplace-stieltjes transform
         mu;          % service rate in each service phase, for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
-        ph;     % cell matrix of PH representations for each station and class
         nchains;           % number of chains (int)
         nclasses;          % number of classes (int)
         nclosedjobs;          % total population (int)
@@ -40,6 +39,7 @@ classdef NetworkStruct <handle
         phi;         % probability of service completion in each service phase,
         % for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
+        proc;     % cell matrix of service and arrival process representations
         rates;       % service rate for each job class in each station
         refstat;    % index of the reference node for each request class (Kx1 int)
         routing;     % routing strategy type
@@ -177,12 +177,12 @@ classdef NetworkStruct <handle
         function setPHService(self, ph, phases)
             % SETPHSERVICE(PH, PHASES)
             
-            self.ph = ph;
+            self.proc = ph;
             self.pie = cell(size(ph));
             for i=1:size(ph,1)
                 for r=1:size(ph,2)
-                    if ~isempty(ph{i,r}) 
-                        self.ph{i,r} = map_normalize(ph{i,r});
+                    if ~isempty(ph{i,r})
+                        self.proc{i,r} = map_normalize(ph{i,r});
                         self.pie{i,r} = map_pie(ph{i,r});
                     else
                         self.pie{i,r} = NaN;
@@ -326,7 +326,7 @@ classdef NetworkStruct <handle
             newObj.phaseshift = obj.phaseshift; % number of phases in each service or arrival process
             newObj.phi = obj.phi;         % probability of service completion in each service phase,
             newObj.pie = obj.pie;         % probability of service entry in each service phase,
-            newObj.ph = obj.ph;         % probability of service completion in each service phase,
+            newObj.proc = obj.proc;         % probability of service completion in each service phase,
             newObj.rates = obj.rates;       % service rate for each job class in each station
             newObj.refstat = obj.refstat;    % index of the reference node for each request class (Kx1 int)
             newObj.routing = obj.routing;     % routing strategy type

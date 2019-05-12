@@ -17,10 +17,9 @@ classdef PMIF
         %public methods, including constructor
         
         %constructor
-        function obj = PMIF(servers, workUnitServers, closedWorkloads, ...
-                % OBJ = PMIF(SERVERS, WORKUNITSERVERS, CLOSEDWORKLOADS, ...
+        function obj = PMIF(servers, workUnitServers, closedWorkloads, demandServiceRequests, workUnitServiceRequests, timeServiceRequests)
+                % OBJ = PMIF(SERVERS, WORKUNITSERVERS, CLOSEDWORKLOADS,            
             
-            demandServiceRequests, workUnitServiceRequests, timeServiceRequests)
             if(nargin > 0)
                 obj.servers = servers;
                 obj.workUnitServers = workUnitServers;

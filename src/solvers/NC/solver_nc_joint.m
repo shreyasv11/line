@@ -10,7 +10,7 @@ state = qn.state;
 S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 C = qn.nchains;
-PH = qn.ph;
+PH = qn.proc;
 %% initialization
 
 % determine service times

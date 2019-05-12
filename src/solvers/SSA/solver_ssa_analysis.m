@@ -12,7 +12,7 @@ NK = qn.njobs';  % initial population per class
 sched = qn.sched;
 Tstart = tic;
 
-PH = qn.ph;
+PH = qn.proc;
 tranSysState = [];
 tranSync = [];
 

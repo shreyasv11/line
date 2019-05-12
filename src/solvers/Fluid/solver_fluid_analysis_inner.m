@@ -68,7 +68,7 @@ for i = 1:qn.nstations
                     w = zeros(1,qn.nclasses);
                     for k = 1:qn.nclasses
                         idx = sum(sum(phases(1:i-1,:))) + sum( phases(i,1:k-1) );
-                        wi(k) = map_mean(qn.ph{i,k});
+                        wi(k) = map_mean(qn.proc{i,k});
                         wni = wni + wi(k)*sum(Qfull((idx+1):(idx+phases(i,k))));
                     end
                     wni_t = 0*Qfull_t{i,1};

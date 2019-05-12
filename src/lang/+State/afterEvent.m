@@ -32,7 +32,7 @@ if qn.isstation(ind)
     end
     mu = qn.mu;
     phi = qn.phi;
-    ph = qn.ph;
+    ph = qn.proc;
     capacity = qn.cap;
     classcap = qn.classcap;
     if K(class) == 0 % if this class is not accepted at the resource

@@ -20,19 +20,19 @@ idSource = [];
 for i = 1:M
     switch qn.sched{i}
         case SchedStrategy.INF
-            node{i} = DelayStation(model, qn.stationnames{i});
+            node{i} = DelayStation(model, qn.nodenames{i});
         case SchedStrategy.FORK
-            node{i} = ForkStation(model, qn.stationnames{i});
+            node{i} = ForkStation(model, qn.nodenames{i});
         case SchedStrategy.EXT
             node{i} = Source(model, 'Source'); idSource = i;
             node{M+1} = Sink(model, 'Sink'); hasSink = 1;
         otherwise
-            node{i} = Queue(model, qn.stationnames{i}, qn.sched{i});
+            node{i} = Queue(model, qn.nodenames{i}, qn.sched{i});
             node{i}.setNumServers(qn.nservers(i));
     end
 end
 
-PH = qn.ph;
+PH = qn.proc;
 for k = 1:K
     if k<=Ktrue
         if isinf(NK(k))
@@ -45,7 +45,7 @@ for k = 1:K
         % set it to the first node where the rate for this class is
         % non-null
         for i=1:M
-            if sum(nnz(qn.ph{i,k}{1}))>0
+            if sum(nnz(qn.proc{i,k}{1}))>0
                 break
             end
         end
@@ -61,11 +61,23 @@ for k = 1:K
         %        if SCVik >= 0.5
         switch qn.sched{i}
             case SchedStrategy.EXT
-                node{i}.setArrival(jobclass{k}, Coxian.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
+                if isnan(qn.rates(i,k))
+                    node{i}.setArrival(jobclass{k}, Disabled());
+                elseif qn.rates(i,k)==0
+                    node{i}.setArrival(jobclass{k}, Immediate());
+                else
+                    node{i}.setArrival(jobclass{k}, APH.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
+                end
             case SchedStrategy.FORK
                 % do nothing
             otherwise
-                node{i}.setService(jobclass{k}, Coxian.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
+                if isnan(qn.rates(i,k))
+                    node{i}.setService(jobclass{k}, Disabled());
+                elseif qn.rates(i,k)==0
+                    node{i}.setService(jobclass{k}, Immediate());
+                else
+                    node{i}.setService(jobclass{k}, APH.fitMeanAndSCV(map_mean(PH{i,k}),SCVik));
+                end
         end
         %        else
         % this could be made more precised by fitting into a 2-state
@@ -80,7 +92,7 @@ for k = 1:K
         %                    node{i}.setService(jobclass{k}, Erlang(nPhases/map_mean(PH{i,k}),nPhases));
         %            end
     end
-end
+    %end
 end
 
 myP = cell(K,K);

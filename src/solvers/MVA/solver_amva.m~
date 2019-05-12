@@ -122,14 +122,22 @@ while max(max(abs(Q-Q_1))) > tol
             if ST(k,r) == 0
                 W(k,r) = 0;
             else
-                if nservers(k)>1
+                %if range(ST(k,:))==0 % product-form, same as PS
+                %     if S(k)>1
+                %         W(k,r) = ST(k,r) * g(k) * (1 + delta * (Q(k,r)+sum(Q(k,sd))));
+                %     else
+                %         W(k,r) = ST(k,r) * (1 + deltar(r) * Q(k,r) + sum(Q(k,sd)));
+                %     end
+                %else
+                if nservers(k)>1                    
                     B = ((deltar .* X .* V(k,:) .* ST(k,:)) / nservers(k)); % note: this is in 0-1 as a utilization
+                    W(k,r) = ST(k,r)*(nservers(k)-1)/nservers(k); % multi-server correction with serial think time
+                    W(k,r) = W(k,r) + (1/nservers(k)) * ST(k,r) * (1 + SCV(k,r))/2; % high SCV
+                    W(k,r) = W(k,r) + (1/nservers(k)) * (ST(k,r) * deltar(r) * Q(k,r)*B(r) + ST(k,sd).*B(sd)*Q(k,sd)'); % FCFS approximation + red
                 else
-                    B = ones(1,K);
+                    W(k,r) = ST(k,r)/2 * (1 + SCV(k,r)) + ST(k,r) * deltar(r) * Q(k,r) + ST(k,sd)*Q(k,sd)';
                 end
-                W(k,r) = ST(k,r)*(nservers(k)-1)/nservers(k); % multi-server correction with serial think time
-                W(k,r) = W(k,r) + (ST(k,r)/nservers(k)) * (1 + SCV(k,r))/2; % high SCV
-                W(k,r) = W(k,r) + (1/nservers(k)) * (ST(k,r) * deltar(r) * Q(k,r)*B(r) + ST(k,sd).*B(sd)*Q(k,sd)'); % FCFS approximation + reducing backlog proportionally to server utilizations; somewhat similar to Rolia-Sevcik -  method of layers - Sec IV.
+                %end
             end
         end
         

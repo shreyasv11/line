@@ -35,7 +35,7 @@ K = zeros(1,R);
 for ist=1:qn.nstations
     for r=1:R
         K(r) = qn.phases(ist,r);
-        if ~isempty(qn.ph) && ~isempty(qn.ph{ist,r}) && any(any(isnan(qn.ph{ist,r}{1}))) && n(ist,r)>0 % if disabled
+        if ~isempty(qn.proc) && ~isempty(qn.proc{ist,r}) && any(any(isnan(qn.proc{ist,r}{1}))) && n(ist,r)>0 % if disabled
             isValid = false;
             %            error('Chain %d is initialized with an incorrect number of jobs: %f instead of %d.', nc, statejobs_chain, njobs_chain);
             return

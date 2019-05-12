@@ -20,7 +20,7 @@ rt = qn.rt;
 rtnodes = qn.rtnodes;
 hasSink = 0;
 sourceID = 0;
-PH = qn.ph;
+PH = qn.proc;
 
 fprintf(fid,'\n');
 %% write nodes
@@ -77,7 +77,7 @@ for k = 1:qn.nclasses
         % non-null
         iref = 0;
         for i=1:qn.nstations
-            if sum(nnz(qn.ph{i,k}{1}))>0
+            if sum(nnz(qn.proc{i,k}{1}))>0
                 iref = i;
                 break
             end

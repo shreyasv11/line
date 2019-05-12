@@ -10,7 +10,7 @@ S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 C = qn.nchains;
 
-PH = qn.ph;
+PH = qn.proc;
 %% initialization
 % queue-dependent functions to capture multi-server and delay stations
 

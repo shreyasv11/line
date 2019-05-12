@@ -13,7 +13,7 @@ K = qn.nclasses;    %number of classes
 N = qn.nclosedjobs;    %population
 Lambda = qn.mu;
 Pi = qn.phi;
-PH = qn.ph;
+PH = qn.proc;
 rt = qn.rt;
 S = qn.nservers;
 

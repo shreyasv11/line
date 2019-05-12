@@ -21,10 +21,10 @@ R = qn.nclasses;
 S = qn.nservers;
 K = zeros(1,R);
 for r=1:R
-    if isempty(qn.ph{ist,r})
+    if isempty(qn.proc{ist,r})
         K(r) = 0;
     else
-        K(r) = length(qn.ph{ist,r}{1});
+        K(r) = length(qn.proc{ist,r}{1});
     end
 end
 state = [];

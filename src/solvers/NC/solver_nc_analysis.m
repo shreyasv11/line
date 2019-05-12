@@ -32,6 +32,7 @@ alpha(alpha<1e-12)=0;
 eta_1 = zeros(1,M);
 eta = ones(1,M);
 if findstring(sched,'fcfs') == -1, options.iter_max=1; end
+
 it = 0;
 while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     it = it + 1;
@@ -96,21 +97,24 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     % step 1
     lG = pfqn_nc(Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1), options);
     
-    % step 2 - reduce the artificial think time
-    if any(S(isfinite(S)) > 1)
-        Xchain = zeros(1,C);
-        for r=1:C % we need the utilizations in step 2 so we determine tput
-            Xchain(r) = exp(pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options) - lG);
-        end
-        for i=1:M
-            if isinf(S(i)) % infinite server
-                % do nothing
-            else
-                Zcorr(i,:) = max([0,(1-(Xchain*Lchain(i,:)'/S(i))^S(i))]) * Lchain(i,:) * (S(i)-1)/S(i);
-            end
-        end
-        lG = pfqn_nc(Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1), options); % update lG
-    end
+    % commented out, poor performance on bench_CQN_FCFS_rm_multiserver_hicv_midload
+    % model 7 as it does not guarantee that the closed population is
+    % constant
+%     % step 2 - reduce the artificial think time
+%     if any(S(isfinite(S)) > 1)
+%         Xchain = zeros(1,C);
+%         for r=1:C % we need the utilizations in step 2 so we determine tput
+%             Xchain(r) = exp(pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options) - lG);
+%         end
+%         for i=1:M
+%             if isinf(S(i)) % infinite server
+%                 % do nothing
+%             else
+%                 Zcorr(i,:) = max([0,(1-(Xchain*Lchain(i,:)'/S(i))^S(i))]) * Lchain(i,:) * (S(i)-1)/S(i);
+%             end
+%         end
+%         lG = pfqn_nc(Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1), options); % update lG
+%     end
     
     for r=1:C
         lGr(r) = pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options);
@@ -126,6 +130,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             end
         end
     end
+    
     if isnan(Xchain)
         %        Z
         %        Zcorr
@@ -154,31 +159,26 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     Qchain(:,Nchain==0)=0;
     Rchain(:,Nchain==0)=0;
     Tchain(:,Nchain==0)=0;
-    
-    
+        
     for c=1:qn.nchains
         inchain = find(qn.chains(c,:));
         for k=inchain(:)'
             X(k) = Xchain(c) * alpha(qn.refstat(k),k);
             for i=1:qn.nstations
                 if isinf(S(i))
-                    % critical for SCV+FCFS to use ST0 here instead of ST
-                    U(i,k) = ST0(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);
+                    U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);
                 else
-                    % critical for SCV+FCFS to use ST0 here instead of ST
-                    U(i,k) = ST0(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);
+                    U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);
                 end
                 if Lchain(i,c) > 0
-                    % critical for SCV+FCFS to use ST0 here instead of ST
-                    Q(i,k) = Rchain(i,c) * ST0(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
+                    Q(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
                     T(i,k) = Tchain(i,c) * alpha(i,k);
                     R(i,k) = Q(i,k) / T(i,k);
-                    %                R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');
+                    % R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');
                 else
-                    T(i,k) = 0;
-                    
-                    R(i,k)=0;
-                    Q(i,k)=0;
+                    T(i,k) = 0;                    
+                    R(i,k) = 0;
+                    Q(i,k) = 0;
                 end
             end
             C(k) = qn.njobs(k) / X(k);
@@ -190,15 +190,15 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         switch sched{i}
             case SchedStrategy.FCFS
                 %if range(ST0(i,sd))>0 % check if non-product-form
-                rho(i) = T(i,sd)*ST0(i,sd)'; % true utilization of each server, critical to use this
-                %                 ca = 0;
+                rho(i) = sum(U(i,:)); % true utilization of each server, critical to use this
+                %                 ca(i) = 0;
                 %                 for j=1:M
                 %                     for r=1:K
                 %                         if ST0(j,r)>0
                 %                             for s=1:K
                 %                                 if ST0(i,s)>0
                 %                                     pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
-                %                                     ca = ca + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
+                %                                     ca(i) = ca(i) + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
                 %                                 end
                 %                             end
                 %                         end
@@ -234,6 +234,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
 end
 runtime = toc(Tstart);
 Q=abs(Q); R=abs(R); X=abs(X); U=abs(U);
+
 
 X(~isfinite(X))=0; U(~isfinite(U))=0; Q(~isfinite(Q))=0; R(~isfinite(R))=0;
 %if options.verbose > 0
