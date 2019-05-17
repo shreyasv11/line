@@ -120,7 +120,8 @@ switch options.method
             self.result.('solver') = self.getName();
             self.result.runtime = Trun;
         end
-    otherwise % jmva methods
+    case {'jmva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
+           'jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
         fname = self.writeJMVA([self.getFilePath(),'jmva',filesep, self.getFileName(),'.jmva']);
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed), ' --illegal-access=permit'];
         if options.verbose
@@ -134,5 +135,7 @@ switch options.method
             delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
         end
         self.getResults;
+    otherwise 
+        error('This solver does not support the specified method.');
 end
 end

@@ -195,12 +195,15 @@ classdef NetworkSolver < Solver
         [TN]                = getAvgSysTput(self,T);
         [QNt,UNt,TNt]       = getTranAvg(self,Qt,Ut,Tt);
         
-        function self = setAvgResults(self,Q,U,R,T,C,X,runtime)
-            % SELF = SETAVGRESULTS(SELF,Q,U,R,T,C,X,RUNTIME)
+        function self = setAvgResults(self,Q,U,R,T,C,X,runtime,method)
+            % SELF = SETAVGRESULTS(SELF,Q,U,R,T,C,X,RUNTIME,METHOD)
             
             % Store average metrics at steady-state
             self.result.('solver') = self.getName();
-            self.result.Avg.('method') = self.getOptions().method;
+            if ~exist('method','var')
+                method = self.getOptions().method;
+            end
+            self.result.Avg.('method') = method;
             if isnan(Q), Q=[]; end
             if isnan(R), R=[]; end
             if isnan(T), T=[]; end

@@ -129,7 +129,7 @@ classdef HyperExp < MarkovianDistribution
         function he = fitMeanAndSCVBalanced(MEAN, SCV)
             % HE = FITMEANANDSCV(MEAN, SCV)
             % Fit distribution with given mean and squared coefficient of
-            % variation (SCV=variance/mean^2) and balanced rates, i.e.,
+            % variation (SCV=variance/mean^2) and balanced means, i.e.,
             % p/mu1 = (1-p)/mu2
             mu1 =  -(2*(((SCV - 1)/(SCV + 1))^(1/2)/2 - 1/2))/MEAN;
             p= 1/2 - ((SCV - 1)/(SCV + 1))^(1/2)/2;

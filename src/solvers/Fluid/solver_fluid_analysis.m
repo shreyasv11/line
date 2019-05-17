@@ -100,46 +100,48 @@ switch options.method
                 end
                 rates(isnan(rates))=0;
                 
-                for i=1:M
-                    switch qn.sched{i}
-                        case SchedStrategy.FCFS
-                            for k=1:K
-                                if rates(i,k)>0
-                                    %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
-                                    cx = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
-                                    %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
-                                    % we now handle the case that due to either numerical issues
-                                    % or different relationship between scv and mean the size of
-                                    % the phase-type representation has changed
-                                    muik = cx.getMu;
-                                    phiik = cx.getPhi;
-                                    phases(i,k) = length(muik);
-                                    if phases(i,k) ~= phases_last(i,k) % if number of phases changed
-                                        % before we update qn we adjust the initial state
-                                        isf = qn.stationToStateful(i);
-                                        [~, nir, sir] = State.toMarginal(qn, i, qn.state{isf}, options);
-                                    end
-                                    %if any(muik > 0.01+ qn.mu{i,k} * rates(i,k) / rates0(i,k))
-                                    %    keyboard
-                                    %end
-                                    qn.proc{i,k} = cx.getRepresentation;
-                                    qn.mu{i,k} = muik;
-                                    qn.phi{i,k} = phiik;
-                                    qn.phases = phases;
-                                    if phases(i,k) ~= phases_last(i,k)
-                                        isf = qn.stationToStateful(i);
-                                        % we now initialize the new service process
-                                        qn.state{isf} = State.fromMarginalAndStarted(qn, i, nir, sir, options);
-                                        qn.state{isf} = qn.state{isf}(1,:); % pick one as the marginals won't change
+                if useSCV
+                    for i=1:M
+                        switch qn.sched{i}
+                            case SchedStrategy.FCFS
+                                for k=1:K
+                                    if rates(i,k)>0
+                                        %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
+                                        [cx,muik,phiik] = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
+                                        %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
+                                        % we now handle the case that due to either numerical issues
+                                        % or different relationship between scv and mean the size of
+                                        % the phase-type representation has changed
+                                        %muik = cx.getMu;
+                                        %phiik = cx.getPhi;
+                                        phases(i,k) = length(muik);
+                                        if phases(i,k) ~= phases_last(i,k) % if number of phases changed
+                                            % before we update qn we adjust the initial state
+                                            isf = qn.stationToStateful(i);
+                                            [~, nir, sir] = State.toMarginal(qn, i, qn.state{isf}, options);
+                                        end
+                                        %if any(muik > 0.01+ qn.mu{i,k} * rates(i,k) / rates0(i,k))
+                                        %    keyboard
+                                        %end
+                                        qn.proc{i,k} = cx.getRepresentation;
+                                        qn.mu{i,k} = muik;
+                                        qn.phi{i,k} = phiik;
+                                        qn.phases = phases;
+                                        if phases(i,k) ~= phases_last(i,k)
+                                            isf = qn.stationToStateful(i);
+                                            % we now initialize the new service process
+                                            qn.state{isf} = State.fromMarginalAndStarted(qn, i, nir, sir, options);
+                                            qn.state{isf} = qn.state{isf}(1,:); % pick one as the marginals won't change
+                                        end
                                     end
                                 end
-                            end
+                        end
                     end
-                end
-                
-                options.init_sol = ymean{end}(:);
-                if norm(phases_last-phases)>0 % If there is a change of phases reset
-                    options.init_sol = solver_fluid_initsol(qn);
+                    
+                    options.init_sol = ymean{end}(:);
+                    if norm(phases_last-phases)>0 % If there is a change of phases reset
+                        options.init_sol = solver_fluid_initsol(qn);
+                    end
                 end
                 qn.phases = phases;
                 [Qfull, Ufull, ~, Tfull, ymean, ~, ~, ~, ~, ~, inner_iters, inner_runtime] = solver_fluid_analysis_inner(qn, options);

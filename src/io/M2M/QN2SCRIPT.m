@@ -172,7 +172,7 @@ for k = 1:qn.nclasses
 end
 
 fprintf(fid,'model.link(P);\n');
-if fid~=1
-    fclose(fid);
-end
+%if fid~=1
+%    fclose(fid);
+%end
 end

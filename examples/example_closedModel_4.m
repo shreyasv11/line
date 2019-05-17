@@ -69,6 +69,6 @@ myP{4,2} = zeros(3);
 
 model.link(myP);
 %
-spaceRunning = State.fromMarginalAndRunning(model,3,[2,1,1,1],[2,1,0,0])
-spaceStarted = State.fromMarginalAndStarted(model,3,[2,1,1,1],[2,1,0,0])
-space = State.fromMarginal(model,3,[2,1,1,1],[2,1,0,0])
+spaceRunning = State.fromMarginalAndRunning(model,node{3},[2,1,1,1],[2,1,0,0])
+spaceStarted = State.fromMarginalAndStarted(model,node{3},[2,1,1,1],[2,1,0,0])
+space = State.fromMarginal(model,node{3},[2,1,1,1],[2,1,0,0])

@@ -77,6 +77,9 @@ algTypeElement.setAttribute('maxSamples',num2str(self.options.samples));
 %%%%%%%%%%
 M = qn.nstations;    %number of stations
 NK = qn.njobs';  % initial population per class
+if any(isinf(NK))
+    error('JMVA does not support open classes;');
+end
 C = qn.nchains;
 SCV = qn.scv;
 

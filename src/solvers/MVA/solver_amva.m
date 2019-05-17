@@ -152,17 +152,18 @@ while max(max(abs(Q-Q_1))) > tol
             Q(k,r) = X(r) * V(k,r) * W(k,r);
             T(k,r) = X(r) * V(k,r);
         end
-        
-        for k=1:M
-            for r=rset
-                if isinf(nservers(k)) % infinite server
-                    U(k,r) = V(k,r)*ST(k,r)*X(r);
-                else
-                    U(k,r) = V(k,r)*ST(k,r)*X(r)/nservers(k);
-                end
+    end
+    
+    for k=1:M
+        for r=rset
+            if isinf(nservers(k)) % infinite server
+                U(k,r) = V(k,r)*ST(k,r)*X(r);
+            else
+                U(k,r) = V(k,r)*ST(k,r)*X(r)/nservers(k);
             end
         end
     end
+    
 end
 
 for k=1:M

@@ -5,7 +5,7 @@ function [Q,U,R,T,C,X,lG,runtime] = solver_nc_analysis(qn, options)
 % All rights reserved.
 
 M = qn.nstations;    %number of stations
-S = qn.nservers;
+nservers = qn.nservers;
 NK = qn.njobs';  % initial population per class
 sched = qn.sched;
 %chains = qn.chains;
@@ -76,20 +76,20 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     Zcorr = zeros(M,C);
     infServers = [];
     for i=1:M
-        if isinf(S(i)) % infinite server
+        if isinf(nservers(i)) % infinite server
             %mu_chain(i,1:sum(Nchain)) = 1:sum(Nchain);
             infServers(end+1) = i;
             Lcorr(i,:) = 0;
             Z(i,:) = Lchain(i,:);
             Zcorr(i,:) = 0;
         else
-            if strcmpi(options.method,'exact') && S(i)>1
+            if strcmpi(options.method,'exact') && nservers(i)>1
                 options.method = 'default';
                 warning('%s does not support exact multiserver yet. Switching to approximate method.', mfilename);
             end
-            Lcorr(i,:) = Lchain(i,:) / S(i);
+            Lcorr(i,:) = Lchain(i,:) / nservers(i);
             Z(i,:) = 0;
-            Zcorr(i,:) = Lchain(i,:) * (S(i)-1)/S(i);
+            Zcorr(i,:) = Lchain(i,:) * (nservers(i)-1)/nservers(i);
         end
     end
     Qchain = zeros(M,C);
@@ -100,28 +100,28 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     % commented out, poor performance on bench_CQN_FCFS_rm_multiserver_hicv_midload
     % model 7 as it does not guarantee that the closed population is
     % constant
-%     % step 2 - reduce the artificial think time
-%     if any(S(isfinite(S)) > 1)
-%         Xchain = zeros(1,C);
-%         for r=1:C % we need the utilizations in step 2 so we determine tput
-%             Xchain(r) = exp(pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options) - lG);
-%         end
-%         for i=1:M
-%             if isinf(S(i)) % infinite server
-%                 % do nothing
-%             else
-%                 Zcorr(i,:) = max([0,(1-(Xchain*Lchain(i,:)'/S(i))^S(i))]) * Lchain(i,:) * (S(i)-1)/S(i);
-%             end
-%         end
-%         lG = pfqn_nc(Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1), options); % update lG
-%     end
+    %     % step 2 - reduce the artificial think time
+    %     if any(S(isfinite(S)) > 1)
+    %         Xchain = zeros(1,C);
+    %         for r=1:C % we need the utilizations in step 2 so we determine tput
+    %             Xchain(r) = exp(pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options) - lG);
+    %         end
+    %         for i=1:M
+    %             if isinf(S(i)) % infinite server
+    %                 % do nothing
+    %             else
+    %                 Zcorr(i,:) = max([0,(1-(Xchain*Lchain(i,:)'/S(i))^S(i))]) * Lchain(i,:) * (S(i)-1)/S(i);
+    %             end
+    %         end
+    %         lG = pfqn_nc(Lcorr,Nchain,sum(Z,1)+sum(Zcorr,1), options); % update lG
+    %     end
     
     for r=1:C
         lGr(r) = pfqn_nc(Lcorr,oner(Nchain,r),sum(Z,1)+sum(Zcorr,1), options);
         Xchain(r) = exp(lGr(r) - lG);
         for i=1:M
             if Lchain(i,r)>0
-                if isinf(S(i)) % infinite server
+                if isinf(nservers(i)) % infinite server
                     Qchain(i,r) = Lchain(i,r) * Xchain(r);
                 else
                     lGar(i,r) = pfqn_nc([Lcorr(setdiff(1:size(Lcorr,1),i),:),zeros(size(Lcorr,1)-1,1); Lcorr(i,:),1], [oner(Nchain,r),1], [sum(Z,1)+sum(Zcorr,1),0], options);
@@ -159,16 +159,16 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     Qchain(:,Nchain==0)=0;
     Rchain(:,Nchain==0)=0;
     Tchain(:,Nchain==0)=0;
-        
+    
     for c=1:qn.nchains
         inchain = find(qn.chains(c,:));
         for k=inchain(:)'
             X(k) = Xchain(c) * alpha(qn.refstat(k),k);
             for i=1:qn.nstations
-                if isinf(S(i))
+                if isinf(nservers(i))
                     U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k);
                 else
-                    U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / S(i);
+                    U(i,k) = ST(i,k) * (Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c)) * alpha(i,k) / nservers(i);
                 end
                 if Lchain(i,c) > 0
                     Q(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * Xchain(c) * Vchain(i,c) / Vchain(qn.refstat(k),c) * alpha(i,k);
@@ -176,7 +176,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
                     R(i,k) = Q(i,k) / T(i,k);
                     % R(i,k) = Rchain(i,c) * ST(i,k) / STchain(i,c) * alpha(i,k) / sum(alpha(qn.refstat(k),inchain)');
                 else
-                    T(i,k) = 0;                    
+                    T(i,k) = 0;
                     R(i,k) = 0;
                     Q(i,k) = 0;
                 end
@@ -191,24 +191,28 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             case SchedStrategy.FCFS
                 %if range(ST0(i,sd))>0 % check if non-product-form
                 rho(i) = sum(U(i,:)); % true utilization of each server, critical to use this
-                %                 ca(i) = 0;
-                %                 for j=1:M
-                %                     for r=1:K
-                %                         if ST0(j,r)>0
-                %                             for s=1:K
-                %                                 if ST0(i,s)>0
-                %                                     pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
-                %                                     ca(i) = ca(i) + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
-                %                                 end
-                %                             end
-                %                         end
-                %                     end
-                %                 end
-                ca(i) = 1;
+                ca(i) = 0;
+                for j=1:M
+                    for r=1:K
+                        if ST0(j,r)>0
+                            for s=1:K
+                                if ST0(i,s)>0
+                                    pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
+                                    ca(i) = ca(i) + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
+                                end
+                            end
+                        end
+                    end
+                end
+                
+                %ca(i) = 1;
                 cs(i) = (SCV(i,sd)*T(i,sd)')/sum(T(i,sd));
                 % asymptotic decay rate (diffusion approximation, Kobayashi JACM)
                 eta(i) = exp(-2*(1-rho(i))/(cs(i)+ca(i)*rho(i)));
                 %end
+                %eta(i) = rho(i);
+                %eta(i) = (rho(i)^nservers(i)+rho(i))/2; % multi-server
+                
         end
     end
     
@@ -218,13 +222,13 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
             case SchedStrategy.FCFS
                 %if range(ST0(i,sd))>0 % check if non-product-form
                 for k=1:K
-                    if sum(Q(i,ST(i,:)>0)) < S(i)
+                    if sum(Q(i,ST(i,:)>0)) < nservers(i)
                         if ST0(i,k)>0
                             ST(i,k) = ST0(i,k);
                         end
                     else % sum(Q(i,ST(i,:)>0)) >= S(i)
                         if ST0(i,k)>0
-                            ST(i,k) = eta(i)*S(i)/sum(T(i,sd));
+                            ST(i,k) = eta(i)*nservers(i)/sum(T(i,sd));
                         end
                     end
                 end

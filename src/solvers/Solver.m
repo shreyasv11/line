@@ -198,6 +198,7 @@ classdef Solver < handle
                 'jmt','jsim','jmva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
                 'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls',...
                 'fluid','nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.mmint','mam','arvscaling','srvscaling',...
+                'mmk','gigk', 'gigk.kingman_approx', ...
                 'mm1','mg1','gig1','gim1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b'};
         end
         
@@ -232,6 +233,7 @@ classdef Solver < handle
                                     'jmt.jsim','jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls',...
                                     'fluid','nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.mmint','mam','arvscaling','srvscaling',...
                                     'mm1','mg1','gig1','gim1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b',...
+                                    'mmk','gigk', 'gigk.kingman_approx', ...
                                     'poisson'}
                                 options.method = varargin{1};
                                 varargin(1) = [];
@@ -263,7 +265,10 @@ classdef Solver < handle
                     if strcmp(options.method,'ctmc'), options.method='default'; end
                     options.method = erase(options.method,'ctmc.');
                     solver = SolverCTMC(model, options);
-                case {'mva','mva.exact','amva','mva.amva'}
+                case {'mva','mva.exact','amva','mva.amva' ...
+                       'mm1','mmk','mg1','gig1','gim1','gig1.kingman', ...
+                       'gigk', 'gigk.kingman_approx', ...
+                       'gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b'}
                     if strcmp(options.method,'mva'), options.method='default'; end
                     options.method = erase(options.method,'mva.');
                     solver = SolverMVA(model, options);
@@ -288,7 +293,7 @@ classdef Solver < handle
                     if strcmp(options.method,'mam'), options.method='default'; end
                     options.method = erase(options.method,'mam.');
                     solver = SolverMAM(model, options);
-                case {'mm1','mg1','gig1','gim1','gig1.kingman','gig1.gelenbe','gig1.heyman','gig1.kimura','gig1.allen','gig1.kobayashi','gig1.klb','gig1.marchal','gig1.myskja','gig1.myskja.b'}
+                otherwise
                     solver = NetworkSolverLibrary(model, options);
             end
         end

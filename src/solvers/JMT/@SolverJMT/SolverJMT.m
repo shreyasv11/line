@@ -100,8 +100,8 @@ classdef SolverJMT < NetworkSolver
         jsimgView(self, options)
         
         [outputFileName] = writeJMVA(self, outputFileName)
-        [outputFileName] = writeJSIM(self, outputFileName)        
-        [result, parsed] = getResults(self)        
+        [outputFileName] = writeJSIM(self, outputFileName)
+        [result, parsed] = getResults(self)
         [result, parsed] = getResultsJSIM(self)
         [result, parsed] = getResultsJMVA(self)
     end
@@ -137,8 +137,8 @@ classdef SolverJMT < NetworkSolver
         getProbNormConstAggr(self); % jmva
         %% StateAggr methods
         Pr = getProbAggr(self, node, state_a);
-                [Pi_t, SSnode_a] = getTranProbAggr(self, node);
-        probSysStateAggr = getProbSysAggr(self);        
+        [Pi_t, SSnode_a] = getTranProbAggr(self, node);
+        probSysStateAggr = getProbSysAggr(self);
         tranNodeStateAggr = sampleAggr(self, node, numsamples);
         tranSysStateAggr = sampleSysAggr(self, numsamples);
         
@@ -264,7 +264,7 @@ classdef SolverJMT < NetworkSolver
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
             options = lineDefaults('JMT');
-        end        
+        end
     end
     
 end
