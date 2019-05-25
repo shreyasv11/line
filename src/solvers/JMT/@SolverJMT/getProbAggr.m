@@ -7,6 +7,6 @@ end
 stationStateAggr = self.sampleAggr(node);
 rows = findrows(stationStateAggr.state, state_a);
 t = stationStateAggr.t;
-dt = [t(1);diff(t)];
+dt = [diff(t);0];
 Pr = sum(dt(rows))/sum(dt);
 end

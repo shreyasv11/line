@@ -1,6 +1,5 @@
 function qn = getStruct(self, wantState)
 % QN = GETSTRUCT(WANTSTATE)
-
 if isempty(self.qn)
     self.refreshStruct();
 end

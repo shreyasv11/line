@@ -292,46 +292,46 @@ classdef SolverLQNS < LayeredNetworkSolver
             bool = true;
             if ispc % windows
                 [~,ret] = dos('lqns -V -H');
-                if contains(ret,'not recognized')
+                if containsstr(ret,'not recognized')
                     bool = false;
                 end
-                if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                        || contains(ret,'Version 1')
+                if containsstr(ret,'Version 5') || containsstr(ret,'Version 4') ...
+                        || containsstr(ret,'Version 3') || containsstr(ret,'Version 2') ...
+                        || containsstr(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
             else %linux
                 [~,ret] = unix('lqns -V -H');
-                if contains(ret,'command not found')
+                if containsstr(ret,'command not found')
                     bool = false;
                 end
-                if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                        || contains(ret,'Version 1')
+                if containsstr(ret,'Version 5') || containsstr(ret,'Version 4') ...
+                        || containsstr(ret,'Version 3') || containsstr(ret,'Version 2') ...
+                        || containsstr(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
             end
             if ispc % windows
                 [~,ret] = dos('lqsim -V -H');
-                if contains(ret,'not recognized')
+                if containsstr(ret,'not recognized')
                     bool = false;
                 end
-                if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                        || contains(ret,'Version 1')
+                if containsstr(ret,'Version 5') || containsstr(ret,'Version 4') ...
+                        || containsstr(ret,'Version 3') || containsstr(ret,'Version 2') ...
+                        || containsstr(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
             else %linux
                 [~,ret] = unix('lqsim -V -H');
-                if contains(ret,'command not found')
+                if containsstr(ret,'command not found')
                     bool = false;
                 end
-                if contains(ret,'Version 5') || contains(ret,'Version 4') ...
-                        || contains(ret,'Version 3') || contains(ret,'Version 2') ...
-                        || contains(ret,'Version 1')
+                if containsstr(ret,'Version 5') || containsstr(ret,'Version 4') ...
+                        || containsstr(ret,'Version 3') || containsstr(ret,'Version 2') ...
+                        || containsstr(ret,'Version 1')
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end

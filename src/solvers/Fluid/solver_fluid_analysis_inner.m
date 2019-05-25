@@ -48,9 +48,9 @@ for i = 1:qn.nstations
         for k = 1:qn.nclasses
             idx = sum(sum(phases(1:i-1,:))) + sum( phases(i,1:k-1) );
             Xservice{i,k} = zeros(phases(i,k),1);
-            for f = 1:phases(i,k)
+            for f = 1:phases(i,k)         
                 Tfull(i,k) = Tfull(i,k) + Qfull(idx+f)*Lambda{i,k}(f)*Pi{i,k}(f);
-                Tfull_t{i,k} = Tfull_t{i,k} + Qfull_t{idx+f}*Lambda{i,k}(f)*Pi{i,k}(f);
+                Tfull_t{i,k} = Tfull_t{i,k} + Qfull_t{i,k}*Lambda{i,k}(f)*Pi{i,k}(f);
                 Xservice{i,k}(f) = Qfull(idx+f)*Lambda{i,k}(f);
             end
         end

@@ -3,7 +3,7 @@ function probSysStateAggr = getProbSysAggr(self)
 
 TranSysStateAggr = self.sampleSysAggr;
 TSS = cell2mat([TranSysStateAggr.t,TranSysStateAggr.state(:)']);
-TSS(:,1)=[TSS(1,1);diff(TSS(:,1))];
+TSS(:,1)=[diff(TSS(:,1));0];
 state = self.model.getState;
 qn = self.model.getStruct;
 nir = zeros(qn.nstateful,qn.nclasses);

@@ -4,6 +4,12 @@ classdef Solver < handle
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
     
+    properties (Constant)
+        VERBOSE_SILENT = 0;
+        VERBOSE_STD = 1;
+        VERBOSE_DEBUG = 2;
+    end
+    
     properties (Access = public)
         options; % Data structure with solver options
         name; % Solver name

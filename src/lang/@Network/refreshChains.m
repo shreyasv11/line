@@ -71,12 +71,13 @@ if wantVisits
         %                    error(sprintf('The routing matrix in chain %d is not stochastic. Chain %d classes: %s',c, c, int2str(inchain)));
         %                end
         alpha_visited = dtmc_solve(Pchain(visited,visited));
-        alpha = zeros(1,M); alpha(visited) = alpha_visited;
+        alpha = zeros(1,M*K); alpha(visited) = alpha_visited;
         if max(alpha)>=1-1e-10
-            error('Line:ChainAbsorbingState','One chain has an absorbing state.');
+            %disabled because a self-looping customer is an absorbing chain
+            %error('Line:ChainAbsorbingState','One chain has an absorbing state.');
         end
-        visits{c} = zeros(M,K);
-        for i=1:M
+        visits{c} = zeros(M,K);        
+        for i=1:M            
             for k=1:length(inchain)
                 visits{c}(i,inchain(k)) = alpha((i-1)*length(inchain)+k);
             end
@@ -101,7 +102,9 @@ if wantVisits
         nodes_alpha_visited = dtmc_solve(nodes_Pchain(nodes_visited,nodes_visited));
         nodes_alpha = zeros(1,I); nodes_alpha(nodes_visited) = nodes_alpha_visited;
         if max(nodes_alpha)>=1-1e-10
-            error('Line:ChainAbsorbingState','One chain has an absorbing state.');
+            %disabled because a self-looping cusotmer has an absobring
+            %chain
+            %error('Line:ChainAbsorbingState','One chain has an absorbing state.');
         end
         nodevisits{c} = zeros(I,K);
         for i=1:I

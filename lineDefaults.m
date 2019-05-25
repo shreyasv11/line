@@ -32,6 +32,7 @@ options.stiff = true;
 options.timespan = [Inf,Inf];
 options.verbose = 1;
 
+%% Solver-specific defaults
 switch solverName
     case 'CTMC'
         options.timespan = [Inf,Inf];

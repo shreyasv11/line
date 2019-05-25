@@ -11,6 +11,10 @@ function [p,Q]=ctmc_solve(Q,options)
 %  Examples:
 %  - ctmc_solve([-0.5,0.5;0.2,-0.2])
 
+if nargin == 1
+    options = struct('verbose', 1,'method','default'); %
+end
+
 if length(Q) > 6000 && (nargin==1 || ~options.force)
     fprintf(1,'ctmc_solve: the order of Q is greater than 6000, i.e., %d elements. Press key to continue.',length(Q));
     pause;
@@ -61,7 +65,9 @@ while goon
     nnzel = find(sum(abs(Qnnz),1)~=0 & sum(abs(Qnnz),2)'~=0);
     if length(nnzel) < n && ~isReducible
         isReducible = true;
-        fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
+        if options.verbose == 2 % debug
+            fprintf(1,'ctmc_solve: the infinitesimal generator is reducible.\n');
+        end
     end
     Qnnz = Qnnz(nnzel, nnzel);
     bnnz = bnnz(nnzel);

@@ -1,14 +1,15 @@
-function sampleNodeState = sample(self, node, numsamples)
+function sampleNodeState = sample(self, node, numSamples)
 % TRANNODESTATE = SAMPLE(NODE)
 
-if exist('numsamples','var')
-    warning('SolveSSA does not support the numsamples parameter, use instead the samples option upon instantiating the solver.');
-end
-
 options = self.getOptions;
+if exist('numSamples','var')
+    options.samples = numSamples;
+else
+    numSamples = options.samples;
+end
 switch options.method
     case {'default','serial'}
-        [~, tranSystemState] = self.run;
+        [~, tranSystemState] = self.run(options);
         isf = self.model.getStatefulNodeIndex(node);       
         sampleNodeState = struct();
         sampleNodeState.handle = node;

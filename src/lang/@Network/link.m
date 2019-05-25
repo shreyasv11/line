@@ -63,6 +63,16 @@ if isLinearP
     end
 end
 
+% assign routing for self-looping jobs
+for r=1:R
+    if isa(self.classes{r},'SelfLoopingClass')        
+        for s=1:R
+            P{r,s} = 0 * P{r,s};
+        end
+        P{r,r}(self.classes{r}.reference, self.classes{r}.reference) = 1.0;
+    end
+end
+
 % link virtual sinks automatically to sink
 ispool = cellisa(self.nodes,'Sink');
 if sum(ispool) > 1

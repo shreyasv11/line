@@ -249,7 +249,7 @@ classdef SolverJMT < NetworkSolver
         end
         
         dataSet = parseLogs(model, isNodeLogged, metric);
-        state = parseTranState(fileArv, fileDep, nodePreload);
+        [state, evtype, evclass] = parseTranState(fileArv, fileDep, nodePreload);
         [classResT, jobResT, jobResTArvTS, classResTJobID] = parseTranRespT(fileArv, fileDep);
         
         function checkOptions(options)

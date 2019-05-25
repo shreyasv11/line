@@ -1,5 +1,11 @@
-function retval = contains(varargin)
-if isoctave
+function retval = containsstr(varargin)
+% R = CONTAINSSTR(STR)
+% Determine if pattern is in string
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
+
+if isoctave 
     retval = strfind(varargin{1},varargin{2});
 else
     if length(varargin) == 2

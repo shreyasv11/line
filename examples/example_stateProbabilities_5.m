@@ -40,6 +40,7 @@ options = Solver.defaultOptions;
 options.verbose=1;
 options.samples=2e4;
 
+% set a custom initial state
 n=[ 0,0;
     1,0;
     0,1];
@@ -50,7 +51,7 @@ end
 state = model.getState;
 
 i=M;
-%
+%% getProbAggr
 if 1
     solver = SolverCTMC(model,options);
     Pr = solver.getProbAggr(node{M});
@@ -73,7 +74,7 @@ if 1
     Pmarg_jmt = Pr
 end
 
-%%
+%% getProb
 solver = SolverCTMC(model,options);
 Pr = solver.getProb(node{M});
 fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
@@ -88,7 +89,7 @@ Pr = solver.getProb(node{M});
 fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
 Pmarg_ssa = Pr
 
-%
+%% getProbSysAggr
 if 1
     i=M;
     solver = SolverCTMC(model,options);
@@ -108,7 +109,7 @@ if 1
     Pjoint_jmt = Pr
 end
 
-%
+%% getProbSys
 if 1
     i=M;
     solver = SolverCTMC(model,options);

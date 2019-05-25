@@ -48,7 +48,7 @@ for i=1:(numOfClasses)
         subParNodeAlphaVec.setAttribute('classPath', 'java.lang.Object');
         subParNodeAlphaVec.setAttribute('name', 'vector');
         PH=distributionObj.getRepresentation;
-        alpha = map_pie(PH);
+        alpha = abs(map_pie(PH));
         for k=1:distributionObj.getNumberOfPhases
             subParNodeAlphaElem = simDoc.createElement('subParameter');
             subParNodeAlphaElem.setAttribute('classPath', 'java.lang.Double');
@@ -74,7 +74,11 @@ for i=1:(numOfClasses)
                 subParNodeTElem.setAttribute('classPath', 'java.lang.Double');
                 subParNodeTElem.setAttribute('name', 'entry');
                 subParValue = simDoc.createElement('value');
-                subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',T(k,j))));
+                if k==j
+                    subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',-abs(T(k,j)))));
+                else
+                    subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',abs(T(k,j)))));
+                end
                 subParNodeTElem.appendChild(subParValue);
                 subParNodeTvec.appendChild(subParNodeTElem);
             end

@@ -30,8 +30,8 @@ refTasks = findstring(lqnGraph.Nodes.Type, 'R');
 if isempty(self.chains)
     for net = netorder
         % list of activity classes and their type
-        self.syncCall{net} = contains(AvgTable{net}.Class,'=>');
-        self.asyncCall{net} = contains(AvgTable{net}.Class,'->');
+        self.syncCall{net} = containsstr(AvgTable{net}.Class,'=>');
+        self.asyncCall{net} = containsstr(AvgTable{net}.Class,'->');
         self.isCall{net} = (self.syncCall{net} | self.asyncCall{net});
         self.syncSource{net} = extractBefore(AvgTable{net}.Class,'=>');
         self.asyncSource{net} = extractBefore(AvgTable{net}.Class,'->');

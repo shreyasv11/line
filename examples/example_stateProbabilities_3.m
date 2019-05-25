@@ -81,5 +81,5 @@ Pr_ctmc = solver.getProbSysAggr()
 solver = SolverNC(model,options);
 Pr_nc = solver.getProbSysAggr()
 
-solver = SolverJMT(model,options,'samples',5e3);
+solver = SolverJMT(model,'samples',1e5);
 Pr_jmt = solver.getProbSysAggr()

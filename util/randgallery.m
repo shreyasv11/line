@@ -1,8 +1,8 @@
 function [L,it]=randgallery(M,R,it,maxint)
 % L=RANDGALLERY(M,R,s,maxint)
-% Returns integer matrix of size MxR with seed s and entries in [0,maxint]
+% Return integer matrix of size MxR with seed s and entries in [0,maxint]
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if ~exist('it','var')
     it=randi(10000);

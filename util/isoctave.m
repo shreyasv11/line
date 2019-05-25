@@ -1,8 +1,8 @@
 function r = isoctave ()
-% r = isoctave()
-% Returns true if run in GNU OCTAVE
+% r = ISOCTAVE()
+% Return true if the execution environment is GNU Octave
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
   persistent x;
   if (isempty (x))

@@ -1,8 +1,9 @@
 function [n]=pprod(n,N)
-% n=pprod(N) - init
-% n=pprod(n,N) - next state
+% n=PPROD(N) - init
+% n=PPROD(n,N) - next state
+% Return a sequence of non-negative vectors less than a given vector
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
     if nargin==1
         N=n;

@@ -1,8 +1,9 @@
 function [n]=pprodcon(n,lb,ub)
-% n=pprodcon(N,lb,ub) - init
-% n=pprod(n,N)
+% n=PPRODCON(N,lb,ub) - init
+% n=PPRODCON(n,N)
+% Runs pprod with constraints on vector range 
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
 % initialization

@@ -1,8 +1,8 @@
 function v = multichoosecon(n,S)
-% constrained multichoose
-% pick vectors of S elements from the available units in vector n
+% v = MULTICHOOSECON(n,S)
+% Pick vectors of S elements from the available units in vector n
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 if S == 1
     v = [];

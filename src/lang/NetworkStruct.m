@@ -17,6 +17,7 @@ classdef NetworkStruct <handle
         isstatedep; % state dependent routing
         isstation; % element i is true if node i is a station
         isstateful; % element i is true if node i is stateful
+        isslc; % element r is true if class r self-loops at its reference station
         lst; % laplace-stieltjes transform
         mu;          % service rate in each service phase, for each job class in each station
         % (MxK cell with n_{i,k}x1 double entries)
@@ -149,6 +150,12 @@ classdef NetworkStruct <handle
             self.rt = rt;
             self.nchains = size(chains,1);
             self.nodevisits = nodes_visits;
+            self.isslc = false(self.nchains,1);
+            for c=1:self.nchains
+                if nnz(visits{c}) == 1
+                    self.isslc(c) = true;
+                end
+            end
         end
         
         function setSched(self, sched, schedparam)
@@ -308,6 +315,7 @@ classdef NetworkStruct <handle
             newObj.isstatedep = obj.isstatedep; % state dependent routing
             newObj.isstation = obj.isstation; % element i is true if node i is a station
             newObj.isstateful = obj.isstateful; % element i is true if node i is stateful
+            newObj.isslc = obj.isslc; % element r is true if class r self-loops at its reference station
             newObj.lst = obj.lst;          % function handle to Laplace-Stieltjes transform for each service or arrival distribution
             newObj.mu = obj.mu;          % service rate in each service phase, for each job class in each station
             newObj.nchains = obj.nchains;           % number of chains (int)

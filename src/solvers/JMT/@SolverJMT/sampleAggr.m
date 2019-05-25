@@ -64,4 +64,5 @@ stationStateAggr.handle = node;
 stationStateAggr.t = t;
 stationStateAggr.state = cell2mat(nir);
 stationStateAggr.isaggregate = true;
+stationStateAggr.t = [0; stationStateAggr.t(1:end-1)];
 end

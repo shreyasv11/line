@@ -22,7 +22,7 @@ classdef Replayer < TimeSeries
             % LOAD()
             
             fileName = self.getParam(1).paramValue;
-            self.data = load(fileName);
+            self.data = load(fileName);            
             self.data = self.data(:);
         end
         

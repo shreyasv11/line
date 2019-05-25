@@ -1,14 +1,16 @@
-function sysStateAggr = sampleSysAggr(self, NUMSAMPLES)
+function sysStateAggr = sampleSysAggr(self, numSamples)
 % TRANSYSSTATEAGGR = sampleSysAggr(NUMSAMPLES)
-if exist('numsamples','var')
-    warning('SolveSSA does not support the numsamples parameter, use instead the samples option upon instantiating the solver.');
+options = self.getOptions;
+
+if ~exist('numSamples','var')
+    numSamples = options.samples;
 end
 
-
-options = self.getOptions;
 switch options.method
     case {'default','serial'}
-        [~, tranSystemState] = self.run;
+        options.samples = numSamples;
+        options.force = true;
+        [~, tranSystemState] = self.run(options);
         qn = self.model.getStruct;
         for ist=1:self.model.getNumberOfStations
             isf = qn.stationToStateful(ist);
@@ -23,4 +25,5 @@ switch options.method
     otherwise
         error('sampleSys is not available in SolverSSA with the chosen method.');
 end
+sysStateAggr.t = [0; sysStateAggr.t(2:end)];
 end

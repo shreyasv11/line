@@ -16,9 +16,10 @@ for c=2:2:20
     node{1}.setService(jobclass{2}, Exp(1));
     node{1}.setService(jobclass{3}, Exp(1));
     
-    node{2}.setService(jobclass{1}, Coxian.fitMeanAndSCV(1,1/c));
-    node{2}.setService(jobclass{2}, Coxian.fitMeanAndSCV(1,1));
-    node{2}.setService(jobclass{3}, Coxian.fitMeanAndSCV(1,c));
+%    node{2}.setService(jobclass{1}, APH([0.7,0.2,0.1],[-1,0,1; 0,-2,1; 0,0,-3]));
+    node{2}.setService(jobclass{1}, APH.fitMeanAndSCV(1,1/c));
+    node{2}.setService(jobclass{2}, APH.fitMeanAndSCV(1,1));
+    node{2}.setService(jobclass{3}, APH.fitMeanAndSCV(1,c));
     
     P = model.initRoutingMatrix;
     P{1} = Network.serialRouting(node{1},node{2});
@@ -28,15 +29,15 @@ for c=2:2:20
     model.link(P);
     
     % This part illustrates the execution of different solvers
-    jt{c} = SolverJMT(model,'seed',23000,'samples',1e4,'verbose',true).getAvgTable.RespT;
-    ft{c} = SolverFluid(model).getAvgTable.RespT;
-    mt{c} = SolverMVA(model).getAvgTable.RespT;
-    nt{c} = SolverNC(model,'exact').getAvgTable.RespT;
+    jmt{c} = SolverJMT(model,'seed',23000,'samples',1e4,'verbose',true).getAvgTable.RespT;
+    flu{c} = SolverFluid(model).getAvgTable.RespT;
+    mva{c} = SolverMVA(model).getAvgTable.RespT;
+    nc{c} = SolverNC(model,'exact').getAvgTable.RespT;
     catch
     end
 end
 %%
-rt = cell2mat(jt)'; plot(max(rt'),'k'); hold on;
-rt = cell2mat(ft)'; plot(max(rt'),'g'); 
-rt = cell2mat(mt)'; plot(max(rt'),'b'); 
-rt = cell2mat(nt)'; plot(max(rt'),'r')
+rt = cell2mat(jmt)'; plot(max(rt'),'k'); hold on;
+rt = cell2mat(flu)'; plot(max(rt'),'g'); 
+rt = cell2mat(mva)'; plot(max(rt'),'b'); 
+rt = cell2mat(nc)'; plot(max(rt'),'r')

@@ -77,9 +77,6 @@ algTypeElement.setAttribute('maxSamples',num2str(self.options.samples));
 %%%%%%%%%%
 M = qn.nstations;    %number of stations
 NK = qn.njobs';  % initial population per class
-if any(isinf(NK))
-    error('JMVA does not support open classes;');
-end
 C = qn.nchains;
 SCV = qn.scv;
 
@@ -182,6 +179,10 @@ for i=1:qn.nstations
             statSrvTimeElem = mvaDoc.createElement('servicetimes');
             statSrvTimeElem.setAttribute('customerclass',sprintf('Chain%02d',c));
             ldSrvString = num2str(STchain(i,c));
+            if any(isinf(NK))
+                error('JMVA does not support open classes in load-dependent models;');
+            end
+            
             for n=2:sum(NK)
                 ldSrvString = sprintf('%s;%s',ldSrvString,num2str(STchain(i,c)/min( n, qn.nservers(i) )));
             end

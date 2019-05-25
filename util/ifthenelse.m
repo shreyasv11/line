@@ -1,5 +1,8 @@
 function V = ifthenelse(cond,res1,res2)
-% Copyright (c) 2012-2018, Imperial College London
+% V = IFTHENELSE(P,A,B)
+% Return A or B based on logic predicate P
+%
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.  
 if cond
     V(1:length(res1)) = res1;

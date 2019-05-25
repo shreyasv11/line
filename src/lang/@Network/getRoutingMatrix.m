@@ -84,7 +84,7 @@ for i=1:self.getNumberOfNodes()
                         % up with routing chain CTMC solution
                         for j=1:self.getNumberOfNodes()
                             if connMatrix(i,j)>0
-                                rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                                %rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
                             end
                         end
                     otherwise

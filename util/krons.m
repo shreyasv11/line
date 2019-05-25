@@ -1,9 +1,10 @@
-function AB=krons(A,B)
+function S=krons(A,B)
+% S=KRONS(A,B)
 % Kronecker sum of matrices A and B
 %
-% Copyright (c) 2012-2018, Imperial College London
+% Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 kron(eye(size(A)),B);
 kron(A,eye(size(B)));
-AB=kron(A,eye(size(B)))+kron(eye(size(A)),B);
+S=kron(A,eye(size(B)))+kron(eye(size(A)),B);
 end

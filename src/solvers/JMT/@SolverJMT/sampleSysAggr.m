@@ -2,7 +2,7 @@ function sysStateAggr = sampleSysAggr(self, numEvents)
 % SYSSTATEAGGR = SAMPLESYSAGGR(NUMEVENTS)
 
 if ~exist('numEvents','var')
-    numEvents = -1;
+    numEvents = self.options.samples;
 end
 
 Q = self.model.getAvgQLenHandles();
@@ -31,8 +31,10 @@ Plinked = self.model.getLinkedRoutingMatrix();
 isNodeLogged = max(isNodeClassLogged,[],2);
 logpath = tempdir;
 modelCopy.linkAndLog(Plinked, isNodeLogged, logpath);
+
 % simulate the model copy and retrieve log data
-solverjmt = SolverJMT(modelCopy, self.getOptions);
+options = self.getOptions; options.samples = numEvents;
+solverjmt = SolverJMT(modelCopy, options);
 solverjmt.maxEvents = numEvents;
 solverjmt.getAvg(); % log data
 logData = SolverJMT.parseLogs(modelCopy, isNodeLogged, Metric.QLen);
@@ -44,21 +46,24 @@ for ist= 1:qn.nstations
     ind = qn.stationToNode(ist);
     t = [];
     nir = cell(1,qn.nclasses);
+    event = {};
     if qn.nodetype(ind) == NodeType.Source
         nir{r} = [];
     else
         for r=1:qn.nclasses
             if ~isempty(logData{isf,r})
-                [~,uniqTS] = unique(logData{isf,r}.t);
+                [~,uniqTSi] = unique(logData{isf,r}.t);
                 if isNodeClassLogged(isf,r)
                     if ~isempty(logData{isf,r})
-                        t = logData{isf,r}.t(uniqTS);
-                        t = [t(2:end);t(end)];
-                        nir{r} = logData{isf,r}.QLen(uniqTS);
+                        t = logData{isf,r}.t(uniqTSi);
+                        event{r} = logData{isf,r}.event;
+                        %t = [t(2:end);t(end)];
+                        nir{r} = logData{isf,r}.QLen(uniqTSi);
                     end
                 end
             else
                 nir{r} = [];
+                event{r} = {};
             end
         end
     end
@@ -75,6 +80,7 @@ for ist= 1:qn.nstations
     statStateAggr{ist}.handle = self.model.stations{ist};
     statStateAggr{ist}.t = t;
     statStateAggr{ist}.state = cell2mat(nir);
+    statStateAggr{ist}.event = event;
     statStateAggr{ist}.isaggregate = true;
 end
 
@@ -88,12 +94,12 @@ end
 for i=1:self.model.getNumberOfStations % stations
     ind = qn.stationToNode(i);
     tranSysStateAggr{1+i} = [];
-    [~,uniqTS] = unique(statStateAggr{i}.t);
+    [~,uniqTSi] = unique(statStateAggr{i}.t);
     if qn.nodetype(ind) ~= NodeType.Source
         for j=1:self.model.getNumberOfClasses % classes
             % we floor the interpolation as we hold the last state
-            if ~isempty(uniqTS)
-                Qijt = floor(interp1(statStateAggr{i}.t(uniqTS), statStateAggr{i}.state(uniqTS,j), tranSysStateAggr{1}));
+            if ~isempty(uniqTSi)
+                Qijt = interp1(statStateAggr{i}.t(uniqTSi), statStateAggr{i}.state(uniqTSi,j), tranSysStateAggr{1},'previous');
                 if isnan(Qijt(end))
                     Qijt(end)=Qijt(end-1);
                 end
@@ -103,11 +109,45 @@ for i=1:self.model.getNumberOfStations % stations
                 tranSysStateAggr{1+i} = [tranSysStateAggr{1+i}, Qijt];
             end
         end
+    else
+        tranSysStateAggr{1+i} = [Inf];
     end
 end
+
+
 sysStateAggr = struct();
 sysStateAggr.handle = self.model.stations';
 sysStateAggr.t = tranSysStateAggr{1};
 sysStateAggr.state = {tranSysStateAggr{2:end}};
 sysStateAggr.isaggregate = true;
+
+% now put the events in the .event cell
+eventSysStateAggr = cell(self.model.getNumberOfStations, qn.nclasses); % timestamps
+for i=1:self.model.getNumberOfStations % stations
+    for r=1:qn.nclasses
+        if isempty(statStateAggr{i}.event)
+            eventSysStateAggr{i,r} = struct();
+        else
+            eventSysStateAggr{i,r} = struct();
+            for e=1:size(statStateAggr{i}.event{r},1)
+                if ~isempty(statStateAggr{i}.event{r}{e})
+                    %statStateAggr{i}.event{r}{e}.t
+                    %etpos = find(sysStateAggr.t == statStateAggr{i}.event{r}{e}.t);
+                    %if ~isempty(etpos)
+                    evtype = statStateAggr{i}.event{r}{e}.event;
+                    evfield = EventType.toText(evtype);
+                    if ~isfield(eventSysStateAggr{i,r},evfield)
+                        eventSysStateAggr{i,r}.(EventType.toText(evtype)) = {};
+                    end
+                    eventSysStateAggr{i,r}.(EventType.toText(evtype)){end+1,1} = statStateAggr{i}.event{r}{e};
+                    %end
+                end
+            end
+            %eventSysStateAggr{i,r} = statStateAggr{i}.event{r};
+        end
+    end
+end
+sysStateAggr.event = eventSysStateAggr;
+%sysStateAggr.t = [0; sysStateAggr.t(1:end-1)];
+
 end

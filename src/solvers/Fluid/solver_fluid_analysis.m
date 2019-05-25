@@ -107,7 +107,7 @@ switch options.method
                                 for k=1:K
                                     if rates(i,k)>0
                                         %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
-                                        [cx,muik,phiik] = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
+                                        [cx,muik,phiik] = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));                                        
                                         %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
                                         % we now handle the case that due to either numerical issues
                                         % or different relationship between scv and mean the size of
@@ -143,7 +143,7 @@ switch options.method
                         options.init_sol = solver_fluid_initsol(qn);
                     end
                 end
-                qn.phases = phases;
+                qn.phases = phases;               
                 [Qfull, Ufull, ~, Tfull, ymean, ~, ~, ~, ~, ~, inner_iters, inner_runtime] = solver_fluid_analysis_inner(qn, options);
                 phases_last = phases;
                 outer_iters = outer_iters + inner_iters;
@@ -153,7 +153,7 @@ switch options.method
             % iterative step. We now have converged in the substitution of the
             % model parameters and we rerun everything from the true initial point
             % so that we get the correct transient.
-            options.init_sol = solver_fluid_initsol(qn, options);
+            options.init_sol = solver_fluid_initsol(qn, options);            
             [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ~, t] = solver_fluid_analysis_inner(qn, options);
         end
     case 'statedep'

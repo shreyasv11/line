@@ -60,12 +60,21 @@ for ind=1:qn.nnodes
             
             switch metric
                 case Metric.QLen
-                    [nodeState{ind}] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload{ind});
+                    [nodeState{ind}, evtype, evclass] = SolverJMT.parseTranState(logFileArvMat, logFileDepMat, nodePreload{ind});
                     
                     %% save in default data structure
                     for r=1:nclasses %0:numOfClasses
                         logData{ind,r} = struct();
                         logData{ind,r}.t = nodeState{ind}(:,1);
+                        logData{ind,r}.event = cell(length(evtype),1);
+                        ec = 0;
+                        for e=1:length(evtype)
+                            if evclass(e) == r
+                                logData{ind,r}.event{e,1} = Event(evtype(e), ind, r, NaN, [], nodeState{ind}(e,1));
+                            else
+                                logData{ind,r}.event{e,1} = [];
+                            end
+                        end
                         logData{ind,r}.QLen = nodeState{ind}(:,1+r);
                     end
                 case Metric.RespT

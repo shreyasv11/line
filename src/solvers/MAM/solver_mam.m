@@ -92,7 +92,7 @@ if M>=2 && qn.nclosedjobs == 0
                         fprintf(1,'Arrival process at node %d is now at %d states. Compressing.\n',ind,length(ARV{ind}{1}));
                         ARV{ind} = mmap_compress(ARV{ind});
                     end
-                    [Qret{1:K}] = MMAPPH1FCFS({ARV{ind}{[1,3:end]}}, {pie{ist,:}}, {D0{ist,:}}, 'ncMoms', 1);
+                    [Qret{1:K}, ncDistr] = MMAPPH1FCFS({ARV{ind}{[1,3:end]}}, {pie{ist,:}}, {D0{ist,:}}, 'ncMoms', 1, 'ncDistr',2);
                     QN(ist,:) = cell2mat(Qret);
                     TN(ist,:) = mmap_lambda(ARV{ind});
             end
@@ -116,40 +116,41 @@ if M>=2 && qn.nclosedjobs == 0
                     for r=1:K
                         
                         %obtain response time distribution for class r
-                        alpha = Ret{(r-1)*2+1}; T0 = Ret{(r-1)*2+2};
-                        RD = {T0,(-T0)*ones(length(alpha),1)*alpha(:)'}; %PH to MAP
-                        tRD = sum(RD{2},2);
-                        pieRD = map_pie(RD);
+                        %alpha = Ret{(r-1)*2+1}; T0 = Ret{(r-1)*2+2};
+                        %RD = {T0,(-T0)*ones(length(alpha),1)*alpha(:)'}; %PH to MAP
+                        %tRD = sum(RD{2},2);
+                        %pieRD = map_pie(RD);
                         
                         %define a ph for the arrival process of class r
                         A = mmap_hide(ARV{ind},setdiff(1:K,r));
+                        tA = sum(A{2},2);
+                        pieA = map_pie(A);
                         
                         %define a ph for the service process of class r
                         S = PH{ist,r};
                         pieS = map_pie(S);
-                        tS=sum(S{2},2);
+                        tS = sum(S{2},2);
                         
                         %with probability rho the output is the
-                        %inter-arrival time, with probability 1-rho is the
-                        %sum of inter-arrival time and response time
-                        %distribution
+                        %inter-arrival time+service time, with probability 1-rho is the
+                        %response time
                         rho = sum(UN(ist,:));
-                        Afull = (sum(QN(ist,:)))/rho; % from A = (1-rho)*0 + rho*Afull
-                        pidle_fullonarrival = 1 - (Afull)/(1+Afull);
-                        pidle_emptyonarrival = 1 - rho;
+                        AQ = sum(QN(ist,:)); % queue seen upon arrival with PASTA
+                        Afull = AQ/rho; % from AQ = (1-rho)*0 + rho*AQfull
+                        pfullonarrival = 1 - (Afull)/(1+Afull);
                         
-                        % remove from iat time spent in service
-                        DAS = mmap_scale(A,map_mean(A)-0*map_mean(S));
-                        tDA = sum(DAS{2},2);
-                        pieDA = map_pie(DAS);
+                        A = mmap_scale(A,map_mean(A)-map_mean(S));
                         
-                        DEP0ir = [DAS{1}, rho*tDA*pieRD, (1-rho)*tDA*pieS;
-                            0*tRD*pieDA,  RD{1}, 0*tRD*pieS;
-                            0*sum(S{2},2)*pieDA, 0*sum(S{2},2)*pieRD, S{1}];
+                        zAS = 0*tA*pieS;
+                        zSA = 0*tS*pieA;
+                        zA = 0*A{2};
                         
-                        DEP1ir = abs([0*A{2}, 0*tDA*pieRD, 0*tDA*pieS; ...
-                            pidle_fullonarrival*tRD*pieDA, 0*RD{2},  (1-pidle_fullonarrival)*tRD*pieS; ...
-                            pidle_emptyonarrival*tS*pieDA, 0*tS*pieRD, (1-pidle_emptyonarrival)*S{2}]);
+                        % this is only for single-class
+                        DEP0ir = [S{1}, sum(rho)*tS*pieA;
+                            zAS, A{1}];
+                        
+                        DEP1ir = [(1-sum(rho))*S{2}, zSA;
+                            tA*pieS, zA];
                         
                         DEP{ind,r} = map_normalize({DEP0ir,DEP1ir});
                         

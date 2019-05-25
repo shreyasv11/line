@@ -6,6 +6,7 @@ classdef EventType < Copyable
     
     % event major classification
     properties (Constant)
+        INIT = -1; % model is initialized (t=0)
         LOCAL = 0;
         ARV = 1; % job arrival
         DEP = 2; % job departure
@@ -19,13 +20,13 @@ classdef EventType < Copyable
             
             switch type
                 case EventType.ARV
-                    text = 'arv';
+                    text = 'ARV';
                 case EventType.DEP
-                    text = 'dep';
+                    text = 'DEP';
                 case EventType.PHASE
-                    text = 'phase';
+                    text = 'PHASE';
                 case EventType.READ
-                    text = 'read';
+                    text = 'READ';
             end
         end
     end

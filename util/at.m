@@ -1,4 +1,10 @@
 function [a,i]=at(A,r,i)
+% s=AT(c,t)
+% Returns element in position t of array t
+%
+% Copyright (c) 2012-2019, Imperial College London
+% All rights reserved.
+
 if ~iscell(A)
 a=A(r);
 elseif iscell(A)

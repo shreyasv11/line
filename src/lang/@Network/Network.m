@@ -282,7 +282,7 @@ classdef Network < Model
             
             M = self.getNumberOfNodes;
             K = self.getNumberOfClasses;
-            P = cellzeros(K,K,M,M);
+            P = cellzeros(K,K,M,M);            
         end
         
         function rtTypes = getRoutingStrategies(self)

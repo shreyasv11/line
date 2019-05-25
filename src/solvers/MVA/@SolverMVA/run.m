@@ -18,7 +18,7 @@ if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && ~self.model
     error('The exact method requires the model to have a product-form solution. This model does not have one. You can use Network.hasProductFormSolution() to check before running the solver.');
 end
 method = options.method;
-if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0
+if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0 % open single-class queueing system
     T0=tic;
     source_ist = qn.nodeToStation(qn.nodetype == NodeType.Source);
     queue_ist = qn.nodeToStation(qn.nodetype == NodeType.Queue);
@@ -47,7 +47,9 @@ if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0
             R = qsys_mmk(lambda,mu,k);
         case {'mg1', 'mgi1'}  % verified
             R = qsys_mg1(lambda,mu,cs);
-        case {'gigk', 'gigk.kingman_approx'} 
+        case {'gigk'}
+            R = qsys_gigk_approx(lambda,mu,ca,cs,k);
+        case {'gigk.kingman_approx'}
             R = qsys_gigk_approx_kingman(lambda,mu,ca,cs,k);
         case {'gig1', 'gig1.kingman'}  % verified
             R = qsys_gig1_ubnd_kingman(lambda,mu,ca,cs);
