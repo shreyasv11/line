@@ -33,7 +33,7 @@ if ~isfield(options,'samples')
     options.samples = 1e4; % default: this is the samples / measure, not the total number of simulation events, which can be much larger.
 elseif options.samples < 5e3
     if ~strcmpi(options.method,'jmva.ls')
-        warning('JMT requires at least 5000 samples for each metric, current value is %d. Setting the samples to 5000.', options.samples);
+        warning('JMT requires at least 5000 samples for each metric, the current value is %d. Starting the simulation with 5000 samples.', options.samples);
     end
     options.samples = 5e3;
 end

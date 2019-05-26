@@ -48,7 +48,12 @@ end
 % we compute all metrics anyway because CTMC has essentially
 % the same cost
 if isinf(options.timespan(1))
-    [QN,UN,RN,TN,CN,XN,Q,SS,SSq,Dfilt] = solver_ctmc_analysis(qn, options);
+    [QN,UN,RN,TN,CN,XN,Q,SS,SSq,Dfilt,~,~,qn] = solver_ctmc_analysis(qn, options);
+    % update initial state if this has been corrected by the state space
+    % generator
+    for isf=1:qn.nstateful
+        self.model.nodes{qn.statefulToNode(isf)}.setState(qn.state{isf});
+    end
     %qn.space = SS;
     self.result.infGen = Q;
     self.result.space = SS;

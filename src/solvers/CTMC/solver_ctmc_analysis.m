@@ -1,5 +1,5 @@
-function [QN,UN,RN,TN,CN,XN,InfGen,StateSpace,StateSpaceAggr,EventFiltration,runtime,fname] = solver_ctmc_analysis(qn, options)
-% [QN,UN,RN,TN,CN,XN,INFGEN,STATESPACE,STATESPACEAGGR,EVENTFILTRATION,RUNTIME,FNAME] = SOLVER_CTMC_ANALYSIS(QN, OPTIONS)
+function [QN,UN,RN,TN,CN,XN,InfGen,StateSpace,StateSpaceAggr,EventFiltration,runtime,fname,qnc] = solver_ctmc_analysis(qn, options)
+% [QN,UN,RN,TN,CN,XN,INFGEN,STATESPACE,STATESPACEAGGR,EVENTFILTRATION,RUNTIME,FNAME,qn] = SOLVER_CTMC_ANALYSIS(qn, OPTIONS)
 %
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
@@ -34,11 +34,25 @@ end
 
 [InfGen,StateSpace,StateSpaceAggr,EventFiltration,arvRates,depRates,qn] = solver_ctmc(qn, options); % qn is updated with the state space
 
+% if the initial state does not reflect the final state of the state
+% vectors, attempt to correct it
+for isf=1:qn.nstateful
+    if size(qn.state{isf},2) < size(qn.space{isf},2) 
+        row = matchrow(qn.space{isf}(:,end-length(qn.state{isf})+1:end),qn.state{isf});
+        if row > 0
+            qn.state{isf} = qn.space{isf}(row,:);
+        end
+    end
+end
+qnc = qn;
+
 if options.keep
     fname = tempname;
     save([fname,'.mat'],'InfGen','StateSpace','StateSpaceAggr','EventFiltration')
     fprintf(1,'CTMC infinitesimal generator and state space saved in: ');
     disp([fname, '.mat'])
+else
+    fname = '';
 end
 
 pi = ctmc_solve(InfGen, options);
@@ -89,7 +103,6 @@ XN(isnan(XN))=0;
 TN(isnan(TN))=0;
 
 runtime = toc(Tstart);
-
 %if options.verbose > 0
 %    fprintf(1,'CTMC analysis completed in %f sec\n',runtime);
 %end

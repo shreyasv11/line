@@ -1,4 +1,4 @@
-function sysStateAggr = sampleSysAggr(self, numSamples)
+function tranSysState = sampleSysAggr(self, numSamples)
 % TRANSYSSTATEAGGR = sampleSysAggr(NUMSAMPLES)
 options = self.getOptions;
 
@@ -10,20 +10,38 @@ switch options.method
     case {'default','serial'}
         options.samples = numSamples;
         options.force = true;
-        [~, tranSystemState] = self.run(options);
         qn = self.model.getStruct;
-        for ist=1:self.model.getNumberOfStations
-            isf = qn.stationToStateful(ist);
-            [~,nir]=State.toMarginal(qn,qn.stationToNode(ist),tranSystemState{1+isf});
-            tranSystemState{1+ist} = nir;
+        
+        [~, tranSystemState, tranSync] = self.run(options);
+        tranSysState = struct();
+        tranSysState.handle = self.model.getStatefulNodes';
+        tranSysState.t = tranSystemState{1};
+        tranSysState.state = {tranSystemState{2:end}};
+        tranSysState.event = tranSync;
+        event = tranSync;
+        
+        for isf=1:self.model.getNumberOfStatefulNodes
+            if size(tranSysState.state{isf},1) > numSamples
+                tranSysState.t = tranSystemState(1:numSamples);
+                tranSysState.state{isf} = tranSysState.state{isf}(1:numSamples,:);
+            end
+            [~,tranSysState.state{isf}] = State.toMarginal(qn,qn.statefulToNode(isf),tranSysState.state{isf});
         end
-        sysStateAggr = struct();
-        sysStateAggr.handle = self.model.stations';
-        sysStateAggr.t = tranSystemState{1};
-        sysStateAggr.state = {tranSystemState{2:end}};
-        sysStateAggr.isaggregate = true;   
+        
+        qn = self.model.getStruct;
+        tranSysState.event = {};
+        for e = 1:length(event)
+            for a=1:length(qn.sync{event(e)}.active)
+                tranSysState.event{end+1} = qn.sync{event(e)}.active{a};
+                tranSysState.event{end}.t = tranSysState.t(e);
+            end
+            for p=1:length(qn.sync{event(e)}.passive)
+                tranSysState.event{end+1} = qn.sync{event(e)}.passive{p};
+                tranSysState.event{end}.t = tranSysState.t(e);
+            end
+        end
+        tranSysState.isaggregate = false;
     otherwise
         error('sampleSys is not available in SolverSSA with the chosen method.');
 end
-sysStateAggr.t = [0; sysStateAggr.t(2:end)];
 end

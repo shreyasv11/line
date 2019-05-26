@@ -1,5 +1,5 @@
 function stationStateAggr = sampleAggr(self, node, numSamples)
-% TRANNODESTATEAGGR = SAMPLEAGGR(NODE, NUMSAMPLES)
+% SAMPLE = SAMPLEAGGR(NODE, NUMSAMPLES)
 if ~exist('node','var')
     error('sampleAggr requires to specify a station.');
 end
@@ -13,7 +13,7 @@ switch options.method
     case {'default','serial'}
         options.samples = numSamples;
         options.force = true;
-        [~, tranSystemState] = self.run(options);
+        [~, tranSystemState, event] = self.run(options);
         qn = self.model.getStruct;
         isf = self.model.getStatefulNodeIndex(node);
         [~,nir]=State.toMarginal(qn,qn.statefulToNode(isf),tranSystemState{1+isf});
@@ -21,6 +21,18 @@ switch options.method
         stationStateAggr.handle = node;
         stationStateAggr.t = tranSystemState{1};
         stationStateAggr.state = nir;
+        qn = self.model.getStruct;
+        stationStateAggr.event = {};
+        for e = 1:length(event)
+            for a=1:length(qn.sync{event(e)}.active)
+                stationStateAggr.event{end+1} = qn.sync{event(e)}.active{a};
+                stationStateAggr.event{end}.t = stationStateAggr.t(e);
+            end
+            for p=1:length(qn.sync{event(e)}.passive)
+                stationStateAggr.event{end+1} = qn.sync{event(e)}.passive{p};
+                stationStateAggr.event{end}.t = stationStateAggr.t(e);
+            end
+        end       
         stationStateAggr.isaggregate = true;
     otherwise
         error('sampleAggr is not available in SolverSSA with the chosen method.');

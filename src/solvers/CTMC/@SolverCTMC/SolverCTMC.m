@@ -74,6 +74,9 @@ classdef SolverCTMC < NetworkSolver
             
         end
         
+        tstate = sampleSys(self, numevents);
+        sampleAggr = sampleAggr(self, node, numSamples);
+        
     end
     
     methods (Static)
