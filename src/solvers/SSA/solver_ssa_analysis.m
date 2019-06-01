@@ -31,30 +31,30 @@ switch options.method
         for k=1:K
             refsf = qn.stationToStateful(qn.refstat(k));
             XN(k) = probSysState*arvRates(:,refsf,k);
-            for i=1:M
-                isf = qn.stationToStateful(i);
-                TN(i,k) = probSysState*depRates(:,isf,k);
-                QN(i,k) = probSysState*SSq(:,(i-1)*K+k);
-                switch sched{i}
+            for ist=1:M
+                isf = qn.stationToStateful(ist);
+                TN(ist,k) = probSysState*depRates(:,isf,k);
+                QN(ist,k) = probSysState*SSq(:,(ist-1)*K+k);
+                switch sched{ist}
                     case SchedStrategy.INF
-                        UN(i,k) = QN(i,k);
+                        UN(ist,k) = QN(ist,k);
                     otherwise
                         % we use Little's law, otherwise there are issues in
                         % estimating the fraction of time assigned to class k (to
                         % recheck)
-                        if ~isempty(PH{i,k})
-                            UN(i,k) = probSysState*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
+                        if ~isempty(PH{ist,k})
+                            UN(ist,k) = probSysState*arvRates(:,ist,k)*map_mean(PH{ist,k})/S(ist);
                         end
                 end
             end
         end
         
         for k=1:K
-            for i=1:M
-                if TN(i,k)>0
-                    RN(i,k) = QN(i,k)./TN(i,k);
+            for ist=1:M
+                if TN(ist,k)>0
+                    RN(ist,k) = QN(ist,k)./TN(ist,k);
                 else
-                    RN(i,k) = 0;
+                    RN(ist,k) = 0;
                 end
             end
             CN(k) = NK(k)./XN(k);
@@ -80,30 +80,30 @@ switch options.method
         for k=1:K
             refsf = qn.stationToStateful(qn.refstat(k));
             XN(k) = probSysState*arvRates(:,refsf,k);
-            for i=1:M
-                isf = qn.stationToStateful(i);
-                TN(i,k) = probSysState*depRates(:,isf,k);
-                QN(i,k) = probSysState*SSq(:,(i-1)*K+k);
-                switch sched{i}
+            for ist=1:M
+                isf = qn.stationToStateful(ist);
+                TN(ist,k) = probSysState*depRates(:,isf,k);
+                QN(ist,k) = probSysState*SSq(:,(ist-1)*K+k);
+                switch sched{ist}
                     case SchedStrategy.INF
-                        UN(i,k) = QN(i,k);
+                        UN(ist,k) = QN(ist,k);
                     otherwise
                         % we use Little's law, otherwise there are issues in
                         % estimating the fraction of time assigned to class k (to
                         % recheck)
-                        if ~isempty(PH{i,k})
-                            UN(i,k) = probSysState*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
+                        if ~isempty(PH{ist,k})
+                            UN(ist,k) = probSysState*arvRates(:,ist,k)*map_mean(PH{ist,k})/S(ist);
                         end
                 end
             end
         end
         
         for k=1:K
-            for i=1:M
-                if TN(i,k)>0
-                    RN(i,k) = QN(i,k)./TN(i,k);
+            for ist=1:M
+                if TN(ist,k)>0
+                    RN(ist,k) = QN(ist,k)./TN(ist,k);
                 else
-                    RN(i,k) = 0;
+                    RN(ist,k) = 0;
                 end
             end
             CN(k) = NK(k)./XN(k);

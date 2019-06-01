@@ -1,5 +1,5 @@
-function model=gallery_merl1
-model = Network('M/Erl/1');
+function [model,source,queue,sink,oclass]=gallery_me1
+model = Network('M/E/1');
 %% Block 1: nodes
 source = Source(model, 'mySource');
 queue = Queue(model, 'myQueue', SchedStrategy.FCFS);

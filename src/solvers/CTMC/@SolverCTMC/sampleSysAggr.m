@@ -45,6 +45,5 @@ for e = 1:length(event)
         tranSysState.event{end}.t = tranSysState.t(e);
     end
 end
-tranSysState.isaggregate = false;
-
+tranSysState.isaggregate = true;
 end

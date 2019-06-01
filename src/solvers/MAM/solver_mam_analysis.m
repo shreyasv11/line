@@ -9,25 +9,25 @@ K = qn.nclasses;    %number of classes
 
 Tstart = tic;
 
+config = struct();
+config.merge = 'super';
+%config.compress = 'mixture.order1';
+config.compress = 'none';
+%config.space_max = 128;
+
 switch options.method
-    %case 'srvscaling'
-    % service distributuion per class scaled by utilization used as
-    % departure process
-    %PH = qn.proc;
-    %[QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options);
-    case {'default', 'arvscaling', 'srvscaling'}
+    case 'dec.mmap'
+        % service distributuion per class scaled by utilization used as
+        % departure process
+        [QN,UN,RN,TN,CN,XN] = solver_mam(qn, options, config);
+    case {'default', 'dec.source', 'arvscaling'}
+        config.space_max = 128;
         % arrival process per chain rescaled by visits at each node
-        PH = qn.proc;
-        [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, PH, options);
-    case 'poisson'
+        [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, options, config);
+    case 'dec.poisson'
         % analyze the network with Poisson streams
-        POI = cell(M,K);
-        for i=1:M
-            for k=1:K
-                POI{i,k} = map_exponential(1/qn.rates(i,k));
-            end
-        end
-        [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, POI, options);
+        config.space_max = 1;
+        [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, options, config);
     otherwise
         error('Unknown method.');
 end
@@ -41,7 +41,7 @@ TN(isnan(TN))=0;
 
 runtime = toc(Tstart);
 
-%if options.verbose > 0
-%    fprintf(1,'MAM analysis completed in %f sec\n',runtime);
+%if options.verbose
+%    fprintf(1,'MAM analysis completed in %f sec.\n',runtime);
 %end
 end

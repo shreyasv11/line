@@ -5,6 +5,12 @@ function [pi,SSq,arvRates,depRates,tranSysState,tranSync]=solver_ssa(qn,options)
 % All rights reserved.
 
 % by default the jobs are all initialized in the first valid state
+
+if ~isfield(options,'seed')
+    options.seed = 23000;
+end
+Solver.resetRandomGeneratorSeed(options.seed+labindex-1);
+
 %% generate local state spaces
 nstations = qn.nstations;
 nstateful = qn.nstateful;
@@ -43,21 +49,8 @@ for ind=1:qn.nnodes
         if isinf(qn.nservers(ist))
             qn.nservers(ist) = sum(capacityc(ind,:));
         end
-    elseif qn.isstateful(ind) % generate state space of other stateful nodes that are not stations
-        isf = qn.nodeToStateful(ind);
-        ist = qn.nodeToStation(ind);
-        switch qn.nodetype(ind)
-            case NodeType.Cache
-                for r=1:qn.nclasses % restrict state space generation for immediate events
-                    if isnan(qn.varsparam{ind}.pref{r})
-                        capacityc(ind,r) =  0; %
-                    else
-                        capacityc(ind,r) =  1; %
-                    end
-                end
-            otherwise
-                capacityc(ind,:) =  1; %
-        end
+        qn.cap(ist,:) = sum(capacityc(ind,:));
+        qn.classcap(ist,:) = capacityc(ind,:);
     end
 end
 

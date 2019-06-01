@@ -11,7 +11,7 @@ spmd
     laboptions.samples = ceil(laboptions.samples / numlabs);
     laboptions.verbose = false;
     switch laboptions.method
-        case {'para','parallel'}
+        case {'para','parallel'}            
             [pi,SSq,arvRates,depRates] = solver_ssa(qnc, laboptions);
             qn.space = qnc.space;
         case {'para.hash','parallel.hash'}

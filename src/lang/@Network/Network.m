@@ -92,7 +92,7 @@ classdef Network < Model
     end
     
     % PUBLIC METHODS
-    methods
+    methods (Access=public)
         %Constructor
         function self = Network(modelName)
             % SELF = NETWORK(MODELNAME)
@@ -895,7 +895,12 @@ classdef Network < Model
                     for j=1:M
                         for s=1:K
                             if Pnodes((i-1)*K+r,(j-1)*K+s)>0
-                                fprintf('%s [%s] => %s [%s] : Pr=%f\n',node_names{i}, classnames{r}, node_names{j}, classnames{s},Pnodes((i-1)*K+r,(j-1)*K+s));
+                                if isa(self.nodes{i},'Cache')
+                                    pr = 'state-dependent';
+                                else
+                                    pr = num2str(Pnodes((i-1)*K+r,(j-1)*K+s),'%f');
+                                end
+                                fprintf('%s [%s] => %s [%s] : Pr=%s\n',node_names{i}, classnames{r}, node_names{j}, classnames{s}, pr);
                             end
                         end
                     end

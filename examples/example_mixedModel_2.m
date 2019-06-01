@@ -1,4 +1,4 @@
-if ~isoctave(), clearvars -except exampleName; end
+if ~isoctave(), clearvars -except exampleName testName; end
 % this is a difficult sparse LDMX model
 model = Network('model');
 
@@ -43,6 +43,7 @@ options.verbose=1;
 options.cutoff = 3;
 options.seed = 23000;
 %options.samples=2e4;
+optionssa = options; optionssa.cutoff = Inf;
 
 disp('This example shows the execution of the solver on a 2-class mixed model with 5 multi-server nodes.')
 % This part illustrates the execution of different solvers

@@ -65,9 +65,9 @@ state=model.getState();
 for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
+    [QNt_marg,UNt_marg,TNt_marg] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,2);
-    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
+    plot(QNt_marg{2,1}.t,QNt_marg{2,1}.metric,dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on first state with the same number of jobs');
@@ -88,9 +88,9 @@ node{2}.setStatePrior(prior);
 for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
+    [QNt_unif,UNt_unif,TNt_unif] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(3,1,3);
-    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
+    plot(QNt_unif{2,1}.t,QNt_unif{2,1}.metric,dashing{s}); hold all
 end
 title('Uniform prior on states with the same number of jobs');
 ylabel('QLen- station 2, class 1');

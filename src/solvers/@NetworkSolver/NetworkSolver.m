@@ -332,7 +332,7 @@ classdef NetworkSolver < Solver
             % Return joint state probability
             error('Line:FeatureNotSupportedBySolver','sampleSysAggr is not supported by this solver.');
         end
-        
+                
         function RD = getCdfRespT(self, R)
             % RD = GETCDFRESPT(R)
             
@@ -354,6 +354,7 @@ classdef NetworkSolver < Solver
             error('Line:FeatureNotSupportedBySolver','getTranCdfPassT is not supported by this solver.');
         end
     end
+    
     methods (Static)
         function solvers = getAllSolvers(model, options)
             % SOLVERS = GETALLSOLVERS(MODEL, OPTIONS)

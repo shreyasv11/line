@@ -1,4 +1,4 @@
-function [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, PH, options)
+function [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, options, config)
 % [Q,U,R,T,C,X] = SOLVER_MAM(QN, PH, OPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
@@ -8,6 +8,7 @@ global BuToolsVerbose;
 global BuToolsCheckInput;
 global BuToolsCheckPrecision;
 
+PH = qn.proc;
 %% generate local state spaces
 I = qn.nnodes;
 M = qn.nstations;
@@ -24,11 +25,12 @@ CN = zeros(1,K);
 XN = zeros(1,K);
 
 lambda = zeros(1,K);
+lambdas_inchain = {};
 for c=1:C
     inchain = find(qn.chains(c,:));
-    lambdas_inchain = qn.rates(qn.refstat(inchain(1)),inchain);
-    lambdas_inchain = lambdas_inchain(isfinite(lambdas_inchain));
-    lambda(inchain) = sum(lambdas_inchain);
+    lambdas_inchain{c} = qn.rates(qn.refstat(inchain(1)),inchain);
+    %lambdas_inchain{c} = lambdas_inchain{c}(isfinite(lambdas_inchain{c}));
+    lambda(inchain) = sum(lambdas_inchain{c}(isfinite(lambdas_inchain{c})));
 end
 
 if M>=2 && qn.nclosedjobs == 0
@@ -42,9 +44,11 @@ if M>=2 && qn.nclosedjobs == 0
     for ist=1:M
         switch qn.sched{ist}
             case SchedStrategy.EXT
-                % form a MMAP for the arrival process from all classes
-                if isnan(PH{ist,1}{1})
-                    PH{ist,1} = map_exponential(Inf); % no arrivals from this class
+                % assemble a MMAP for the arrival process from all classes
+                for k=1:K
+                    if isnan(PH{ist,k}{1})
+                        PH{ist,k} = map_exponential(Inf); % no arrivals from this class
+                    end
                 end
                 chainArrivalAtSource = cell(1,C);
                 for c=1:C %for each chain
@@ -56,16 +60,17 @@ if M>=2 && qn.nclosedjobs == 0
                         if isnan(PH{ist,k}{1})
                             PH{ist,k} = map_exponential(Inf); % no arrivals from this class
                         end
-                        chainArrivalAtSource{c} = mmap_super(chainArrivalAtSource{c},{PH{ist,k}{1},PH{ist,k}{2},PH{ist,k}{2}});
-                    end                    
+                        chainArrivalAtSource{c} = mmap_super_safe({chainArrivalAtSource{c},{PH{ist,k}{1},PH{ist,k}{2},PH{ist,k}{2}}}, config.space_max, 'default');
+                    end
                     if c == 1
                         aggrArrivalAtSource = chainArrivalAtSource{1};
                     else
-                        aggrArrivalAtSource = mmap_super(aggrArrivalAtSource,chainArrivalAtSource{c});
+                        aggrArrivalAtSource = mmap_super_safe({aggrArrivalAtSource,chainArrivalAtSource{c}},config.space_max, 'default');
                     end
+                    inchain = find(qn.chains(c,:));
+                    TN(ist,inchain) = lambdas_inchain{c};
+                    %TN(ist,isnan(lambdas_inchain{c}))=0;
                 end
-                TN(ist,:) = mmap_count_lambda(aggrArrivalAtSource);
-                TN(ist,isnan(TN(ist,:)))=0;
             case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.PS}
                 for k=1:K
                     % divide service time by number of servers and put
@@ -84,24 +89,26 @@ if M>=2 && qn.nclosedjobs == 0
             switch qn.sched{ist}
                 case SchedStrategy.INF
                     for k=1:K
-                        RN(ist,k) = map_mean(PH{ist,k});
-                        TN(ist,k) = TN(qn.refstat(k),k);
-                        QN(ist,k) = TN(qn.refstat(k),k).*RN(ist,k);
-                        UN(ist,k) = QN(ist,k);
+                        TN(ist,k) = lambda(k)*V(ist,k);
+                        UN(ist,k) = map_mean(PH{ist,k})*TN(ist,k);
+                        QN(ist,k) = TN(ist,k).*map_mean(PH{ist,k})*V(ist,k);
+                        RN(ist,k) = QN(ist,k)/TN(ist,k);
                     end
                 case SchedStrategy.PS
                     for k=1:K
-                        UN(ist,k) = map_mean(PH{ist,k})*TN(qn.refstat(k),k);
-                        RN(ist,k) = map_mean(PH{ist,k})/(1-UN(ist,k));
-                        TN(ist,k) = TN(qn.refstat(k),k)*V(ist,k);
-                        QN(ist,k) = TN(qn.refstat(k),k).*RN(ist,k);
+                        TN(ist,k) = lambda(k)*V(ist,k);
+                        UN(ist,k) = map_mean(PH{ist,k})*TN(ist,k);
+                    end
+                    sum(UN(ist,:))
+                    for k=1:K
+                        QN(ist,k) = UN(ist,k)/(1-sum(UN(ist,:)));
+                        RN(ist,k) = QN(ist,k)/TN(ist,k);
                     end
                 case {SchedStrategy.FCFS, SchedStrategy.HOL}
-                    Qret = {};
                     chainArrivalAtNode = cell(1,C);
                     Qret = {};
-                    rates = {};
-                    for c=1:C %for each chain                        
+                    rates = cell(M,C);
+                    for c=1:C %for each chain
                         rates{ist,c} = V(ist,:) .* map_lambda(chainArrivalAtSource{c});
                         inchain = find(qn.chains(c,:))';
                         chainArrivalAtNode{c} = mmap_mark(chainArrivalAtSource{c}, rates{ist,c}(inchain) / sum(rates{ist,c}(inchain)));
@@ -109,7 +116,7 @@ if M>=2 && qn.nclosedjobs == 0
                         if c == 1
                             aggrArrivalAtNode = chainArrivalAtNode{1};
                         else
-                            aggrArrivalAtNode = mmap_super(aggrArrivalAtNode,chainArrivalAtNode{c});
+                            aggrArrivalAtNode = mmap_super_safe({aggrArrivalAtNode, chainArrivalAtNode{c}}, config.space_max, 'default');
                         end
                     end
                     if any(qn.classprio ~= qn.classprio(1)) % if priorities are not identical
@@ -125,7 +132,7 @@ if M>=2 && qn.nclosedjobs == 0
                     QN(ist,:) = cell2mat(Qret);
                     for k=1:K
                         c = find(qn.chains(:,k));
-                        TN(ist,k) = rates{ist,c}(k); 
+                        TN(ist,k) = rates{ist,c}(k);
                         UN(ist,k) = TN(ist,k) * map_mean(PH{ist,k});
                         % add number of jobs at the surrogate delay server
                         QN(ist,k) = QN(ist,k) + TN(ist,k)*(map_mean(PH{ist,k})*qn.nservers(ist)) * (qn.nservers(ist)-1)/qn.nservers(ist);

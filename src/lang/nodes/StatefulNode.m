@@ -62,7 +62,7 @@ classdef StatefulNode < Node
         function self = resetStateSpace(self)
             % SELF = RESETSTATESPACE()
             self.space = {};
-        end
+        end                
         
     end
     

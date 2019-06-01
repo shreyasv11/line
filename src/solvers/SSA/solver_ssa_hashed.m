@@ -5,6 +5,12 @@ function [pi,SSq,arvRates,depRates]=solver_ssa_hashed(qn,options)
 % All rights reserved.
 
 % by default the jobs are all initialized in the first valid state
+
+if ~isfield(options,'seed')
+    options.seed = 23000;
+end
+Solver.resetRandomGeneratorSeed(options.seed+labindex-1);
+
 %% generate local state spaces
 nstations = qn.nstations;
 nstateful = qn.nstateful;
@@ -43,24 +49,10 @@ for ind=1:qn.nnodes
         if isinf(qn.nservers(ist))
             qn.nservers(ist) = sum(capacityc(ind,:));
         end
-    elseif qn.isstateful(ind) % generate state space of other stateful nodes that are not stations
-        isf = qn.nodeToStateful(ind);
-        ist = qn.nodeToStation(ind);
-        switch qn.nodetype(ind)
-            case NodeType.Cache
-                for r=1:qn.nclasses % restrict state space generation for immediate events
-                    if isnan(qn.varsparam{ind}.p{r})
-                        capacityc(ind,r) =  0; %
-                    else
-                        capacityc(ind,r) =  1; %
-                    end
-                end
-            otherwise
-                capacityc(ind,:) =  1; %
-        end
+        qn.cap(ist,:) = sum(capacityc(ind,:));
+        qn.classcap(ist,:) = capacityc(ind,:);
     end
 end
-
 %%
 if any(isinf(Np))
     Np(isinf(Np)) = 0;
@@ -167,13 +159,13 @@ while samples_collected < options.samples
                             end
                             % simulate also self-loops as we need to log them
                             %if any(new_state ~= state)
-                                if node_p{act} < local && ~csmask(class_a{act}, class_p{act}) && qn.nodetype(node_p{act})~=NodeType.Source && (rate_a{act}(ia) * prob_sync_p{act} >0)
-                                    error('Fatal error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a{act}, node_a{act}, node_p{act}, class_a{act}, class_p{act});
-                                end
-                                enabled_rates(ctr) = rate_a{act}(ia) * prob_sync_p{act};
-                                enabled_sync{ctr} = act;
-                                enabled_new_state{ctr} = new_state;
-                                ctr = ctr + 1;
+                            if node_p{act} < local && ~csmask(class_a{act}, class_p{act}) && qn.nodetype(node_p{act})~=NodeType.Source && (rate_a{act}(ia) * prob_sync_p{act} >0)
+                                error('Fatal error: state-dependent routing at node %d violates class switching mask (node %d -> node %d, class %d -> class %d).', node_a{act}, node_a{act}, node_p{act}, class_a{act}, class_p{act});
+                            end
+                            enabled_rates(ctr) = rate_a{act}(ia) * prob_sync_p{act};
+                            enabled_sync{ctr} = act;
+                            enabled_new_state{ctr} = new_state;
+                            ctr = ctr + 1;
                             %end
                         end
                     end

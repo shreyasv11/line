@@ -38,6 +38,7 @@ M = model.getNumberOfNodes;
 K = model.getNumberOfClasses;
 
 options = Solver.defaultOptions;
+options.seed = 23000;
 solver = SolverJMT(model,options);
 
 T = model.getAvgTputHandles();

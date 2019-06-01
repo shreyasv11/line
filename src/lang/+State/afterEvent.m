@@ -61,7 +61,7 @@ if qn.isstation(ind)
         case EventType.ARV %% passive
             % return if there is no space to accept the arrival
             [ni,nir] = State.toMarginalAggr(qn,ind,inspace,K,Ks,space_buf,space_srv,space_var);
-            % otherwise check scheduling strategy            
+            % otherwise check scheduling strategy
             pentry = pie{ist,class};
             outprob = [];
             outprob_k = [];
@@ -128,9 +128,10 @@ if qn.isstation(ind)
                         outprob_k = pentry(kentry)*ones(size(space_srv_k,1));
                 end
                 outspace_k = [space_buf_k, space_srv_k, space_var_k];
-                % remove states where new arrival violates capacity constraints
+                % remove states where new arrival violates capacity or cutoff constraints
                 en = classcap(ist,class)> nir(:,class) | capacity(ist)*ones(size(ni,1),1) > ni;
                 outspace = [outspace; outspace_k(en,:)];
+                
                 outrate = [outrate; -1*ones(size(outspace_k,1))]; % passive action, rate is unspecified
                 outprob = [outprob; outprob_k];
             end

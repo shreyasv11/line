@@ -27,6 +27,12 @@ classdef Distrib < Copyable
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
         end
         
+        function RATE = getRate(self)
+            % RATE = GETRATE()
+            % Get distribution rate
+            RATE = 1 / getMean(self);
+        end
+        
         function MEAN = getMean(self)
             % MEAN = GETMEAN()
             % Get distribution mean

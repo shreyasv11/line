@@ -39,7 +39,7 @@ fprintf(1,'This example illustrates the calculation of probabilities via normali
 options = Solver.defaultOptions;
 options.verbose=1;
 options.samples=2e4;
-
+options.seed = 23000;
 % set a custom initial state
 n=[ 0,0;
     1,0;
@@ -50,29 +50,26 @@ for i=1:M
 end
 state = model.getState;
 
-i=M;
 %% getProbAggr
-if 1
-    solver = SolverCTMC(model,options);
-    Pr = solver.getProbAggr(node{M});
-    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
-    Pmarg_ctmc = Pr
-    
-    solver = SolverNC(model,options);
-    Pr = solver.getProbAggr(node{M});
-    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
-    Pmarg_nc = Pr
-    
-    solver = SolverSSA(model,options);
-    Pr = solver.getProbAggr(node{M});
-    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
-    Pmarg_ssa = Pr
-    
-    solver = SolverJMT(model,options);
-    Pr = solver.getProbAggr(node{M});
-    fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
-    Pmarg_jmt = Pr
-end
+solver = SolverCTMC(model,options);
+Pr = solver.getProbAggr(node{M});
+fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
+Pmarga_ctmc = Pr
+
+solver = SolverNC(model,options);
+Pr = solver.getProbAggr(node{M});
+fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
+Pmarga_nc = Pr
+
+solver = SolverSSA(model,options);
+Pr = solver.getProbAggr(node{M});
+fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
+Pmarga_ssa = Pr
+
+solver = SolverJMT(model,options);
+Pr = solver.getProbAggr(node{M});
+fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),Pr);
+Pmarga_jmt = Pr
 
 %% getProb
 solver = SolverCTMC(model,options);
@@ -90,43 +87,37 @@ fprintf(1,'Station %d is in state %s with probability %d\n',i,mat2str(state{i}),
 Pmarg_ssa = Pr
 
 %% getProbSysAggr
-if 1
-    i=M;
-    solver = SolverCTMC(model,options);
-    Pr = solver.getProbSysAggr();
-    Pjoint_ctmc = Pr
-    
-    solver = SolverNC(model,options);
-    Pr = solver.getProbSysAggr();
-    Pjoint_nc = Pr
-    
-    solver = SolverSSA(model,options);
-    Pr = solver.getProbSysAggr();
-    Pjoint_ssa = Pr
-    
-    solver = SolverJMT(model,options);
-    Pr = solver.getProbSysAggr();
-    Pjoint_jmt = Pr
-end
+solver = SolverCTMC(model,options);
+Pr = solver.getProbSysAggr();
+Pjointa_ctmc = Pr
+
+solver = SolverNC(model,options);
+Pr = solver.getProbSysAggr();
+Pjointa_nc = Pr
+
+solver = SolverSSA(model,options);
+Pr = solver.getProbSysAggr();
+Pjointa_ssa = Pr
+
+solver = SolverJMT(model,options);
+Pr = solver.getProbSysAggr();
+Pjointa_jmt = Pr
 
 %% getProbSys
-if 1
-    i=M;
-    solver = SolverCTMC(model,options);
-    Pr = solver.getProbSys();
-    Pjoint_ctmc = Pr
-    
-    % solver = SolverNC(model,options);
-    % Pr = solver.getProbSys();
-    % Pjoint_nc = Pr
-    
-    solver = SolverSSA(model,options);
-    Pr = solver.getProbSys();
-    Pjoint_ssa = Pr
-    
-    % options.samples = 3e5;
-    % solver = SolverJMT(model,options);
-    % Pr = solver.getProbSys();
-    % Pjoint_jmt = Pr
-    
-end
+solver = SolverCTMC(model,options);
+Pr = solver.getProbSys();
+Pjoint_ctmc = Pr
+
+% solver = SolverNC(model,options);
+% Pr = solver.getProbSys();
+% Pjoint_nc = Pr
+
+solver = SolverSSA(model,options);
+Pr = solver.getProbSys();
+Pjoint_ssa = Pr
+
+% options.samples = 3e5;
+% solver = SolverJMT(model,options);
+% Pr = solver.getProbSys();
+% Pjoint_jmt = Pr
+

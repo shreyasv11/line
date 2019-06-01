@@ -40,7 +40,7 @@ switch options.method
                 tranSysState.event{end}.t = tranSysState.t(e);
             end
         end
-        tranSysState.isaggregate = false;
+        tranSysState.isaggregate = true;
     otherwise
         error('sampleSys is not available in SolverSSA with the chosen method.');
 end

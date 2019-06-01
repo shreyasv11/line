@@ -1,4 +1,3 @@
-clear;
 model = Network('model');
 
 source = Source(model,'Source');

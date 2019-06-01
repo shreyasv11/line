@@ -48,6 +48,5 @@ end
 if ~isempty(self.qn) %&& isprop(self.qn,'mu')
     self.qn.setCoxService(mu, phi, phases);
 end
-
 [ph, phases] = refreshPHService(self);
 end

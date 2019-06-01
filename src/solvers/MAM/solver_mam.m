@@ -1,4 +1,4 @@
-function [QN,UN,RN,TN,CN,XN] = solver_mam(qn, PH, options)
+function [QN,UN,RN,TN,CN,XN] = solver_mam(qn, options, config)
 %[Q,U,R,T,C,X] = SOLVER_MAM(QN, PH, OPTIONS)
 
 %Copyright (c) 2012-2019, Imperial College London
@@ -7,7 +7,8 @@ global SCVmam
 global BuToolsVerbose;
 global BuToolsCheckInput;
 global BuToolsCheckPrecision;
-%generate local state spaces
+
+PH = qn.proc;
 I = qn.nnodes;
 M = qn.nstations;
 K = qn.nclasses;
@@ -73,12 +74,7 @@ if M>=2 && qn.nclosedjobs == 0
                 end
             end
         end
-        
-        config = struct();
-        config.merge = 'super';
-        %config.compress = 'mixture.order1';
-        config.compress = 'none';
-        config.space_max = 128;
+                
         
         ARV = solver_mam_estflows(qn, DEP, config);
         
@@ -173,6 +169,6 @@ else
     warning('This model is not supported by SolverMAM yet. Returning with no result.');
 end
 if options.verbose
-    fprintf(1,'MAM parametric decomposition completed in %d iterations.\n',it);
+    fprintf(1,'MAM parametric dec.sition completed in %d iterations.\n',it);
 end
 end

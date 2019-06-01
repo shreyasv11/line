@@ -29,6 +29,7 @@ fprintf(1,'This example shows how to update a model parameters and its solution.
 %pause
 options = Solver.defaultOptions;
 options.verbose = 0;
+options.seed = 23000;
 solver = SolverCTMC(model,options);
 
 I=10;

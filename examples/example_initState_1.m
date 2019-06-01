@@ -60,9 +60,9 @@ state=model.getState();
 for s=1:length(solver)
     solver{s}.reset();
     fprintf(1,'SOLVER: %s\n',solver{s}.getName());
-    [QNt,UNt,TNt] = solver{s}.getTranAvg(Qt,Ut,Tt);
+    [QNt_marg,UNt_marg,TNt_marg] = solver{s}.getTranAvg(Qt,Ut,Tt);
     subplot(1,2,2);
-    plot(QNt{2,1}.t,QNt{2,1}.metric,dashing{s}); hold all
+    plot(QNt_marg{2,1}.t,QNt_marg{2,1}.metric,dashing{s}); hold all
     solver{s}.reset();
 end
 title('Prior on state with 3 jobs in station 2');

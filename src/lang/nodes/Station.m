@@ -165,7 +165,7 @@ classdef Station < StatefulNode
                     phi{r}  = NaN;
                 elseif self.server.serviceProcess{r}{end}.isImmediate()
                     ph{r}  = {[Distrib.InfRate],[1]};
-                    mu{r}  = [Inf];
+                    mu{r}  = [Distrib.InfRate];
                     phi{r}  = [1];
                 elseif ~self.server.serviceProcess{r}{end}.isDisabled()
                     switch class(self.server.serviceProcess{r}{end})
@@ -186,5 +186,6 @@ classdef Station < StatefulNode
                 end
             end
         end
+                
     end
 end

@@ -46,6 +46,10 @@ classdef Source < Station
             
             sections = {self.input, self.server, self.output};
         end
+        
+        function distrib = getArrivalProcess(self, oclass)
+            distrib = self.arrivalProcess{oclass};
+        end
     end
     
 end

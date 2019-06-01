@@ -3,7 +3,8 @@ figure;
 label = {};
 nJobs = [1,4,8];
 plotColors = {'k';'b--';'r-.'};
-for N = nJobs
+for ni = 1:length(nJobs)
+    N = nJobs(ni);
     model = Network('model');
     
     node{1} = Delay(model, 'Delay');
@@ -27,15 +28,15 @@ for N = nJobs
     options = SolverFluid.defaultOptions;
     options.iter_max = 100;
     solver = SolverFluid(model, options);
-    AvgRespT = solver.getAvgRespT
+    AvgRespT{ni} = solver.getAvgRespT
     FC = solver.getCdfRespT();
     %%
     for c=1:model.getNumberOfClasses
         for i=1:model.getNumberOfStations
-            AvgRespTfromCDF(i,c) = diff(FC{i,c}(:,1))'*FC{i,c}(2:end,2); %mean
-            PowerMoment2_R(i,c) = diff(FC{i,c}(:,1))'*(FC{i,c}(2:end,2).^2);
-            Variance_R(i,c) = PowerMoment2_R(i,c)-AvgRespTfromCDF(i,c)^2; %variance
-            SqCoeffOfVariationRespTfromCDF(i,c) = (Variance_R(i,c))/AvgRespTfromCDF(i,c)^2; %scv
+            AvgRespTfromCDF{ni}(i,c) = diff(FC{i,c}(:,1))'*FC{i,c}(2:end,2); %mean
+            PowerMoment2_R{ni}(i,c) = diff(FC{i,c}(:,1))'*(FC{i,c}(2:end,2).^2);
+            Variance_R{ni}(i,c) = PowerMoment2_R{ni}(i,c)-AvgRespTfromCDF{ni}(i,c)^2; %variance
+            SqCoeffOfVariationRespTfromCDF{ni}(i,c) = (Variance_R{ni}(i,c))/AvgRespTfromCDF{ni}(i,c)^2; %scv
         end
     end
     for i=2
@@ -43,8 +44,8 @@ for N = nJobs
             semilogx(FC{i,c}(:,2),FC{i,c}(:,1),plotColors{find(N==nJobs)}); hold all;
         end
     end
-    AvgRespTfromCDF
-    %SqCoeffOfVariationRespTfromCDF
+    AvgRespTfromCDF{ni}
+    %SqCoeffOfVariationRespTfromCDF{ni}
     label{end+1} = ['N=', num2str(N),' jobs'];
 end
 legend(label,'Location','SouthEast');

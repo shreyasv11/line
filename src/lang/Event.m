@@ -1,11 +1,11 @@
-classdef Event < Copyable
+classdef Event 
     % A generic event occurring in a model.
+    %
+    % Object of the Event class are not passed by handle.
     %
     % Copyright (c) 2012-2019, Imperial College London
     % All rights reserved.
-    
-    % event major classification
-    
+        
     properties
         node;
         event;

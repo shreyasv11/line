@@ -69,7 +69,7 @@
 %  .. [2] Horváth, Gábor, and Hiroyuki Okamura. A Fast EM
 %         Algorithm for Fitting Marked Markovian Arrival 
 %         Processes with a New Special Structure. Computer
-%         Performance Engineering. Springer Berlin 
+%         Performance Engineering. Springer Bein 
 %         Heidelberg, 2013. 119-133.
 
 function [D0, D1, logli] = MAPFromTrace (trace, orders, maxIter, stopCond, initial, result)
@@ -154,12 +154,12 @@ function [D0, D1, logli] = MAPFromTrace (trace, orders, maxIter, stopCond, initi
         return;
     end
     
-    function X = generatorFromErlangs (erll, erlo)
-        X = zeros (sum(erlo));
+    function X = generatorFromErlangs (el, eo)
+        X = zeros (sum(eo));
         xx = 1;
-        for ii=1:length(erll)
-            X(xx:xx+erlo(ii)-1, xx:xx+erlo(ii)-1) = erll(ii)*(diag(ones(1,erlo(ii)-1),1)-diag(ones(1,erlo(ii))));
-            xx = xx + erlo(ii);
+        for ii=1:length(el)
+            X(xx:xx+eo(ii)-1, xx:xx+eo(ii)-1) = el(ii)*(diag(ones(1,eo(ii)-1),1)-diag(ones(1,eo(ii))));
+            xx = xx + eo(ii);
         end
     end
     

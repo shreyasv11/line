@@ -1,4 +1,4 @@
-if ~isoctave(), clearvars -except exampleName; end 
+if ~isoctave(), clearvars -except exampleName; end
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
@@ -21,7 +21,9 @@ P{2,2} = circul(2);
 % model
 model.link(P);
 RDfluid = SolverFluid(model).getCdfRespT()
-jmtoptions = SolverJMT.defaultOptions; jmtoptions.samples = 1e5;
+jmtoptions = SolverJMT.defaultOptions; 
+jmtoptions.samples = 1e5;
+jmtoptions.seed = 23000;
 RDsim = SolverJMT(model, jmtoptions).getTranCdfRespT();
 
 %%
@@ -40,4 +42,12 @@ for i=1:model.getNumberOfStations
     semilogx(RDfluid{i,2}(:,2),1-RDfluid{i,2}(:,1),'--')
     legend('jmt-transient','fluid-steady','Location','Best');
     title(['Tail: Node ',num2str(i),', Class ',num2str(2),', ',node{i}.serviceProcess{2}.name, ' service']);
+end
+
+%%
+for i=1:model.getNumberOfStations
+    for c=1:model.getNumberOfClasses
+        AvgRespTfromCDFfluid(i,c) = diff(RDfluid{i,c}(:,1))'*RDfluid{i,c}(2:end,2);
+        AvgRespTfromCDFsim(i,c) = diff(RDsim{i,c}(:,1))'*RDsim{i,c}(2:end,2);
+    end
 end

@@ -24,6 +24,6 @@ qn.space = qn.state; % SSA progressively grows this cell array into the simulate
 
 [Q,U,R,T,C,X,~, tranSysState, tranSync] = solver_ssa_analysis(qn, options);
 
-runtime=toc(T0);
+runtime = toc(T0);
 self.setAvgResults(Q,U,R,T,C,X,runtime);
 end

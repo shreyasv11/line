@@ -1,4 +1,3 @@
-clear;
 model = Network('model');
 
 node{1} = Delay(model, 'Delay');
@@ -81,5 +80,5 @@ Pr_ctmc = solver.getProbSysAggr()
 solver = SolverNC(model,options);
 Pr_nc = solver.getProbSysAggr()
 
-solver = SolverJMT(model,'samples',1e5);
+solver = SolverJMT(model,'samples',1e5,'seed',532733);
 Pr_jmt = solver.getProbSysAggr()
