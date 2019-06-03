@@ -37,7 +37,7 @@ modelCopy.linkAndLog(Plinked, isNodeLogged, logpath);
 options = self.getOptions; options.samples = numEvents;
 solverjmt = SolverJMT(modelCopy, options);
 solverjmt.maxEvents = numEvents;
-solverjmt.getAvg(); % log data
+solverjmt.run(); % log data
 logData = SolverJMT.parseLogs(modelCopy, isNodeLogged, Metric.QLen);
 
 % from here convert from nodes in logData to stations
@@ -90,7 +90,14 @@ tranSysStateAggr = cell(1,1+self.model.getNumberOfStations);
 
 tranSysStateAggr{1} = []; % timestamps
 for i=1:self.model.getNumberOfStations % stations
-    tranSysStateAggr{1} = union(tranSysStateAggr{1}, statStateAggr{i}.t);
+    if isempty(tranSysStateAggr{1})
+        tranSysStateAggr{1} = statStateAggr{i}.t;
+    else
+        tumax = min(max(tranSysStateAggr{1}),max(statStateAggr{i}.t));
+        tranSysStateAggr{1} = union(tranSysStateAggr{1}, statStateAggr{i}.t);
+        tranSysStateAggr{1} = tranSysStateAggr{1}(tranSysStateAggr{1}<=tumax);
+        tranSysStateAggr{1} = union(tranSysStateAggr{1}, statStateAggr{i}.t);
+    end
 end
 
 for i=1:self.model.getNumberOfStations % stations

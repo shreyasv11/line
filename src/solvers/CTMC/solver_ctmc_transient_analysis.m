@@ -69,32 +69,38 @@ UNt = cell(M,K);
 %XNt = cell(1,K);
 TNt = cell(M,K);
 
+if t(1) == 0
+    t(1) = 1e-8;
+end
 for k=1:K
     %    XNt(k) = pi*arvRates(:,qn.refstat(k),k);
-    for i=1:M
-        TNt{i,k} = pit*depRates(:,i,k);
-        QNt{i,k} = pit*StateSpaceAggr(:,(i-1)*K+k);
+    for i=1:M        
+        occupancy_t = cumsum(pit.*[0;diff(t)],1)./t;        
+        TNt{i,k} = occupancy_t*depRates(:,i,k);
+        qlenAt_t = pit*StateSpaceAggr(:,(i-1)*K+k);
+        QNt{i,k} = cumsum(qlenAt_t.*[0;diff(t)])./t;
         switch sched{i}
             case SchedStrategy.INF
                 UNt{i,k} = QNt{i,k};
             case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.RAND, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF}
                 if ~isempty(PH{i,k})
-                    UNt{i,k} = pit*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
+                    UNt{i,k} = occupancy_t*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
                 end
             case SchedStrategy.PS
-                nik = S(i)* StateSpaceAggr(:,(i-1)*K+k) ./ sum(StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);
-                nik(isnan(nik))=0;
-                UNt{i,k} = pit*nik;
+                uik = min(StateSpaceAggr(:,(i-1)*K+k),S(i)) .* StateSpaceAggr(:,(i-1)*K+k) ./ sum(StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);
+                uik(isnan(uik))=0;
+                utilAt_t = pit * uik / S(i);
+                UNt{i,k} = cumsum(utilAt_t.*[0;diff(t)])./t;
             case SchedStrategy.DPS
                 w = qn.schedparam(i,:);
                 nik = S(i) * w(k) * StateSpaceAggr(:,(i-1)*K+k) ./ sum(repmat(w,size(StateSpaceAggr,1),1).*StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);
                 nik(isnan(nik))=0;
-                UNt{i,k} = pit*nik;
+                UNt{i,k} = occupancy_t*nik;
             otherwise
                 if ~isempty(PH{i,k})
                     ind = qn.stationToNode(i);
                     warning('Transient utilization not support yet for station %s, returning an approximation.',qn.nodenames{ind});
-                    UNt{i,k} = pit*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
+                    UNt{i,k} = occupancy_t*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
                 end
         end
     end

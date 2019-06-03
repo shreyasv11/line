@@ -90,29 +90,63 @@ switch options.method
                 stateu = {};
                 for it=1:options.iter_max
                     self.options.seed = initSeed + it -1;
-                    TranSysStateAggr{it} = self.sampleSysAggr;
-                    tu = union(tu, TranSysStateAggr{it}.t);
+                    TranSysStateAggr{it} = self.sampleSysAggr();
+                    if isempty(tu)
+                        tu = TranSysStateAggr{it}.t;
+                    else
+                        % we need to limit the time series at the minimum
+                        % as otherwise the predictor of the state cannot
+                        % take into account constraints that exist on the
+                        % state space
+                        tumax = min(max(tu),max(TranSysStateAggr{it}.t));
+                        tu = union(tu, TranSysStateAggr{it}.t);
+                        tu = tu(tu<=tumax); 
+                    end
                 end
-                QNt = cellzeros(qn.nstations,qn.nclasses,length(tu),2);
+                QNt = cellzeros(qn.nstations, qn.nclasses, length(tu), 2);
+                UNt = cellzeros(qn.nstations, qn.nclasses, length(tu), 2);
+                TNt = cellzeros(qn.nstations, qn.nclasses, length(tu), 2);
                 M = qn.nstations;
                 K = qn.nclasses;
                 for j=1:M
                     for r=1:K
                         QNt{j,r}(:,2) = tu;
+                        UNt{j,r}(:,2) = tu;
+                        TNt{j,r}(:,2) = tu;
                         for it=1:options.iter_max
-                            QNt{j,r}(:,1) = QNt{j,r}(:,1) + (1/options.iter_max) * floor(interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}(:,r), tu));
+                            qlenAt_t = interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}(:,r), tu,'previous');
+                            avgQlenAt_t = cumsum(qlenAt_t .*[0;diff(tu)])./tu; 
+                            avgQlenAt_t(isnan(avgQlenAt_t))=0;
+                            QNt{j,r}(:,1) = QNt{j,r}(:,1) + (1/options.iter_max) * avgQlenAt_t;
                         end
+                        for it=1:options.iter_max
+                            if isfinite(qn.nservers(j))
+                                occupancyAt_t = interp1(TranSysStateAggr{it}.t, min(TranSysStateAggr{it}.state{j}(:,r),qn.nservers(j)), tu,'previous')/qn.nservers(j);
+                            else % if delay we use queue-length
+                                occupancyAt_t = interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}(:,r), tu,'previous');
+                            end
+                            avgOccupancyAt_t = cumsum(occupancyAt_t .*[0;diff(tu)])./tu; 
+                            avgOccupancyAt_t(isnan(avgOccupancyAt_t))=0;
+                             UNt{j,r}(:,1) = UNt{j,r}(:,1) + (1/options.iter_max) * avgOccupancyAt_t;
+                        end
+                        for it=1:options.iter_max
+                            departures = [0;diff(TranSysStateAggr{it}.state{j}(:,r))];
+                            departures(departures>0) = 0;
+                            departuresAt_t = abs(interp1(TranSysStateAggr{it}.t, cumsum(departures), tu, 'previous'));
+                            avgDeparturesAt_t = departuresAt_t./tu;
+                            avgDeparturesAt_t(isnan(avgDeparturesAt_t))=0;
+                            TNt{j,r}(:,1) = TNt{j,r}(:,1) + (1/options.iter_max) * avgDeparturesAt_t;
+                        end
+                        %TNt{j,r}(:,1) = UNt{j,r}(:,1) * qn.rates(j,r);                        
                     end
                 end
-                Trun = toc(T0);
-                UNt = [];
+                Trun = toc(T0);                
                 RNt = [];
-                TNt = [];
                 CNt = [];
                 XNt = [];
                 self.setTranAvgResults(QNt,UNt,RNt,TNt,CNt,XNt,Trun);
-                self.result.Tran.Avg.U = cell(M,K);
-                self.result.Tran.Avg.T = cell(M,K);
+                self.result.Tran.Avg.U = UNt;
+                self.result.Tran.Avg.T = TNt;
                 self.result.Tran.Avg.Q = QNt;
             end
             self.options.seed = initSeed;

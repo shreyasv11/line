@@ -119,7 +119,7 @@ if M>=2 && qn.nclosedjobs == 0
                             aggrArrivalAtNode = mmap_super_safe({aggrArrivalAtNode, chainArrivalAtNode{c}}, config.space_max, 'default');
                         end
                     end
-                    if any(qn.classprio ~= qn.classprio(1)) % if priorities are not identical
+                    if strcmp(qn.sched{ist},SchedStrategy.HOL) && any(qn.classprio ~= qn.classprio(1)) % if priorities are not identical
                         [uK,iK] = unique(qn.classprio);
                         if length(uK) == length(qn.classprio) % if all priorities are different
                             [Qret{iK}] = MMAPPH1NPPR({aggrArrivalAtNode{[1;2+iK]}}, {pie{ist,iK}}, {D0{ist,iK}}, 'ncMoms', 1);

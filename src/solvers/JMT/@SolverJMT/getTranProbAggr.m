@@ -14,7 +14,7 @@ if isfield(options,'timespan')  && isfinite(options.timespan(2))
     end
     for j=1:length(TranSysStateAggr{it}.state)
         for it=1:options.iter_max
-            TranSysStateAggr{it}.state{j} = floor(interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}, tu));
+            TranSysStateAggr{it}.state{j} = interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}, tu, 'previous');
             
         end
     end

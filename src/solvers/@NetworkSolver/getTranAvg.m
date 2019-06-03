@@ -24,7 +24,6 @@ TNclass_t={};
 
 qn = self.model.getStruct;
 minrate = min(qn.rates(isfinite(qn.rates)));
-%if isempty(self.result) || isa(self.result.Avg.Q,double) || (isfield(self.options,'force') && self.options.force)
 if ~self.hasTranResults()
     if isinf(self.options.timespan(1)) && isinf(self.options.timespan(2))
         self.options.timespan = [0,30/minrate];
@@ -33,19 +32,13 @@ if ~self.hasTranResults()
     if isinf(self.options.timespan(1))
         warning('Start time of transient analysis unspecified, setting the timespan option to [0,%d].',self.options.timespan(2));
         self.options.timespan(1) = 0;
-        %error('Please specify the transient range using the timespan option, e.g., SolverCTMC(model,''timespan'',[0,T]).getTranAvg()');
     end
     if isinf(self.options.timespan(2))
         self.options.timespan(2) = 30/minrate;
         warning('End time of transient analysis unspecified, setting the timespan option to [%d,%d]. Use %s(model,''timespan'',[0,T]) to customize.',self.options.timespan(1),self.options.timespan(2),class(self));
-        %error('Please specify the transient range using the timespan option, e.g., SolverCTMC(model,''timespan'',[0,T]).getTranAvg()');
     end
     self.run();
 end
-%    if isempty(self.result)
-%        return
-%    end
-%end
 
 M = self.model.getNumberOfStations();
 K = self.model.getNumberOfClasses();

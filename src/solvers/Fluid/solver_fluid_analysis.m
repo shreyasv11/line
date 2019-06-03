@@ -107,7 +107,7 @@ switch options.method
                                 for k=1:K
                                     if rates(i,k)>0
                                         %[cx] = APH.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
-                                        [cx,muik,phiik] = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));                                        
+                                        [cx,muik,phiik] = Coxian.fitMeanAndSCV(1/rates(i,k), SCV(i,k));
                                         %[~,muik,phiik] = Coxian.fitMeanAndSCV(map_mean(PH{i,k}), 1); % replace with an exponential
                                         % we now handle the case that due to either numerical issues
                                         % or different relationship between scv and mean the size of
@@ -143,7 +143,7 @@ switch options.method
                         options.init_sol = solver_fluid_initsol(qn);
                     end
                 end
-                qn.phases = phases;               
+                qn.phases = phases;
                 [Qfull, Ufull, ~, Tfull, ymean, ~, ~, ~, ~, ~, inner_iters, inner_runtime] = solver_fluid_analysis_inner(qn, options);
                 phases_last = phases;
                 outer_iters = outer_iters + inner_iters;
@@ -153,11 +153,22 @@ switch options.method
             % iterative step. We now have converged in the substitution of the
             % model parameters and we rerun everything from the true initial point
             % so that we get the correct transient.
-            options.init_sol = solver_fluid_initsol(qn, options);            
+            options.init_sol = solver_fluid_initsol(qn, options);
             [Qfull, Ufull, Rfull, Tfull, ymean, Qfull_t, Ufull_t, Tfull_t, ~, t] = solver_fluid_analysis_inner(qn, options);
         end
     case 'statedep'
         % do nothing, a single iteration is sufficient
+end
+
+if t(1) == 0
+    t(1) = 1e-8;
+end
+
+for i=1:M
+    for k=1:K
+        Qfull_t{i,k} = cumsum(Qfull_t{i,k}.*[0;diff(t)])./t;
+        Ufull_t{i,k} = cumsum(Ufull_t{i,k}.*[0;diff(t)])./t;        
+    end
 end
 
 Ufull0 = Ufull;
@@ -165,16 +176,18 @@ for i=1:M
     sd = find(Qfull(i,:)>0);
     Ufull(i,Qfull(i,:)==0)=0;
     switch qn.sched{i}
-        case SchedStrategy.FCFS
-            for k=sd
-                % correct for the real rates, instead of the diffusion
-                % approximation rates
-                Ufull(i,k) = min([1,Qfull(i,k)/S(i),sum(Ufull0(i,sd)) * (Tfull(i,k)./rates0(i,k))/sum(Tfull(i,sd)./rates0(i,sd))]);
-            end
         case SchedStrategy.INF
             for k=sd
                 Ufull(i,k) = Qfull(i,k);
                 Ufull_t{i,k} = Qfull_t{i,k};
+                Tfull_t{i,k}  = Ufull_t{i,k}*qn.rates(i,k);
+            end
+        otherwise
+            for k=sd
+                % correct for the real rates, instead of the diffusion
+                % approximation rates
+                Ufull(i,k) = min([1,Qfull(i,k)/S(i),sum(Ufull0(i,sd)) * (Tfull(i,k)./rates0(i,k))/sum(Tfull(i,sd)./rates0(i,sd))]);
+                Tfull_t{i,k}  = Ufull_t{i,k}*qn.rates(i,k)*qn.nservers(i);
             end
     end
 end
@@ -185,7 +198,9 @@ for i=1:M
     Rfull(i,Qfull(i,:)==0)=0;
     for k=sd
         switch qn.sched{i}
-            case SchedStrategy.FCFS
+            case SchedStrategy.INF
+                % no-op
+            otherwise
                 %mu = rates0(i,k);
                 %lambda = Tfull(i,k);
                 %rho = lambda/mu;
