@@ -75,10 +75,12 @@ end
 for k=1:K
     %    XNt(k) = pi*arvRates(:,qn.refstat(k),k);
     for i=1:M        
-        occupancy_t = cumsum(pit.*[0;diff(t)],1)./t;        
+        %occupancy_t = cumsum(pit.*[0;diff(t)],1)./t;        
+        occupancy_t = pit;
         TNt{i,k} = occupancy_t*depRates(:,i,k);
         qlenAt_t = pit*StateSpaceAggr(:,(i-1)*K+k);
-        QNt{i,k} = cumsum(qlenAt_t.*[0;diff(t)])./t;
+        %QNt{i,k} = cumsum(qlenAt_t.*[0;diff(t)])./t;
+        QNt{i,k} = qlenAt_t;
         switch sched{i}
             case SchedStrategy.INF
                 UNt{i,k} = QNt{i,k};
@@ -90,7 +92,8 @@ for k=1:K
                 uik = min(StateSpaceAggr(:,(i-1)*K+k),S(i)) .* StateSpaceAggr(:,(i-1)*K+k) ./ sum(StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);
                 uik(isnan(uik))=0;
                 utilAt_t = pit * uik / S(i);
-                UNt{i,k} = cumsum(utilAt_t.*[0;diff(t)])./t;
+                %UNt{i,k} = cumsum(utilAt_t.*[0;diff(t)])./t;
+                UNt{i,k} = utilAt_t;
             case SchedStrategy.DPS
                 w = qn.schedparam(i,:);
                 nik = S(i) * w(k) * StateSpaceAggr(:,(i-1)*K+k) ./ sum(repmat(w,size(StateSpaceAggr,1),1).*StateSpaceAggr(:,((i-1)*K+1):(i*K)),2);

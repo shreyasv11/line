@@ -166,8 +166,8 @@ end
 
 for i=1:M
     for k=1:K
-        Qfull_t{i,k} = cumsum(Qfull_t{i,k}.*[0;diff(t)])./t;
-        Ufull_t{i,k} = cumsum(Ufull_t{i,k}.*[0;diff(t)])./t;        
+        %Qfull_t{i,k} = cumsum(Qfull_t{i,k}.*[0;diff(t)])./t;
+        %Ufull_t{i,k} = cumsum(Ufull_t{i,k}.*[0;diff(t)])./t;        
     end
 end
 

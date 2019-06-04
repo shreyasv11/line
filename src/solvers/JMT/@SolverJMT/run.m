@@ -100,7 +100,7 @@ switch options.method
                         % state space
                         tumax = min(max(tu),max(TranSysStateAggr{it}.t));
                         tu = union(tu, TranSysStateAggr{it}.t);
-                        tu = tu(tu<=tumax); 
+                        tu = tu(tu<=tumax);
                     end
                 end
                 QNt = cellzeros(qn.nstations, qn.nclasses, length(tu), 2);
@@ -115,7 +115,8 @@ switch options.method
                         TNt{j,r}(:,2) = tu;
                         for it=1:options.iter_max
                             qlenAt_t = interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}(:,r), tu,'previous');
-                            avgQlenAt_t = cumsum(qlenAt_t .*[0;diff(tu)])./tu; 
+                            avgQlenAt_t = qlenAt_t;
+                            %avgQlenAt_t = cumsum(qlenAt_t .*[0;diff(tu)])./tu;
                             avgQlenAt_t(isnan(avgQlenAt_t))=0;
                             QNt{j,r}(:,1) = QNt{j,r}(:,1) + (1/options.iter_max) * avgQlenAt_t;
                         end
@@ -125,22 +126,28 @@ switch options.method
                             else % if delay we use queue-length
                                 occupancyAt_t = interp1(TranSysStateAggr{it}.t, TranSysStateAggr{it}.state{j}(:,r), tu,'previous');
                             end
-                            avgOccupancyAt_t = cumsum(occupancyAt_t .*[0;diff(tu)])./tu; 
+                            avgOccupancyAt_t = occupancyAt_t;
+                            %avgOccupancyAt_t = cumsum(occupancyAt_t .*[0;diff(tu)])./tu;
                             avgOccupancyAt_t(isnan(avgOccupancyAt_t))=0;
-                             UNt{j,r}(:,1) = UNt{j,r}(:,1) + (1/options.iter_max) * avgOccupancyAt_t;
+                            UNt{j,r}(:,1) = UNt{j,r}(:,1) + (1/options.iter_max) * avgOccupancyAt_t;
                         end
-                        for it=1:options.iter_max
-                            departures = [0;diff(TranSysStateAggr{it}.state{j}(:,r))];
-                            departures(departures>0) = 0;
-                            departuresAt_t = abs(interp1(TranSysStateAggr{it}.t, cumsum(departures), tu, 'previous'));
-                            avgDeparturesAt_t = departuresAt_t./tu;
-                            avgDeparturesAt_t(isnan(avgDeparturesAt_t))=0;
-                            TNt{j,r}(:,1) = TNt{j,r}(:,1) + (1/options.iter_max) * avgDeparturesAt_t;
+                        %                         for it=1:options.iter_max
+                        %                             departures = [0;diff(TranSysStateAggr{it}.state{j}(:,r))];
+                        %                             departures(departures>0) = 0;
+                        %                             departuresAt_t = abs(interp1(TranSysStateAggr{it}.t, cumsum(departures), tu, 'previous'));
+                        %                             avgDeparturesAt_t = departuresAt_t./tu;
+                        %                             avgDeparturesAt_t(isnan(avgDeparturesAt_t))=0;
+                        %                             TNt{j,r}(:,1) = TNt{j,r}(:,1) + (1/options.iter_max) * avgDeparturesAt_t;
+                        %                         end
+                        if isfinite(qn.nservers(j))
+                            TNt{j,r}(:,1) = UNt{j,r}(:,1) * qn.nservers(j) * qn.rates(j,r);
+                        else
+                            TNt{j,r}(:,1) = UNt{j,r}(:,1) * qn.rates(j,r);
                         end
-                        %TNt{j,r}(:,1) = UNt{j,r}(:,1) * qn.rates(j,r);                        
+                        
                     end
                 end
-                Trun = toc(T0);                
+                Trun = toc(T0);
                 RNt = [];
                 CNt = [];
                 XNt = [];
@@ -155,7 +162,7 @@ switch options.method
             self.result.runtime = Trun;
         end
     case {'jmva','jmva.amva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
-           'jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
+            'jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
         fname = self.writeJMVA([self.getFilePath(),'jmva',filesep, self.getFileName(),'.jmva']);
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed), ' --illegal-access=permit'];
         if options.verbose
@@ -169,7 +176,7 @@ switch options.method
             delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
         end
         self.getResults;
-    otherwise         
+    otherwise
         warning('This solver does not support the specified method. Setting to default.');
         self.options.method  = 'default';
         Trun = run(self);
