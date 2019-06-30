@@ -301,6 +301,36 @@ classdef NetworkStruct <handle
                 node_idx = NaN;
             end
         end
+    end
+    
+    methods (Access = public)
+        function bool = isclosed(self)
+            bool = all(isfinite(self.njobs));
+        end
+        
+        function bool = isopen(self)
+            bool = all(isinf(self.njobs));
+        end
+        
+        function bool = ismixed(self)
+            bool = true;
+            if isopen(self) || isclosed(self)
+                bool = false;
+            end
+        end
+               
+        function bool = isqsys(self)
+            % bool = isqsys(self)
+            % True if the model defined an open queueing system.            
+            bool = false;
+            if qn.nstations == 2 && sum(self.nodetype == NodeType.Sink)==1
+                bool = true;
+            end
+        end
+        
+        function bool = hasdelay(self)
+            bool = any(self.nodetype == NodeType.Delay);
+        end
         
         function newObj = copy(obj)
             % NEWOBJ = COPY(OBJ)

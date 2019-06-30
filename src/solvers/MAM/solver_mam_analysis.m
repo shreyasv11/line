@@ -13,15 +13,14 @@ config = struct();
 config.merge = 'super';
 %config.compress = 'mixture.order1';
 config.compress = 'none';
-%config.space_max = 128;
+config.space_max = 128;
 
 switch options.method
     case 'dec.mmap'
         % service distributuion per class scaled by utilization used as
         % departure process
         [QN,UN,RN,TN,CN,XN] = solver_mam(qn, options, config);
-    case {'default', 'dec.source', 'arvscaling'}
-        config.space_max = 128;
+    case {'default', 'dec.source'}
         % arrival process per chain rescaled by visits at each node
         [QN,UN,RN,TN,CN,XN] = solver_mam_basic(qn, options, config);
     case 'dec.poisson'

@@ -82,7 +82,7 @@ m=size(A1,1);
 
 % Shift technique
 if (options.Mode=='Shift')
-    theta=stat(A0+A1+A2);
+    theta=statvec(A0+A1+A2);
     drift=theta*sum(A0,2)-theta*sum(A2,2);
     if (drift < 0) % MC is transient -> use the dual MC
         if (nargout > 1 | options.Verbose==1)

@@ -42,10 +42,12 @@ while nvec>=0
     nc = sum(nvec);
     for i=1:M
         for c=1:C
-            hnvec_c = hashpop(oner(nvec,c),Nc,C,prods);
-            % Compute mean residence times
-            for n=1:nc
-                w(i,c,hnvec) = w(i,c,hnvec) + Dc(i,c) * n * EC(i,n) * Pc(i, 1+(n-1), hnvec_c);
+            if nvec(c)>0
+                hnvec_c = hashpop(oner(nvec,c),Nc,C,prods);
+                % Compute mean residence times
+                for n=1:nc
+                    w(i,c,hnvec) = w(i,c,hnvec) + Dc(i,c) * n * EC(i,n) * Pc(i, 1+(n-1), hnvec_c);
+                end
             end
         end
     end
@@ -56,8 +58,10 @@ while nvec>=0
     for i=1:M
         for n=1:nc
             for c=1:C
-                hnvec_c = hashpop(oner(nvec,c),Nc,C,prods);
-                Pc(i, 1 + n, hnvec) = Pc(i, 1 + n, hnvec) + Dc(i,c) * EC(i,n) * x(c,hnvec) * Pc(i, 1+(n-1), hnvec_c);
+                if nvec(c)>0
+                    hnvec_c = hashpop(oner(nvec,c),Nc,C,prods);
+                    Pc(i, 1 + n, hnvec) = Pc(i, 1 + n, hnvec) + Dc(i,c) * EC(i,n) * x(c,hnvec) * Pc(i, 1+(n-1), hnvec_c);
+                end
             end
         end
         Pc(i, 1 + 0, hnvec) = max(eps,1-sum(Pc(i, 1 + (1:nc), hnvec)));

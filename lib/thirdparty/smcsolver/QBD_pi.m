@@ -94,7 +94,7 @@ if( max(temp<-100*eps) )
 end    
 
 if (isempty(options.Boundary))
-    pi=stat(B1+R*B0); % compute pi_0
+    pi=statvec(B1+R*B0); % compute pi_0
     pi=pi/(pi*temp*ones(m,1)); % normalize pi_0
     sumpi=sum(pi);
     numit=1;
@@ -110,7 +110,7 @@ if (isempty(options.Boundary))
 %    pi=reshape(pi',1,[]);
 else
     mb=size(B1,1);
-    pi0=stat([[B1; B0] options.Boundary]); % compute pi_0 and pi_1
+    pi0=statvec([[B1; B0] options.Boundary]); % compute pi_0 and pi_1
     pi0=pi0/(pi0(1:mb)*ones(mb,1)+pi0(mb+1:end)*temp*ones(m,1)); % normalize
     pi=pi0(mb+1:end);
     pi0=pi0(1:mb);

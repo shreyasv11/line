@@ -36,7 +36,7 @@ for k=1:K
     chain(k) = find(qn.chains(:,k));
 end
 
-if M>=2 && qn.nclosedjobs == 0
+if qn.isopen()
     %    open queueing system (one node is the external world)
     BuToolsVerbose = false;
     BuToolsCheckInput = false;
@@ -74,7 +74,7 @@ if M>=2 && qn.nclosedjobs == 0
                 end
             end
         end
-                
+        
         
         ARV = solver_mam_estflows(qn, DEP, config);
         
@@ -87,9 +87,11 @@ if M>=2 && qn.nclosedjobs == 0
                     if length(ARV{ind}{1}) > config.space_max
                         fprintf(1,'Arrival process at node %d is now at %d states. Compressing.\n',ind,length(ARV{ind}{1}));
                         ARV{ind} = mmap_compress(ARV{ind});
-                    end
+                    end                    
                     [Qret{1:K}, ncDistr] = MMAPPH1FCFS({ARV{ind}{[1,3:end]}}, {pie{ist,:}}, {D0{ist,:}}, 'ncMoms', 1, 'ncDistr',2);
-                    QN(ist,:) = cell2mat(Qret);
+                    for k=1:K
+                        QN(ist,k) = sum(Qret{k});
+                    end
                     TN(ist,:) = mmap_lambda(ARV{ind});
             end
             for k=1:K
@@ -164,11 +166,11 @@ if M>=2 && qn.nclosedjobs == 0
             %QN
         end
     end
-    
+    if options.verbose
+        fprintf(1,'MAM parametric decomposition completed in %d iterations.\n',it);
+    end
 else
     warning('This model is not supported by SolverMAM yet. Returning with no result.');
 end
-if options.verbose
-    fprintf(1,'MAM parametric dec.sition completed in %d iterations.\n',it);
-end
+
 end

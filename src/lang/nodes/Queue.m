@@ -117,7 +117,7 @@ classdef Queue < Station
                 self.server.serviceProcess{1, class.index}{3} = distribution;
             end
             if length(self.classCap) < class.index
-                self.classCap(class.index) = Inf;
+                self.classCap((length(self.classCap)+1):class.index) = Inf;
             end
             self.setStrategyParam(class, weight);
             if resetInitState

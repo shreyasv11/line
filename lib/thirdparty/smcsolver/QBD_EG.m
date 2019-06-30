@@ -6,7 +6,7 @@ R=[];
 U=[];
 
 m=size(A1,1);
-theta=stat(A0+A1+A2);
+theta=statvec(A0+A1+A2);
 drift=theta*sum(A0,2)-theta*sum(A2,2);
 if (drift > 0) % pos recurrent case
     if (rank(A0)==1) % A0 = alpha * beta ?

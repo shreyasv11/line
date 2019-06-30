@@ -29,6 +29,7 @@ phases_last = phases;
 useSCV = false;
 
 %%
+
 switch options.method
     case {'default','stateindep'}
         % approximate FCFS nodes as state-independent stations

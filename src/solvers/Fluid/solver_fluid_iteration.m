@@ -106,9 +106,17 @@ end
         % [T, YT_E] = SOLVEODE(Y0)
         
         if tol <= 1e-3
-            [t, yt_e] = feval(options.odesolvers.accurateOdeSolver, ode_h, [T0 T], y0, opt);
+            if isoctave
+              [t, yt_e] = ode23(ode_h, [T0 T], y0, opt);
+            else
+              [t, yt_e] = feval(options.odesolvers.accurateOdeSolver, ode_h, [T0 T], y0, opt);
+            end
         else
-            [t, yt_e] = feval(options.odesolvers.fastOdeSolver, ode_h, [T0 T], y0, opt);
+            if isoctave
+              [t, yt_e] = lsode(ode_h, [T0 T], y0, opt);
+            else
+              [t, yt_e] = feval(options.odesolvers.fastOdeSolver, ode_h, [T0 T], y0, opt);
+            end
         end
     end
 

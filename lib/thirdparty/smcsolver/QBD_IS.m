@@ -86,7 +86,7 @@ m=size(A1,1);
 
 % Step 1, F(z)=zD(z)-N(z), with A(z) = D^(-1)(z)N(z)
 % For QBD: A(z) is a polynomial matrix in z with degree f. Thus, D(z)=I.
-theta=stat(A0+A1+A2);
+theta=statvec(A0+A1+A2);
 drift=theta*sum(A0,2)-theta*sum(A2,2);
 F{1}=-A0;
 F{2}=eye(m)-A1;

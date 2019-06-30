@@ -20,10 +20,10 @@ if isoctave
         t = dataframe(v');
     catch
         try
-            pkg load dataframe;
+            pkg load dataframe
         catch
-            pkg install -forge dataframe;
-            pkg load dataframe;
+            pkg install -forge dataframe
+            pkg load dataframe
         end
         t = dataframe(v);
     end

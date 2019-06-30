@@ -7,10 +7,12 @@ for i = 1:M
         case SchedStrategy.ID_INF
             % do nothing
         case SchedStrategy.ID_EXT  %EXT
+            % this is treated by a delay except that we require mass
+            % conservation in the local population
             for k=1:K
                 idxIni = q_indices(i,k);
                 idxEnd = q_indices(i,k) + Kic(i,k) - 1;
-                rates(idxIni) = 1-sum(x(idxIni+1:idxEnd)); % not needed for idxIni+1:idxEnd as rates is initialized equal to x
+                rates(idxIni) = 1-sum(x(idxIni+1:idxEnd)); % keep total mass 1 into the source for all classes at all times, not needed for idxIni+1:idxEnd as rates is initialized equal to x
             end
         case SchedStrategy.ID_PS
             idxIni = q_indices(i,1);
