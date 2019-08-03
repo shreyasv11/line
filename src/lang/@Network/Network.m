@@ -1272,7 +1272,7 @@ classdef Network < Model
             for i=1:M
                 strategy{Mz+i} = SchedStrategy.PS;
             end
-            model = Network.cyclic(N,[D;Z],strategy);
+            model = Network.cyclic(N,[Z;D],strategy);
         end
         
         function model = cyclicFcfs(N,D)
@@ -1296,7 +1296,7 @@ classdef Network < Model
             for i=1:M
                 strategy{Mz+i} = SchedStrategy.FCFS;
             end
-            model = Network.cyclic(N,[D;Z],strategy);
+            model = Network.cyclic(N,[Z;D],strategy);
         end
         
         function model = cyclic(N,D,strategy)

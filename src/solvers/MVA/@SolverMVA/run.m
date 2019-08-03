@@ -113,14 +113,14 @@ else % queueing network
                 RN(:,1) = 1 ./ qn.rates * N;
                 RN(qn.schedid == SchedStrategy.ID_INF,1) = 1 ./ qn.rates(qn.schedid == SchedStrategy.ID_INF,1);
                 QN(:,1) = TN(:,1) .* RN(:,1);
-                UN(:,1) = TN(:,1) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                UN(:,1) = TN(:,1) ./ qn.rates;
                 UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
                 lG = 0;
             else
                 QN = []; UN = [];
                 RN = []; TN = [];
                 CN = []; XN = [];
-                lG = NaN;                
+                lG = NaN;
             end
             runtime=toc(T0);
         case 'aba.lower'
@@ -131,28 +131,95 @@ else % queueing network
                 V = qn.visits{1}(:);
                 Z = sum(V(qn.schedid == SchedStrategy.ID_INF) ./ qn.rates(qn.schedid == SchedStrategy.ID_INF));
                 D = V(qn.schedid ~= SchedStrategy.ID_INF) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
-                Dmax = max(D);
                 N = qn.nclosedjobs;
                 XN(1,1) = N / (Z + N*sum(D));
                 CN(1,1) = Z + sum(D);
                 TN(:,1) = V .* XN(1,1);
                 RN(:,1) = 1 ./ qn.rates;
                 QN(:,1) = TN(:,1) .* RN(:,1);
-                UN(:,1) = TN(:,1) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                UN(:,1) = TN(:,1) ./ qn.rates;
                 UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
                 lG = 0;
             else
                 QN = []; UN = [];
                 RN = []; TN = [];
                 CN = []; XN = [];
-                lG = NaN;                
+                lG = NaN;
+            end
+            runtime=toc(T0);
+        case 'gb.upper'
+            if qn.nclasses==1 && qn.nclosedjobs >0 % closed single-class queueing network
+                if any(qn.nservers(qn.schedid ~= SchedStrategy.ID_INF)>1)
+                    error('Line:UnsupportedMethod','Unsupported method for a model with multi-server stations.');
+                end
+                V = qn.visits{1}(:);
+                Z = sum(V(qn.schedid == SchedStrategy.ID_INF) ./ qn.rates(qn.schedid == SchedStrategy.ID_INF));
+                D = V(qn.schedid ~= SchedStrategy.ID_INF) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                N = qn.nclosedjobs;
+                XN(1,1) = pfqn_xzgsbup(D,N,Z);
+                CN(1,1) = N / pfqn_xzgsblow(D,N,Z);
+                TN(:,1) = V .* XN(1,1);
+                XNlow = pfqn_xzgsblow(D,N,Z);
+                k = 0;
+                for i=1:size(qn.schedid,1)
+                    if qn.schedid(i) == SchedStrategy.ID_INF
+                        RN(i,1) = 1 / qn.rates(i);
+                        QN(i,1) = XN(1,1) * RN(i,1);
+                    else
+                        k = k + 1;
+                        QN(i,1) = pfqn_qzgbup(D,N,Z,k);
+                        RN(i,1) = QN(i,1) / XNlow / V(i) ;
+                    end
+                end
+                RN(qn.schedid == SchedStrategy.ID_INF,1) = 1 ./ qn.rates(qn.schedid == SchedStrategy.ID_INF,1);
+                UN(:,1) = TN(:,1) ./ qn.rates;
+                UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
+                lG = 0;
+            else
+                QN = []; UN = [];
+                RN = []; TN = [];
+                CN = []; XN = [];
+                lG = NaN;
+            end
+            runtime=toc(T0);
+        case 'gb.lower'
+            if qn.nclasses==1 && qn.nclosedjobs >0 % closed single-class queueing network
+                if any(qn.nservers(qn.schedid ~= SchedStrategy.ID_INF)>1)
+                    error('Line:UnsupportedMethod','Unsupported method for a model with multi-server stations.');
+                end
+                V = qn.visits{1}(:);
+                Z = sum(V(qn.schedid == SchedStrategy.ID_INF) ./ qn.rates(qn.schedid == SchedStrategy.ID_INF));
+                D = V(qn.schedid ~= SchedStrategy.ID_INF) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                N = qn.nclosedjobs;
+                XN(1,1) = pfqn_xzgsblow(D,N,Z);
+                CN(1,1) = N / pfqn_xzgsbup(D,N,Z);
+                TN(:,1) = V .* XN(1,1);
+                XNup = pfqn_xzgsbup(D,N,Z);
+                k = 0;
+                for i=1:size(qn.schedid,1)
+                    if qn.schedid(i) == SchedStrategy.ID_INF
+                        RN(i,1) = 1 / qn.rates(i);
+                        QN(i,1) = XN(1,1) * RN(i,1);
+                    else
+                        k = k + 1;
+                        QN(i,1) = pfqn_qzgblow(D,N,Z,k);
+                        RN(i,1) = QN(i,1) / XNup / V(i) ;
+                    end
+                end
+                UN(:,1) = TN(:,1) ./ qn.rates;
+                UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
+                lG = 0;
+            else
+                QN = []; UN = [];
+                RN = []; TN = [];
+                CN = []; XN = [];
+                lG = NaN;
             end
             runtime=toc(T0);
         otherwise
             [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_mva_analysis(qn, options);
     end
 end
-    self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,method);
-    self.result.Prob.logNormConstAggr = lG;
+self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,method);
+self.result.Prob.logNormConstAggr = lG;
 end
-

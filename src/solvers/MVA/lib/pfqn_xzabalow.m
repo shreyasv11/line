@@ -1,6 +1,4 @@
-function [XN]=xzabalow(L,N,Z)
-    Ltot=sum(L);
-    LM=max(L);
+function [XN]=pfqn_xzabalow(L,N,Z)
+    Ltot=sum(L);    
     XN=N/(Z+Ltot*N);
-%    XN=1/Ltot;
 end
