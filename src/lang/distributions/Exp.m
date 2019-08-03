@@ -69,10 +69,10 @@ classdef Exp < MarkovianDistribution
             SCV = varargin{2};
             SKEW = varargin{3};
             %            KURT = varargin{4};
-            if abs(SCV-1) < Distrib.Tol
+            if abs(SCV-1) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit squared coefficient of variation != 1, changing squared coefficient of variation to 1.');
             end
-            if abs(SKEW-2) < Distrib.Tol
+            if abs(SKEW-2) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit skewness != 2, changing skewness to 2.');
             end
             %            if abs(KURT-9) < Distrib.Tol

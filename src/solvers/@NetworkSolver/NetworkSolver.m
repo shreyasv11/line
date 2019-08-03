@@ -196,8 +196,7 @@ classdef NetworkSolver < Solver
         [QNt,UNt,TNt]       = getTranAvg(self,Qt,Ut,Tt);
         
         function self = setAvgResults(self,Q,U,R,T,C,X,runtime,method)
-            % SELF = SETAVGRESULTS(SELF,Q,U,R,T,C,X,RUNTIME,METHOD)
-            
+            % SELF = SETAVGRESULTS(SELF,Q,U,R,T,C,X,RUNTIME,METHOD)            
             % Store average metrics at steady-state
             self.result.('solver') = self.getName();
             if ~exist('method','var')

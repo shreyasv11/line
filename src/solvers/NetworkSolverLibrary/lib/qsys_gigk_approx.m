@@ -6,6 +6,6 @@ if rho>0.7
 else
     alpha = rho^((k+1)/2);
 end
-W = (alpha/mu)*(1/(1-rho))*(ca^2+cs^2)/(2*m) + 1/mu; % includes service time
+W = (alpha/mu)*(1/(1-rho))*(ca^2+cs^2)/(2*k) + 1/mu; % includes service time
 rhohat = W*lambda/(1+W*lambda); % so that M/M/1 formulas still hold
 end

@@ -46,6 +46,9 @@ if ~self.hasAvgResults || ~self.options.cache
                 rethrow(ME)
         end
     end
+    if ~self.hasAvgResults
+        error('Line is unable to return results for this model.');
+    end
 end % else return cached value
 
 M = self.model.getNumberOfStations();
@@ -58,7 +61,7 @@ TNclass = [];
 if ~isempty(Q)
     QNclass = zeros(M,K);
     for k=1:K
-        for i=1:M
+        for i=1:M          
             QNclass(i,k) = Q{i,k}.get(self.result, self.model);
         end
     end

@@ -40,6 +40,16 @@ if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0 % open single-class 
             error('Line:MethodNotAvailable','MVA exact method unavailable for this model.');
         end
     end
+    
+    switch method
+        case 'default'
+            if k>1
+                method = 'gigk';
+            else
+                method = 'gig1.klb';
+            end
+    end
+    
     switch method
         case 'mm1'
             R = qsys_mm1(lambda,mu);
@@ -59,7 +69,7 @@ if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0 % open single-class 
             R = qsys_gig1_approx_allencunneen(lambda,mu,ca,cs);
         case 'gig1.kobayashi'
             R = qsys_gig1_approx_kobayashi(lambda,mu,ca,cs);
-        case {'default','gig1.klb'}
+        case 'gig1.klb'
             R = qsys_gig1_approx_klb(lambda,mu,ca,cs);
             if strcmpi(options.method,'default')
                 method = sprintf('default [%s]','gig1.klb');
@@ -85,8 +95,64 @@ if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0 % open single-class 
     lG = 0;
     runtime=toc(T0);
 else % queueing network
-    [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_mva_analysis(qn, options);
+    T0=tic;
+    switch method
+        case 'aba.upper'
+            if qn.nclasses==1 && qn.nclosedjobs >0 % closed single-class queueing network
+                if any(qn.nservers(qn.schedid ~= SchedStrategy.ID_INF)>1)
+                    error('Line:UnsupportedMethod','Unsupported method for a model with multi-server stations.');
+                end
+                V = qn.visits{1}(:);
+                Z = sum(V(qn.schedid == SchedStrategy.ID_INF) ./ qn.rates(qn.schedid == SchedStrategy.ID_INF));
+                D = V(qn.schedid ~= SchedStrategy.ID_INF) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                Dmax = max(D);
+                N = qn.nclosedjobs;
+                CN(1,1) = Z + N * sum(D);
+                XN(1,1) = min( 1/Dmax, N / (Z + sum(D)));
+                TN(:,1) = V .* XN(1,1);
+                RN(:,1) = 1 ./ qn.rates * N;
+                RN(qn.schedid == SchedStrategy.ID_INF,1) = 1 ./ qn.rates(qn.schedid == SchedStrategy.ID_INF,1);
+                QN(:,1) = TN(:,1) .* RN(:,1);
+                UN(:,1) = TN(:,1) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
+                lG = 0;
+            else
+                QN = []; UN = [];
+                RN = []; TN = [];
+                CN = []; XN = [];
+                lG = NaN;                
+            end
+            runtime=toc(T0);
+        case 'aba.lower'
+            if qn.nclasses==1 && qn.nclosedjobs >0 % closed single-class queueing network
+                if any(qn.nservers(qn.schedid ~= SchedStrategy.ID_INF)>1)
+                    error('Line:UnsupportedMethod','Unsupported method for a model with multi-server stations.');
+                end
+                V = qn.visits{1}(:);
+                Z = sum(V(qn.schedid == SchedStrategy.ID_INF) ./ qn.rates(qn.schedid == SchedStrategy.ID_INF));
+                D = V(qn.schedid ~= SchedStrategy.ID_INF) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                Dmax = max(D);
+                N = qn.nclosedjobs;
+                XN(1,1) = N / (Z + N*sum(D));
+                CN(1,1) = Z + sum(D);
+                TN(:,1) = V .* XN(1,1);
+                RN(:,1) = 1 ./ qn.rates;
+                QN(:,1) = TN(:,1) .* RN(:,1);
+                UN(:,1) = TN(:,1) ./ qn.rates(qn.schedid ~= SchedStrategy.ID_INF);
+                UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
+                lG = 0;
+            else
+                QN = []; UN = [];
+                RN = []; TN = [];
+                CN = []; XN = [];
+                lG = NaN;                
+            end
+            runtime=toc(T0);
+        otherwise
+            [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_mva_analysis(qn, options);
+    end
 end
-self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,method);
-self.result.Prob.logNormConstAggr = lG;
+    self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,method);
+    self.result.Prob.logNormConstAggr = lG;
 end
+

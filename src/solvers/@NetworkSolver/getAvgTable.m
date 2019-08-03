@@ -12,7 +12,7 @@ end
 M = self.model.getNumberOfStations();
 K = self.model.getNumberOfClasses();
 if nargin == 1
-    [Q,U,R,T,A] = self.model.getAvgHandles();
+    [Q,U,R,T,~] = self.model.getAvgHandles();
 end
 if isfinite(self.getOptions.timespan(2))
     [Qt,Ut,Tt] = self.model.getTranHandles();
@@ -59,7 +59,7 @@ elseif ~keepDisabled
     AvgTable = Table(Station,Class,QLen,Util,RespT,Tput);
 else
     Qval = zeros(M,K); Uval = zeros(M,K);
-    Rval = zeros(M,K); Tval = zeros(M,K); 
+    Rval = zeros(M,K); Tval = zeros(M,K);
     Class = cell(K*M,1);
     Station = cell(K*M,1);
     for i=1:M
