@@ -51,7 +51,6 @@ classdef SolverLQNS < LayeredNetworkSolver
             
             model.reset;
         end
-        
         function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)
             % [QN,UN,RN,TN] = GETAVG(SELF,~,~,~,~)
             
@@ -62,6 +61,42 @@ classdef SolverLQNS < LayeredNetworkSolver
             TN = self.result.Avg.Tput;
         end
         
+        function [NodeAvgTable,CallAvgTable] = getRawAvgTables(self)
+            % [QN,UN,RN,TN] = GETRAWAVGTABLES(SELF,~,~,~,~)
+            
+            self.run();
+            
+            Node = self.model.lqnGraph.Nodes.Node;
+            Objects = self.model.lqnGraph.Nodes.Object;
+            O = length(Objects);
+            NodeType = cell(O,1);
+            for o = 1:O
+                NodeType{o} = class(Objects{o});
+            end
+            Utilization = self.result.RawAvg.Nodes.Utilization;
+            Phase1Utilization = self.result.RawAvg.Nodes.Phase1Utilization;
+            Phase2Utilization = self.result.RawAvg.Nodes.Phase2Utilization;
+            Phase1ServiceTime = self.result.RawAvg.Nodes.Phase1ServiceTime;
+            Phase2ServiceTime = self.result.RawAvg.Nodes.Phase2ServiceTime;
+            Throughput = self.result.RawAvg.Nodes.Throughput;
+            ProcWaiting = self.result.RawAvg.Nodes.ProcWaiting;
+            ProcUtilization = self.result.RawAvg.Nodes.ProcUtilization;
+            NodeAvgTable = Table(Node, NodeType, Utilization, Phase1Utilization,...
+                Phase2Utilization, Phase1ServiceTime, Phase2ServiceTime, Throughput,...
+                ProcWaiting, ProcUtilization);
+            
+            CallIndices = find(self.model.lqnGraph.Edges.Type>0);
+            EndNodes = self.model.lqnGraph.Edges.EndNodes(CallIndices,:);
+            SourceIndices = findnode(self.model.lqnGraph,EndNodes(:,1));
+            SourceNode = self.model.lqnGraph.Nodes.Node(SourceIndices);
+            TargetIndices = findnode(self.model.lqnGraph,EndNodes(:,2));
+            TargetNode = self.model.lqnGraph.Nodes.Node(TargetIndices);
+            CallTypeMap = {'Synchronous';'Asynchronous'};
+            CallType = CallTypeMap(self.model.lqnGraph.Edges.Type(CallIndices));
+            Waiting = self.result.RawAvg.Edges.Waiting(CallIndices);
+            CallAvgTable = Table(SourceNode, TargetNode, CallType, Waiting);
+        end
+        
         function [result, iterations] = parseXMLResults(self, filename)
             % [RESULT, ITERATIONS] = PARSEXMLRESULTS(FILENAME)
             
@@ -69,16 +104,18 @@ classdef SolverLQNS < LayeredNetworkSolver
             import org.w3c.dom.*;
             import java.io.*;
             
-            model = self.model;
-            Avg = struct();
-            Avg.Nodes.RespT = [];
-            Avg.Nodes.Tput = [];
-            Avg.Nodes.Util = [];
-            Avg.Nodes.QLen = [];
-            Avg.Edges.RespT = [];
-            Avg.Edges.Tput = [];
-            Avg.Edges.QLen = [];
-            lqnGraph = model.getGraph;
+            lqnGraph = self.model.getGraph;
+            numOfNodes = height(lqnGraph.Nodes);
+            numOfEdges = height(lqnGraph.Edges);
+            Avg.Nodes.Utilization = NaN*ones(numOfNodes,1);
+            Avg.Nodes.Phase1Utilization = NaN*ones(numOfNodes,1);
+            Avg.Nodes.Phase2Utilization = NaN*ones(numOfNodes,1);
+            Avg.Nodes.Phase1ServiceTime = NaN*ones(numOfNodes,1);
+            Avg.Nodes.Phase2ServiceTime = NaN*ones(numOfNodes,1);
+            Avg.Nodes.Throughput = NaN*ones(numOfNodes,1);
+            Avg.Nodes.ProcWaiting = NaN*ones(numOfNodes,1);
+            Avg.Nodes.ProcUtilization = NaN*ones(numOfNodes,1);
+            Avg.Edges.Waiting = NaN*ones(numOfEdges,1);
             verbose = self.options.verbose;
             
             if nargin == 1
@@ -89,7 +126,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             dbFactory = DocumentBuilderFactory.newInstance();
             dBuilder = dbFactory.newDocumentBuilder();
             try
-                [fpath,fname,fext] = fileparts(filename);
+                [fpath,fname,~] = fileparts(filename);
                 resultFilename = [fpath,filesep,fname,'.lqxo'];
                 if verbose > 0
                     w = warning('query');
@@ -110,129 +147,110 @@ classdef SolverLQNS < LayeredNetworkSolver
             doc.getDocumentElement().normalize();
             
             %NodeList
-            solverPara = doc.getElementsByTagName('solver-params');
-            for i = 0:solverPara.getLength()-1
-                procNode = solverPara.item(i);
-                result = procNode.getElementsByTagName('result-general');
-                iterations = str2num(result.item(0).getAttribute('iterations'));
+            solverParams = doc.getElementsByTagName('solver-params');
+            for i = 0:solverParams.getLength()-1
+                solverParam = solverParams.item(i);
+                result = solverParam.getElementsByTagName('result-general');
+                iterations = str2double(result.item(0).getAttribute('iterations'));
             end
             
             procList = doc.getElementsByTagName('processor');
             for i = 0:procList.getLength()-1
                 %Node - Processor
-                procNode = procList.item(i);
+                procElement = procList.item(i);
+                procName = char(procElement.getAttribute('name'));
+                procPos = findstring(lqnGraph.Nodes.Node,procName);
+                procResult = procElement.getElementsByTagName('result-processor');
+                uRes = str2double(procResult.item(0).getAttribute('utilization'));
+                Avg.Nodes.ProcUtilization(procPos) = uRes;
                 
-                if procNode.getNodeType() == Node.ELEMENT_NODE
+                taskList = procElement.getElementsByTagName('task');
+                for j = 0:taskList.getLength()-1
+                    %Node - Task
+                    taskElement = taskList.item(j);
+                    taskName = char(taskElement.getAttribute('name'));
+                    taskPos = findstring(lqnGraph.Nodes.Node,taskName);
+                    taskResult = taskElement.getElementsByTagName('result-task');
+                    uRes = str2double(taskResult.item(0).getAttribute('utilization'));
+                    p1uRes = str2double(taskResult.item(0).getAttribute('phase1-utilization'));
+                    p2uRes = str2double(taskResult.item(0).getAttribute('phase2-utilization'));
+                    tRes = str2double(taskResult.item(0).getAttribute('throughput'));
+                    puRes = str2double(taskResult.item(0).getAttribute('proc-utilization'));
+                    Avg.Nodes.Utilization(taskPos) = uRes;
+                    Avg.Nodes.Phase1Utilization(taskPos) = p1uRes;
+                    Avg.Nodes.Phase2Utilization(taskPos) = ifthenelse(isempty(p2uRes),NaN,p2uRes);
+                    Avg.Nodes.Throughput(taskPos) = tRes;
+                    Avg.Nodes.ProcUtilization(taskPos) = puRes;
                     
-                    %Element
-                    procElement = procNode;
-                    name = char(procElement.getAttribute('name'));
-                    procPos = findstring(lqnGraph.Nodes.Node,name);
-                    result = procNode.getElementsByTagName('result-processor');
-                    utilizationRes = str2num(result.item(0).getAttribute('utilization'));
-                    Avg.Nodes.Util(procPos) = utilizationRes;
-                    Avg.Nodes.QLen(procPos) = NaN;
-                    Avg.Nodes.RespT(procPos) = NaN;
-                    Avg.Nodes.Tput(procPos) = NaN;
+                    entryList = taskElement.getElementsByTagName('entry');
+                    for k = 0:entryList.getLength()-1
+                        %Node - Entry
+                        entryElement = entryList.item(k);
+                        entryName = char(entryElement.getAttribute('name'));
+                        entryPos = findstring(lqnGraph.Nodes.Node,entryName);
+                        entryResult = entryElement.getElementsByTagName('result-entry');
+                        uRes = str2double(entryResult.item(0).getAttribute('utilization'));
+                        p1uRes = str2double(entryResult.item(0).getAttribute('phase1-utilization'));
+                        p2uRes = str2double(entryResult.item(0).getAttribute('phase2-utilization'));
+                        p1stRes = str2double(entryResult.item(0).getAttribute('phase1-service-time'));
+                        p2stRes = str2double(entryResult.item(0).getAttribute('phase2-service-time'));
+                        tRes = str2double(entryResult.item(0).getAttribute('throughput'));
+                        puRes = str2double(entryResult.item(0).getAttribute('proc-utilization'));
+                        Avg.Nodes.Utilization(entryPos) = uRes;
+                        Avg.Nodes.Phase1Utilization(entryPos) = p1uRes;
+                        Avg.Nodes.Phase2Utilization(entryPos) = ifthenelse(isempty(p2uRes),NaN,p2uRes);
+                        Avg.Nodes.Phase1ServiceTime(entryPos) = p1stRes;
+                        Avg.Nodes.Phase2ServiceTime(entryPos) = ifthenelse(isempty(p2stRes),NaN,p2stRes);
+                        Avg.Nodes.Throughput(entryPos) = tRes;
+                        Avg.Nodes.ProcUtilization(entryPos) = puRes;
+                    end
                     
-                    taskList = procNode.getElementsByTagName('task');
-                    for j = 0:taskList.getLength()-1
-                        %Node - Task
-                        taskNode = taskList.item(j);
-                        if taskNode.getNodeType() == Node.ELEMENT_NODE
-                            taskElement = taskNode;
-                            name = char(taskElement.getAttribute('name'));
-                            result = taskNode.getElementsByTagName('result-task');
-                            Avg.Nodes.Util(findstring(lqnGraph.Nodes.Node,name)) = str2num(result.item(0).getAttribute('proc-utilization'));
-                            Avg.Nodes.QLen(findstring(lqnGraph.Nodes.Node,name)) = str2num(result.item(0).getAttribute('utilization'));
-                            Avg.Nodes.RespT(findstring(lqnGraph.Nodes.Node,name)) = NaN;
-                            Avg.Nodes.Tput(findstring(lqnGraph.Nodes.Node,name)) = str2num(result.item(0).getAttribute('throughput'));
-                            entryList = taskNode.getElementsByTagName('entry');
-                            for k = 0:entryList.getLength()-1
-                                %Node - Task
-                                entryNode = entryList.item(k);
-                                if entryNode.getNodeType() == Node.ELEMENT_NODE
-                                    %Element
-                                    entryElement = entryNode;
-                                    name = char(entryElement.getAttribute('name'));
-                                    result = entryNode.getElementsByTagName('result-entry');
-                                    utilizationRes = str2num(result.item(0).getAttribute('proc-utilization'));
-                                    Avg.Nodes.Util(findstring(lqnGraph.Nodes.Node,name)) = utilizationRes;
-                                    qlenRes = str2num(result.item(0).getAttribute('utilization'));
-                                    Avg.Nodes.QLen(findstring(lqnGraph.Nodes.Node,name)) = qlenRes;
-                                    tputRes = str2num(result.item(0).getAttribute('throughput'));
-                                    Avg.Nodes.Tput(findstring(lqnGraph.Nodes.Node,name)) = tputRes;
-                                    rtRes = str2num(result.item(0).getAttribute('phase1-service-time'));
-                                    if ~isempty(rtRes)
-                                        Avg.Nodes.RespT(findstring(lqnGraph.Nodes.Node,name)) = rtRes;
-                                    end
+                 %% task-activities
+                    taskActivities = taskElement.getElementsByTagName('task-activities');
+                    if taskActivities.getLength > 0
+                        actList = taskActivities.item(0).getElementsByTagName('activity');
+                        for l = 0:actList.getLength()-1
+                            %Node - Activity
+                            actElement = actList.item(l);
+                            if strcmp(char(actElement.getParentNode().getNodeName()),'task-activities')
+                                actName = char(actElement.getAttribute('name'));
+                                actPos = findstring(lqnGraph.Nodes.Node,actName);
+                                actResult = actElement.getElementsByTagName('result-activity');
+                                uRes = str2double(actResult.item(0).getAttribute('utilization'));
+                                stRes = str2double(actResult.item(0).getAttribute('service-time'));
+                                tRes = str2double(actResult.item(0).getAttribute('throughput'));
+                                pwRes = str2double(actResult.item(0).getAttribute('proc-waiting'));
+                                puRes = str2double(actResult.item(0).getAttribute('proc-utilization'));
+                                Avg.Nodes.Utilization(actPos) = uRes;
+                                Avg.Nodes.Phase1ServiceTime(actPos) = stRes;
+                                Avg.Nodes.Throughput(actPos) = tRes;
+                                Avg.Nodes.ProcWaiting(actPos) = pwRes;
+                                Avg.Nodes.ProcUtilization(actPos) = puRes;
+                                
+                                actID = lqnGraph.Nodes.Name{actPos};
+                                synchCalls = actElement.getElementsByTagName('synch-call');
+                                for m = 0:synchCalls.getLength()-1
+                                    %Call - Synchronous
+                                    callElement = synchCalls.item(m);
+                                    destName = char(callElement.getAttribute('dest'));
+                                    destPos = findstring(lqnGraph.Nodes.Node,destName);
+                                    destID = lqnGraph.Nodes.Name{destPos};
+                                    callPos = findedge(lqnGraph,actID,destID);
+                                    callResult = callElement.getElementsByTagName('result-call');
+                                    wRes = str2double(callResult.item(0).getAttribute('waiting'));
+                                    Avg.Edges.Waiting(callPos) = wRes;
                                 end
-                            end
-                            
-                            %% task-activities
-                            if taskElement.getElementsByTagName('task-activities').getLength > 0
-                                %actNames = cell(0); iterActNames = 1;
-                                %actCalls = cell(0);
-                                actList = taskElement.getElementsByTagName('task-activities').item(0).getElementsByTagName('activity');
-                                for l = 0:actList.getLength()-1
-                                    %Node - Task
-                                    actNode = actList.item(l);
-                                    if actNode.getNodeType() == Node.ELEMENT_NODE && strcmp(char(actNode.getParentNode().getNodeName()),'task-activities')
-                                        %Element
-                                        actElement = actNode;
-                                        name = char(actElement.getAttribute('name'));
-                                        
-                                        result = actNode.getElementsByTagName('result-activity');
-                                        rtRes = str2num(result.item(0).getAttribute('service-time'));
-                                        Avg.Nodes.RespT(findstring(lqnGraph.Nodes.Node,name)) = rtRes;
-                                        utilizationRes = str2num(result.item(0).getAttribute('proc-utilization'));
-                                        Avg.Nodes.Util(findstring(lqnGraph.Nodes.Node,name)) = utilizationRes;
-                                        qlenRes = str2num(result.item(0).getAttribute('utilization'));
-                                        Avg.Nodes.QLen(findstring(lqnGraph.Nodes.Node,name)) = qlenRes;
-                                        tputRes = str2num(result.item(0).getAttribute('throughput'));
-                                        Avg.Nodes.Tput(findstring(lqnGraph.Nodes.Node,name)) = tputRes;
-                                        
-                                        %                             synchCalls = actElement.getElementsByTagName('synch-call');
-                                        %                             asynchCalls = actElement.getElementsByTagName('asynch-call');
-                                        %                             %add synch calls if any
-                                        %                             if synchCalls.getLength() > 0
-                                        %                                 for m = 0:synchCalls.getLength()-1
-                                        %                                     callElement = synchCalls.item(m);
-                                        %                                     dest = char(callElement.getAttribute('dest'));
-                                        %                                     mean = str2double(char(callElement.getAttribute('calls-mean')));
-                                        %                                     tempAct = tempAct.synchCall(dest,mean);
-                                        %                                     actCalls{iterActNames,1} = dest;
-                                        %                                     requesters{size(requesters,1)+1,1} = tempAct.name;
-                                        %                                     requesters{size(requesters,1),2} = taskID;
-                                        %                                     requesters{size(requesters,1),3} = tempProc.name;
-                                        %                                     requesters{size(requesters,1),4} = dest;
-                                        %                                     requesters{size(requesters,1),5} = procID;
-                                        %                                     %requesters:
-                                        %                                     % activity - task - processor - dest (entry) - procID
-                                        %                                 end
-                                        %                                 %else
-                                        %                                 %    actCalls{iterActNames,1} = [];
-                                        %                                 %end
-                                        %                                 %iterActNames = iterActNames + 1;
-                                        %                                 %add asynch calls if any
-                                        %                             elseif asynchCalls.getLength() > 0
-                                        %                                 for m = 0:asynchCalls.getLength()-1
-                                        %                                     callElement = asynchCalls.item(m);
-                                        %                                     dest = char(callElement.getAttribute('dest'));
-                                        %                                     mean = str2double(char(callElement.getAttribute('calls-mean')));
-                                        %                                     tempAct = tempAct.asynchCall(dest,mean);
-                                        %                                     actCalls{iterActNames,1} = dest;
-                                        %                                     requesters{size(requesters,1)+1,1} = tempAct.name;
-                                        %                                     requesters{size(requesters,1),2} = taskID;
-                                        %                                     requesters{size(requesters,1),3} = tempProc.name;
-                                        %                                     requesters{size(requesters,1),4} = dest;
-                                        %                                     requesters{size(requesters,1),5} = procID;
-                                        %                                 end
-                                        %                             else
-                                        %                                 actCalls{iterActNames,1} = [];
-                                        %                             end
-                                        %iterActNames = iterActNames + 1;
-                                    end
+                                asynchCalls = actElement.getElementsByTagName('asynch-call');
+                                for m = 0:asynchCalls.getLength()-1
+                                    %Call - Asynchronous
+                                    callElement = asynchCalls.item(m);
+                                    destName = char(callElement.getAttribute('dest'));
+                                    destPos = findstring(lqnGraph.Nodes.Node,destName);
+                                    destID = lqnGraph.Nodes.Name{destPos};
+                                    callPos = findedge(lqnGraph,actID,destID);
+                                    callResult = callElement.getElementsByTagName('result-call');
+                                    wRes = str2double(callResult.item(0).getAttribute('waiting'));
+                                    Avg.Edges.Waiting(callPos) = wRes;
                                 end
                             end
                         end
@@ -240,25 +258,11 @@ classdef SolverLQNS < LayeredNetworkSolver
                 end
             end
             
-            %             for edge=1:height(lqnGraph.Edges)
-            %                 if lqnGraph.Edges.Type(edge) == 1 % add contribution of sync-calls
-            %                     syncSource = lqnGraph.Edges.EndNodes{edge,1};
-            %                     aidx = findstring(lqnGraph.Nodes.Name,syncSource);
-            %                     if lqnGraph.Edges.Weight(edge) >= 1
-            %                         Avg.Nodes.RespT(aidx) = Avg.Nodes.RespT(aidx) +  Avg.Edges.RespT(edge) * lqnGraph.Edges.Weight(edge);
-            %                     else
-            %                         Avg.Nodes.RespT(aidx) = Avg.Nodes.RespT(aidx) +  Avg.Edges.RespT(edge);
-            %                     end
-            %                 end
-            %             end
-            
-            self.result = struct();
-            self.result.Avg = struct();
-            self.result.Avg.Graph = lqnGraph;
-            self.result.Avg.QLen = Avg.Nodes.QLen(:);
-            self.result.Avg.Util = Avg.Nodes.Util(:);
-            self.result.Avg.RespT = Avg.Nodes.RespT(:);
-            self.result.Avg.Tput = Avg.Nodes.Tput(:);
+            self.result.RawAvg = Avg;
+            self.result.Avg.QLen = Avg.Nodes.Utilization(:);
+            self.result.Avg.Util = Avg.Nodes.ProcUtilization(:);
+            self.result.Avg.RespT = Avg.Nodes.Phase1ServiceTime(:);
+            self.result.Avg.Tput = Avg.Nodes.Throughput(:);
             result = self.result;
         end
         

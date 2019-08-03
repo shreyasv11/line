@@ -8,11 +8,11 @@ classdef Task < LayeredNetworkElement
         multiplicity;       %int
         scheduling;         %string
         thinkTime;          %double
-        thinkTimeMean;          %double
-        thinkTimeSCV;          %double
+        thinkTimeMean;      %double
+        thinkTimeSCV;       %double
         entries = [];
         activities = Activity.empty();     %task-activities
-        initActID = 0;       %integer that indicates which is the initial activity
+        initActID = 0;      %integer that indicates which is the initial activity
         precedences = [];
         replyEntry;
     end
@@ -78,14 +78,14 @@ classdef Task < LayeredNetworkElement
         function obj = setAsReferenceTask(obj)
             % OBJ = SETASREFERENCETASK(OBJ)
             
-            self.scheduling = SchedStrategy.REF;
+            obj.scheduling = SchedStrategy.REF;
         end
         
         function obj = setThinkTime(obj, thinkTime)
             % OBJ = SETTHINKTIME(OBJ, THINKTIME)
             
             if isnumeric(thinkTime)
-                obj.thinkTimeMean = Exp(1/thinkTime);
+                obj.thinkTime = Exp(1/thinkTime);
                 obj.thinkTimeMean = thinkTime;
                 obj.thinkTimeSCV = 1.0;
             elseif isa(thinkTime,'Distrib')

@@ -36,23 +36,24 @@ classdef LayeredNetworkSolver < Solver
                 wantLQNSnaming = false;
             end
             [QN,UN,RN,TN] = self.getAvg();
-            Node = self.model.getGraph.Nodes.Node;
-            Objects = self.model.getGraph.Nodes.Object;
+            Node = self.model.lqnGraph.Nodes.Node;
+            Objects = self.model.lqnGraph.Nodes.Object;
             O = length(Objects);
             NodeType = cell(O,1);
-            for o=1:O
-                NodeType{o,1} = class(Objects{o});
+            for o = 1:O
+                NodeType{o} = class(Objects{o});
             end
             if wantLQNSnaming
-                utilization = QN;
-                QT = Table(Node,utilization);
-                procUtilization = UN;
-                UT = Table(Node,procUtilization);
-                phase1ServiceTime = RN;
-                RT = Table(Node,phase1ServiceTime);
-                throughput = TN;
-                TT = Table(Node,throughput);
-                AvgTable = Table(Node, NodeType, utilization, procUtilization, phase1ServiceTime, throughput);
+                Utilization = QN;
+                QT = Table(Node,Utilization);
+                ProcUtilization = UN;
+                UT = Table(Node,ProcUtilization);
+                Phase1ServiceTime = RN;
+                RT = Table(Node,Phase1ServiceTime);
+                Throughput = TN;
+                TT = Table(Node,Throughput);
+                AvgTable = Table(Node, NodeType, Utilization, ProcUtilization,...
+                    Phase1ServiceTime, Throughput);
             else
                 QLen = QN;
                 QT = Table(Node,QLen);

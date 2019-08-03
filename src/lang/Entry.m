@@ -7,6 +7,9 @@ classdef Entry < LayeredNetworkElement
     properties
         type;
         parent;
+        extArrival;          %double
+        extArrivalMean;      %double
+        extArrivalSCV;       %double
         activities = [];
         replyActivity = {};
     end
@@ -15,8 +18,8 @@ classdef Entry < LayeredNetworkElement
         %public methods, including constructor
         
         %constructor
-        function obj = Entry(model, name, type)
-            % OBJ = ENTRY(MODEL, NAME, TYPE)
+        function obj = Entry(model, name, type, extArrival)
+            % OBJ = ENTRY(MODEL, NAME, TYPE, EXTARRIVAL)
             
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
@@ -26,6 +29,18 @@ classdef Entry < LayeredNetworkElement
                 type = 'Graph';
             end
             obj.type = type;
+            if ~exist('extArrival','var')
+                extArrival = NaN;
+            end
+            if isnumeric(extArrival)
+                obj.extArrival = Exp(1/extArrival);
+                obj.extArrivalMean = extArrival;
+                obj.extArrivalSCV = 1.0;
+            elseif isa(extArrival,'Distrib')
+                obj.extArrival = extArrival;
+                obj.extArrivalMean = extArrival.getMean();
+                obj.extArrivalSCV = extArrival.getSCV();
+            end
             model.objects.entries{end+1} = obj;
         end
         
@@ -34,6 +49,20 @@ classdef Entry < LayeredNetworkElement
             
             parent.addEntry(obj);
             obj.parent = parent;
+        end
+        
+        function obj = setExternalArrival(obj, extArrival)
+            % OBJ = SETEXTERNALARRIVAL(OBJ, EXTARRIVAL)
+            
+            if isnumeric(extArrival) % assume this is a mean
+                obj.extArrival = Exp(1 / extArrival);
+                obj.extArrivalMean = extArrival;
+                obj.extArrivalSCV = 1.0;
+            elseif isa(extArrival,'Distrib')
+                obj.extArrival = extArrival;
+                obj.extArrivalMean = extArrival.getMean();
+                obj.extArrivalSCV = extArrival.getSCV();
+            end
         end
         
         %addActivity

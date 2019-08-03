@@ -186,33 +186,76 @@ classdef Metric < Copyable
                     r = findstring(classnames,self.class.name);
                     switch self.type
                         case Metric.Util
-                            value = results.Avg.U(i,r);
+                            if isempty(results.Avg.U)
+                                value = NaN;
+                            else
+                                value = results.Avg.U(i,r);
+                            end
                         case Metric.SysRespT
-                            value = results.Avg.C(i,r);
+                            if isempty(results.Avg.C)
+                                value = NaN;
+                            else
+                                value = results.Avg.C(i,r);
+                            end
                         case Metric.SysTput
-                            value = results.Avg.X(i,r);
+                            if isempty(results.Avg.X)
+                                value = NaN;
+                            else
+                                value = results.Avg.X(i,r);
+                            end
                         case Metric.RespT
-                            value = results.Avg.R(i,r);
+                            if isempty(results.Avg.R)
+                                value = NaN;
+                            else
+                                value = results.Avg.R(i,r);
+                            end                            
                         case Metric.Tput
-                            value = results.Avg.T(i,r);
+                            if isempty(results.Avg.T)
+                                value = NaN;
+                            else
+                                value = results.Avg.T(i,r);
+                            end
                         case Metric.QLen
-                            value = results.Avg.Q(i,r);
+                            if isempty(results.Avg.Q)
+                                value = NaN;
+                            else
+                                value = results.Avg.Q(i,r);
+                            end
                         case Metric.TranTput
                             %results.Tran.Avg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);
                             %results.Tran.Avg.T{i,r}.TimeInfo.Units = 'since initialization';
-                            value = results.Tran.Avg.T{i,r};
+                            if isempty(results.Tran.Avg.T)
+                                value = NaN;
+                            else
+                                value = results.Tran.Avg.T{i,r};
+                            end                            
                         case Metric.TranUtil
                             %results.Tran.Avg.U{i,r}.Name = sprintf('Utilization (station %d, class %d)',i,r);
                             %results.Tran.Avg.U{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.Tran.Avg.U{i,r};
+                            if isempty(results.Tran.Avg.U)
+                                value = NaN;
+                            else
+                                value = results.Tran.Avg.U{i,r};
+                            end                            
                         case Metric.TranQLen
                             %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
                             %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.Tran.Avg.Q{i,r};
+                            if isempty(results.Tran.Avg.Q)
+                                value = NaN;
+                            else
+                                value = results.Tran.Avg.Q{i,r};
+                            end                            
                         case Metric.TranRespT
                             %results.Tran.Avg.Q{i,r}.Name = sprintf('Queue Length (station %d, class %d)',i,r);
                             %results.Tran.Avg.Q{i,r}.TimeInfo.Units = 'since initialization';
                             value = results.Tran.Avg.R{i,r};
+                            if isempty(results.Tran.Avg.R)
+                                value = NaN;
+                            else
+                                value = results.Tran.Avg.R{i,r};
+                            end                            
                     end
             end
         end

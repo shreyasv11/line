@@ -8,10 +8,11 @@ classdef Activity < LayeredNetworkElement
         phase = 1;                  %int
         hostDemand = [];
         hostDemandMean = 0;         %double
-        hostDemandSCV = 0;         %double
+        hostDemandSCV = 0;          %double
         parent;
-        parentName;            %string
+        parentName;                 %string
         boundToEntry;               %string
+        callOrder;                  %string \in {'stochastic', 'deterministic'} or
         synchCallDests = cell(0);   %string array
         synchCallMeans = [];        %integer array
         asynchCallDests = cell(0);  %string array
@@ -22,14 +23,17 @@ classdef Activity < LayeredNetworkElement
         %public methods, including constructor
         
         %constructor
-        function obj = Activity(model, name, hostDemand, boundToEntry, phase)
-            % OBJ = ACTIVITY(MODEL, NAME, HOSTDEMAND, BOUNDTOENTRY, PHASE)
+        function obj = Activity(model, name, hostDemand, boundToEntry, callOrder, phase)
+            % OBJ = ACTIVITY(MODEL, NAME, HOSTDEMAND, BOUNDTOENTRY, CALLORDER, PHASE)
             
             if ~exist('name','var')
                 error('Constructor requires to specify at least: name, hostDemandMean.');
             end
             obj@LayeredNetworkElement(name);
             obj.parentName = '';
+            if ~exist('hostDemand','var')
+                hostDemand = NaN;
+            end
             if isnumeric(hostDemand)
                 obj.hostDemand = Exp(1/hostDemand);
                 obj.hostDemandMean = hostDemand;
@@ -42,10 +46,14 @@ classdef Activity < LayeredNetworkElement
             if ~exist('boundToEntry','var')
                 boundToEntry = '';
             end
+            if ~exist('callOrder','var')
+                callOrder = '';
+            end
             if ~exist('phase','var')
                 phase = 1;
             end
             obj.boundToEntry = boundToEntry;
+            obj.callOrder = callOrder;
             obj.phase = phase;
             model.objects.activities{end+1} = obj;
         end
@@ -67,6 +75,20 @@ classdef Activity < LayeredNetworkElement
             
             parent.addActivity(obj);
             obj.parent = parent;
+        end
+        
+        function obj = setHostDemand(obj, hostDemand)
+            % OBJ = SETHOSTDEMAND(OBJ, HOSTDEMAND)
+            
+            if isnumeric(hostDemand)
+                obj.hostDemand = Exp(1/hostDemand);
+                obj.hostDemandMean = hostDemand;
+                obj.hostDemandSCV = 1.0;
+            elseif isa(hostDemand,'Distrib')
+                obj.hostDemand = hostDemand;
+                obj.hostDemandMean = hostDemand.getMean();
+                obj.hostDemandSCV = hostDemand.getSCV();
+            end
         end
         
         function obj = repliesTo(obj, entry)
@@ -96,6 +118,16 @@ classdef Activity < LayeredNetworkElement
             end
         end
         
+        function obj = setCallOrder(obj, callOrder)
+            % OBJ = SETCALLORDER(OBJ, CALLORDER)
+            
+            if strcmpi(callOrder, 'STOCHASTIC') || strcmpi(callOrder, 'DETERMINISTIC')
+                obj.callOrder = upper(callOrder);
+            else
+                obj.callOrder = '';
+            end
+        end
+        
         %synchCall
         function obj = synchCall(obj, synchCallDest, synchCallMean)
             % OBJ = SYNCHCALL(OBJ, SYNCHCALLDEST, SYNCHCALLMEAN)
@@ -115,14 +147,15 @@ classdef Activity < LayeredNetworkElement
         function obj = asynchCall(obj, asynchCallDest, asynchCallMean)
             % OBJ = ASYNCHCALL(OBJ, ASYNCHCALLDEST, ASYNCHCALLMEAN)
             
-            if nargin == 3
-                if ischar(asynchCallDest)
-                    obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest;
-                else % object
-                    obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest.name;
-                end
-                obj.asynchCallMeans = [obj.asynchCallMeans; asynchCallMean];
+            if ~exist('asynchCallMean','var')
+                asynchCallMean = 1.0;
             end
+            if ischar(asynchCallDest)
+                obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest;
+            else % object
+                obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest.name;
+            end
+            obj.asynchCallMeans = [obj.asynchCallMeans; asynchCallMean];
         end
         
     end
