@@ -59,7 +59,7 @@ for c=1:qn.nchains
         XNchain(c) = 0;
         % all classes in same chain must share the same refstation, so we use the first one
         ref = refstats(inchain(1));
-        % we now compute the incoming throughput to the
+        % we now compute the incoming system throughput to the
         % reference station from completing classes
         for i=1:qn.nstations
             for r=completingclasses(:)'

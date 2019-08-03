@@ -84,7 +84,7 @@ if qn.nstations==2 && qn.nclasses==1 && qn.nclosedjobs == 0 % open single-class 
     QN(queue_ist,1) = XN(queue_ist,1) * RN(queue_ist,1);
     lG = 0;
     runtime=toc(T0);
-else
+else % queueing network
     [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_mva_analysis(qn, options);
 end
 self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,method);
