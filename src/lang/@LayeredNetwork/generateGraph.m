@@ -217,11 +217,12 @@ for p=1:length(proc)
                     PostType(end+1,1) = 0; % single
                 end
                 
+                
                 asynchCallDests = sw_act_tp(a).asynchCallDests;
                 for asd=1:length(asynchCallDests)
-                    EndNodes(end+1,1) = sw_act_tp(a).name;
-                    EndNodes(end,2) = asynchCallDests{sd};
-                    Weight(end+1,1) = sw_act_tp(a).asynchCallMeans(sd);
+                    EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
+                    EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,asynchCallDests{asd});
+                    Weight(end+1,1) = sw_act_tp(a).asynchCallMeans(asd);
                     EdgeType(end+1,1) = 2; % async
                     PreType(end+1,1) = 0; % single
                     PostType(end+1,1) = 0; % single

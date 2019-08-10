@@ -240,6 +240,7 @@ classdef SolverLQNS < LayeredNetworkSolver
                                     wRes = str2double(callResult.item(0).getAttribute('waiting'));
                                     Avg.Edges.Waiting(callPos) = wRes;
                                 end
+                                
                                 asynchCalls = actElement.getElementsByTagName('asynch-call');
                                 for m = 0:asynchCalls.getLength()-1
                                     %Call - Asynchronous

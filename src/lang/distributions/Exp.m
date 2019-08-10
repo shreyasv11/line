@@ -75,7 +75,7 @@ classdef Exp < MarkovianDistribution
             if abs(SKEW-2) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit skewness != 2, changing skewness to 2.');
             end
-            %            if abs(KURT-9) < Distrib.Tol
+            %            if abs(KURT-9) > Distrib.Tol
             %                warning('Warning: the exponential distribution cannot fit kurtosis != 9, changing kurtosis to 9.');
             %            end
             self.getParam(1).paramValue = 1 / MEAN;
@@ -99,7 +99,7 @@ classdef Exp < MarkovianDistribution
             % UPDATEMEANANDSCV(SELF,MEAN,SCV)
             
             % Update parameters to match the given mean and squared coefficient of variation (SCV=variance/mean^2)
-            if abs(SCV-1) < Distrib.Tol
+            if abs(SCV-1) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit SCV != 1, changing SCV to 1.');
             end
             self.getParam(1).paramValue = 1 / MEAN;
@@ -135,7 +135,7 @@ classdef Exp < MarkovianDistribution
             % EX = FITMEANANDSCV(MEAN, SCV)
             
             % Fit exponential distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
-            if abs(SCV-1) < Distrib.Tol
+            if abs(SCV-1) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit SCV != 1, changing SCV to 1.');
             end
             ex = Exp(1/MEAN);

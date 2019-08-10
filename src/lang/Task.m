@@ -46,7 +46,7 @@ classdef Task < LayeredNetworkElement
                         obj.multiplicity = 1;
                     end
                     if isnumeric(thinkTime)
-                        obj.thinkTimeMean = Exp(1/thinkTime);
+                        obj.thinkTime = Exp(1/thinkTime);
                         obj.thinkTimeMean = thinkTime;
                         obj.thinkTimeSCV = 1.0;
                     elseif isa(thinkTime,'Distrib')

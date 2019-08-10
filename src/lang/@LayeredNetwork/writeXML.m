@@ -61,6 +61,10 @@ for p = 1:length(self.processors)
             taskElement.appendChild(entryElement);
             entryElement.setAttribute('name', curEntry.name);
             entryElement.setAttribute('type', curEntry.type);
+            if ~isnan(curEntry.extArrivalMean)
+                entryElement.setAttribute('open-arrival-rate', num2str(1/curEntry.extArrivalMean));
+                taskElement.setAttribute('scheduling', SchedStrategy.INF);
+            end
         end
         taskActElement = doc.createElement('task-activities');
         taskElement.appendChild(taskActElement);
@@ -73,12 +77,21 @@ for p = 1:length(self.processors)
             if ~isempty(curAct.boundToEntry)
                 actElement.setAttribute('bound-to-entry', curAct.boundToEntry);
             end
+            if ~isempty(curAct.callOrder)
+                actElement.setAttribute('call-order', curAct.callOrder);
+            end
             actElement.setAttribute('name', curAct.name);
-            for s=1:length(curAct.synchCallDests)
+            for sd=1:length(curAct.synchCallDests)
                 syncCallElement = doc.createElement('synch-call');
                 actElement.appendChild(syncCallElement);
-                syncCallElement.setAttribute('dest',curAct.synchCallDests(s));
-                syncCallElement.setAttribute('calls-mean',num2str(curAct.synchCallMeans(s)));
+                syncCallElement.setAttribute('dest',curAct.synchCallDests(sd));
+                syncCallElement.setAttribute('calls-mean',num2str(curAct.synchCallMeans(sd)));
+            end
+            for asd=1:length(curAct.asynchCallDests)
+                asyncCallElement = doc.createElement('asynch-call');
+                actElement.appendChild(asyncCallElement);
+                asyncCallElement.setAttribute('dest',curAct.asynchCallDests(asd));
+                asyncCallElement.setAttribute('calls-mean',num2str(curAct.asynchCallMeans(asd)));
             end
         end
         for ap=1:length(curTask.precedences)

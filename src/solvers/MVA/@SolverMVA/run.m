@@ -6,6 +6,10 @@ T0=tic;
 if ~exist('options','var')
     options = self.getOptions;
 end
+QN = []; UN = [];
+RN = []; TN = [];
+CN = []; XN = [];
+lG = NaN;
 
 if ~self.supports(self.model)
     error('Line:FeatureNotSupportedBySolver','This model contains features not supported by the solver.');
@@ -115,12 +119,7 @@ else % queueing network
                 QN(:,1) = TN(:,1) .* RN(:,1);
                 UN(:,1) = TN(:,1) ./ qn.rates;
                 UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
-                lG = 0;
-            else
-                QN = []; UN = [];
-                RN = []; TN = [];
-                CN = []; XN = [];
-                lG = NaN;
+                lG = - N*log(XN(1,1));
             end
             runtime=toc(T0);
         case 'aba.lower'
@@ -139,12 +138,7 @@ else % queueing network
                 QN(:,1) = TN(:,1) .* RN(:,1);
                 UN(:,1) = TN(:,1) ./ qn.rates;
                 UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
-                lG = 0;
-            else
-                QN = []; UN = [];
-                RN = []; TN = [];
-                CN = []; XN = [];
-                lG = NaN;
+                lG = - N*log(XN(1,1));
             end
             runtime=toc(T0);
         case 'gb.upper'
@@ -174,12 +168,7 @@ else % queueing network
                 RN(qn.schedid == SchedStrategy.ID_INF,1) = 1 ./ qn.rates(qn.schedid == SchedStrategy.ID_INF,1);
                 UN(:,1) = TN(:,1) ./ qn.rates;
                 UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
-                lG = 0;
-            else
-                QN = []; UN = [];
-                RN = []; TN = [];
-                CN = []; XN = [];
-                lG = NaN;
+                lG = - N*log(XN(1,1));
             end
             runtime=toc(T0);
         case 'gb.lower'
@@ -208,12 +197,7 @@ else % queueing network
                 end
                 UN(:,1) = TN(:,1) ./ qn.rates;
                 UN((qn.schedid == SchedStrategy.ID_INF),1) = QN((qn.schedid == SchedStrategy.ID_INF),1);
-                lG = 0;
-            else
-                QN = []; UN = [];
-                RN = []; TN = [];
-                CN = []; XN = [];
-                lG = NaN;
+                lG = - N*log(XN(1,1));
             end
             runtime=toc(T0);
         otherwise
