@@ -23,6 +23,5 @@ end
 
 function value = approximate(x,y,alpha) %soft-min
 % VALUE = APPROXIMATE(X,Y,ALPHA) %SOFT-MIN
-
 value = - ((-x)*exp(-alpha*x) -y*exp(-alpha*y)) / (exp(-alpha*x) + exp(-alpha*y));
 end

@@ -8,6 +8,13 @@ if ~exist('options','var')
     options = self.getOptions;
 end
 
+switch options.method
+    case {'default','stateindep','statedep'}
+        % do nothing
+    otherwise
+    warning('This solver does not support the specified method. Setting to default.');
+    options.method  = 'default';
+end
 
 if isinf(options.timespan(1))
     if options.verbose  == 2

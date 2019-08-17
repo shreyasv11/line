@@ -1,5 +1,5 @@
-function [Gn,lGn]=pfqn_pnc(L,K,Z)
-% [GN,LGN]=PFQN_PNC(L,K,Z)
+function [Gn,lGn]=pfqn_panacea(L,K,Z)
+% [GN,LGN]=PFQN_PANACEA(L,K,Z)
 
 % K = population vector
 [q,p]=size(L);
@@ -67,7 +67,7 @@ end
 I = [A0, A1/N, A2/N^2];%, A3/N^3*0];
 
 lGn = - sum(factln(K)) + sum(K.*log(sum(Z,1))) + log(sum(I)) - sum(log(alpha));
-Gn = prod(Z.^K) / prod(factorial(K)) * sum(I) / prod(alpha);
+Gn = exp(lGn);
 if ~isfinite(lGn)
     Gn=NaN;
     lGn=NaN;

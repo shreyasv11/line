@@ -1,6 +1,7 @@
 function [XN,QN,UN,CN,lGN]=pfqn_mvald(L,N,Z,mu)
 % [XN,QN,UN,CN,LGN]=PFQN_MVALD(L,N,Z,MU)
 
+warn = true;
 [M,R]=size(L); % get number of queues (M) and classes (R)
 if ~exist('mi','var')
     mi = ones(M,1);
@@ -40,7 +41,16 @@ while n~=-1
     
     % compute pi(0|n)
     for i=1:M
-        pi(i,(0)+1,hashpop(n,N))=1-sum(pi(i,(1:sum(n))+1,hashpop(n,N)));
+        p0 = 1-sum(pi(i,(1:sum(n))+1,hashpop(n,N)));
+        if p0<10*eps 
+            if warn
+                warning('MVA-LD is numerically unstable on this model, forcing all probabilities to be non-negative.'); 
+                warn=false;
+            end
+            pi(i,(0)+1,hashpop(n,N)) = eps;
+        else
+            pi(i,(0)+1,hashpop(n,N)) = p0;
+        end
     end
     
     last_nnz = max(find(n>0));
