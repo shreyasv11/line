@@ -58,6 +58,7 @@ if isinf(options.timespan(1))
     self.result.infGen = Q;
     self.result.space = SS;
     self.result.spaceAggr = SSq;
+    self.result.nodeSpace = qn.space;
     self.result.eventFilt = Dfilt;
     runtime=toc(T0);
     self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,options.method);

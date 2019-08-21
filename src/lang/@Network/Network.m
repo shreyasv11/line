@@ -788,6 +788,18 @@ classdef Network < Model
             self.isInitialized = true;
         end
         
+%         function setState(self, state)
+%             for ind=1:self.getNumberOfNodes
+%                 if self.nodes{ind}.isStateful
+%                     ist = qn.nodeToStation(ind);
+%                     self.nodes{ind}.setState(state{ind});
+%                     if isempty(self.nodes{ind}.getState)
+%                         error(sprintf('Invalid state assignment for station %d\n',ind));
+%                     end
+%                 end
+%             end            
+%         end
+        
         function [H,G] = getGraph(self)
             % [H,G] = GETGRAPH()
             

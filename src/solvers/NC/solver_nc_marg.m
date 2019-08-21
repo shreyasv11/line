@@ -1,8 +1,12 @@
-function [Pr,G,runtime] = solver_nc_marg(qn, options)
+function [Pr,G,runtime] = solver_nc_marg(qn, options, lG)
 % [PR,G,RUNTIME] = SOLVER_NC_MARG(QN, OPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
+
+if nargin == 2
+    lG = NaN;
+end
 
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
@@ -11,7 +15,7 @@ S = qn.nservers;
 NK = qn.njobs';  % initial population per class
 C = qn.nchains;
 
-PH = qn.proc;
+PHr = qn.proc;
 
 %% initialization
 
@@ -20,7 +24,7 @@ ST = zeros(M,K);
 V = zeros(M,K);
 for k = 1:K
     for i=1:M
-        ST(i,k) = 1 ./ map_lambda(PH{i,k});
+        ST(i,k) = 1 ./ map_lambda(PHr{i,k});
     end
 end
 ST(isnan(ST))=0;
@@ -85,34 +89,85 @@ for i=1:M
 end
 Lchain(~isfinite(Lchain))=0;
 
-G = pfqn_gmvald(Lchain, Nchain, mu);
+if isnan(lG)
+    G = pfqn_gmvald(Lchain, Nchain, mu);
+else
+    G = exp(lG);
+end
+
 for ist=1:qn.nstations
     ind = qn.stationToNode(ist);
     isf = qn.stationToStateful(ist);
-    [~,nivec] = State.toMarginal(qn, ind, state{isf});
-    if min(nivec) < 0 % user flags that state of i should be ignored
+    [~,nirvec,sivec,kirvec] = State.toMarginal(qn, ind, state{isf});
+    if min(nirvec) < 0 % user flags that state of i should be ignored
         Pr(i) = NaN;
     else
         set_ist = setdiff(1:qn.nstations,ist);
-        nivec_chain = nivec * qn.chains';
+        nivec_chain = nirvec * qn.chains';
         G_minus_i = pfqn_gmvald(Lchain(set_ist,:), Nchain-nivec_chain, mu(set_ist,:), options);
-        F_i = pfqn_gmvald(ST(ist,:).*V(ist,:), nivec, mu(ist,:), options);
+        F_i = 1;
+        switch qn.schedid(ist)
+            case SchedStrategy.ID_FCFS
+                for r=1:K
+                    PHr = qn.proc{ist,r};
+                    if ~isempty(PHr)
+                        kir = kirvec(1,r,:); kir=kir(:)';
+                        if length(kir)>1
+                            error('Cannot return state probability because the product-form solution requires exponential service times at FCFS nodes.');
+                        end
+                        if ST(ist,r)~=max(ST(ist,:))
+                            error('Cannot return state probability because the product-form solution requires identical service times at FCFS nodes.');
+                        end
+                    end
+                end
+                ci = find(sivec);
+                if ~isempty(ci)
+                    F_i = F_i * prod(exp(nirvec(1,:).*log(V(ist,r))))./prod(mu(ist,1:sum(kirvec(:))));
+                else
+                    F_i = 1;
+                end
+            case SchedStrategy.ID_RAND
+                for r=1:K
+                    PHr = qn.proc{ist,r};
+                    if ~isempty(PHr)
+                        kir = kirvec(1,r,:); kir=kir(:)';
+                        if length(kir)>1
+                            error('Cannot return state probability because the product-form solution requires exponential service times at RAND nodes.');
+                        end
+                        if ST(ist,r)~=max(ST(ist,:))
+                            error('Cannot return state probability because the product-form solution requires identical service times at RAND nodes.');
+                        end
+                    end
+                end
+                ci = find(sivec);
+                if ~isempty(ci)
+                    F_i = (nirvec(ci)/sum(nirvec)) * pfqn_gmvald(ST(ist,:).*V(ist,:), nirvec, mu(ist,:), options);
+                else
+                    F_i = 1;
+                end
+            case SchedStrategy.ID_PS
+                for r=1:K
+                    PHr = qn.proc{ist,r};
+                    if ~isempty(PHr)
+                        kir = kirvec(1,r,:); kir=kir(:)';
+                        Ar = map_pie(PHr)*inv(-PHr{1});
+                        F_i = F_i * prod(exp(kir.*log(V(ist,r)*Ar)))./prod(factorial(kir));
+                    end
+                end
+                F_i = F_i * factorial(sum(kirvec(:)))./prod(mu(ist,1:sum(kirvec(:))));
+            case SchedStrategy.ID_INF
+                for r=1:K
+                    PHr = qn.proc{ist,r};
+                    if ~isempty(PHr)
+                        kir = kirvec(1,r,:); kir=kir(:)';
+                        Ar = map_pie(PHr)*inv(-PHr{1});
+                        F_i = F_i * prod(exp(kir.*log(V(ist,r)*Ar)))./prod(factorial(kir));
+                    end
+                end
+        end
         Pr(ist) =  F_i * G_minus_i / G;
     end
 end
-
-% Pr = 1;
-% for i=1:M
-%     isf = qn.stationToStateful(i);
-%     [~,nivec] = State.toMarginal(qn, i, state{isf});
-%     nivec_chain = nivec * qn.chains';
-%     F_i = pfqn_gmvald(Lchain(i,:), nivec_chain, mu_chain(i,:));
-%     G_minus_i = pfqn_gmvald(Lchain(setdiff(1:M,i),:), Nchain-nivec_chain, mu_chain(setdiff(1:M,i),:));
-%     g0_i = pfqn_gmvald(ST(i,:).*alpha(i,:),nivec, mu_chain(i,:));
-%     G0_i = pfqn_gmvald(STchain(i,:),nivec_chain, mu_chain(i,:));
-%     Pr = F_i * G_minus_i / G * (g0_i / G0_i);
-% end
-%
 
 runtime = toc(Tstart);
 Pr(isnan(Pr))=0;

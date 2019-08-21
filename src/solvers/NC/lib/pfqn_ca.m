@@ -29,9 +29,15 @@ if M==0
     return
 end
 
+if sum(N)==0
+    Gn=0;
+    lGn=-Inf;
+    return;
+end
+
 if min(N)<0
     Gn=0;
-    ln=-Inf;
+    lGn=-Inf;
     return;
 end
 

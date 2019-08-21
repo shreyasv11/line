@@ -1,5 +1,8 @@
 function [lNormConst] = getProbNormConstAggr(self)
 % [LNORMCONST] = GETPROBNORMCONST()
+%
+% Returns the logarithm of the normalizing constant for the aggregate state
+% probabilities
 
 if ~isempty(self.result)
     lNormConst = self.result.Prob.logNormConstAggr;

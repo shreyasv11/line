@@ -1,5 +1,5 @@
 function Pnir = getProb(self, node, state)
-% PNIR = GETPROBSTATE(NODE, STATE)
+% PNIR = GETPROB(NODE, STATE)
 
 if ~exist('node','var')
     error('getProb requires to pass a parameter the station of interest.');

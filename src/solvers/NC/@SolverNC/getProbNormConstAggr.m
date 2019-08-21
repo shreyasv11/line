@@ -1,6 +1,6 @@
-function [lNormConst] = getProbNormConstAggr(self)
-% [LNORMCONST] = GETPROBNORMCONST()
+function [logNormConst] = getProbNormConstAggr(self)
+% [LOGNORMCONST] = GETPROBNORMCONST()
 
 self.run();
-lNormConst = self.result.Prob.logNormConstAggr;
+logNormConst = self.result.Prob.logNormConstAggr;
 end

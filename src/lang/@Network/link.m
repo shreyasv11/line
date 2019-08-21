@@ -46,7 +46,7 @@ end
 
 % This block is to make sure that P = model.initRoutingMatrix; P{2} writes
 % into P{2,2} rather than being interpreted as P{2,1}.
-if isLinearP 
+if isLinearP
     Ptmp = P;
     P = cell(R,R);
     for r=1:R
@@ -55,7 +55,7 @@ if isLinearP
         else
             P{r,r} = Ptmp;
         end
-        for s=1:R        
+        for s=1:R
             if s~=r
                 P{r,s} = 0*Ptmp{r};
             end
@@ -65,7 +65,7 @@ end
 
 % assign routing for self-looping jobs
 for r=1:R
-    if isa(self.classes{r},'SelfLoopingClass')        
+    if isa(self.classes{r},'SelfLoopingClass')
         for s=1:R
             P{r,s} = 0 * P{r,s};
         end
@@ -229,6 +229,27 @@ for i=1:Mplus
     end
 end
 
+% check if the probability out of (i,r) sums to 1.0
+for i=1:Mplus
+    for r=1:R
+        pSum = 0;
+        for s=1:R
+            for j=1:Mplus
+                pSum = pSum + P{r,s}(i,j);
+            end            
+        end
+        if pSum > 1.0 + Distrib.Tol
+            if self.nodes{i}.schedStrategy ~= SchedStrategy.FORK
+                error('The total routing probability for jobs leaving node %s in class %s is greater than 1.0.',self.nodes{i}.name,self.classes{r}.name);
+            end
+%        elseif pSum < 1.0 - Distrib.Tol % we cannot check this case as class r may not reach station i, in which case its outgoing routing prob is zero
+%            if self.nodes{i}.schedStrategy ~= SchedStrategy.EXT % if not a sink
+%                error('The total routing probability for jobs leaving node %s in class %s is less than 1.0.',self.nodes{i}.name,self.classes{r}.name);
+%            end
+        end
+    end
+end
+
 if isReset
     %%re-instate all of this if re-instating refreshChains
     %nodetypes = self.getNodeTypes();
@@ -239,4 +260,5 @@ if isReset
     %self.refreshChains(self.qn.rates, wantVisits);
     self.refreshStruct; % without this exception with linkAndLog
 end
+
 end
