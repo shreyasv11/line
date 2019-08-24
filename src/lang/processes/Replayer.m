@@ -12,7 +12,12 @@ classdef Replayer < TimeSeries
         %Constructor
         function self = Replayer(fileName)
             % SELF = REPLAYER(FILENAME)
-            fileName = which(fileName);
+            if exist(fileName,'file') == 2
+                dirStruct = dir(fileName); 
+                fileName = [dirStruct.folder,filesep,dirStruct.name];
+            else 
+                error('The file cannot be located, use the full file path.');
+            end
             self@TimeSeries('Replayer',1);
             setParam(self, 1, 'fileName', fileName, 'java.lang.String');
             self.data = [];

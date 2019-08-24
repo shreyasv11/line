@@ -1,4 +1,3 @@
-clear;
 model = Network('model');
 
 node{1} = DelayStation(model, 'InfiniteServer');
@@ -34,8 +33,9 @@ model.link(P);
 model.initFromMarginalAndStarted([2,1;1,0],[0,0;1,0]);
 
 options = Solver.defaultOptions;
-options.keep=true;
+%options.keep=true;
 options.verbose=1;
+options.seed=23000;
 
 disp('This example shows the execution of the solver on a 2-class 2-node class-switching model with specified initial state.')
 % This part illustrates the execution of different solvers
