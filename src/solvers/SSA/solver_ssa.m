@@ -12,7 +12,7 @@ end
 Solver.resetRandomGeneratorSeed(options.seed+labindex-1);
 
 %% generate local state spaces
-nstations = qn.nstations;
+%nstations = qn.nstations;
 nstateful = qn.nstateful;
 %init_nserver = qn.nservers; % restore Inf at delay nodes
 R = qn.nclasses;
@@ -31,7 +31,7 @@ capacityc = zeros(qn.nnodes, qn.nclasses);
 for ind=1:qn.nnodes
     if qn.isstation(ind) % place jobs across stations
         ist = qn.nodeToStation(ind);
-        isf = qn.nodeToStateful(ind);
+        %isf = qn.nodeToStateful(ind);
         for r=1:qn.nclasses %cut-off open classes to finite capacity
             c = find(qn.chains(:,r));
             if ~isempty(qn.visits{c}) && qn.visits{c}(ist,r) == 0

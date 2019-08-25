@@ -10,6 +10,7 @@ fprintf(fid,[num2str(Solver.defaultOptions.iter_tol),'\n']);
 fprintf(fid,[num2str(Solver.defaultOptions.iter_max),'\n']);
 fprintf(fid,['-1\n\n']);
 
+%%
 fprintf(fid,'#Processor block\n');
 fprintf(fid,['P ',num2str(length(self.processors)),'\n']);
 for p = 1:length(self.processors)
@@ -29,6 +30,8 @@ for p = 1:length(self.processors)
             error('Unsupported scheduling policy.');
     end
 end
+
+%%
 fprintf(fid,'-1\n\n#Task block\n');
 numTasks = 0;
 for p = 1:length(self.processors)
@@ -60,6 +63,8 @@ for p = 1:length(self.processors)
         end
     end
 end
+
+%%
 fprintf(fid,'-1\n\n#Entry block\n');
 
 numEntry = 0;
@@ -89,6 +94,7 @@ for p = 1:length(self.processors)
     end
 end
 
+%%
 fprintf(fid,'-1\n\n#Activity blocks\n');
 for p = 1:length(self.processors)
     curProc = self.processors(p);
@@ -102,6 +108,9 @@ for p = 1:length(self.processors)
             for d=1:numel(curAct.synchCallDests)
                 fprintf(fid,['y ',curAct.name,' ',curAct.synchCallDests{d},' ',num2str(curAct.synchCallMeans),' \n']);
             end
+            for d=1:numel(curAct.asynchCallDests)
+                fprintf(fid,['z ',curAct.name,' ',curAct.asynchCallDests{d},' ',num2str(curAct.asynchCallMeans),' \n']);
+            end            
         end
         if ~strcmp(curTask.scheduling,'ref')
             fprintf(fid,[':']);
@@ -119,6 +128,7 @@ for p = 1:length(self.processors)
         fprintf(fid,['\n-1\n\n']);
     end
 end
+
 if fid~=1
     fclose(fid);
 end

@@ -352,6 +352,37 @@ classdef Network < Model
             end
         end
         
+        function nodes = getNodeByName(self, name)
+            % NODES = GETNODEBYNAME(SELF, NAME)
+            idx = findstring(self.getNodeNames,name);
+            if idx > 0
+                nodes = self.nodes{idx};
+            else
+                nodes = NaN;
+            end            
+        end
+        
+        function station = getStationByName(self, name)
+            % STATION = GETSTATIONBYNAME(SELF, NAME)
+            idx = findstring(self.getStationNames,name);
+            if idx > 0
+                station = self.stations{idx};
+            else
+                station = NaN;
+            end            
+        end
+        
+        function class = getClassByName(self, name)
+            % CLASS = GETCLASSBYNAME(SELF, NAME)
+            idx = findstring(self.getClassNames,name);
+            if idx > 0
+                class = self.classes{idx};
+            else
+                class = NaN;
+            end            
+        end
+        
+        
         function summary(self)
             % SUMMARY()
             
@@ -1347,7 +1378,7 @@ classdef Network < Model
         
         function P = serialRouting(varargin)
             % P = SERIALROUTING(VARARGIN)
-            
+                        
             if length(varargin)==1
                 varargin = varargin{1};
             end

@@ -50,7 +50,11 @@ if isempty(self.qn)
                         [svcTimeSorted] = sort(unique(svcTime));
                         self.nodes{i}.schedStrategyPar = zeros(1,K);
                         for k=1:K
-                            self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                            if ~isnan(svcTime(k))
+                                self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                            else
+                                self.nodes{i}.schedStrategyPar(k) = find(isnan(svcTimeSorted));
+                            end
                         end
                     case SchedStrategy.LEPT
                         svcTime = zeros(1,K);

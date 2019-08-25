@@ -57,6 +57,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             % [RESULT, RUNTIME] = ANALYZE(IT, E)
             
             T0 = tic;
+            self.ensemble{e}.reset();
             self.solvers{e}.reset();
             result = self.solvers{e}.getAvgTable();
             runtime = toc(T0);

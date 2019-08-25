@@ -26,14 +26,16 @@ lqnssolver = SolverLQNS(model, options);
 AvgTableLQNS = lqnssolver.getAvgTable;
 AvgTableLQNS
 
+% this method runs the MVA solver in each layer
 lnoptions = SolverLN.defaultOptions;
 lnoptions.verbose = 1;
 lnoptions.seed = 2300;
-solver{1} = SolverLN(model, @SolverNC, lnoptions);
+options = SolverMVA.defaultOptions;
+solver{1} = SolverLN(model, @(model) SolverMVA(model, options), lnoptions);
 AvgTable{1} = solver{1}.getAvgTable
 AvgTable{1}
 
-% this method adapts with the layer
+% this method adapts with the features of each layer
 solver{2} = SolverLN(model, @(model) SolverAuto(model, SolverAuto.defaultOptions), lnoptions);
 AvgTable{2} = solver{2}.getAvgTable
 AvgTable{2}
