@@ -26,7 +26,7 @@ end
 qn = self.getStruct();
 if any(isinf(qn.njobs))
     if isinf(options.cutoff)
-        error('Line:UnspecifiedOption','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., SolverCTMC(model,''cutoff'',1).');
+        error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., SolverCTMC(model,''cutoff'',1).');
     end
 end
 

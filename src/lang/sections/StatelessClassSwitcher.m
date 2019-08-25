@@ -14,6 +14,10 @@ classdef StatelessClassSwitcher < ClassSwitcher
             % matrix anyway
             self.csFun = @(r,s,state,statep) csMatrix(r,s); % state parameter if present is ignored
         end
+        
+        function self = updateClassSwitch(self, csMatrix)
+            self.csFun = @(r,s,state,statep) csMatrix(r,s); % state parameter if present is ignored
+        end
     end
     
 end

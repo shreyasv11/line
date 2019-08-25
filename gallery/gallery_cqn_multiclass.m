@@ -1,8 +1,8 @@
-function model = gallery_cqn(n,r)
-model = Network('Single-class CQN');
+function model = gallery_cqn_multiclass(m,r)
+model = Network('Multi-class CQN');
 %% Block 1: nodes
 node{1} = DelayStation(model, 'Delay 1');
-for i=1:n
+for i=1:m
     node{1+i} = Queue(model, ['Queue ',num2str(i)], SchedStrategy.PS);
 end
 %% Block 2: classes
@@ -12,7 +12,7 @@ end
 
 for s=1:r
     node{1}.setService(jobclass{s}, Exp.fitMean(2.000000+s)); % (Delay 1,Class1)
-    for i=1:n
+    for i=1:m
         node{1+i}.setService(jobclass{s}, Exp.fitMean(1.000000+i+s)); % (Queue 1,Class1)
     end
 end

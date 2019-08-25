@@ -31,7 +31,7 @@ classdef SolverCTMC < NetworkSolver
                 self.run;
             end
             if isempty(self.result) || ~isfield(self.result,'space')
-                warning('The model has not been cached. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpace()');
+                warning('The model solution is not available yet or has not been cached. Either solve it or use the ''force'' option to require this is done automatically, e.g., SolverCTMC(model,''force'',true).getStateSpace()');
                 stateSpace = [];
                 nodeStateSpace = [];
             else

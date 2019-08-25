@@ -153,7 +153,7 @@ end
 %             end
 
 
-self.linkedP = P;
+self.linkedRoutingTable = P;
 for i=1:M
     for j=1:M
         csMatrix{i,j} = zeros(R);

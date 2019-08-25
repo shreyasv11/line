@@ -9,7 +9,7 @@ classdef Network < Model
         % it must be accessed via getUsedLangFeatures that updates
         % the Distribution classes dynamically
         logPath;
-        linkedP;
+        linkedRoutingTable;
         isInitialized;
     end
     
@@ -107,7 +107,7 @@ classdef Network < Model
             self.links = {};
             self.initUsedFeatures();
             self.qn = [];
-            self.linkedP = {};
+            self.linkedRoutingTable = {};
             self.ag = [];
             self.isInitialized = false;
             self.logPath = '';
@@ -121,17 +121,17 @@ classdef Network < Model
         end
         
         function P = getLinkedRoutingMatrix(self)
-            % P = GETLINKEDROUTINGMATRIX()            
-            if isempty(self.linkedP)
+            % P = GETLINKEDROUTINGMATRIX()
+            if isempty(self.linkedRoutingTable)
                 warning('Unsupported: getLinkedRoutingMatrix() reqyires that the model topology has been instantiated with the link() method. Attempting auto-recovery.');
                 fname = tempname;
                 QN2SCRIPT(self,self.name,fname);
                 run(fname);
                 delete(fname);
-                P = model.getLinkedRoutingMatrix();                
-                % THE MODEL TOPOLOGY MUST HAVE BEEN LINKED WITH THE LINK() METHOD.');                
+                P = model.getLinkedRoutingMatrix();
+                % THE MODEL TOPOLOGY MUST HAVE BEEN LINKED WITH THE LINK() METHOD.');
             else
-                P = self.linkedP;
+                P = self.linkedRoutingTable;
             end
         end
         
@@ -160,16 +160,22 @@ classdef Network < Model
             end
         end
         
-        function reset(self)
-            % RESET()
+        function reset(self, resetState)
+            % RESET(RESETSTATE)
+            %
+            % If RESETSTATE is true, the model requires re-initialization
+            % of its state
             
             self.perfIndex.Avg = {};
             self.perfIndex.Tran = {};
             self.handles = {};
             self.qn = [];
             self.ag = [];
+            if nargin == 2 && resetState
+                self.isInitialized = false;
+            end
         end
-        
+                
         refreshStruct(self);
         
         function [M,R] = getSize(self)
@@ -282,7 +288,7 @@ classdef Network < Model
             
             M = self.getNumberOfNodes;
             K = self.getNumberOfClasses;
-            P = cellzeros(K,K,M,M);            
+            P = cellzeros(K,K,M,M);
         end
         
         function rtTypes = getRoutingStrategies(self)
@@ -359,7 +365,7 @@ classdef Network < Model
                 nodes = self.nodes{idx};
             else
                 nodes = NaN;
-            end            
+            end
         end
         
         function station = getStationByName(self, name)
@@ -369,7 +375,7 @@ classdef Network < Model
                 station = self.stations{idx};
             else
                 station = NaN;
-            end            
+            end
         end
         
         function class = getClassByName(self, name)
@@ -379,9 +385,22 @@ classdef Network < Model
                 class = self.classes{idx};
             else
                 class = NaN;
-            end            
+            end
         end
         
+        
+        function [stateSpace,nodeStateSpace] = getStateSpace(self, varargin)
+            try
+                [stateSpace,nodeStateSpace] = SolverCTMC(self,'force',true,'verbose',false,varargin{:}).getStateSpace;
+            catch ME
+                switch ME.identifier
+                    case 'Line:NoCutoff'
+                        error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., model.getStateSpace(''cutoff'',1).');
+                    otherwise
+                        rethrow ME
+                end
+            end
+        end
         
         function summary(self)
             % SUMMARY()
@@ -437,7 +456,7 @@ classdef Network < Model
                 if self.nodes{i}.isStateful
                     statefulnodes{end+1,1} = self.nodes{i};
                 end
-            end            
+            end
         end
         
         function statefulnames = getStatefulNodeNames(self)
@@ -819,17 +838,17 @@ classdef Network < Model
             self.isInitialized = true;
         end
         
-%         function setState(self, state)
-%             for ind=1:self.getNumberOfNodes
-%                 if self.nodes{ind}.isStateful
-%                     ist = qn.nodeToStation(ind);
-%                     self.nodes{ind}.setState(state{ind});
-%                     if isempty(self.nodes{ind}.getState)
-%                         error(sprintf('Invalid state assignment for station %d\n',ind));
-%                     end
-%                 end
-%             end            
-%         end
+        %         function setState(self, state)
+        %             for ind=1:self.getNumberOfNodes
+        %                 if self.nodes{ind}.isStateful
+        %                     ist = qn.nodeToStation(ind);
+        %                     self.nodes{ind}.setState(state{ind});
+        %                     if isempty(self.nodes{ind}.getState)
+        %                         error(sprintf('Invalid state assignment for station %d\n',ind));
+        %                     end
+        %                 end
+        %             end
+        %         end
         
         function [H,G] = getGraph(self)
             % [H,G] = GETGRAPH()
@@ -969,6 +988,50 @@ classdef Network < Model
             self.refreshStruct();
         end
         
+        function self = removeClass(self, jobclass)
+            if self.hasSingleClass()
+                if self.classes{1}.name == jobclass.name
+                    error('The network has a single class, it cannot be removed from the model.');
+                else
+                    % no changes
+                end
+            else
+                nClasses = length(self.classes);
+                r = self.getClassByName(jobclass.name).index; % class to remove
+                remaining = setdiff(1:nClasses, r);
+                if ~isnan(r)
+                    % check with SEPT/LEPT
+                    for i=1:length(self.nodes)
+                        switch class(self.nodes{i})
+                            case {'DelayStation','Queue'}
+                                self.nodes{i}.schedStrategyPar = self.nodes{i}.schedStrategyPar(remaining);
+                                self.nodes{i}.serviceProcess = self.nodes{i}.serviceProcess(remaining);
+                                self.nodes{i}.classCap = self.nodes{i}.classCap(remaining);
+                                self.nodes{i}.input.inputJobClasses = self.nodes{i}.input.inputJobClasses(remaining);
+                                self.nodes{i}.server.serviceProcess = self.nodes{i}.server.serviceProcess(remaining);
+                                self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
+                            case 'ClassSwitch'
+                                self.nodes{i}.input.inputJobClasses = self.nodes{i}.input.inputJobClasses(remaining);
+                                self.nodes{i}.server.updateClassSwitch(self.nodes{i}.server.csFun(remaining,remaining));
+                                self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
+                            case 'Cache'
+                                error('Cannot dynamically remove classes in models with caches. You need to re-instantiate the model.');
+                            case 'Source'
+                                self.nodes{i}.arrivalProcess = self.nodes{i}.arrivalProcess(remaining);
+                                self.nodes{i}.classCap = self.nodes{i}.classCap(remaining);
+                                self.nodes{i}.input.sourceClasses = self.nodes{i}.input.sourceClasses(remaining);
+                                %self.nodes{i}.server.serviceProcess = self.nodes{i}.server.serviceProcess(remaining);
+                                self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);                                
+                            case 'Sink'
+                                self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
+                        end
+                    end
+                    self.classes = self.classes(remaining);
+                    self.reset(true); % require a complete re-initialization including state
+                end
+            end
+        end
+        
     end
     
     % Private methods
@@ -986,7 +1049,7 @@ classdef Network < Model
             % The list includes all classes but Model and Hidden or
             % Constant or Abstract or Solvers
             self.usedFeatures = SolverFeatureSet;
-        end
+        end        
     end
     
     methods(Access = protected)
@@ -1378,7 +1441,7 @@ classdef Network < Model
         
         function P = serialRouting(varargin)
             % P = SERIALROUTING(VARARGIN)
-                        
+            
             if length(varargin)==1
                 varargin = varargin{1};
             end
