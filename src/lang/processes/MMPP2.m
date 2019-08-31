@@ -83,7 +83,7 @@ classdef MMPP2 < MarkovModulated
         
         function PH = getRepresentation(self)
             % PH = GETREPRESENTATION()
-            PH = map_renewal(self.getProcess());
+            PH = self.getProcess();
         end
         
         function MAP = getProcess(self)
