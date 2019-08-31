@@ -38,6 +38,7 @@ if ~isLoadDep
     if isempty(Zli)
         Zli = 0*N;
     end
+    options.method='exact';
     G = pfqn_nc(Lli,N,Zli, options);
 end
 

@@ -7,25 +7,33 @@ classdef SolverEnv < EnsembleSolver
     
     properties
         env; % user-supplied representation of each stage transition
-        envMMAP; % MMAP representation of each stage transition
-        holdTime; % holding times
-        probEnv; % steady-state probability of the environment
-        probOrig; % probability that a request originated from phase
+        envObj;
+        resetFromMarginal;
     end
     
     methods
-        function self = SolverEnv(models,env,solverFactory,options)
-            % SELF = SOLVERENV(MODELS,ENV,SOLVERFACTORY,OPTIONS)
-            
-            self@EnsembleSolver(Ensemble(models),mfilename,options);
+        function self = SolverEnv(renv, solverFactory, options)
+            % SELF = SOLVERENV(ENV,SOLVERFACTORY,OPTIONS)
+            self@EnsembleSolver(renv,mfilename,options);
+            self.envObj = renv;
+            models = renv.getEnsemble;
+            env = renv.getEnv;
             self.env = env;
-            for e=1:length(env)
+            for e=1:length(self.env)
                 self.setSolver(solverFactory(models{e}),e);
+            end
+
+            for e=1:length(self.env)
+                for h=1:length(self.env)
+                    self.resetFromMarginal{e,h} = renv.resetFun{e,h};
+                end
             end
             
             for e=1:length(self.env)
                 for h=1:length(self.env)
-                    if ~isa(self.env{e,h},'MarkovianDistribution')
+                    if isa(self.env{e,h},'Disabled')
+                        self.env{e,h} = Exp(0);
+                    elseif ~isa(self.env{e,h},'MarkovianDistribution')
                         error('The distribution of the environment transition from stage %d to %d is not supported by the %s solver.',e,h,self.getName);
                     end
                 end
@@ -68,68 +76,12 @@ classdef SolverEnv < EnsembleSolver
         
         
         function init(self)
-            % INIT()
-            
-            options = self.options;
-            
+            % INIT()            
+            options = self.options;            
             if isfield(options,'seed')
                 Solver.resetRandomGeneratorSeed(options.seed);
-            end
-            
-            E = self.getNumberOfModels;
-            Pemb = zeros(E);
-            
-            % analyse holding times
-            envMMAP = cell(E);
-            self.holdTime = {};
-            for e=1:E
-                for h=1:E
-                    envMMAP{e,h} = self.env{e,h}.getRepresentation; % multiclass MMAP representation
-                    for j = 1:E
-                        if j == h
-                            envMMAP{e,h}{2+j} = envMMAP{e,h}{2};
-                        else
-                            envMMAP{e,h}{2+j} = 0 * envMMAP{e,h}{2};
-                        end
-                    end
-                end
-                self.holdTime{e} = envMMAP{e,e};
-                for h=setdiff(1:E,e)
-                    self.holdTime{e}{1} = krons(self.holdTime{e}{1},envMMAP{e,h}{1});
-                    for j = 2:(E+2)
-                        self.holdTime{e}{j} = krons(self.holdTime{e}{j},envMMAP{e,h}{j});
-                        completion_rates = self.holdTime{e}{j}*ones(length(self.holdTime{e}{j}),1);
-                        self.holdTime{e}{j} = 0*self.holdTime{e}{j};
-                        self.holdTime{e}{j}(:,1) = completion_rates;
-                    end
-                    self.holdTime{e} = mmap_normalize(self.holdTime{e});
-                end
-                count_lambda = mmap_count_lambda(self.holdTime{e}); % completiom rates for the different transitions
-                Pemb(e,:) = count_lambda/sum(count_lambda);
-            end
-            self.envMMAP = envMMAP;
-            
-            %
-            lambda = zeros(1,E);
-            A = zeros(E); I=eye(E);
-            for e=1:E
-                lambda(e) = 1/map_mean(self.holdTime{e});
-                for h=1:E
-                    A(e,h) = -lambda(e)*(I(e,h)-Pemb(e,h));
-                end
-            end
-            probEnv = ctmc_solve(A);
-            self.probEnv = probEnv;
-            self.probOrig = zeros(E);
-            for e = 1:E
-                for h = 1:E
-                    self.probOrig(h,e) = probEnv(h) * lambda(h) * Pemb(h,e);
-                end
-                if probEnv(e) > 0
-                    self.probOrig(:,e) = self.probOrig(:,e) / sum(self.probOrig(:,e));
-                end
-            end
-            
+            end            
+            self.envObj.init();
         end
         
         function pre(self, it)
@@ -137,7 +89,12 @@ classdef SolverEnv < EnsembleSolver
             
             if it==1
                 for e=self.list()
-                    [QN,~,~,~] = self.getSolver(e).getAvg();
+                    if isinf(self.getSolver(e).options.timespan(2))
+                        [QN,~,~,~] = self.getSolver(e).getAvg();
+                    else
+                        [QNt,~,~] = self.getSolver(e).getTranAvg();                        
+                        QN = cellfun(@(q) q.metric(end), QNt);
+                    end
                     self.ensemble{e}.initFromMarginal(QN);
                 end
             end
@@ -167,36 +124,32 @@ classdef SolverEnv < EnsembleSolver
             
             E = self.getNumberOfModels;
             for e=1:E
-                QExit{e}=[];
-                for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
-                    for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                        w{e} = [0, map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
-                        QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.t'*w{e}/sum(w{e});
-                    end
-                end
                 for h = 1:E
-                    QE{e,h} = zeros(size(self.results{it,e}.Tran.Avg.Q));
+                    Qexit{e,h} = zeros(size(self.results{it,e}.Tran.Avg.Q));
                     for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                         for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                            w{e,h} = [0, map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
+                            w{e,h} = [0, map_cdf(self.envObj.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.envObj.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
                             if ~isnan(w{e,h})
-                                QE{e,h}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e,h}/sum(w{e,h});
+                                Qexit{e,h}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e,h}/sum(w{e,h});
                             else
-                                QE{e,h}(i,r) = 0;
+                                Qexit{e,h}(i,r) = 0;
                             end
                         end
                     end
                 end
-            end
+            end 
             
-            Q0 = cell(1,E); % average entry queue-length
+            Qentry = cell(1,E); % average entry queue-length
             for e = 1:E
-                Q0{e} = zeros(size(QE{e}));
+                Qentry{e} = zeros(size(Qexit{e}));
                 for h=1:E
-                    Q0{e} = Q0{e} + self.probOrig(h,e) * QE{h,e};
+                    % probability of coming from h to e \times resetFun(Qexit from h to e 
+                    if self.envObj.probOrig(h,e) > 0                    
+                        Qentry{e} = Qentry{e} + self.envObj.probOrig(h,e) * self.resetFromMarginal{h,e}(Qexit{h,e});
+                    end
                 end
                 self.solvers{e}.reset();
-                self.ensemble{e}.initFromMarginal(Q0{e});
+                self.ensemble{e}.initFromMarginal(Qentry{e});
             end
         end
         
@@ -211,7 +164,7 @@ classdef SolverEnv < EnsembleSolver
                 TExit{e}=[];
                 for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                     for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                        w{e} = [0, map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
+                        w{e} = [0, map_cdf(self.envObj.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.envObj.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
                         QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e}/sum(w{e});
                         UExit{e}(i,r) = self.results{it,e}.Tran.Avg.U{i,r}.metric'*w{e}/sum(w{e});
                         TExit{e}(i,r) = self.results{it,e}.Tran.Avg.T{i,r}.metric'*w{e}/sum(w{e});
@@ -221,7 +174,7 @@ classdef SolverEnv < EnsembleSolver
                 %                     QE{e,h} = zeros(size(self.results{it,e}.Tran.Avg.Q));
                 %                     for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
                 %                         for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                %                             w{e,h} = [0, map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}(2:end,2)) - map_cdf(self.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}(1:end-1,2))]';
+                %                             w{e,h} = [0, map_cdf(self.envObj.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}(2:end,2)) - map_cdf(self.envObj.envMMAP{e,h}, self.results{it,e}.Tran.Avg.Q{i,r}(1:end-1,2))]';
                 %                             if ~isnan(w{e,h})
                 %                                 QE{e,h}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}(:,1)'*w{e,h}/sum(w{e,h});
                 %                             else
@@ -236,9 +189,9 @@ classdef SolverEnv < EnsembleSolver
             Uval=0*UExit{e};
             Tval=0*TExit{e};
             for e=1:E
-                Qval = Qval + self.probEnv(e) * QExit{e}; % to check
-                Uval = Uval + self.probEnv(e) * UExit{e}; % to check
-                Tval = Tval + self.probEnv(e) * TExit{e}; % to check
+                Qval = Qval + self.envObj.probEnv(e) * QExit{e}; % to check
+                Uval = Uval + self.envObj.probEnv(e) * UExit{e}; % to check
+                Tval = Tval + self.envObj.probEnv(e) * TExit{e}; % to check
             end
             self.result.Avg.Q = Qval;
             %    self.result.Avg.R = R;
@@ -334,7 +287,7 @@ classdef SolverEnv < EnsembleSolver
                 TT = Table(Station,Class,Tput);
                 AvgTable = Table(Station,Class,QLen,Util,Tput);
             end
-        end
+        end        
     end
     
     methods (Static)

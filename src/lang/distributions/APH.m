@@ -118,7 +118,7 @@ classdef APH < MarkovianDistribution
             % variance, skewness)
             ex = APH(1.0, [1]);
             ex.updateMeanAndSCV(MEAN, SCV);
-        end
+        end        
     end
     
 end

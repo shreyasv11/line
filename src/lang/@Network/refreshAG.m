@@ -1,6 +1,7 @@
-function refreshAG(self)
+function refreshAG(self, cutoffs)
 % REFRESHAG()
-% Export network in stochastic agent representation
+% Export network as a collection of interacting stochastic agents
+
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
@@ -10,86 +11,102 @@ function refreshAG(self)
 qn = self.getStruct;
 nnodes = qn.nnodes;
 nstateful = qn.nstateful;
-nclasses = qn.nclasses;
-A = length(qn.sync);
+S = length(qn.sync);
+%%
+if nargin>1 && length(cutoffs(:))==1
+    defaultCutoff = cutoffs;
+elseif nargin==1 % cutoff not specified, use 2 in each dimension
+    defaultCutoff = 2;
+end
+if nargin==1 || (nargin>1 && length(cutoffs(:))==1)
+    cutoffs = defaultCutoff * ones(qn.nnodes,qn.nclasses);
+end
+qn = self.getStruct;
+space = State.spaceGeneratorNodes(qn, cutoffs);
 %%
 active = 1; % column of active actions
 passive = 2; % columns of passive actions
-eps = nnodes+1; % row of local actions
+eps = nstateful+1; % row of local actions
 sync = qn.sync;
-actionTable=zeros(A,6);
-%[~,eventFilt]=SolverCTMC(self,'cutoff',3,'force',true).getGenerator()
-for a=1:A
-    actionTable(a,:) = [sync{a}.active{1}.node, sync{a}.active{1}.class, sync{a}.passive{1}.node, sync{a}.passive{1}.class, sync{a}.active{1}.event, sync{a}.passive{1}.event];
-    AP(a,[active,passive]) = [sync{a}.active{1}.node, sync{a}.passive{1}.node];
-    %    eventFilt{a}
-end
-%actionTable = unique(actionTable,'rows');
-[stateSpace,nodeStateSpace] = model.getStateSpace;
-actionTable
-%%
-SSh=[];
-RL = cell(size(actionTable,1)+1,nstateful); % RL{a,active}(s1,s2) rate from state s1 to s2 for action a in active agent, RL{a,passive}(s1p,s2p) accept probability of passive
+
+RL = cell(S+1,nstateful); % RL{a,active}(s1,s2)=rate from state s1 to s2 for action a in active agent, RL{a,passive}(s1p,s2p)=accept probability of passive
+
 for j=1:nnodes
     if qn.isstateful(j)
         jsf = qn.nodeToStateful(j);
-        RL{end,j}=zeros(size(qn.space{jsf},1));
+        RL{end,jsf}=zeros(size(space{jsf},1));
     end
 end
 
 issim = false;
-for a=1:A
-    node_a = sync{a}.active{1}.node;
-    class_a = sync{a}.active{1}.class;
-    event_a = sync{a}.active{1}.event;
-    
-    node_p = sync{a}.passive{1}.node;
-    class_p = sync{a}.passive{1}.class;
-    event_p = sync{a}.passive{1}.event; if isempty(event_p), event_p=0; end
-    prob_p = sync{a}.passive{1}.prob;
+for s=1:S
+    node_a = sync{s}.active{1}.node;
+    class_a = sync{s}.active{1}.class;
+    event_a = sync{s}.active{1}.event;
+    node_p = sync{s}.passive{1}.node;
+    class_p = sync{s}.passive{1}.class;
+    event_p = sync{s}.passive{1}.event; if isempty(event_p), event_p=0; end
+    prob_p = sync{s}.passive{1}.prob;
     
     if node_p ~= eps
         if prob_p > 0
-            l = matchrow(actionTable,[node_a, class_a, node_p, class_p, event_a, event_p]);
-            AP(l,active) = node_a; % active
-            AP(l,passive) = node_p;
-            RL{l,active} = zeros(size(qn.space{node_a},1));
-            RL{l,passive} = zeros(size(qn.space{node_p},1));
-            for s=1:size(space{node_a},1)
-                state_a = space{node_a}(s,:);
-                [new_state_a, rate_a] = State.afterEvent( qn, node_a, state_a, event_a, class_a, issim);
-                if new_state_a>0
-                    RL{l,active}(state_a,new_state_a)=rate_a;
-                    
-                    node_p = sync{a}.passive{1}.node;
-                    state_p = state(node_p);
-                    if node_p == node_a %self-loop
-                        [new_state_p, ~] = State.afterEvent( qn, node_p, new_state_a, event_p, class_p, issim);
-                    else
-                        [new_state_p, ~] = State.afterEvent( qn, node_p, state_p, event_p, class_p, issim);
+            %a = matchrow(actionTable,[node_a, class_a, node_p, class_p, event_a, event_p]);
+            % determine active-passive roles
+            AP(s,active) = qn.nodeToStateful(node_a); % active
+            AP(s,passive) = qn.nodeToStateful(node_p);
+            % determine synchronization rates
+            RL{s,active} = zeros(size(space{qn.nodeToStateful(node_a)},1));
+            RL{s,passive} = zeros(size(space{qn.nodeToStateful(node_p)},1));
+            for sa=1:size(space{qn.nodeToStateful(node_a)},1)
+                state_a = space{qn.nodeToStateful(node_a)}(sa,:);
+                [new_state_a, rate_a] = State.afterEvent(qn, node_a, state_a, event_a, class_a, issim);
+                if ~isempty(new_state_a)
+                    nsa = matchrow(space{qn.nodeToStateful(node_a)},new_state_a);
+                    if sa>0 && nsa >= 0
+                        RL{s,active}(sa,nsa)=rate_a;
+                        
+                        node_p = sync{s}.passive{1}.node;
+                        state_p = space{qn.nodeToStateful(node_p)};
+                        if node_p == node_a %self-loop
+                            [new_state_p, ~] = State.afterEvent(qn, node_p, new_state_a, event_p, class_p, issim);
+                        else
+                            [new_state_p, ~] = State.afterEvent(qn, node_p, state_p, event_p, class_p, issim);
+                        end
+                        for j = 1:size(state_p,1)
+                            sp = matchrow(space{qn.nodeToStateful(node_p)},state_p(j,:));
+                            nsp = matchrow(space{qn.nodeToStateful(node_p)},new_state_p(j,:));
+                            if sp>0 && nsp >= 0
+                                RL{s,passive}(sp,nsp)=prob_p;
+                            end
+                        end
                     end
-                    RL{l,passive}(state_p,new_state_p)=prob_p;
                 end
             end
         end
     else % local transitions
-        for a=1:size(SSh,1)
-            state = SSh(a,:);
-            state_a = state(node_a);
+        for sa=1:size(space{qn.nodeToStateful(node_a)},1)
+            state_a = space{qn.nodeToStateful(node_a)}(sa,:);
             [new_state_a, rate_a] = State.afterEvent(qn, node_a, state_a, event_a, class_a, issim);
-            if new_state_a > 0
-                RL{end,node_a}(state_a,new_state_a)=RL{end,node_a}(state_a,new_state_a)+rate_a;
+            nsa = matchrow(space{qn.nodeToStateful(node_a)},new_state_a);
+            if sa > 0 && nsa > 0
+                RL{end,qn.nodeToStateful(node_a)}(sa,nsa)=RL{end,qn.nodeToStateful(node_a)}(sa,nsa)+rate_a;
             end
         end
     end
 end
-todelete = [];
-for l=1:size(RL,1)-1 % don't delete local events row
-    if ~any(RL{l,1}(:))
-        todelete = [todelete l];
+
+% remove inactive synchornizations
+inactiveSync = [];
+for a=1:size(RL,1)-1 % don't delete local events row
+    if ~any(RL{a,1}(:))
+        inactiveSync = [inactiveSync a];
     end
 end
-RL(todelete,:)=[];
-AP(todelete,:)=[];
-self.ag = struct('rate',RL,'role',AP);
+RL(inactiveSync,:)=[];
+AP(inactiveSync,:)=[];
+self.ag = struct();
+self.ag.space = space;
+self.ag.actions = RL;
+self.ag.roles = AP;
+%[x, pi, Q, stats, xls, xus] = autocat(ag.rate, ag.role, 'linprog', 'lpr')
 end

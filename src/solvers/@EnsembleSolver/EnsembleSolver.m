@@ -11,16 +11,16 @@ classdef EnsembleSolver < Solver
     end
     
     methods (Hidden)
-        function self = EnsembleSolver(model, name, options)
+        function self = EnsembleSolver(envmodel, name, options)
             % SELF = ENSEMBLESOLVER(MODEL, NAME, OPTIONS)
             
-            self@Solver(model, name);
+            self@Solver(envmodel, name);
             if exist('options','var')
                 self.setOptions(options);
             else
                 self.setOptions(EnsembleSolver.defaultOptions);
             end
-            self.ensemble = model.getEnsemble;
+            self.ensemble = envmodel.getEnsemble;
             self.solvers = {};
         end
     end

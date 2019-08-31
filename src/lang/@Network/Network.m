@@ -20,6 +20,7 @@ classdef Network < Model
     properties (Hidden)
         qn;
         ag;
+        env;
         handles;
         perfIndex;
         links;
@@ -112,11 +113,21 @@ classdef Network < Model
             self.isInitialized = false;
             self.logPath = '';
             self.items = {};
+            self.env = {};
         end
         
+        function env = getEnvironment(self)
+            % ENV = GETENVIRONMENT()            
+            env = self.env;
+        end        
+                
+        function self = setEnvironment(self, env)
+            % SELF = SETENVIRONMENT(ENV)            
+            self.env = env;
+        end        
+        
         function nodes = getNodes(self)
-            % NODES = GETNODES()
-            
+            % NODES = GETNODES()            
             nodes = self.nodes;
         end
         
@@ -989,6 +1000,10 @@ classdef Network < Model
         end
         
         function self = removeClass(self, jobclass)
+            % SELF = REMOVECLASS(SELF, CLASS)
+            %
+            % Remove the specified CLASS from the model
+            
             if self.hasSingleClass()
                 if self.classes{1}.name == jobclass.name
                     error('The network has a single class, it cannot be removed from the model.');

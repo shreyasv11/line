@@ -1,23 +1,28 @@
-if ~isoctave(), clearvars -except exampleName; end 
+if ~isoctave(), clearvars -except exampleName; end
 N = 1;
 M = 2;
+
 E = 2;
+envModel = Env('MyEnv');
+envName = {'Stage1', 'Stage2'};
+envType = {Semantics.UP, Semantics.DOWN};
+
 rate = zeros(M,E); rate(M,1:E)=(1:E); rate(1,1:E)=(E:-1:1);
+envSubModel = {example_randomEnvironment_genqn(rate(:,1),N), example_randomEnvironment_genqn(rate(:,2),N)};
+for e=1:E
+    envModel.addStage(envName{e}, envType{e}, envSubModel{e});
+end
+
 envRates = [0,1; 0.5,0.5];
-env = cell(E);
 for e=1:E
     for h=1:E
-        if envRates(e,h)==0
-            env{e,h} = Exp(0);
-        else
-            env{e,h} = Exp(envRates(e,h));
+        if envRates(e,h)>0
+            envModel.addTransition(envName{e}, envName{h}, Exp(envRates(e,h)));
         end
     end
 end
-K=1;
-qn1 = example_randomEnvironment_genqn(rate(:,1),N);
-qn2 = example_randomEnvironment_genqn(rate(:,1),N);
-%%
+
+%
 fprintf(1,'The metasolver considers an environment with 2 stages and a queueing network with 2 stations.\n')
 fprintf(1,'Every time the stage changes, the queueing network will modify the service rates of the stations.\n')
 
@@ -30,10 +35,11 @@ options.method = 'default';
 options.verbose = true;
 
 soptions = SolverFluid.defaultOptions;
-soptions.timespan = [0,Inf];
+soptions.timespan = [0,1e3];
 soptions.verbose = false;
-models = {qn1, qn2};
-renvSolver = SolverEnv(models,env,@(model) SolverFluid(model, soptions),options);
 
-[QN,UN,TN] = renvSolver.getAvg();
-AvgTable = renvSolver.getAvgTable()
+envModel.getStageTable
+envSolver = SolverEnv(envModel,@(model) SolverFluid(model, soptions),options);
+[QN,UN,TN] = envSolver.getAvg();
+AvgTable = envSolver.getAvgTable()
+
