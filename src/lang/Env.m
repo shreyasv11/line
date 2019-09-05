@@ -9,11 +9,11 @@ classdef Env < Ensemble
     properties
         env;
         envGraph;
-        envMMAP; % MMAP representation of each stage transition
+        proc; % Markovian representation of each stage transition
         holdTime; % holding times
         probEnv; % steady-stage probability of the environment
         probOrig; % probability that a request originated from phase
-        resetFun; % function implementing the reset policy
+        resetFun; % function implementing the reset policy        
     end
     
     methods
@@ -27,7 +27,10 @@ classdef Env < Ensemble
         end
         
         function name = addStage(self, name, type, model)
+            wcfg = warning; % store warning configuration
+            warning('off','MATLAB:table:RowsAddedExistingVars');
             self.envGraph = self.envGraph.addnode(name);
+            warning(wcfg); % restore warning configuration
             self.envGraph.Nodes.Model{end} = model;
             self.envGraph.Nodes.Type{end} = type;
             E = height(self.envGraph.Nodes);
@@ -95,7 +98,7 @@ classdef Env < Ensemble
                 count_lambda = mmap_count_lambda(self.holdTime{e}); % completiom rates for the different transitions
                 Pemb(e,:) = count_lambda/sum(count_lambda);
             end
-            self.envMMAP = emmap;
+            self.proc = emmap;
             
             %
             lambda = zeros(1,E);

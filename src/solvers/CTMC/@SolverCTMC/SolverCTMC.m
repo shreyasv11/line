@@ -6,8 +6,7 @@ classdef SolverCTMC < NetworkSolver
     
     methods
         function self = SolverCTMC(model,varargin)
-            % SELF = SOLVERCTMC(MODEL,VARARGIN)
-            
+            % SELF = SOLVERCTMC(MODEL,VARARGIN)            
             self@NetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
         end

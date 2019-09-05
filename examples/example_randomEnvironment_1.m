@@ -34,12 +34,19 @@ options.iter_tol = 0.01;
 options.method = 'default';
 options.verbose = true;
 
-soptions = SolverFluid.defaultOptions;
-soptions.timespan = [0,1e3];
-soptions.verbose = false;
-
 envModel.getStageTable
-envSolver = SolverEnv(envModel,@(model) SolverFluid(model, soptions),options);
+
+sfoptions = SolverFluid.defaultOptions;
+sfoptions.timespan = [0,1e3];
+sfoptions.verbose = false;
+envSolver = SolverEnv(envModel,@(model) SolverFluid(model, sfoptions),options);
 [QN,UN,TN] = envSolver.getAvg();
 AvgTable = envSolver.getAvgTable()
+
+% scoptions = SolverJMT.defaultOptions;
+% scoptions.timespan = [0,1e3];
+% scoptions.verbose = false;
+% envSolver = SolverEnv(envModel,@(model) SolverJMT(model, scoptions),options);
+% [QNc,UNc,TNc] = envSolver.getAvg();
+% AvgTableC = envSolver.getAvgTable()
 

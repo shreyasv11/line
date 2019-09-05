@@ -13,7 +13,7 @@ phi = cell(M,K);
 phases = zeros(M,K);
 for i=1:M
     if i == self.getIndexSourceStation
-        [~,mu_i,phi_i] = self.stations{i}.getPHSourceRates();
+        [~,mu_i,phi_i] = self.stations{i}.getMarkovianSourceRates();
     else
         switch class(self.stations{i})
             case 'Fork'
@@ -31,7 +31,7 @@ for i=1:M
                     phi_i{r} = NaN;
                 end
             otherwise
-                [~,mu_i,phi_i] = self.stations{i}.getPHServiceRates();
+                [~,mu_i,phi_i] = self.stations{i}.getMarkovianServiceRates();
         end
     end
     for r=1:K
@@ -48,5 +48,5 @@ end
 if ~isempty(self.qn) %&& isprop(self.qn,'mu')
     self.qn.setCoxService(mu, phi, phases);
 end
-[ph, phases] = refreshPHService(self);
+[ph, phases] = refreshMarkovianService(self);
 end

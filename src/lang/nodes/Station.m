@@ -117,70 +117,78 @@ classdef Station < StatefulNode
             end
         end    
         
-        function [ph, mu, phi] = getPHSourceRates(self)
+        function [map, mu, phi] = getMarkovianSourceRates(self)
             % [PH,MU,PHI] = GETPHSOURCERATES()
             
             nclasses = size(self.input.sourceClasses,2);
-            ph = cell(1,nclasses);
+            map = cell(1,nclasses);
             mu = cell(1,nclasses);
             phi = cell(1,nclasses);
             for r=1:nclasses
                 if isempty(self.input.sourceClasses{r})
                     self.input.sourceClasses{r} = {[],ServiceStrategy.LI,Disabled()};
-                    ph{r}  = {[NaN],[NaN]};
+                    map{r}  = {[NaN],[NaN]};
                     mu{r}  = NaN;
                     phi{r}  = NaN;
                 elseif ~self.input.sourceClasses{r}{end}.isDisabled()
                     switch class(self.input.sourceClasses{r}{end})
                         case 'Replayer'
                             aph = self.input.sourceClasses{r}{end}.fitAPH;
-                            ph{r} = aph.getRepresentation();
+                            map{r} = aph.getRepresentation();
                             mu{r} = aph.getMu;
                             phi{r} = aph.getPhi;
-                        case {'Exp','Coxian','Erlang','HyperExp','MarkovianDistribution','APH'}
-                            ph{r} = self.input.sourceClasses{r}{end}.getRepresentation;
+                        case {'Exp','Coxian','Erlang','HyperExp','MarkovianDistribution','APH','PH'}
+                            map{r} = self.input.sourceClasses{r}{end}.getRepresentation;
+                            mu{r} = self.input.sourceClasses{r}{end}.getMu;
+                            phi{r} = self.input.sourceClasses{r}{end}.getPhi;
+                        case 'MMPP2'
+                            map{r} = self.input.sourceClasses{r}{end}.getRepresentation();
                             mu{r} = self.input.sourceClasses{r}{end}.getMu;
                             phi{r} = self.input.sourceClasses{r}{end}.getPhi;
                     end
                 else
-                    ph{r}  = {[NaN],[NaN]};
+                    map{r}  = {[NaN],[NaN]};
                     mu{r}  = NaN;
                     phi{r}  = NaN;
                 end
             end
         end        
         
-        function [ph,mu,phi] = getPHServiceRates(self)
+        function [map,mu,phi] = getMarkovianServiceRates(self)
             % [PH,MU,PHI] = GETPHSERVICERATES()
             
             nclasses = size(self.server.serviceProcess,2);
-            ph = cell(1,nclasses);
+            map = cell(1,nclasses);
             mu = cell(1,nclasses);
             phi = cell(1,nclasses);
             for r=1:nclasses
                 if isempty(self.server.serviceProcess{r})
                     self.server.serviceProcess{r} = {[],ServiceStrategy.LI,Disabled()};
-                    ph{r}  = {[NaN],[NaN]};
+                    map{r}  = {[NaN],[NaN]};
                     mu{r}  = NaN;
                     phi{r}  = NaN;
                 elseif self.server.serviceProcess{r}{end}.isImmediate()
-                    ph{r}  = {[Distrib.InfRate],[1]};
+                    map{r}  = {[Distrib.InfRate],[1]};
                     mu{r}  = [Distrib.InfRate];
                     phi{r}  = [1];
                 elseif ~self.server.serviceProcess{r}{end}.isDisabled()
                     switch class(self.server.serviceProcess{r}{end})
                         case 'Replayer'
                             aph = self.server.serviceProcess{r}{end}.fitAPH;
-                            ph{r} = aph.getRepresentation();
+                            map{r} = aph.getRepresentation();
                             mu{r} = aph.getMu;
                             phi{r} = aph.getPhi;
                         case {'Exp','Coxian','Erlang','HyperExp','MarkovianDistribution','APH'}
-                            ph{r} = self.server.serviceProcess{r}{end}.getRepresentation();
+                            map{r} = self.server.serviceProcess{r}{end}.getRepresentation();
+                            mu{r} = self.server.serviceProcess{r}{end}.getMu;
+                            phi{r} = self.server.serviceProcess{r}{end}.getPhi;
+                        case 'MMPP2'
+                            map{r} = self.server.serviceProcess{r}{end}.getRepresentation();
                             mu{r} = self.server.serviceProcess{r}{end}.getMu;
                             phi{r} = self.server.serviceProcess{r}{end}.getPhi;
                     end
                 else
-                    ph{r}  = {[NaN],[NaN]};
+                    map{r}  = {[NaN],[NaN]};
                     mu{r}  = NaN;
                     phi{r}  = NaN;
                 end

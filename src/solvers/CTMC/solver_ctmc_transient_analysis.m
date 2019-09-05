@@ -54,7 +54,17 @@ for i=1:qn.nnodes
     end
 end
 pi0 = zeros(1,length(InfGen));
-pi0(matchrow(StateSpace,state)) = 1; % find initial state and set it to probability 1
+
+state0 = matchrow(StateSpace, state);
+if state0 == -1
+    error('Initial state not contained in the state space.');   
+%     state0 = matchrow(StateSpace, round(state));
+%     state = round(state);
+%     if state0 == -1
+%         error('Cannot recover - CTMC stopping');
+%     end
+end
+pi0(state0) = 1; % find initial state and set it to probability 1
 
 %if options.timespan(1) == options.timespan(2)
 %    pit = ctmc_uniformization(pi0,Q,options.timespan(1));

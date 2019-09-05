@@ -794,9 +794,15 @@ classdef Network < Model
             if ~exist('options','var')
                 options = Solver.defaultOptions;
             end
-            [isvalidn] = State.isValid(qn, n, [], options);
+            [isvalidn] = State.isValid(qn, n, [], options);            
             if ~isvalidn
-                error('The specified state does not have the correct number of jobs.');
+                %         error('The specified state does not have the correct number of jobs.');
+                warning('Initial state not contained in the state space. Trying to recover.');
+                n = round(n);
+                [isvalidn] = State.isValid(qn, n, [], options);
+                if ~isvalidn
+                    error('Cannot recover - stopping.');
+                end
             end
             for ind=1:qn.nnodes
                 if qn.isstateful(ind)

@@ -99,9 +99,21 @@ classdef MMPP2 < MarkovModulated
         end
         
         function n = getNumberOfPhases(self)
-            % N = GETNUMBEROFPHASES()
-            
+            % N = GETNUMBEROFPHASES()            
             n = 2;
+        end
+        
+        function mu = getMu(self)
+            % MU = GETMU()
+            MAP = self.getProcess();
+            mu = sum(MAP{2},2); % sum D1 rows / diag -D0                        
+        end
+        
+        function phi = getPhi(self)
+            % PHI = GETPHI()
+            % Return the exit vector of the underlying PH
+            MAP = self.getProcess();
+            phi = sum(MAP{2},2) ./ diag(-MAP{1}); % sum D1 rows / diag -D0            
         end
         
         function bool = isImmmediate(self)

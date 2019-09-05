@@ -352,6 +352,7 @@ classdef NetworkSolver < Solver
             % Return cumulative distribution of passage times at steady-state
             error('Line:FeatureNotSupportedBySolver','getTranCdfPassT is not supported by this solver.');
         end
+        
     end
     
     methods (Static)

@@ -63,9 +63,11 @@ if qn.isopen()
                         chainArrivalAtSource{c} = mmap_super_safe({chainArrivalAtSource{c},{PH{ist,k}{1},PH{ist,k}{2},PH{ist,k}{2}}}, config.space_max, 'default');
                     end
                     if c == 1
-                        aggrArrivalAtSource = chainArrivalAtSource{1};
+                        aggrArrivalAtSource = mmap_super_safe({chainArrivalAtSource{1}, mmap_exponential(0,1)}, config.space_max, 'default');
+                        aggrArrivalAtSource = {aggrArrivalAtSource{1} aggrArrivalAtSource{2} aggrArrivalAtSource{2}};
+                        aggrArrivalAtSource = mmap_scale(aggrArrivalAtSource, 1/ map_lambda(chainArrivalAtSource{c}));
                     else
-                        aggrArrivalAtSource = mmap_super_safe({aggrArrivalAtSource,chainArrivalAtSource{c}},config.space_max, 'default');
+                        aggrArrivalAtSource = mmap_super_safe({aggrArrivalAtSource, chainArrivalAtSource{c}},config.space_max, 'default');
                     end
                     inchain = find(qn.chains(c,:));
                     TN(ist,inchain) = lambdas_inchain{c};
@@ -114,7 +116,9 @@ if qn.isopen()
                         chainArrivalAtNode{c} = mmap_mark(chainArrivalAtSource{c}, rates{ist,c}(inchain) / sum(rates{ist,c}(inchain)));
                         chainArrivalAtNode{c} = mmap_scale(chainArrivalAtNode{c}, 1./rates{ist,c});
                         if c == 1
-                            aggrArrivalAtNode = chainArrivalAtNode{1};
+                            aggrArrivalAtNode = mmap_super_safe({chainArrivalAtNode{c}, mmap_exponential(0,1)}, config.space_max, 'default');                            
+                            aggrArrivalAtNode = {aggrArrivalAtNode{1} aggrArrivalAtNode{2} aggrArrivalAtNode{2}};
+                            aggrArrivalAtNode = mmap_scale(aggrArrivalAtNode, 1/ map_lambda(chainArrivalAtNode{c}));                            
                         else
                             aggrArrivalAtNode = mmap_super_safe({aggrArrivalAtNode, chainArrivalAtNode{c}}, config.space_max, 'default');
                         end

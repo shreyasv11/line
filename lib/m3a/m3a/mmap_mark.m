@@ -1,5 +1,5 @@
 function mmap = mmap_mark(MMAP, prob)
-% MMAP_MARK. Marks arrivals from a MMAP according to give probabilities.
+% MMAP_MARK. Marks arrivals from a MMAP according to given probabilities.
 % MMAP = MMAP_MARK(MMAP, PROB) takes a MMAP with K types and a probability
 % matrix with element PROB(k,s) giving the probability that a type-k
 % arrival should be marked as a class-s arrival and returns a new MMAP
