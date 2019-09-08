@@ -30,6 +30,14 @@ classdef Node < NetworkElement
             
             self.model.addLink(self,nodeTo);
         end
+        
+        function self = reset(self)
+            % SELF = RESET()
+            %
+            % Reset internal data structures when the network model is
+            % reset
+            
+        end
     end
     
     methods

@@ -19,6 +19,9 @@ qn.space = qnc.space;
 if options.verbose
     fprintf(1,'State space size: %d states.\n',size(SS,1));
 end
+if ~isfield(options, 'hide_immediate')
+    options.hide_immediate = true;
+end
 
 %size(SS)
 %%
@@ -76,7 +79,12 @@ for a=1:A
         class_a = sync{a}.active{1}.class;
         event_a = sync{a}.active{1}.event;
         [new_state_a, rate_a] = State.afterEventHashed( qn, node_a, state_a, event_a, class_a);        
-        
+        %% debugging block
+%        if true%options.verbose == 2
+%            fprintf(1,'---\n');
+%            sync{a}.active{1}.print,
+%        end
+        %%
         if new_state_a == -1 % hash not found
             continue
         end
@@ -89,6 +97,13 @@ for a=1:A
                     event_p = sync{a}.passive{1}.event;
                     %prob_sync_p = sync{a}.passive{1}.prob(state_a, state_p)
                     %if prob_sync_p > 0
+                    %% debugging block
+                    if options.verbose == 2
+                        fprintf(1,'---\n');
+                        sync{a}.active{1}.print,
+                        sync{a}.passive{1}.print
+                    end
+                    %%
                     if node_p == node_a %self-loop
                         [new_state_p, ~, outprob_p] = State.afterEventHashed( qn, node_p, new_state_a(ia), event_p, class_p);
                     else % departure
@@ -189,29 +204,24 @@ Q(zero_col,zero_col) = -eye(length(zero_col));
 for a=1:A
     Dfilt{a}(:,end+1:end+(size(Dfilt{a},1)-size(Dfilt{a},2)))=0;
 end
+
 if options.verbose == 2
-    for s1=1:size(SS,1)
-        for s2=1:size(SS,1)
-            if Q(s1,s2)>0 && SS(s1,end-1)==0
-                fprintf(1,'%s -> %s : %d\n',mat2str(SS(s1,4:end)),mat2str(SS(s2,4:end)),full(Q(s1,s2)));
-            end
-        end
-    end
+    SolverCTMC.printInfGen(Q,SS);
 end
 Q = ctmc_makeinfgen(Q);
 
 %SolverCTMC.printInfGen(Q,SS)
 %% now remove immediate transitions
-% we first determine states in stateful nodes where three is an immediate
+% we first determine states in stateful nodes where there is an immediate
 % job in the node
-if true
+if options.hide_immediate % if want to remove immediate transitions
     statefuls = find(qn.isstateful-qn.isstation);
     imm=[];
     for st = statefuls(:)'
         imm_st = find(sum(qn.space{st}(:,1:nclasses),2)>0);
         imm = [imm; find(arrayfun(@(a) any(a==imm_st),SSh(:,st)))];
     end
-    imm= unique(imm);
+    imm = unique(imm);
     nonimm = setdiff(1:size(Q,1),imm);
     SS(imm,:) = [];
     SSq(imm,:) = [];
@@ -222,6 +232,7 @@ if true
         Dfilt{a} = Dfilt{a}(nonimm,nonimm)+T;
     end
 end
+%SolverCTMC.printInfGen(Q,SS)
 %%
 Q = ctmc_makeinfgen(Q);
 end

@@ -11,6 +11,8 @@ classdef CacheClassSwitcher < StatefulClassSwitcher
         inputJobClasses;
         hitClass;
         missClass;
+        actualHitProb;
+        actualMissProb;
     end
     
     methods
@@ -28,6 +30,8 @@ classdef CacheClassSwitcher < StatefulClassSwitcher
             self.csFun = @(r, s, state, statep) self.simpleHitMiss(r, s, state, statep); % do nothing by default
             self.hitClass = sparse([]);
             self.missClass = sparse([]);
+            self.actualHitProb = sparse([]); % this field is filled after model solution
+            self.actualMissProb = sparse([]); % this field is filled after model solution
         end
     end
     

@@ -36,6 +36,9 @@ for i=1:self.getNumberOfNodes()
                 case 'Join'
                     self.setUsedFeatures('Join');
                     self.setUsedFeatures('Joiner');
+                case 'Cache'
+                    self.setUsedFeatures('CacheClassSwitcher');
+                    self.setUsedFeatures('Cache');
             end
         end
     end

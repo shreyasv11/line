@@ -185,6 +185,9 @@ classdef Network < Model
             if nargin == 2 && resetState
                 self.isInitialized = false;
             end
+            for ind = 1:length(self.getNodes)
+                self.nodes{ind}.reset();
+            end
         end
                 
         refreshStruct(self);
@@ -1478,6 +1481,15 @@ classdef Network < Model
             P(isnan(P)) = 0;
         end
         
+       function printInfGen(Q,SS)
+            % PRINTINFGEN(Q,SS)
+            SolverCTMC.printInfGen(Q,SS);
+        end
+        
+        function printEventFilt(sync,D,SS,myevents)
+            % PRINTEVENTFILT(SYNC,D,SS,MYEVENTS)
+            SolverCTMC.printEventFilt(sync,D,SS,myevents);
+        end
         
     end
 end

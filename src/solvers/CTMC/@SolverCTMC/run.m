@@ -52,7 +52,14 @@ if isinf(options.timespan(1))
     % update initial state if this has been corrected by the state space
     % generator
     for isf=1:qn.nstateful
-        self.model.nodes{qn.statefulToNode(isf)}.setState(qn.state{isf});
+        ind = qn.statefulToNode(isf);
+        self.model.nodes{ind}.setState(qn.state{isf});
+        switch class(self.model.nodes{qn.statefulToNode(isf)})
+            case 'Cache'
+                self.model.nodes{qn.statefulToNode(isf)}.server.actualHitProb = qn.varsparam{ind}.actualhitprob;
+                self.model.nodes{qn.statefulToNode(isf)}.server.actualMissProb = qn.varsparam{ind}.actualmissprob;
+                self.model.refreshChains;
+        end
     end
     %qn.space = SS;
     self.result.infGen = Q;

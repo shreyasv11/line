@@ -89,6 +89,15 @@ for j=1:size(chainStationPos,1)
             state_i = qn.space{isf};
             if any(stateMarg_i > capacityc(ind,:))
                 netstates{j,isf} = State.getHash(qn,ind,[]);
+            elseif qn.nodetype(ind) == NodeType.Cache                
+                cacheClasses = union(qn.varsparam{ind}.hitclass, qn.varsparam{ind}.missclass);
+                %if sum(stateMarg_i(cacheClasses)) > 1 || sum(stateMarg_i(setdiff(1:qn.nclasses,cacheClasses))) > 0                                        
+                if sum(stateMarg_i(1:qn.nclasses)) > 1
+                    netstates{j,isf} = State.getHash(qn,ind,[]);
+                else
+                    state_i = state_i(findrows(state_i(:,1:length(stateMarg_i)),stateMarg_i),:);
+                    netstates{j,isf} = State.getHash(qn,ind,state_i);
+                end
             else
                 state_i = state_i(findrows(state_i(:,1:length(stateMarg_i)),stateMarg_i),:);
                 netstates{j,isf} = State.getHash(qn,ind,state_i);

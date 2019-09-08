@@ -22,8 +22,16 @@ qn = self.model.getStruct();
 qn.state = self.model.getState; % not used internally by SSA
 qn.space = qn.state; % SSA progressively grows this cell array into the simulated state space
 
-[Q,U,R,T,C,X,~, tranSysState, tranSync] = solver_ssa_analysis(qn, options);
-
+[Q,U,R,T,C,X,~, tranSysState, tranSync, qn] = solver_ssa_analysis(qn, options);
+for isf=1:qn.nstateful   
+    ind = qn.statefulToNode(isf);
+    switch class(self.model.nodes{qn.statefulToNode(isf)})
+        case 'Cache'
+            self.model.nodes{qn.statefulToNode(isf)}.server.actualHitProb = qn.varsparam{ind}.actualhitprob;
+            self.model.nodes{qn.statefulToNode(isf)}.server.actualMissProb = qn.varsparam{ind}.actualmissprob;
+            self.model.refreshChains;
+    end
+end
 runtime = toc(T0);
 self.setAvgResults(Q,U,R,T,C,X,runtime);
 end

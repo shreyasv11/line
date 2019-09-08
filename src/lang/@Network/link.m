@@ -27,6 +27,22 @@ if size(P,1) == size(P,2)
             end
         end
     end
+    % in this case it is possible that P is linear but just because the
+    % routing is state-dependent and therefore some zero entries are
+    % actually unspecified
+    %cacheNodes = find(cellfun(@(c) isa(c,'Cache'), self.getStatefulNodes));
+    for ind=1:M
+        switch class(self.nodes{ind})
+            case 'Cache'
+                % note that since a cache needs to distinguish hits and
+                % misses, it needs to do class-switch unless the model is
+                % degenerate
+                isLinearP = false;
+                if self.nodes{ind}.server.hitClass == self.nodes{ind}.server.missClass
+                    warning('Ambiguous use of hitClass and missClass at cache, it is recommended to use different classes.');
+                end
+        end
+    end
 end
 
 

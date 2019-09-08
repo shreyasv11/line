@@ -62,13 +62,13 @@ if qn.isopen()
                         end
                         chainArrivalAtSource{c} = mmap_super_safe({chainArrivalAtSource{c},{PH{ist,k}{1},PH{ist,k}{2},PH{ist,k}{2}}}, config.space_max, 'default');
                     end
-                    if c == 1
-                        aggrArrivalAtSource = mmap_super_safe({chainArrivalAtSource{1}, mmap_exponential(0,1)}, config.space_max, 'default');
-                        aggrArrivalAtSource = {aggrArrivalAtSource{1} aggrArrivalAtSource{2} aggrArrivalAtSource{2}};
-                        aggrArrivalAtSource = mmap_scale(aggrArrivalAtSource, 1/ map_lambda(chainArrivalAtSource{c}));
-                    else
-                        aggrArrivalAtSource = mmap_super_safe({aggrArrivalAtSource, chainArrivalAtSource{c}},config.space_max, 'default');
-                    end
+%                     if c == 1
+%                         aggrArrivalAtSource = mmap_super_safe({chainArrivalAtSource{1}, mmap_exponential(0,1)}, config.space_max, 'default');
+%                         aggrArrivalAtSource = {aggrArrivalAtSource{1} aggrArrivalAtSource{2} aggrArrivalAtSource{2}};
+%                         aggrArrivalAtSource = mmap_scale(aggrArrivalAtSource, 1/ map_lambda(chainArrivalAtSource{c}));
+%                     else
+%                         aggrArrivalAtSource = mmap_super_safe({aggrArrivalAtSource, chainArrivalAtSource{c}},config.space_max, 'default');
+%                     end
                     inchain = find(qn.chains(c,:));
                     TN(ist,inchain) = lambdas_inchain{c};
                     %TN(ist,isnan(lambdas_inchain{c}))=0;

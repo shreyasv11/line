@@ -65,6 +65,16 @@ classdef Cache < StatefulNode
         %                 self.server.serviceProcess{1+level, itemclass.index} = {[], ServiceStrategy.ID_SD, distribution};
         %             end
         %         end
+
+        function self = reset(self)
+            % SELF = RESET()
+            %
+            % Reset internal data structures when the network model is
+            % reset
+            self.server.actualHitProb = sparse([]);
+            self.server.actualMissProb = sparse([]);
+        end
+        
         
         function setHitClass(self, jobinclass, joboutclass)
             % SETHITCLASS(JOBINCLASS, JOBOUTCLASS)

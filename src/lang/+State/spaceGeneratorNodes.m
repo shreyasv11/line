@@ -29,7 +29,7 @@ for ind=1:qn.nnodes
         isf = qn.nodeToStateful(ind);
         switch qn.nodetype(ind)
             case NodeType.Cache
-                for r=1:qn.nclasses % restrict state space generation for immediate events
+                for r=1:qn.nclasses % restrict state space generation to immediate events
                     if isnan(qn.varsparam{ind}.pref{r})
                         capacityc(ind,r) =  1; %
                     else

@@ -13,7 +13,9 @@ K = self.model.getNumberOfClasses();
 if nargin == 1
     [Q,U,R,T,A] = self.model.getAvgHandles();
 end
+
 [QN,UN,RN,TN,AN] = self.getAvgNode(Q,U,R,T,A);
+
 if isempty(QN)
     AvgTable = Table();
     QT = Table();
@@ -77,6 +79,5 @@ else
     ArvR = Aval(:); % we need to save first in a variable named like the column
     AT = Table(Node,Class,ArvR);
     AvgTable = Table(Node,Class,QLen,Util,RespT,ArvR,Tput);
-    
 end
 end

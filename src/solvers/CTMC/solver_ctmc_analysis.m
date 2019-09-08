@@ -32,12 +32,16 @@ for i=1:M
     end
 end
 
+if any(qn.nodetype == NodeType.Cache)
+    options.hide_immediate = false;
+end
+
 [InfGen,StateSpace,StateSpaceAggr,EventFiltration,arvRates,depRates,qn] = solver_ctmc(qn, options); % qn is updated with the state space
 
 % if the initial state does not reflect the final state of the state
 % vectors, attempt to correct it
 for isf=1:qn.nstateful
-    if size(qn.state{isf},2) < size(qn.space{isf},2) 
+    if size(qn.state{isf},2) < size(qn.space{isf},2)
         row = matchrow(qn.space{isf}(:,end-length(qn.state{isf})+1:end),qn.state{isf});
         if row > 0
             qn.state{isf} = qn.space{isf}(row,:);
@@ -55,7 +59,23 @@ else
     fname = '';
 end
 
-pi = ctmc_solve(InfGen, options);
+wset = 1:length(InfGen);
+
+% for caches we keep the immediate transitions to give hit/miss rates
+[pi, ~, nConnComp, connComp] = ctmc_solve(InfGen, options);
+
+if any(isnan(pi))
+    if nConnComp > 1
+        % the matrix was reducible
+        initState = matchrow(StateSpace, cell2mat(qn.state'));
+        % determine the weakly connected component associated to the initial state
+        wset = find(connComp == connComp(initState));
+        pi = ctmc_solve(InfGen(wset, wset), options);
+        InfGen = InfGen(wset, wset);
+        StateSpace = StateSpace(wset,:);
+    end
+end
+
 pi(pi<1e-14)=0;
 pi = pi/sum(pi);
 
@@ -68,17 +88,17 @@ CN = NaN*zeros(1,K);
 
 for k=1:K
     refsf = qn.stationToStateful(qn.refstat(k));
-    XN(k) = pi*arvRates(:,refsf,k);
+    XN(k) = pi*arvRates(wset,refsf,k);
     for i=1:M
         isf = qn.stationToStateful(i);
-        TN(i,k) = pi*depRates(:,isf,k);
-        QN(i,k) = pi*StateSpaceAggr(:,(i-1)*K+k);
+        TN(i,k) = pi*depRates(wset,isf,k);
+        QN(i,k) = pi*StateSpaceAggr(wset,(i-1)*K+k);
         switch sched{i}
             case SchedStrategy.INF
                 UN(i,k) = QN(i,k);
             otherwise
                 if ~isempty(PH{i,k})
-                    UN(i,k) = pi*arvRates(:,i,k)*map_mean(PH{i,k})/S(i);
+                    UN(i,k) = pi*arvRates(wset,i,k)*map_mean(PH{i,k})/S(i);
                 end
         end
     end
@@ -103,6 +123,31 @@ XN(isnan(XN))=0;
 TN(isnan(TN))=0;
 
 runtime = toc(Tstart);
+
+% now update the routing probabilities in nodes with state-dependent routing
+for k=1:K
+    for isf=1:qn.nstateful
+        if qn.nodetype(isf) == NodeType.Cache            
+            TNcache(isf,k) = pi*depRates(wset,isf,k);
+        end
+    end
+end
+
+% updates cache actual hit and miss data
+for k=1:K
+    for isf=1:qn.nstateful
+        if qn.nodetype(isf) == NodeType.Cache
+            ind = qn.statefulToNode(isf);
+            if length(qnc.varsparam{ind}.hitclass)>=k
+                h = qnc.varsparam{ind}.hitclass(k);
+                m = qnc.varsparam{ind}.missclass(k);
+                qn.varsparam{ind}.actualhitprob(k) = TNcache(isf,h)/sum(TNcache(isf,[h,m]));
+                qn.varsparam{ind}.actualmissprob(k) = TNcache(isf,m)/sum(TNcache(isf,[h,m]));
+            end
+        end
+    end
+end
+
 %if options.verbose > 0
 %    fprintf(1,'CTMC analysis completed in %f sec\n',runtime);
 %end

@@ -135,6 +135,7 @@ for i=1:self.getNumberOfNodes % source
                     Pcs(r,:) = Pcs(r,:)/sum(Pcs(r,:));
                 end
             end
+            
             for r=1:self.getNumberOfClasses()
                 if (isempty(find(r == self.nodes{i}.server.hitClass)) && isempty(find(r == self.nodes{i}.server.missClass)))
                     for j=1:self.getNumberOfNodes() % destination
@@ -143,7 +144,26 @@ for i=1:self.getNumberOfNodes % source
                         end
                     end
                 end
+            end      
+            
+            for r=1:self.getNumberOfClasses()
+                if length(self.nodes{i}.server.actualHitProb)>=r && length(self.nodes{i}.server.hitClass)>=r
+                    ph = self.nodes{i}.server.actualHitProb(r);
+                    pm = self.nodes{i}.server.actualMissProb(r);
+                    h = self.nodes{i}.server.hitClass(r);
+                    m = self.nodes{i}.server.missClass(r);
+                    rtNodes((i-1)*K+r,(i-1)*K+h) = ph;
+                    rtNodes((i-1)*K+r,(i-1)*K+m) = pm;
+                else
+                    if length(self.nodes{i}.server.hitClass)>=r
+                        h = self.nodes{i}.server.hitClass(r);
+                        m = self.nodes{i}.server.missClass(r);
+                        rtNodes((i-1)*K+r,(i-1)*K+h) = NaN;
+                        rtNodes((i-1)*K+r,(i-1)*K+m) = NaN;
+                    end
+                end
             end
+            
             for j=1:self.getNumberOfNodes() % destination
                 Pij = Pi(1:K,((j-1)*K+1):j*K); %Pij(r,s)
                 for r=1:self.getNumberOfClasses()
@@ -177,6 +197,7 @@ for i=1:self.getNumberOfNodes % source
     % We here re-route back as C and leave for the chain analyzer
     % to detect that C is in a chain with A and B and change this
     % part.
+        
     [C,inChain]=weaklyconncomp(rtNodes+rtNodes');
     inChain(colsToIgnore) = 0;
     chainCandidates = cell(1,C);

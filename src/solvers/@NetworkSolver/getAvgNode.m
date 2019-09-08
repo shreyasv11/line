@@ -15,7 +15,9 @@ elseif nargin == 2
     T=handlers{4};
 end
 qn = self.model.getStruct;
+
 [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
+
 I = self.model.getNumberOfNodes;
 M = self.model.getNumberOfStations;
 R = self.model.getNumberOfClasses;
@@ -25,19 +27,20 @@ UNn = zeros(I,R);
 RNn = zeros(I,R);
 TNn = zeros(I,R);
 ANn = zeros(I,R);
+
 for ist=1:M
     ind = qn.stationToNode(ist);
     QNn(ind,:) = QN(ist,:);
     UNn(ind,:) = UN(ist,:);
     RNn(ind,:) = RN(ist,:);
-    %TNn(ind,:) = TN(ist,:);
-    ANn(ind,:) = TN(ist,:);
+    %TNn(ind,:) = TN(ist,:); % this is built later from ANn
+    %ANn(ind,:) = TN(ist,:);
 end
 
-if any(qn.isstatedep(:,3)) || any(qn.nodetype == NodeType.Cache)
-    warning('Node-level metrics not available in models with state-dependent routing. Returning station-level metrics.');
-    return
-end
+%if any(qn.isstatedep(:,3)) || any(qn.nodetype == NodeType.Cache)
+%    warning('Node-level metrics not available in models with state-dependent routing. Returning station-level metrics only.');
+%    return
+%end
 
 % update tputs for all nodes but the sink and the joins
 for ind=1:I
@@ -47,14 +50,14 @@ for ind=1:I
             %anystat = find(qn.visits{c}(:,r));
             refstat = qn.refstat(c);
             %if ~isempty(anystat)
-                if qn.nodetype(ind) ~= NodeType.Source
-                    %if qn.isstation(ind)
-                    %    ist = qn.nodeToStation(ind);
-                    %    ANn(ind, r) =  TN(ist,r);
-                    %else
-                    ANn(ind, r) =  (qn.nodevisits{c}(ind,r) / qn.visits{c}(refstat,r)) * TN(refstat,r);
-                    %end
-                end
+            if qn.nodetype(ind) ~= NodeType.Source
+                %if qn.isstation(ind)
+                %    ist = qn.nodeToStation(ind);
+                %    ANn(ind, r) =  TN(ist,r);
+                %else
+                ANn(ind, r) =  (qn.nodevisits{c}(ind,r) / sum(qn.visits{c}(refstat,inchain))) * TN(refstat,r);
+                %end
+            end
             %end
         end
     end
@@ -82,6 +85,8 @@ for ind=1:I
         end
     end
 end
+
 ANn(isnan(ANn)) = 0;
 TNn(isnan(TNn)) = 0;
+
 end

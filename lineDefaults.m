@@ -8,6 +8,7 @@ options.cache = true;
 options.cutoff = Inf;
 options.config = {};
 options.force = false;
+options.hide_immediate = true; % hide immediate transitions if possible
 options.init_sol = [];
 options.iter_max = 10;
 options.iter_tol = 1e-4; % convergence tolerance to stop iterations
