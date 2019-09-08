@@ -1,4 +1,3 @@
-
 if ~isoctave(), clearvars -except exampleName; end
 model = Network('model');
 

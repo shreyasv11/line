@@ -127,5 +127,15 @@ fprintf(1,'\n\nExample: <strong>example_misc_4</strong>\n');
 fprintf(1,'This example shows that LINE automatically checks if a solver is feasible for a given model.\n');
 fprintf(1,'If not, an empty result set is returned.\n');
 clear; example_misc_4; fprintf(1,'Pausing...'); pause(3.0);
+
+%%
+fprintf(1,'\n<strong>RUNNING: example_cacheModel_*</strong>');
+fprintf(1,'\n\nExample: <strong>example_cacheModel_1</strong>\n');
+fprintf('This example shows a small cache model with an open arrival process.\n')
+clear; example_cacheModel_1; fprintf(1,'Pausing...'); pause(3.0);
+fprintf(1,'\n\nExample: <strong>example_cacheModel_2</strong>\n');
+fprintf('This example shows a small cache model with a closed arrival process.\n')
+clear; example_cacheModel_2; fprintf(1,'Pausing...'); pause(3.0);
+
 %%
 fprintf(1,'\nExamples completed.\n')
