@@ -468,7 +468,7 @@ elseif qn.isstateful(ind)
                 case EventType.READ
                     n = qn.varsparam{ind}.nitems; % n items
                     m = qn.varsparam{ind}.cap; % capacity
-                    ac = qn.varsparam{ind}.accost; % access cost
+                    ac = qn.varsparam{ind}.accost; % access cost                    
                     hitclass = qn.varsparam{ind}.hitclass;
                     missclass = qn.varsparam{ind}.missclass;
                     h = length(m);
@@ -482,9 +482,11 @@ elseif qn.isstateful(ind)
                         if any(en)
                             for e=find(en)'
                                 if isSimulation
-                                    % pick one
+                                    % pick one item
                                     kset = 1 + max([0,find( rand > cumsum(p) )]);
-                                    outprob = p(kset);
+                                    % pick one entry list
+                                    l = 1 + max([0,find( rand > cumsum(ac{class,kset}(1,:)) )]);
+                                    outprob = ac{class,kset}(1,l) * p(kset);
                                 else
                                     kset = 1:n;
                                 end
@@ -504,10 +506,12 @@ elseif qn.isstateful(ind)
                                                 space_srv_k = [space_srv_k; space_srv_e];
                                                 space_var_k = [space_var_k; varp];
                                                 if isSimulation
-                                                    %% no p(k) weighting since htat goes in the outprob vec
+                                                    %% no p(k) weighting since that goes in the outprob vec
                                                     outrate(end+1,1) = Distrib.InfRate;
                                                 else
-                                                    outrate(end+1,1) = p(k) * Distrib.InfRate;
+                                                    for l=2
+                                                        outrate(end+1,1) = ac{class,k}(1,l) * p(k) * Distrib.InfRate;
+                                                    end
                                                 end
                                             case ReplacementStrategy.ID_RAND
                                                 if isSimulation
@@ -523,7 +527,9 @@ elseif qn.isstateful(ind)
                                                         varp(r) = k;
                                                         space_srv_k = [space_srv_k; space_srv_e];
                                                         space_var_k = [space_var_k; (varp)];
-                                                        outrate(end+1,1) = p(k)/m(1) * Distrib.InfRate;
+                                                        for l=2
+                                                            outrate(end+1,1) = ac{class,k}(1,l) * p(k)/m(1) * Distrib.InfRate;
+                                                        end
                                                     end
                                                 end
                                         end
@@ -557,7 +563,7 @@ elseif qn.isstateful(ind)
                                                         varp(cpos(inew,1)) = k;
                                                         space_srv_k = [space_srv_k; space_srv_e];
                                                         space_var_k = [space_var_k; varp];
-                                                        outrate(end+1,1) = ac{class,k}(i,inew) * p(k) * Distrib.InfRate;
+                                                        outrate(end+1,1) = ac{class,k}(1+i,1+inew) * p(k) * Distrib.InfRate;
                                                     end
                                                 end
                                             case ReplacementStrategy.ID_RAND
@@ -567,7 +573,7 @@ elseif qn.isstateful(ind)
                                                     r = randi(m(inew),1,1);
                                                     varp(cpos(i,j)) = var(cpos(inew,r));
                                                     varp(cpos(inew,r)) = k;
-                                                    outprob = outprob * ac{class,k}(i,inew);
+                                                    outprob = outprob * ac{class,k}(1+i,1+inew);
                                                     space_srv_k = [space_srv_k; space_srv_e];
                                                     space_var_k = [space_var_k; varp];
                                                     outrate(end+1,1) = Distrib.InfRate;
@@ -579,7 +585,7 @@ elseif qn.isstateful(ind)
                                                             varp(cpos(inew,r)) = k;
                                                             space_srv_k = [space_srv_k; space_srv_e];
                                                             space_var_k = [space_var_k; varp];
-                                                            outrate(end+1,1) = ac{class,k}(i,inew) * p(k)/m(inew) * Distrib.InfRate;
+                                                            outrate(end+1,1) = ac{class,k}(1+i,1+inew) * p(k)/m(inew) * Distrib.InfRate;
                                                         end
                                                     end
                                                 end
@@ -603,7 +609,7 @@ elseif qn.isstateful(ind)
                                                         varp(cpos(inew,1)) = k;
                                                         space_srv_k = [space_srv_k; space_srv_e];
                                                         space_var_k = [space_var_k; varp];
-                                                        outrate(end+1,1) = ac{class,k}(i,inew) * p(k) * Distrib.InfRate;
+                                                        outrate(end+1,1) = ac{class,k}(1+i,1+inew) * p(k) * Distrib.InfRate;
                                                     end
                                                 end
                                         end
@@ -617,8 +623,8 @@ elseif qn.isstateful(ind)
                                                 space_var_k = [space_var_k; (var)];
                                                 if isSimulation
                                                     outrate(end+1,1) = Distrib.InfRate;
-                                                else
-                                                    outrate(end+1,1) = p(k) * Distrib.InfRate;
+                                                else                                                    
+                                                    outrate(end+1,1) = ac{class,k}(1+h,1+h) * p(k) * Distrib.InfRate;
                                                 end
                                             case {ReplacementStrategy.ID_FIFO, ReplacementStrategy.ID_SFIFO}
                                                 space_srv_k = [space_srv_k; space_srv_e];
@@ -626,7 +632,7 @@ elseif qn.isstateful(ind)
                                                 if isSimulation
                                                     outrate(end+1,1) = Distrib.InfRate;
                                                 else
-                                                    outrate(end+1,1) = p(k) * Distrib.InfRate;
+                                                    outrate(end+1,1) = ac{class,k}(1+h,1+h) * p(k) * Distrib.InfRate;
                                                 end
                                             case ReplacementStrategy.ID_LRU
                                                 varp = var;
@@ -637,7 +643,7 @@ elseif qn.isstateful(ind)
                                                 if isSimulation
                                                     outrate(end+1,1) = Distrib.InfRate;
                                                 else
-                                                    outrate(end+1,1) = p(k) * Distrib.InfRate;
+                                                    outrate(end+1,1) = ac{class,k}(1+h,1+h) * p(k) * Distrib.InfRate;
                                                 end
                                         end
                                     end

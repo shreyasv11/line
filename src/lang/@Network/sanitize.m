@@ -20,8 +20,10 @@ if isempty(self.qn)
                 if isempty(self.nodes{i}.accessCost)
                     self.nodes{i}.accessCost = cell(K,self.nodes{i}.items.nitems);
                     for v=1:K
-                        for j=1:self.nodes{i}.items.nitems
-                            self.nodes{i}.accessCost{v,j} = diag(ones(1,self.nodes{i}.nLevels-1),1);
+                        for k=1:self.nodes{i}.items.nitems
+							% accessCost{v,k}(l,p) is the cost (probability) for a user-v request to item k in list l to access list p
+                            self.nodes{i}.accessCost{v,k} = diag(ones(1,self.nodes{i}.nLevels),1);
+							self.nodes{i}.accessCost{v,k}(1+self.nodes{i}.nLevels,1+self.nodes{i}.nLevels) = 1;
                         end
                     end
                 end
