@@ -1,7 +1,7 @@
 if ~isoctave(), clearvars -except exampleName; end
 model = Network('model');
 
-n = 3; % number of items
+n = 5; % number of items
 m = 2; % cache capacity
 
 delay = Delay(model, 'Delay');

@@ -22,35 +22,39 @@ classdef SolverLQNS < LayeredNetworkSolver
             tic;
             options = self.getOptions;
             filename = [tempname,'.lqnx'];
-            self.model.writeXML(filename);
-            switch options.method
-                case {'default','lqns'}
-                    system(['lqns -i',num2str(options.iter_max),' -x ',filename]);
-                case 'exact'
-                    system(['lqns -Playering=srvn -i',num2str(options.iter_max),' -Pmva=exact -x ',filename]);
-                case {'srvn'}
-                    system(['lqns -Playering=srvn -i',num2str(options.iter_max),' -x ',filename]);
-                case 'srvnexact'
-                    system(['lqns -Playering=srvn -i',num2str(options.iter_max),' -Pmva=exact -x ',filename]);
-                case {'sim','lqsim'}
-                    system(['lqsim -A ',num2str(options.samples),',0.95 -x ',filename]);
-                case {'lqnsdefault'}
-                    system(['lqns -x ',filename]);
-                otherwise
-                    system(['lqns -Playering=srvn -i',num2str(options.iter_max),' -x ',filename]);
-            end
-            self.parseXMLResults(filename);
-            if ~options.keep
-                delete(filename)
+            try
+                self.model.writeXML(filename);
+                switch options.method
+                    case {'default','lqns'}
+                        system(['lqns -i ',num2str(options.iter_max),' -x ',filename]);
+                    case {'srvn'}
+                        system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -x ',filename]);
+                    case {'exact'}
+                        system(['lqns -i ',num2str(options.iter_max),' -Pmva=exact -x ',filename]);
+                    case {'srvnexact'}
+                        system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -Pmva=exact -x ',filename]);
+                    case {'sim','lqsim'}
+                        system(['lqsim -A ',num2str(options.samples),',3 -x ',filename]);
+                    case {'lqnsdefault'}
+                        system(['lqns -x ',filename]);
+                    otherwise
+                        system(['lqns -i ',num2str(options.iter_max),' -x ',filename]);
+                end
+                self.parseXMLResults(filename);
+                if ~options.keep
+                    [filepath,name] = fileparts(filename);
+                    delete([filepath,filesep,name,'*'])
+                end
+            catch exception
+                if ~options.keep
+                    [filepath,name] = fileparts(filename);
+                    delete([filepath,filesep,name,'*'])
+                end
+                rethrow(exception)
             end
             runtime = toc;
         end
         
-        function reset(self)
-            % RESET()
-            
-            model.reset;
-        end
         function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)
             % [QN,UN,RN,TN] = GETAVG(SELF,~,~,~,~)
             
@@ -125,25 +129,17 @@ classdef SolverLQNS < LayeredNetworkSolver
             % init Java XML parser and load file
             dbFactory = DocumentBuilderFactory.newInstance();
             dBuilder = dbFactory.newDocumentBuilder();
-            try
-                [fpath,fname,~] = fileparts(filename);
-                resultFilename = [fpath,filesep,fname,'.lqxo'];
-                if verbose > 0
-                    w = warning('query');
-                    %warning off;
-                    fprintf(1,'Parsing LQNS result file: %s\n', resultFilename);
-                    warning(w);
-                end
-                doc = dBuilder.parse(resultFilename);
-            catch exception %java.io.FileNotFoundException
-                if ~exist(filename, 'file')
-                    disp(['Error: Input XML file ', filename, ' not found']);
-                    return;
-                else
-                    rethrow(exception);
-                end
+            
+            [fpath,fname,~] = fileparts(filename);
+            resultFilename = [fpath,filesep,fname,'.lqxo'];
+            if verbose > 0
+                w = warning('query');
+                %warning off;
+                fprintf(1,'Parsing LQNS result file: %s\n',resultFilename);
+                warning(w);
             end
             
+            doc = dBuilder.parse(resultFilename);
             doc.getDocumentElement().normalize();
             
             %NodeList

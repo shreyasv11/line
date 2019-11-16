@@ -1,5 +1,5 @@
-function [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_mva_cache_analysis(qn, options)
-% [Q,U,R,T,C,X,LG,RUNTIME] = SOLVER_MVA_CACHE_ANALYSIS(QN, OPTIONS)
+function [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_nc_cache_analysis(qn, options)
+% [Q,U,R,T,C,X,LG,RUNTIME] = SOLVER_NC_CACHE_ANALYSIS(QN, OPTIONS)
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
@@ -20,6 +20,11 @@ ch = qn.varsparam{qn.nodetype == NodeType.Cache};
 
 m = ch.cap;
 n = ch.nitems;
+
+if n<m+2
+    error('NC requires the number of items to exceed the cache capacity at least by 2.');
+end
+
 h = length(m);
 u = qn.nclasses;
 lambda = zeros(u,n,h);
@@ -36,8 +41,7 @@ end
 
 R = ch.accost;
 gamma = mucache_gamma_lp(lambda,R);
-
-[~,missRate] = mucache_miss_asy(gamma,m,lambda);
+[~,missRate] = mucache_miss_rayint(gamma,m,lambda);
 
 for r = 1:qn.nclasses
     if length(ch.hitclass)>=r

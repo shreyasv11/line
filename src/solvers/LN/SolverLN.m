@@ -32,7 +32,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
                 end
                 %                maxIterErr
                 if it > 1 && self.options.verbose == 2
-                    fprintf(1, sprintf('\nSolverLN error is: %f',maxIterErr));
+                    fprintf(1, sprintf('\nSolverLN error is: %f\n',maxIterErr));
                 end
                 if maxIterErr < 1e-5 && self.options.verbose
                     fprintf(1, sprintf('\nSolverLN completed in %d iterations.\n',size(self.results,2)));

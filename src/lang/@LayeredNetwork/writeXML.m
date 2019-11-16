@@ -37,7 +37,7 @@ for p = 1:length(self.processors)
         procElement.setAttribute('multiplicity', num2str(curProc.multiplicity));
     end
     procElement.setAttribute('scheduling', num2str(curProc.scheduling));
-    if ~isnan(curProc.quantum)
+    if ~isnan(curProc.quantum) && strcmp(curProc.scheduling, SchedStrategy.PS)
         procElement.setAttribute('quantum', num2str(curProc.quantum));
     end
     if ~isnan(curProc.speedFactor)
@@ -61,10 +61,6 @@ for p = 1:length(self.processors)
             taskElement.appendChild(entryElement);
             entryElement.setAttribute('name', curEntry.name);
             entryElement.setAttribute('type', curEntry.type);
-            if ~isnan(curEntry.extArrivalMean)
-                entryElement.setAttribute('open-arrival-rate', num2str(1/curEntry.extArrivalMean));
-                taskElement.setAttribute('scheduling', SchedStrategy.INF);
-            end
         end
         taskActElement = doc.createElement('task-activities');
         taskElement.appendChild(taskActElement);
@@ -132,6 +128,6 @@ transformerFactory = TransformerFactory.newInstance();
 transformer = transformerFactory.newTransformer();
 transformer.setOutputProperty(OutputKeys.INDENT, 'yes');
 source = DOMSource(doc);
-result =  StreamResult(File(filename));
+result = StreamResult(File(filename));
 transformer.transform(source, result);
 end

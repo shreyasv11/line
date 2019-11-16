@@ -67,18 +67,17 @@ switch options.method
     case {'jsim','default'}
         if isinf(options.timespan(2)) || ((options.timespan(2)) == (options.timespan(1)))
             self.writeJSIM;
-            cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg" -seed ',num2str(options.seed), ' --illegal-access=permit'];
+            cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep,self.getFileName(),'.jsimg" -seed ',num2str(options.seed),' --illegal-access=permit'];
             if options.verbose
-                fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
+                fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep,self.getFileName(),'.jsimg']);
                 fprintf(1,'JMT Command: %s\n',cmd);
             end
             [~, result] = system(cmd);
             Trun = toc(T0);
-            if ~options.keep
-                delete([self.getFilePath(),'jsimg',filesep, self.getFileName(), '.jsimg']);
-                
-            end
             self.getResults;
+            if ~options.keep
+                delete([self.getFilePath(),'jsimg',filesep,self.getFileName(),'*']);
+            end
         else
             options = self.getOptions;
             initSeed = self.options.seed;
@@ -87,7 +86,6 @@ switch options.method
             if isfield(options,'timespan')  && isfinite(options.timespan(2))
                 qn = self.getStruct;
                 tu = [];
-                stateu = {};
                 for it=1:options.iter_max
                     self.options.seed = initSeed + it -1;
                     TranSysStateAggr{it} = self.sampleSysAggr();
@@ -144,7 +142,6 @@ switch options.method
                         else
                             TNt{j,r}(:,1) = UNt{j,r}(:,1) * qn.rates(j,r);
                         end
-                        
                     end
                 end
                 Trun = toc(T0);
@@ -162,20 +159,19 @@ switch options.method
             self.result.runtime = Trun;
         end
     case {'jmva','jmva.amva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
-            'jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
-        fname = self.writeJMVA([self.getFilePath(),'jmva',filesep, self.getFileName(),'.jmva']);
-        cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed), ' --illegal-access=permit'];
+          'jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
+        fname = self.writeJMVA([self.getFilePath(),'jmva',filesep,self.getFileName(),'.jmva']);
+        cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed),' --illegal-access=permit'];
         if options.verbose
-            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
+            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jmva',filesep,self.getFileName(),'.jmva']);
             fprintf(1,'JMT Command: %s\n',cmd);
         end
         [~, result] = system(cmd);
         Trun = toc(T0);
-        
-        if ~options.keep
-            delete([self.getFilePath(),'jmva',filesep, self.getFileName(), '.jmva']);
-        end
         self.getResults;
+        if ~options.keep
+            delete([self.getFilePath(),'jmva',filesep,self.getFileName(),'*']);
+        end
     otherwise
         warning('This solver does not support the specified method. Setting to default.');
         self.options.method  = 'default';

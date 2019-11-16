@@ -23,7 +23,7 @@ for p = 1:length(self.processors)
         case SchedStrategy.INF
             fprintf(fid,['p ',curProc.name,' i','\n']);
         case SchedStrategy.PS
-            fprintf(fid,['p ',curProc.name,' s','\n']);
+            fprintf(fid,['p ',curProc.name,' s ',num2str(curProc.quantum),' m ',num2str(curProc.multiplicity),'\n']);
         case SchedStrategy.RAND
             fprintf(fid,['p ',curProc.name,' r m ',num2str(curProc.multiplicity),'\n']);
         otherwise
@@ -51,13 +51,15 @@ for p = 1:length(self.processors)
         entryList=entryList(2:end);
         switch curTask.scheduling
             case SchedStrategy.REF
-                fprintf(fid,['t ',curTask.name,' r ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);%,' z ',num2str(curTask.thinkTimeMean),'\n']);
+                fprintf(fid,['t ',curTask.name,' r ',entryList,' -1 ',curProc.name,' z ',num2str(curTask.thinkTimeMean),' m ',num2str(curTask.multiplicity),'\n']);
             case SchedStrategy.FCFS
-                fprintf(fid,['t ',curTask.name,' f  ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);
+                fprintf(fid,['t ',curTask.name,' f ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);
             case SchedStrategy.HOL
-                fprintf(fid,['t ',curTask.name,' h  ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);
-            case {SchedStrategy.INF, SchedStrategy.PS, SchedStrategy.RAND, SchedStrategy.GPS, SchedStrategy.DPS}
-                fprintf(fid,['t ',curTask.name,' n  ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);
+                fprintf(fid,['t ',curTask.name,' h ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);
+            case SchedStrategy.INF
+                fprintf(fid,['t ',curTask.name,' i ',entryList,' -1 ',curProc.name,'\n']);
+            case {SchedStrategy.PS, SchedStrategy.RAND, SchedStrategy.GPS, SchedStrategy.DPS}
+                fprintf(fid,['t ',curTask.name,' n ',entryList,' -1 ',curProc.name,' m ',num2str(curTask.multiplicity),'\n']);
             otherwise
                 error('Unsupported scheduling policy.');
         end
@@ -83,11 +85,11 @@ for p = 1:length(self.processors)
         curTask = self.processors(p).tasks(t);
         for e=1:length(curTask.entries)
             curEntry = self.processors(p).tasks(t).entries(e);
-            %fprintf(fid,['s ',curEntry.name,' 0.0 -1\n']);
             for a=1:length(curTask.activities)
                 curAct = self.processors(p).tasks(t).activities(a);
                 if strcmp(curAct.boundToEntry,curEntry.name)
                     fprintf(fid,['A ',curEntry.name,' ',curAct.name,'\n']);
+                    break
                 end
             end
         end
@@ -96,6 +98,7 @@ end
 
 %%
 fprintf(fid,'-1\n\n#Activity blocks\n');
+lqnGraph = self.getGraph;
 for p = 1:length(self.processors)
     curProc = self.processors(p);
     for t=1:length(curProc.tasks)
@@ -104,28 +107,49 @@ for p = 1:length(self.processors)
         % task activities
         for a=1:length(curTask.activities)
             curAct = self.processors(p).tasks(t).activities(a);
-            fprintf(fid,['s ',curAct.name,' ',num2str(curAct.hostDemandMean),' \n']);
+            fprintf(fid,['s ',curAct.name,' ',num2str(curAct.hostDemandMean),'\n']);
+            fprintf(fid,['c ',curAct.name,' ',num2str(curAct.hostDemandSCV),'\n']);
+            if strcmp(curAct.callOrder,'DETERMINISTIC')
+                fprintf(fid,['f ',curAct.name,' 1\n']);
+            else
+                fprintf(fid,['f ',curAct.name,' 0\n']);
+            end
             for d=1:numel(curAct.synchCallDests)
-                fprintf(fid,['y ',curAct.name,' ',curAct.synchCallDests{d},' ',num2str(curAct.synchCallMeans),' \n']);
+                fprintf(fid,['y ',curAct.name,' ',curAct.synchCallDests{d},' ',num2str(curAct.synchCallMeans),'\n']);
             end
             for d=1:numel(curAct.asynchCallDests)
-                fprintf(fid,['z ',curAct.name,' ',curAct.asynchCallDests{d},' ',num2str(curAct.asynchCallMeans),' \n']);
+                fprintf(fid,['z ',curAct.name,' ',curAct.asynchCallDests{d},' ',num2str(curAct.asynchCallMeans),'\n']);
             end            
         end
-        if ~strcmp(curTask.scheduling,'ref')
-            fprintf(fid,[':']);
-            for a=1:length(curTask.activities)
-                curAct = self.processors(p).tasks(t).activities(a);
-                if ~isempty(curAct.boundToEntry)
-                    if a==length(curTask.activities)
-                        fprintf(fid,['\n',curAct.name,' [',curAct.boundToEntry,']']);
-                    else
-                        fprintf(fid,['\n',curAct.name,' [',curAct.boundToEntry,'];']);
-                    end
+        buffer = '';
+        for ap=1:length(curTask.precedences)
+            curActPrec = self.processors(p).tasks(t).precedences(ap);
+            preActName = curActPrec.pres{1};
+            postActName = curActPrec.posts{1};
+            for e=1:length(curTask.entries)
+                curEntry = self.processors(p).tasks(t).entries(e);
+                if any(strcmp(preActName,curEntry.replyActivity))
+                    preActName = [preActName,'[',curEntry.name,']'];
+                    break
+                end
+            end
+            buffer = [buffer,preActName,' -> ',postActName,';\n'];
+        end
+        for e=1:length(curTask.entries)
+            curEntry = self.processors(p).tasks(t).entries(e);
+            for r=1:length(curEntry.replyActivity)
+                replyActName = curEntry.replyActivity{r};
+                replyActIndex = findstring(lqnGraph.Nodes.Node,replyActName);
+                nextNodeIndices = successors(lqnGraph,replyActIndex);
+                if ~any(strcmp(lqnGraph.Nodes.Type(nextNodeIndices),'AS'))
+                    buffer = [buffer,replyActName,'[',curEntry.name,'];\n'];
                 end
             end
         end
-        fprintf(fid,['\n-1\n\n']);
+        if ~isempty(buffer)
+            fprintf(fid,[':\n',buffer(1:end-3),'\n']);
+        end
+        fprintf(fid,['-1\n\n']);
     end
 end
 

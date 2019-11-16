@@ -1,52 +1,64 @@
-function [submodels, levels] = getGraphLayers(self, lqnGraph, taskGraph)
-% [SUBMODELS, LEVELS] = GETGRAPHLAYERS(LQNGRAPH, TASKGRAPH)
+function submodels = getGraphLayers(self)
+% SUBMODELS = GETGRAPHLAYERS()
 
 % Copyright (c) 2012-2019, Imperial College London
 % All rights reserved.
 
-submodels = layerize_loose(self,lqnGraph, taskGraph);
-reftasks = [findstring(taskGraph.Nodes.Type,'R')];
-levels = distances(taskGraph,reftasks(1),'Method','unweighted');
-for r=2:length(reftasks)
-    rlevel{r} = distances(taskGraph,reftasks(r),'Method','unweighted');
-    rlevel{r}(isinf(rlevel{r})) = 0; % if a task is unreachable from a ref task, ignore the level obtained from this reftask
-    levels = max(levels,rlevel{r});
-end
-levels = levels + 1;
-levels(reftasks) = [];
-[levels,order] = sort(levels);
-submodels = {submodels{order}};
+submodels = layerize_loose(self);
 end
 
-function submodels = layerize_loose(self,G, H)
-% SUBMODELS = LAYERIZE_LOOSE(SELF,G, H)
-
-initnodes = [findstring(G.Nodes.Type,'P')];
-nextlevel = zeros(1,length(initnodes));
-for r = 1:length(initnodes)
-    nextlevel(1,r) = H.findnode(self.getNodeName(initnodes(r)));
-end
+function submodels = layerize_loose(self)
+% SUBMODELS = LAYERIZE_LOOSE(SELF)
 
 % first build all layers
-submodels = {};
-for n=1:height(H.Nodes)
-    pred = H.predecessors(n);
-    if ~isempty(pred)
-        submodels{end+1} = digraph();
-        for p=pred'
-            nameFrom = H.Nodes.Name{p};
-            nameTo = H.Nodes.Name{n};
-            submodels{end} = submodels{end}.addedge(nameFrom,nameTo);
-        end
+reftasks = findstring(self.taskGraph.Nodes.Type,'R');
+order = toposort(self,reftasks);
+order = order(~ismember(order,reftasks));
+submodels = cell(1,length(order));
+for l = 1:length(submodels)
+    submodels{l} = digraph();
+    nameTo = self.taskGraph.Nodes.Name{order(l)};
+    submodels{l} = submodels{l}.addnode(nameTo);
+    pred = predecessors(self.taskGraph,order(l));
+    for p = pred'
+        nameFrom = self.taskGraph.Nodes.Name{p};
+        submodels{l} = submodels{l}.addedge(nameFrom,nameTo);
     end
 end
 
 % update full name
-for l=1:length(submodels)
-    submodels{l}.Nodes.Node = submodels{l}.Nodes.Name;
-    for i=1:submodels{l}.numnodes
-        idG=G.findnode(submodels{l}.Nodes.Name(i));
-        submodels{l}.Nodes.Node(i) = G.Nodes.Node(idG);
+for l = 1:length(submodels)
+    submodels{l}.Nodes.Node = cell(submodels{l}.numnodes,1);
+    for i = 1:submodels{l}.numnodes
+        j = self.lqnGraph.findnode(submodels{l}.Nodes.Name(i));
+        submodels{l}.Nodes.Node(i) = self.lqnGraph.Nodes.Node(j);
     end
 end
+end
+
+function order = toposort(self,reftasks)
+% ORDER = TOPOSORT(SELF,REFTASKS)
+
+self.topoOrder = [];
+self.dfsMarks = zeros(height(self.taskGraph.Nodes),1);
+for r = reftasks'
+    dfsearch(self,r);
+end
+self.topoOrder = flip(self.topoOrder);
+order = self.topoOrder;
+end
+
+function dfsearch(self,n)
+% DFSEARCH(SELF,N)
+
+if self.dfsMarks(n) > 0
+    return
+end
+self.dfsMarks(n) = 1;
+succ = successors(self.taskGraph,n);
+for s = succ'
+    dfsearch(self,s);
+end
+self.dfsMarks(n) = 2;
+self.topoOrder(end+1,1) = n;
 end

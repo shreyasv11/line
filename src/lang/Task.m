@@ -40,31 +40,14 @@ classdef Task < LayeredNetworkElement
             end
             obj.multiplicity = multiplicity;
             obj.scheduling = scheduling;
-            switch scheduling
-                case SchedStrategy.REF
-                    if ~isfinite(multiplicity)
-                        obj.multiplicity = 1;
-                    end
-                    if isnumeric(thinkTime)
-                        obj.thinkTime = Exp(1/thinkTime);
-                        obj.thinkTimeMean = thinkTime;
-                        obj.thinkTimeSCV = 1.0;
-                    elseif isa(thinkTime,'Distrib')
-                        obj.thinkTime = thinkTime;
-                        obj.thinkTimeMean = thinkTime.getMean();
-                        obj.thinkTimeSCV = thinkTime.getSCV();
-                    end
-                otherwise
-                    if strcmp(SchedStrategy.INF,scheduling) && isfinite(multiplicity)
-                        obj.multiplicity = 1;
-                    end
-                    
-                    obj.thinkTime = Exp(Inf);
-                    obj.thinkTimeMean = 0.0;
-                    obj.thinkTimeSCV = 0.0;
-                    if thinkTime > 0
-                        warning('Cannot specify a think time for a non-reference task, setting it to zero.');
-                    end
+            if isnumeric(thinkTime)
+                obj.thinkTime = Exp(1/thinkTime);
+                obj.thinkTimeMean = thinkTime;
+                obj.thinkTimeSCV = 1.0;
+            elseif isa(thinkTime,'Distrib')
+                obj.thinkTime = thinkTime;
+                obj.thinkTimeMean = thinkTime.getMean();
+                obj.thinkTimeSCV = thinkTime.getSCV();
             end
             model.objects.tasks{end+1} = obj;
         end

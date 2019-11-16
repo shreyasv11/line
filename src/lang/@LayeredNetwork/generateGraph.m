@@ -217,7 +217,6 @@ for p=1:length(proc)
                     PostType(end+1,1) = 0; % single
                 end
                 
-                
                 asynchCallDests = sw_act_tp(a).asynchCallDests;
                 for asd=1:length(asynchCallDests)
                     EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
@@ -229,11 +228,13 @@ for p=1:length(proc)
                 end
                 
                 %                 fwdCallDests = sw_act_tp(a).fwdCallDests;
-                %                 for asd=1:length(fwdCallDests)
-                %                     EndNodes(end+1,1) = sw_act_tp(a).name;
-                %                     EndNodes(end,2) = fwdCallDests{sd};
-                %                     Weight(end+1,1) = sw_act_tp(a).fwdCallMeans;
-                %                     Type(end+1,1) = 3; % forwarding
+                %                 for fd=1:length(fwdCallDests)
+                %                     EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
+                %                     EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,fwdCallDests{fd});
+                %                     Weight(end+1,1) = sw_act_tp(a).fwdCallMeans(fd);
+                %                     EdgeType(end+1,1) = 3; % forwarding
+                %                     PreType(end+1,1) = 0; % single
+                %                     PostType(end+1,1) = 0; % single
                 %                 end
             end
         end

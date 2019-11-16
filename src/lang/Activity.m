@@ -12,7 +12,7 @@ classdef Activity < LayeredNetworkElement
         parent;
         parentName;                 %string
         boundToEntry;               %string
-        callOrder;                  %string \in {'stochastic', 'deterministic'} or
+        callOrder;                  %string \in {'STOCHASTIC', 'DETERMINISTIC'}
         synchCallDests = cell(0);   %string array
         synchCallMeans = [];        %integer array
         asynchCallDests = cell(0);  %string array
@@ -61,7 +61,7 @@ classdef Activity < LayeredNetworkElement
         function obj = setParent(obj, parentName)
             % OBJ = SETPARENT(OBJ, PARENTNAME)
             
-            if isa(parentName,'Entry') ||  isa(parentName,'Task')
+            if isa(parentName,'Entry') || isa(parentName,'Task')
                 obj.parentName = parentName.name;
                 obj.parent = parentName;
             else
@@ -121,7 +121,7 @@ classdef Activity < LayeredNetworkElement
         function obj = setCallOrder(obj, callOrder)
             % OBJ = SETCALLORDER(OBJ, CALLORDER)
             
-            if strcmpi(callOrder, 'STOCHASTIC') || strcmpi(callOrder, 'DETERMINISTIC')
+            if strcmpi(callOrder,'STOCHASTIC') || strcmpi(callOrder,'DETERMINISTIC')
                 obj.callOrder = upper(callOrder);
             else
                 obj.callOrder = '';

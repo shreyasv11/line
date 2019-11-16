@@ -2,7 +2,7 @@ if ~isoctave(), clearvars -except exampleName; end
 
 model = Network('model');
 
-n = 3; % number of items
+n = 5; % number of items
 m = 2; % cache capacity 
 
 source = Source(model, 'Source');
@@ -39,4 +39,8 @@ AvgTable{2} = solver{2}.getAvgNodeTable; AvgTable{2}
 model.reset;
 solver{3} = SolverMVA(model,'seed',1);
 AvgTable{3} = solver{3}.getAvgNodeTable; AvgTable{3}
+
+% model.reset;
+% solver{3} = SolverNC(model,'seed',1);
+% AvgTable{3} = solver{3}.getAvgNodeTable; AvgTable{3}
 

@@ -9,6 +9,8 @@ classdef LayeredNetwork < Model & Ensemble
         lqnGraph; % digraph representation of all dependencies
         taskGraph; % digraph representation of task dependencies
         layerGraph;
+        topoOrder;
+        dfsMarks;
         clientTask;
         nodeNames;
         nodeDep; % (i,1) = procId, (i,2) = taskId, (i,3) = entryId, NaN is n/a
@@ -81,7 +83,7 @@ classdef LayeredNetwork < Model & Ensemble
         self = generateGraph(self);
         [lqnGraph,taskGraph] = getGraph(self)
         self = setGraph(self,lqnGraph,taskGraph)
-        [subgraphs, levels] = getGraphLayers(self, lqnGraph, taskGraph)
+        layerGraph = getGraphLayers(self)
         
         function G = summary(self)
             % G = SUMMARY()

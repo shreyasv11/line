@@ -11,7 +11,7 @@ self.edgeWeight = lqnGraph.Edges.Weight(:);
 %end
 
 if isempty(self.layerGraph)
-    [self.layerGraph, ~] = self.getGraphLayers(lqnGraph, taskGraph);
+    self.layerGraph = self.getGraphLayers();
 end
 graphLayer = self.layerGraph;
 %graphs are returned with updated Multiplicity fields on the 'inf' tasks
