@@ -1,7 +1,7 @@
 function [ph, phases] = refreshMarkovianService(self)
 % [PH, PHASES] = REFRESHPHSERVICE()
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 M = self.getNumberOfStations();
@@ -45,6 +45,6 @@ for i=1:M
     end
 end
 if ~isempty(self.qn) %&& isprop(self.qn,'mu')
-    self.qn.setPHService(ph, phases);
+    self.qn.setMAPService(ph, phases);
 end
 end

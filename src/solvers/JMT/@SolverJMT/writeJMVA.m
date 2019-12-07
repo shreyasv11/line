@@ -1,7 +1,7 @@
 function [outputFileName] = writeJMVA(self, outputFileName)
 % [OUTPUTFILENAME] = WRITEJMVA(OUTPUTFILENAME)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 if ~self.model.hasProductFormSolution

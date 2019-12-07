@@ -1,7 +1,7 @@
 function self = updateParam(self, AvgTable)
 % SELF = UPDATEPARAM(AVGTABLE)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 network = self.getEnsemble();
 [lqnGraph,taskGraph] = self.getGraph();

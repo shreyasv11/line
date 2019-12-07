@@ -1,7 +1,7 @@
 classdef Station < StatefulNode
     % An abstract class for nodes where jobs station
     %
-    % Copyright (c) 2012-2019, Imperial College London
+    % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     
     properties
@@ -145,6 +145,10 @@ classdef Station < StatefulNode
                             map{r} = self.input.sourceClasses{r}{end}.getRepresentation();
                             mu{r} = self.input.sourceClasses{r}{end}.getMu;
                             phi{r} = self.input.sourceClasses{r}{end}.getPhi;
+                        case 'MAP'
+                            map{r} = self.input.sourceClasses{r}{end}.getRepresentation();
+                            mu{r} = self.input.sourceClasses{r}{end}.getMu;
+                            phi{r} = self.input.sourceClasses{r}{end}.getPhi;
                     end
                 else
                     map{r}  = {[NaN],[NaN]};
@@ -178,7 +182,7 @@ classdef Station < StatefulNode
                             map{r} = aph.getRepresentation();
                             mu{r} = aph.getMu;
                             phi{r} = aph.getPhi;
-                        case {'Exp','Coxian','Erlang','HyperExp','MarkovianDistribution','APH'}
+                        case {'Exp','Coxian','Erlang','HyperExp','MarkovianDistribution','APH','MAP'}
                             map{r} = self.server.serviceProcess{r}{end}.getRepresentation();
                             mu{r} = self.server.serviceProcess{r}{end}.getMu;
                             phi{r} = self.server.serviceProcess{r}{end}.getPhi;

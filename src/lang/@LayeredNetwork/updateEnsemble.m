@@ -1,7 +1,7 @@
 function self = updateEnsemble(self, isBuild, deepUpdate)
 % SELF = UPDATEENSEMBLE(ISBUILD, DEEPUPDATE)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 ensemble = self.ensemble;
 [lqnGraph, taskGraph] = self.getGraph();

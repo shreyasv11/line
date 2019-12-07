@@ -1,7 +1,7 @@
 function space = fromMarginalBounds(qn, ind, lb, ub, cap)
 % SPACE = FROMMARGINALBOUNDS(QN, IND, LB, UB, CAP)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 % ind: node index

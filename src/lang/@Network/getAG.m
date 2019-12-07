@@ -2,7 +2,7 @@
 function ag = getAG(self)
 % AG = GETAG()
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 % parses all but the service processes

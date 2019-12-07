@@ -2,7 +2,7 @@ function [lt] = refreshLST(self)
 % [LT] = REFRESHLAPLST()
 % Refresh the Laplace-Stieltjes transforms in the NetworkStruct object
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 M = self.getNumberOfStations();

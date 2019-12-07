@@ -1,7 +1,7 @@
 function fname = writeJSIM(self)
 % FNAME = WRITEJSIM()
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 [simElem, simDoc] = saveXMLHeader(self, self.model.getLogPath);
 [simElem, simDoc] = saveClasses(self, simElem, simDoc);

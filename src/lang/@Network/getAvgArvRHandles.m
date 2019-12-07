@@ -2,7 +2,7 @@
 function [A] = getAvgArvRHandles(self)
 % [T] = GETAVGARVRHANDLES()
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 % The method returns the handles to the performance indices but

@@ -1,7 +1,7 @@
 function [simElem, simDoc] = saveClasses(self, simElem, simDoc)
 % [SIMELEM, SIMDOC] = SAVECLASSES(SIMELEM, SIMDOC)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 numOfClasses = length(self.model.classes);

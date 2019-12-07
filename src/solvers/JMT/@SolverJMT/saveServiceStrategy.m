@@ -1,7 +1,7 @@
 function [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode)
 % [SIMDOC, SECTION] = SAVESERVICESTRATEGY(SIMDOC, SECTION, CURRENTNODE)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 strategyNode = simDoc.createElement('parameter');
 strategyNode.setAttribute('array', 'true');
@@ -88,6 +88,65 @@ for i=1:(numOfClasses)
         subParNodeAlpha.appendChild(subParNodeAlphaVec);
         distrParNode.appendChild(subParNodeAlpha);
         distrParNode.appendChild(subParNodeT);
+        serviceTimeStrategyNode.appendChild(distributionNode);
+        serviceTimeStrategyNode.appendChild(distrParNode);
+    elseif (isa(distributionObj,'MAP') && distributionObj.getNumParams == 2)
+        serviceTimeStrategyNode.setAttribute('classPath', 'jmt.engine.NetStrategies.ServiceStrategies.ServiceTimeStrategy');
+        serviceTimeStrategyNode.setAttribute('name', 'ServiceTimeStrategy');
+        distributionNode = simDoc.createElement('subParameter');
+        distributionNode.setAttribute('classPath', 'jmt.engine.random.MAPDistr');
+        distributionNode.setAttribute('name', 'Burst (MAP)');
+        distrParNode = simDoc.createElement('subParameter');
+        distrParNode.setAttribute('classPath', 'jmt.engine.random.MAPPar');
+        distrParNode.setAttribute('name', 'distrPar');
+        
+        MAP = distributionObj.getRepresentation;
+        
+        subParNodeD0 = simDoc.createElement('subParameter');
+        subParNodeD0.setAttribute('array', 'true');
+        subParNodeD0.setAttribute('classPath', 'java.lang.Object');
+        subParNodeD0.setAttribute('name', 'D0');
+        D0 = MAP{1};
+        for k=1:distributionObj.getNumberOfPhases
+            subParNodeD0vec = simDoc.createElement('subParameter');
+            subParNodeD0vec.setAttribute('array', 'true');
+            subParNodeD0vec.setAttribute('classPath', 'java.lang.Object');
+            subParNodeD0vec.setAttribute('name', 'vector');
+            for j=1:distributionObj.getNumberOfPhases
+                subParNodeD0Elem = simDoc.createElement('subParameter');
+                subParNodeD0Elem.setAttribute('classPath', 'java.lang.Double');
+                subParNodeD0Elem.setAttribute('name', 'entry');
+                subParValue = simDoc.createElement('value');
+                subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',D0(k,j))));
+                subParNodeD0Elem.appendChild(subParValue);
+                subParNodeD0vec.appendChild(subParNodeD0Elem);
+            end
+            subParNodeD0.appendChild(subParNodeD0vec);
+        end
+        distrParNode.appendChild(subParNodeD0);
+        
+        subParNodeD1 = simDoc.createElement('subParameter');
+        subParNodeD1.setAttribute('array', 'true');
+        subParNodeD1.setAttribute('classPath', 'java.lang.Object');
+        subParNodeD1.setAttribute('name', 'D1');
+        D1 = MAP{2};
+        for k=1:distributionObj.getNumberOfPhases
+            subParNodeD1vec = simDoc.createElement('subParameter');
+            subParNodeD1vec.setAttribute('array', 'true');
+            subParNodeD1vec.setAttribute('classPath', 'java.lang.Object');
+            subParNodeD1vec.setAttribute('name', 'vector');
+            for j=1:distributionObj.getNumberOfPhases
+                subParNodeD1Elem = simDoc.createElement('subParameter');
+                subParNodeD1Elem.setAttribute('classPath', 'java.lang.Double');
+                subParNodeD1Elem.setAttribute('name', 'entry');
+                subParValue = simDoc.createElement('value');
+                subParValue.appendChild(simDoc.createTextNode(sprintf('%.12f',D1(k,j))));
+                subParNodeD1Elem.appendChild(subParValue);
+                subParNodeD1vec.appendChild(subParNodeD1Elem);
+            end
+            subParNodeD1.appendChild(subParNodeD1vec);
+        end
+        distrParNode.appendChild(subParNodeD1);
         serviceTimeStrategyNode.appendChild(distributionNode);
         serviceTimeStrategyNode.appendChild(distrParNode);
     else

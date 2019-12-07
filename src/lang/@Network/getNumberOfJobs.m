@@ -1,7 +1,7 @@
 function N = getNumberOfJobs(self)
 % N = GETNUMBEROFJOBS()
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 K = self.getNumberOfClasses();

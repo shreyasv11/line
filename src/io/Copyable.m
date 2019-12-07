@@ -1,7 +1,7 @@
 classdef Copyable < handle
     % Copyable allows to perform deep-copy of objects via the copy() method.
     %
-    % Copyright (c) 2012-2019, Imperial College London
+    % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     
     methods
@@ -16,9 +16,17 @@ classdef Copyable < handle
                 newObj = newObj.obj;
                 delete(fname);
             else
-                % MATLAB R2010b or newer - directly in memory (faster)
-                objByteArray = getByteStreamFromArray(obj);
-                newObj = getArrayFromByteStream(objByteArray);
+                try
+                    % MATLAB R2010b or newer - directly in memory (faster)
+                    objByteArray = getByteStreamFromArray(obj);
+                    newObj = getArrayFromByteStream(objByteArray);
+                catch me
+                    fname = [tempname '.mat'];
+                    save(fname, 'obj');
+                    newObj = load(fname);
+                    newObj = newObj.obj;
+                    delete(fname);                    
+                end
             end
         end
     end

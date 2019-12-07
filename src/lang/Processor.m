@@ -1,7 +1,7 @@
 classdef Processor  < LayeredNetworkElement
     % A hardware server in a LayeredNetwork.
     %
-    % Copyright (c) 2012-2019, Imperial College London
+    % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     
     properties

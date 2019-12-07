@@ -1,7 +1,7 @@
 function jsimwView(self, options)
 % JSIMWVIEW(OPTIONS)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 if ~self.supports(self.model)

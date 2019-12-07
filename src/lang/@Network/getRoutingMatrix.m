@@ -1,7 +1,7 @@
 function [rt,rtNodes,rtNodesByClass,rtNodesByStation,connMatrix] = getRoutingMatrix(self, arvRates)
 % [RT,RTNODES,RTNODESBYCLASS,RTNODESBYSTATION,CONNMATRIX] = GETROUTINGMATRIX(ARVRATES)
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
 if ~exist('arvRates','var')

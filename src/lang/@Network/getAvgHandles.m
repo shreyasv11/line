@@ -7,7 +7,7 @@
 function [Q,U,R,T,A] = getAvgHandles(self)
 % [Q,U,R,T,A] = GETAVGHANDLES()
 
-% Copyright (c) 2012-2019, Imperial College London
+% Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 Q = self.getAvgQLenHandles;
 U = self.getAvgUtilHandles;
