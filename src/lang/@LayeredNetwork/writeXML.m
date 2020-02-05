@@ -33,85 +33,105 @@ for p = 1:length(self.processors)
     procElement = doc.createElement('processor');
     rootElement.appendChild(procElement);
     procElement.setAttribute('name', curProc.name);
-    if isfinite(curProc.multiplicity)
+    procElement.setAttribute('scheduling', num2str(curProc.scheduling));
+    if ~strcmp(curProc.scheduling, SchedStrategy.INF)
         procElement.setAttribute('multiplicity', num2str(curProc.multiplicity));
     end
-    procElement.setAttribute('scheduling', num2str(curProc.scheduling));
-    if ~isnan(curProc.quantum) && strcmp(curProc.scheduling, SchedStrategy.PS)
+    if strcmp(curProc.scheduling, SchedStrategy.PS)
         procElement.setAttribute('quantum', num2str(curProc.quantum));
     end
-    if ~isnan(curProc.speedFactor)
-        procElement.setAttribute('speed-factor', num2str(curProc.speedFactor));
-    end
+    procElement.setAttribute('speed-factor', num2str(curProc.speedFactor));
     for t=1:length(curProc.tasks)
-        curTask = self.processors(p).tasks(t);
+        curTask = curProc.tasks(t);
         taskElement = doc.createElement('task');
         procElement.appendChild(taskElement);
         taskElement.setAttribute('name', curTask.name);
         taskElement.setAttribute('scheduling', curTask.scheduling);
-        if isfinite(curTask.multiplicity)
+        if ~strcmp(curTask.scheduling, SchedStrategy.INF)
             taskElement.setAttribute('multiplicity', num2str(curTask.multiplicity));
         end
-        if ~isnan(curTask.thinkTimeMean)
+        if strcmp(curTask.scheduling, SchedStrategy.REF)
             taskElement.setAttribute('think-time', num2str(curTask.thinkTimeMean));
         end
         for e=1:length(curTask.entries)
-            curEntry = self.processors(p).tasks(t).entries(e);
+            curEntry = curTask.entries(e);
             entryElement = doc.createElement('entry');
             taskElement.appendChild(entryElement);
             entryElement.setAttribute('name', curEntry.name);
-            entryElement.setAttribute('type', curEntry.type);
+            entryElement.setAttribute('type', 'NONE');
         end
-        taskActElement = doc.createElement('task-activities');
-        taskElement.appendChild(taskActElement);
+        taskActsElement = doc.createElement('task-activities');
+        taskElement.appendChild(taskActsElement);
         for a=1:length(curTask.activities)
-            curAct = self.processors(p).tasks(t).activities(a);
+            curAct = curTask.activities(a);
             actElement = doc.createElement('activity');
-            taskActElement.appendChild(actElement);
+            taskActsElement.appendChild(actElement);
             actElement.setAttribute('host-demand-mean', num2str(curAct.hostDemandMean));
             actElement.setAttribute('host-demand-cvsq', num2str(curAct.hostDemandSCV));
             if ~isempty(curAct.boundToEntry)
                 actElement.setAttribute('bound-to-entry', curAct.boundToEntry);
             end
-            if ~isempty(curAct.callOrder)
-                actElement.setAttribute('call-order', curAct.callOrder);
-            end
+            actElement.setAttribute('call-order', curAct.callOrder);
             actElement.setAttribute('name', curAct.name);
             for sd=1:length(curAct.synchCallDests)
                 syncCallElement = doc.createElement('synch-call');
                 actElement.appendChild(syncCallElement);
-                syncCallElement.setAttribute('dest',curAct.synchCallDests(sd));
-                syncCallElement.setAttribute('calls-mean',num2str(curAct.synchCallMeans(sd)));
+                syncCallElement.setAttribute('dest', curAct.synchCallDests(sd));
+                syncCallElement.setAttribute('calls-mean', num2str(curAct.synchCallMeans(sd)));
             end
             for asd=1:length(curAct.asynchCallDests)
                 asyncCallElement = doc.createElement('asynch-call');
                 actElement.appendChild(asyncCallElement);
-                asyncCallElement.setAttribute('dest',curAct.asynchCallDests(asd));
-                asyncCallElement.setAttribute('calls-mean',num2str(curAct.asynchCallMeans(asd)));
+                asyncCallElement.setAttribute('dest', curAct.asynchCallDests(asd));
+                asyncCallElement.setAttribute('calls-mean', num2str(curAct.asynchCallMeans(asd)));
             end
         end
         for ap=1:length(curTask.precedences)
-            actPrecedence = doc.createElement('precedence');
-            taskActElement.appendChild(actPrecedence);
-            curActPrec = self.processors(p).tasks(t).precedences(ap);
+            curActPrec = curTask.precedences(ap);
+            actPrecElement = doc.createElement('precedence');
+            taskActsElement.appendChild(actPrecElement);
             
-            precPreElement = doc.createElement('pre');
-            actPrecedence.appendChild(precPreElement);
-            precAct = doc.createElement('activity');
-            precAct.setAttribute('name',curActPrec.pres{1});
-            precPreElement.appendChild(precAct);
+            preElement = doc.createElement(curActPrec.preType);
+            actPrecElement.appendChild(preElement);
+            if strcmp(curActPrec.preType, ActivityPrecedence.PRE_AND) && ~isempty(curActPrec.preParams)
+                preElement.setAttribute('quorum', num2str(curActPrec.preParams(1)));
+            end
+            for pra = 1:length(curActPrec.preActs)
+                preActElement = doc.createElement('activity');
+                preElement.appendChild(preActElement);
+                preActElement.setAttribute('name', curActPrec.preActs{pra});
+            end
             
-            precPostElement = doc.createElement('post');
-            actPrecedence.appendChild(precPostElement);
-            precAct = doc.createElement('activity');
-            precAct.setAttribute('name',curActPrec.posts{1});
-            precPostElement.appendChild(precAct);
+            postElement = doc.createElement(curActPrec.postType);
+            actPrecElement.appendChild(postElement);
+            if strcmp(curActPrec.postType, ActivityPrecedence.POST_OR)
+                for poa = 1:length(curActPrec.postActs)
+                    postActElement = doc.createElement('activity');
+                    postElement.appendChild(postActElement);
+                    postActElement.setAttribute('name', curActPrec.postActs{poa});
+                    postActElement.setAttribute('prob', num2str(curActPrec.postParams(poa)));
+                end
+            elseif strcmp(curActPrec.postType, ActivityPrecedence.POST_LOOP)
+                for poa = 1:length(curActPrec.postActs)-1
+                    postActElement = doc.createElement('activity');
+                    postElement.appendChild(postActElement);
+                    postActElement.setAttribute('name', curActPrec.postActs{poa});
+                    postActElement.setAttribute('count', num2str(curActPrec.postParams(poa)));
+                end
+                postElement.setAttribute('end', curActPrec.postActs{end});
+            else
+                for poa = 1:length(curActPrec.postActs)
+                    postActElement = doc.createElement('activity');
+                    postElement.appendChild(postActElement);
+                    postActElement.setAttribute('name', curActPrec.postActs{poa});
+                end
+            end
         end
         for e=1:length(curTask.entries)
-            curEntry = self.processors(p).tasks(t).entries(e);
+            curEntry = curTask.entries(e);
             if ~isempty(curEntry.replyActivity)
                 entryReplyElement = doc.createElement('reply-entry');
-                taskActElement.appendChild(entryReplyElement);
+                taskActsElement.appendChild(entryReplyElement);
                 entryReplyElement.setAttribute('name', curEntry.name);
                 for r=1:length(curEntry.replyActivity)
                     entryReplyActElement = doc.createElement('reply-activity');

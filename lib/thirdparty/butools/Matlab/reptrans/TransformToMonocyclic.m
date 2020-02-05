@@ -157,7 +157,7 @@ function B = TransformToMonocyclic (A, maxSize, precision)
     % build monocyclic representation
     febs = generateFEBs (A, evalues, repeats, maxSize, precision);
 
-    % assemble generator matrix of the her-feb 
+    % assemble generator matrix of the hyper-feb 
     B = [];
     pos = 1;
     for i=1:length(febs)

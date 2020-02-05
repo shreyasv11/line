@@ -156,7 +156,7 @@ classdef Coxian < MarkovianDistribution
                 mu(1) = 2/MEAN;
                 mu(2) = mu(1)/( 2*SCV );
                 phi = zeros(n,1);
-                phi(1) = 1 - mu(2)/mu(1);
+                phi(1) = 1-mu(2)/mu(1);
                 phi(2) = 1;
             end
             phi(n) = 1;

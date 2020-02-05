@@ -5,10 +5,9 @@ classdef Activity < LayeredNetworkElement
     % All rights reserved.
     
     properties
-        phase = 1;                  %int
-        hostDemand = [];
-        hostDemandMean = 0;         %double
-        hostDemandSCV = 0;          %double
+        hostDemand;
+        hostDemandMean;             %double
+        hostDemandSCV;              %double
         parent;
         parentName;                 %string
         boundToEntry;               %string
@@ -23,49 +22,38 @@ classdef Activity < LayeredNetworkElement
         %public methods, including constructor
         
         %constructor
-        function obj = Activity(model, name, hostDemand, boundToEntry, callOrder, phase)
-            % OBJ = ACTIVITY(MODEL, NAME, HOSTDEMAND, BOUNDTOENTRY, CALLORDER, PHASE)
+        function obj = Activity(model, name, hostDemand, boundToEntry, callOrder)
+            % OBJ = ACTIVITY(MODEL, NAME, HOSTDEMAND, BOUNDTOENTRY, CALLORDER)
             
             if ~exist('name','var')
-                error('Constructor requires to specify at least: name, hostDemandMean.');
+                error('Constructor requires to specify at least a name.');
             end
             obj@LayeredNetworkElement(name);
-            obj.parentName = '';
+            
             if ~exist('hostDemand','var')
-                hostDemand = NaN;
-            end
-            if isnumeric(hostDemand)
-                obj.hostDemand = Exp(1/hostDemand);
-                obj.hostDemandMean = hostDemand;
-                obj.hostDemandSCV = 1.0;
-            elseif isa(hostDemand,'Distrib')
-                obj.hostDemand = hostDemand;
-                obj.hostDemandMean = hostDemand.getMean();
-                obj.hostDemandSCV = hostDemand.getSCV();
+                hostDemand = 0.0;
             end
             if ~exist('boundToEntry','var')
                 boundToEntry = '';
             end
             if ~exist('callOrder','var')
-                callOrder = '';
+                callOrder = 'STOCHASTIC';
             end
-            if ~exist('phase','var')
-                phase = 1;
-            end
+            
+            obj.setHostDemand(hostDemand);
             obj.boundToEntry = boundToEntry;
-            obj.callOrder = callOrder;
-            obj.phase = phase;
+            obj.setCallOrder(callOrder);
             model.objects.activities{end+1} = obj;
         end
         
-        function obj = setParent(obj, parentName)
-            % OBJ = SETPARENT(OBJ, PARENTNAME)
+        function obj = setParent(obj, parent)
+            % OBJ = SETPARENT(OBJ, PARENT)
             
-            if isa(parentName,'Entry') || isa(parentName,'Task')
-                obj.parentName = parentName.name;
-                obj.parent = parentName;
+            if isa(parent,'Entry') || isa(parent,'Task')
+                obj.parentName = parent.name;
+                obj.parent = parent;
             else
-                obj.parentName = parentName;
+                obj.parentName = parent;
                 obj.parent = [];
             end
         end
@@ -81,9 +69,15 @@ classdef Activity < LayeredNetworkElement
             % OBJ = SETHOSTDEMAND(OBJ, HOSTDEMAND)
             
             if isnumeric(hostDemand)
-                obj.hostDemand = Exp(1/hostDemand);
-                obj.hostDemandMean = hostDemand;
-                obj.hostDemandSCV = 1.0;
+                if hostDemand <= 0.0
+                    obj.hostDemand = Immediate();
+                    obj.hostDemandMean = 0.0;
+                    obj.hostDemandSCV = 0.0;
+                else
+                    obj.hostDemand = Exp(1/hostDemand);
+                    obj.hostDemandMean = hostDemand;
+                    obj.hostDemandSCV = 1.0;
+                end
             elseif isa(hostDemand,'Distrib')
                 obj.hostDemand = hostDemand;
                 obj.hostDemandMean = hostDemand.getMean();
@@ -124,7 +118,7 @@ classdef Activity < LayeredNetworkElement
             if strcmpi(callOrder,'STOCHASTIC') || strcmpi(callOrder,'DETERMINISTIC')
                 obj.callOrder = upper(callOrder);
             else
-                obj.callOrder = '';
+                obj.callOrder = 'STOCHASTIC';
             end
         end
         

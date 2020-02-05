@@ -5,7 +5,6 @@ classdef Erlang < MarkovianDistribution
     % All rights reserved.
     
     methods
-        
         function self = Erlang(phaseRate, nphases)
             % SELF = ERLANG(PHASERATE, NPHASES)
             
@@ -74,11 +73,9 @@ classdef Erlang < MarkovianDistribution
             r = self.getParam(2).paramValue; % stages
             L = (alpha / (alpha + s))^r;
         end
-        
     end
     
     methods(Static)
-        
         function er = fit(MEAN, SCV, SKEW)
             % ER = FITCENTRAL(MEAN, SCV, SKEW)
             
@@ -123,7 +120,6 @@ classdef Erlang < MarkovianDistribution
             alpha = r/MEAN;
             er = Erlang(alpha, r);
         end
-        
     end
     
 end

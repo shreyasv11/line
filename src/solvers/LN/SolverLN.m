@@ -25,17 +25,23 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             % BOOL = CONVERGED(IT) % CONVERGENCE TEST AT ITERATION IT
             
             bool = false;
-            if it>1
+            if it > 1
                 maxIterErr = 0;
-                for e=1:size(self.results,2)
-                    maxIterErr = max([maxIterErr, nanmax(abs(1 - self.results{end,e}.RespT ./ self.results{end-1,e}.RespT))]);
+                for e = 1:size(self.results,2)
+                    try
+                        maxIterErr = max([maxIterErr, nanmax(abs(1 - self.results{end,e}.RespT ./ self.results{end-1,e}.RespT))]);
+                    catch
+                        maxIterErr = Inf;
+                        break
+                    end
                 end
-                %                maxIterErr
-                if it > 1 && self.options.verbose == 2
+                if self.options.verbose == 2
                     fprintf(1, sprintf('\nSolverLN error is: %f\n',maxIterErr));
                 end
-                if maxIterErr < 1e-5 && self.options.verbose
-                    fprintf(1, sprintf('\nSolverLN completed in %d iterations.\n',size(self.results,2)));
+                if maxIterErr < self.options.iter_tol
+                    if self.options.verbose
+                        fprintf(1, sprintf('\nSolverLN completed in %d iterations.\n',size(self.results,2)));
+                    end
                     bool = true;
                 end
             end
@@ -87,7 +93,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             % At this point the Avg data structure includes only the
             % fundamental perf indexes that uniquely determine a valid LQN.
             % We now derive the other perf indexes
-            for edge=1:height(lqnGraph.Edges)
+            for edge = 1:height(lqnGraph.Edges)
                 if lqnGraph.Edges.Type(edge) == 1 % add contribution of sync-calls
                     syncSource = lqnGraph.Edges.EndNodes{edge,1};
                     aidx = findstring(lqnGraph.Nodes.Name,syncSource);
@@ -148,7 +154,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
                 'Buffer','Server','JobSink','RandomSource','ServiceTunnel',...
                 'SchedStrategy_PS','SchedStrategy_FCFS','ClosedClass'});
             bool = true;
-            for e=1:model.getNumberOfLayers()
+            for e = 1:model.getNumberOfLayers()
                 bool = bool && SolverFeatureSet.supports(featSupported, featUsed{e});
             end
         end

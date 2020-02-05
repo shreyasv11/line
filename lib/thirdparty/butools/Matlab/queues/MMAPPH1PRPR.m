@@ -39,8 +39,8 @@
 %      |                |                    | condition when solving the Riccati and |
 %      |                |                    | the matrix-quadratic equations         |
 %      +----------------+--------------------+----------------------------------------+
-%      | "eMaxOrder"  | Integer number     | The maximal Erlang order used in the   |
-%      |                |                    | eangization procedure. The default   |
+%      | "erlMaxOrder"  | Integer number     | The maximal Erlang order used in the   |
+%      |                |                    | erlangization procedure. The default   |
 %      |                |                    | value is 200.                          |
 %      +----------------+--------------------+----------------------------------------+
 %      | "classes"      | Vector of integers | Only the performance measures          |
@@ -74,13 +74,13 @@ function varargout = MMAPPH1PRPR(D, sigma, S, varargin)
     K = length(D)-1;
 
     % parse options
-    eMaxOrder = 200;
+    erlMaxOrder = 200;
     precision = 1e-14;
     classes = 1:K;
     eaten = [];
     for i=1:length(varargin)
-        if strcmp(varargin{i},'eMaxOrder')
-            eMaxOrder = varargin{i+1};
+        if strcmp(varargin{i},'erlMaxOrder')
+            erlMaxOrder = varargin{i+1};
             eaten = [eaten, i, i+1];
         elseif strcmp(varargin{i},'prec')
             precision = varargin{i+1};
@@ -215,7 +215,7 @@ function varargout = MMAPPH1PRPR(D, sigma, S, varargin)
                     stCdfPoints = varargin{argIx+1};
                     res = [];
                     for t=stCdfPoints
-                        L = eMaxOrder;
+                        L = erlMaxOrder;
                         lambda = L/t/2;
                         Psie = FluidFundamentalMatrices (Qspp-lambda*eye(size(Qspp)), Qspm, Qsmp, Qsmm-lambda*eye(size(Qsmm)), 'P', precision);
                         Pn = {Psie};

@@ -4,8 +4,6 @@ function self = generateGraph(self)
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
-wantCalls = true;
-wantProcs = true;
 self.lqnGraph = digraph();
 % add processors
 self.nodeDep = [];
@@ -33,7 +31,7 @@ for p=1:length(self.processors)
     name{end+1} = sprintf('P%d',ctrp);
     pidx = length(name);
     object{end+1} = self.processors(p);
-    demand(end+1)= 0.0;
+    demand(end+1) = 0.0;
     multiplicity(end+1)= object{end}.multiplicity;
     %    boundToEntry(end+1)=false;
     host_proc{end+1}= '';
@@ -46,7 +44,7 @@ for p=1:length(self.processors)
         name{end+1} = sprintf('T%d',ctrt);
         tidx = length(name);
         taskname = name{end};
-        demand(end+1)= self.processors(p).tasks(t).thinkTimeMean;
+        demand(end+1) = self.processors(p).tasks(t).thinkTimeMean;
         object{end+1} = self.processors(p).tasks(t);
         multiplicity(end+1)= object{end}.multiplicity;
         %        boundToEntry(end+1)=false;
@@ -68,7 +66,7 @@ for p=1:length(self.processors)
             eidx = length(name);
             entryname = name{end};
             type{end+1} = 'E';
-            demand(end+1)= 0.0;
+            demand(end+1) = 0.0;
             object{end+1} = self.processors(p).tasks(t).entries(e);
             multiplicity(end+1)= NaN;
             %            boundToEntry(end+1)=false;
@@ -76,29 +74,11 @@ for p=1:length(self.processors)
             host_task{end+1}= taskname;
             host_entry{end+1}= '';
             nodeDep(end+1,1:3) = [pidx,tidx,NaN];
-            for a=1:length(self.processors(p).tasks(t).entries(e).activities)
-                ctrap = ctrap + 1;
-                fullname{end+1} = self.processors(p).tasks(t).entries(e).activities(a).name;
-                demand(end+1)= self.processors(p).tasks(t).entries(e).activities(a).hostDemandMean;
-                %                name{end+1} = sprintf('AH%d(%.3f)',ctrap,demand(end));
-                name{end+1} = sprintf('AH%d',ctrap);
-                nodeDep(end+1,1:3) = [pidx,tidx,eidx];
-                type{end+1} = 'AH';
-                object{end+1} = self.processors(p).tasks(t).entries(e).activities(a);
-                multiplicity(end+1)= NaN;
-                %                boundToEntry(end+1)=false;
-                %                if ~isempty(object{end}.boundToEntry)
-                %                    boundToEntry(end)=true;
-                %                end
-                host_proc{end+1}= hostname;
-                host_task{end+1}= taskname;
-                host_entry{end+1}= entryname;
-            end
         end
         for a=1:length(self.processors(p).tasks(t).activities)
             ctras = ctras + 1;
             fullname{end+1} = self.processors(p).tasks(t).activities(a).name;
-            demand(end+1)= self.processors(p).tasks(t).activities(a).hostDemandMean;
+            demand(end+1) = self.processors(p).tasks(t).activities(a).hostDemandMean;
             %            name{end+1} = sprintf('AS%d(%.3f)',ctras,demand(end));
             name{end+1} = sprintf('AS%d',ctras);
             type{end+1} = 'AS';
@@ -122,7 +102,7 @@ for p=1:length(self.processors)
     end
 end
 
-myTable = Table();%'RowNames',name(:));
+myTable = Table();
 myTable.Name = name(:);
 self.nodeNames = name(:);
 myTable.Type = type(:);
@@ -146,32 +126,21 @@ PreType = [];
 for p=1:length(proc)
     tasks_p = proc(p).tasks;
     for t=1:length(tasks_p)
-        if wantProcs
-            EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,proc(p).tasks(t).name);
-            EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,proc(p).name);
-            Weight(end+1,1) = 1.0;
-            EdgeType(end+1,1) = 0; % within task
-            PreType(end+1,1) = 0; % single
-            PostType(end+1,1) = 0; % single
-        end
+        EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,proc(p).tasks(t).name);
+        EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,proc(p).name);
+        Weight(end+1,1) = 1.0;
+        EdgeType(end+1,1) = 0; % within task
+        PreType(end+1,1) = 0; % pre
+        PostType(end+1,1) = 0; % post
+        
         entries_tp = tasks_p(t).entries;
         for e=1:length(entries_tp)
             EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,tasks_p(t).name);
             EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,entries_tp(e).name);
             Weight(end+1,1) = 1.0;
             EdgeType(end+1,1) = 0; % within task
-            PreType(end+1,1) = 0; % single
-            PostType(end+1,1) = 0; % single
-            
-            hw_act_etp = entries_tp(e).activities; % hw activities
-            for a=1:length(hw_act_etp)
-                EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,entries_tp(e).name);
-                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,hw_act_etp(a).name);
-                Weight(end+1,1) = 1.0;
-                EdgeType(end+1,1) = 0; % within task
-                PreType(end+1,1) = 0; % single
-                PostType(end+1,1) = 0; % single
-            end
+            PreType(end+1,1) = 0; % pre
+            PostType(end+1,1) = 0; % post
         end
         
         sw_act_tp = tasks_p(t).activities; % sw activities
@@ -181,61 +150,105 @@ for p=1:length(proc)
                 EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
                 Weight(end+1,1) = 1.0;
                 EdgeType(end+1,1) = 0; % within task
-                PreType(end+1,1) = 0; % single
-                PostType(end+1,1) = 0; % single
+                PreType(end+1,1) = 0; % pre
+                PostType(end+1,1) = 0; % post
             end
             
-            for d=1:length(tasks_p(t).precedences)
-                if strcmp(tasks_p(t).precedences(d).pres{1},sw_act_tp(a).name)
-                    switch tasks_p(t).precedences(d).preType
-                        case 'single'
-                            switch tasks_p(t).precedences(d).postType
-                                case 'single'
-                                    EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, tasks_p(t).precedences(d).pres{1});
-                                    EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, tasks_p(t).precedences(d).posts{1});
-                                    Weight(end+1,1) = 1.0;
-                                    EdgeType(end+1,1) = 0; % within task
-                                    PreType(end+1,1) = 0; % single
-                                    PostType(end+1,1) = 0; % single
-                                otherwise
-                                    error('Precedence is not supported yet.');
+            synchCallDests = sw_act_tp(a).synchCallDests;
+            for sd=1:length(synchCallDests)
+                EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
+                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,synchCallDests{sd});
+                Weight(end+1,1) = sw_act_tp(a).synchCallMeans(sd);
+                EdgeType(end+1,1) = 1; % sync
+                PreType(end+1,1) = 0; % pre
+                PostType(end+1,1) = 0; % post
+            end
+            
+            asynchCallDests = sw_act_tp(a).asynchCallDests;
+            for asd=1:length(asynchCallDests)
+                EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
+                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,asynchCallDests{asd});
+                Weight(end+1,1) = sw_act_tp(a).asynchCallMeans(asd);
+                EdgeType(end+1,1) = 2; % async
+                PreType(end+1,1) = 0; % pre
+                PostType(end+1,1) = 0; % post
+            end
+        end
+        
+        act_prec_tp = tasks_p(t).precedences;
+        for ap=1:length(act_prec_tp)
+            if strcmpi(act_prec_tp(ap).postType,ActivityPrecedence.POST_SEQ)
+                switch act_prec_tp(ap).preType
+                    case ActivityPrecedence.PRE_SEQ
+                        EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).preActs{1});
+                        EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).postActs{1});
+                        Weight(end+1,1) = 1.0;
+                        EdgeType(end+1,1) = 0; % within task
+                        PreType(end+1,1) = 0; % pre
+                        PostType(end+1,1) = 0; % post
+                    case ActivityPrecedence.PRE_AND
+                        for pra=1:length(act_prec_tp(ap).preActs)
+                            EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).preActs{pra});
+                            EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).postActs{1});
+                            if ~isempty(act_prec_tp(ap).preParams)
+                                Weight(end+1,1) = act_prec_tp(ap).preParams(1)/length(act_prec_tp(ap).preActs);
+                            else
+                                Weight(end+1,1) = 1.0;
                             end
-                        otherwise
-                            error('Precedence is not supported yet.');
-                    end
+                            EdgeType(end+1,1) = 0; % within task
+                            PreType(end+1,1) = 1; % pre-AND
+                            PostType(end+1,1) = 0; % post
+                        end
+                    case ActivityPrecedence.PRE_OR
+                        for pra=1:length(act_prec_tp(ap).preActs)
+                            EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).preActs{pra});
+                            EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).postActs{1});
+                            Weight(end+1,1) = 1.0;
+                            EdgeType(end+1,1) = 0; % within task
+                            PreType(end+1,1) = 2; % pre-OR
+                            PostType(end+1,1) = 0; % post
+                        end
+                    otherwise
+                        error('Precedence is not supported yet.');
                 end
-            end
-            
-            if wantCalls
-                synchCallDests = sw_act_tp(a).synchCallDests;
-                for sd=1:length(synchCallDests)
-                    EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
-                    EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,synchCallDests{sd});
-                    Weight(end+1,1) = sw_act_tp(a).synchCallMeans(sd);
-                    EdgeType(end+1,1) = 1; % sync
-                    PreType(end+1,1) = 0; % single
-                    PostType(end+1,1) = 0; % single
+            elseif strcmpi(act_prec_tp(ap).preType,ActivityPrecedence.PRE_SEQ)
+                switch act_prec_tp(ap).postType
+                    case ActivityPrecedence.POST_AND
+                        for poa=1:length(act_prec_tp(ap).postActs)
+                            EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).preActs{1});
+                            EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).postActs{poa});
+                            Weight(end+1,1) = 1.0;
+                            EdgeType(end+1,1) = 0; % within task
+                            PreType(end+1,1) = 0; % pre
+                            PostType(end+1,1) = 1; % post-AND
+                        end
+                    case ActivityPrecedence.POST_OR
+                        for poa=1:length(act_prec_tp(ap).postActs)
+                            EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).preActs{1});
+                            EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).postActs{poa});
+                            Weight(end+1,1) = act_prec_tp(ap).postParams(poa);
+                            EdgeType(end+1,1) = 0; % within task
+                            PreType(end+1,1) = 0; % pre
+                            PostType(end+1,1) = 2; % post-OR
+                        end
+                    case ActivityPrecedence.POST_LOOP
+                        for poa=1:length(act_prec_tp(ap).postActs)
+                            EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).preActs{1});
+                            EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node, act_prec_tp(ap).postActs{poa});
+                            if poa < length(act_prec_tp(ap).postActs)
+                                Weight(end+1,1) = act_prec_tp(ap).postParams(poa);
+                            else
+                                Weight(end+1,1) = 1.0;
+                            end
+                            EdgeType(end+1,1) = 0; % within task
+                            PreType(end+1,1) = 0; % pre
+                            PostType(end+1,1) = 3; % post-LOOP
+                        end
+                    otherwise
+                        error('Precedence is not supported yet.');
                 end
-                
-                asynchCallDests = sw_act_tp(a).asynchCallDests;
-                for asd=1:length(asynchCallDests)
-                    EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
-                    EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,asynchCallDests{asd});
-                    Weight(end+1,1) = sw_act_tp(a).asynchCallMeans(asd);
-                    EdgeType(end+1,1) = 2; % async
-                    PreType(end+1,1) = 0; % single
-                    PostType(end+1,1) = 0; % single
-                end
-                
-                %                 fwdCallDests = sw_act_tp(a).fwdCallDests;
-                %                 for fd=1:length(fwdCallDests)
-                %                     EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
-                %                     EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,fwdCallDests{fd});
-                %                     Weight(end+1,1) = sw_act_tp(a).fwdCallMeans(fd);
-                %                     EdgeType(end+1,1) = 3; % forwarding
-                %                     PreType(end+1,1) = 0; % single
-                %                     PostType(end+1,1) = 0; % single
-                %                 end
+            else
+                error('Precedence is not supported yet.');
             end
         end
     end
@@ -247,11 +260,12 @@ for e=1:size(EndNodes,1)
     self.lqnGraph = self.lqnGraph.addedge(name{source},name{target},Weight(e,1));
 end
 
-for e=1:size(EndNodes,1) % do not merge with previous as addedge does mess
+% do not merge with the previous loop as addedge does not preserve the order
+for e=1:size(EndNodes,1)
     source = EndNodes(e,1);
     target = EndNodes(e,2);
     eid = self.lqnGraph.findedge(name{source},name{target});
-    self.endNodes(eid,1) = EndNodes(e,1); % someone addedge does not preserve the order
+    self.endNodes(eid,1) = EndNodes(e,1);
     self.endNodes(eid,2) = EndNodes(e,2);
     self.lqnGraph.Edges.Type(eid)=EdgeType(e,1);
     self.lqnGraph.Edges.Pre(eid)=PreType(e,1);
@@ -259,25 +273,17 @@ for e=1:size(EndNodes,1) % do not merge with previous as addedge does mess
 end
 
 % fix all activities
-for j=find(cellfun(@(c) strcmpi(c,'NaN'),self.lqnGraph.Nodes.Entry))'
-    self.lqnGraph.Nodes.Entry{j} = self.findEntryOfActivity(self.lqnGraph.Nodes.Name{j});
+for a=find(cellfun(@(c) strcmpi(c,'NaN'),self.lqnGraph.Nodes.Entry))'
+    self.lqnGraph.Nodes.Entry{a} = self.findEntryOfActivity(self.lqnGraph.Nodes.Name{a});
 end
-% for i=1:numnodes(G)
-%     if isempty(successors(G,i))
-%         if ~strcmpi(G.Nodes.Type{i},'AH')
-%             %G.Nodes.Type{i}='X';
-%         end
-%     end
-% end
 
 % put processors as target of hosted task
 keep = ([findstring(self.lqnGraph.Nodes.Type,'P'); findstring(self.lqnGraph.Nodes.Type,'R'); findstring(self.lqnGraph.Nodes.Type,'T')]);
-taskGraph = self.lqnGraph.subgraph(keep(keep>0)); % ignore missing types
+self.taskGraph = self.lqnGraph.subgraph(keep(keep>0)); % ignore missing types
 % now H contains all tasks and edges to the processors they run on
 % we add external calls
 
-actset = [findstring(self.lqnGraph.Nodes.Type,'AS')]';
-entryset = [findstring(self.lqnGraph.Nodes.Type,'E')]';
+actset = findstring(self.lqnGraph.Nodes.Type,'AS')';
 for s = actset(actset>0)
     source_activity = self.getNodeName(s);
     source_task = self.getNodeTask(source_activity);
@@ -285,13 +291,9 @@ for s = actset(actset>0)
     for t = entryset(entryset>0)
         if strcmpi(self.getNodeType(t),'E')
             target_task = self.getNodeTask(t);
-            edge = self.findEdgeIndex(s, t);
-            if edge
-                weight = exp(self.lqnGraph.Edges.Weight(edge));
-                try
-                    taskGraph=taskGraph.addedge(source_task, target_task, weight);
-                end
-            end
+            edge_index = self.findEdgeIndex(s, t);
+            edge_data = self.lqnGraph.Edges(edge_index, 2:end);
+            self.taskGraph = self.taskGraph.addedge(source_task, target_task, edge_data);
         end
     end
 end
@@ -302,7 +304,4 @@ self.param.Nodes.Tput=zeros(height(self.lqnGraph.Nodes),1);
 
 self.param.Edges.RespT=zeros(height(self.lqnGraph.Edges),1);
 self.param.Edges.Tput=zeros(height(self.lqnGraph.Edges),1);
-
-self.lqnGraph = self.lqnGraph;
-self.taskGraph = taskGraph;
 end

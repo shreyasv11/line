@@ -4,15 +4,17 @@ MaxTimeBC = 100;
 NumMAPs=length(SCVj);
 TOL=1e-9;
 EPSTOL=10*TOL;
+VERBOSE=0;
+
 
 %% other variables
 NBC=norm(BC,2); % normalizing constants for bicovariances
 
-%% truncate bicorrelations when it gets negative
+% truncate bicorrelations when it gets negative
 tag=[];
-for i=1:size(BCLags,1)
-    if find(diff(BCLags(i,:))<0)
-        tag(end+1,1)=i;
+for index=1:size(BCLags,1)
+    if find(diff(BCLags(index,:))<0)
+        tag(end+1,1)=index;
     end
 end
 BCLags(tag,:)=[];
@@ -26,18 +28,22 @@ xparamset = {}; % record all the possible x params
 fset = [];   % record the objective function values for each param set
 xparam_best = [];
 f_best = inf;
-for j = 1:NumMAPs
-    E2j(j)=(1+SCVj(j))*E1j(j)^2;
-    E3j(j)=(3/2+t)*E2j(j)^2/E1j(j);
+for index = 1:NumMAPs
+    E2j(index)=(1+SCVj(index))*E1j(index)^2;
+    E3j(index)=(3/2+t)*E2j(index)^2/E1j(index);
 end
 x0=[E1j(:);E3j(:)]';
+x0base=x0;
 
-fprintf(1,'bcfit: maximum number of solver iterations per run is MaxIterBC = %d\n', MaxIterBC);
-for i = 1:MaxRunsBC
+
+%fprintf(1,'bcfit: maximum number of solver iterations per run is MaxIterBC = %d\n', MaxIterBC);
+for ind = 1:MaxRunsBC
     tstart = tic();
-    fprintf(1,'bcfit: run %d of %d ',i,MaxRunsBC);
+    if VERBOSE ~= 0
+        fprintf(1,'bcfit: run %d of %d ',ind, MaxRunsBC);
+    end
     tic;
-    numIterations = 0;
+
     options = optimset('LargeScale','off', ...
         'MaxIter',MaxIterBC, ...
         'MaxFunEvals',1e10, ...
@@ -47,23 +53,39 @@ for i = 1:MaxRunsBC
         'DiffMinChange',1e-10, ...
         'OutputFcn',@(x,optimValues,state) kpcfit_sub_bcfit_outfun(x,optimValues,state,MaxIterBC,MaxTimeBC,tstart,f_best));
     
-    [x,f,exitflag]=fmincon(@objfun,x0,[],[],[],[],0*x0+EPSTOL,[],@nnlcon,options);
-    fprintf(1,'(%3.3f sec, %d iter)\n',toc, numIterations);
+    [x,f,exitflag,output]=fmincon(@objfun,x0,[],[],[],[],0*x0+EPSTOL,[],@nnlcon,options);
+    
+    if VERBOSE ~= 0
+        fprintf(1,'(%3.3f sec, %d iter) f=%f',toc, output.iterations, f);
+    end
+    
     xparamset{end+1} = x;
     fset(1,end+1) = f;
     if f < f_best
-        %        fprintf(1,'**best**',toc);
+        if VERBOSE ~= 0
+            fprintf(1,'**best**',toc);
+        end
         f_best = f;
         xparam_best = x;
     end
-    %fprintf(1,'\n',toc);
+    
+    if VERBOSE ~= 0
+        fprintf(1,'\n',toc);
+    end
+   
+   x0 = x0base .* [(0.25+1.75*rand(NumMAPs,1)); ones(NumMAPs,1)]';
+   t = rand*E(1);
+   for index = 1:NumMAPs
+        E2j(index)=(1+SCVj(index))*x0(index)^2;
+        x0(NumMAPs+index)=(3/2+t)*E2j(index)^2/x0(index);
+    end
 end
-[v,ind] = sort(fset,2,'ascend');
 
 [E1j,E3j]=xtopar(xparam_best);
 E1j(1)=E(1)/prod(E1j(2:end));
 prod(E1j);
 f = f_best;
+
 
     function [E1j,E3j]=xtopar(x)
         E1j=x(1:NumMAPs);
@@ -101,21 +123,17 @@ f = f_best;
     function f=objfun(x)
         [E1j,E3j]=xtopar(x);
         BCj=ones(1,size(BCLags,1));
-        for j=1:NumMAPs
-            if j==1
-                MAPj=mmpp2_fit3(E1j(1),(1+SCVj(1))*E1j(1)^2,E3j(1),G2j(1));
-                if map_isfeasible(MAPj)<12
-                    MAPj=map_block(E1j(1),(1+SCVj(1))*E1j(1)^2,E3j(1),G2j(1));
-                end
-            else
-                MAPj=map_block(E1j(j),(1+SCVj(j))*E1j(j)^2,E3j(j),G2j(j));
-            end
-            for i=1:size(BCLags,1)
-                BCj(i)=BCj(i)*(map_joint(MAPj,BCLags(i,:),[1,1,1]));
-            end
+        
+        [compMAP, subMaps, err] = kpcfit_sub_compose(E1j, SCVj, E3j, G2j);
+        if err ~= 0
+            f=max(2*fold, 10^6);
+            return
         end
-        f=norm(BC-BCj,2)/NBC; %rms, this is the objective function
-        % for fitting the BCariance
+        for indexL=1:size(BCLags,1)
+            BCj(indexL)=(map_joint(compMAP,BCLags(indexL,:),[1,1,1]));
+        end
+        
+        f=norm(BC-BCj,2)/NBC;
         
         if isnan(f)
             f=2*fold;

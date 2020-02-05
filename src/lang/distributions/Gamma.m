@@ -70,7 +70,6 @@ classdef Gamma < ContinuousDistrib
     end
     
     methods(Static)
-        
         function gm = fitMeanAndSCV(MEAN, SCV)
             % GM = FITMEANANDSCV(MEAN, SCV)
             
@@ -80,7 +79,6 @@ classdef Gamma < ContinuousDistrib
             scale = MEAN / shape;
             gm = Gamma(shape, scale);
         end
-        
     end
     
 end

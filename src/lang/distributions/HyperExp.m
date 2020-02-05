@@ -143,7 +143,6 @@ classdef HyperExp < MarkovianDistribution
             mu2 = real(mu2);
             he = HyperExp(p, mu1, mu2);           
         end
-        
     end
     
 end

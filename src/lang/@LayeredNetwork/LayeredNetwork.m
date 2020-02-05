@@ -4,8 +4,8 @@ classdef LayeredNetwork < Model & Ensemble
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     properties
-        objects = struct();    % cell arrays of objects
-        processors = cell(0,4);      % list of processors
+        objects = struct();    % struct of objects
+        processors = [];       % list of processors
         lqnGraph; % digraph representation of all dependencies
         taskGraph; % digraph representation of task dependencies
         layerGraph;

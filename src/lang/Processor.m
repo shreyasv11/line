@@ -5,12 +5,11 @@ classdef Processor  < LayeredNetworkElement
     % All rights reserved.
     
     properties
-        ID;                 %int
         multiplicity;       %int
         scheduling;         %char: ps, fcfs, inf, ref
-        quantum = 0;        %double
-        speedFactor = 1;    %double
-        tasks = [];         %list of classes
+        quantum;            %double
+        speedFactor;        %double
+        tasks = [];         %list of tasks
     end
     
     methods
@@ -43,11 +42,7 @@ classdef Processor  < LayeredNetworkElement
             obj.quantum = quantum;
             obj.speedFactor = speedFactor;
             model.objects.processors{end+1} = obj;
-            if isempty(model.processors)
-                model.processors = obj;
-            else
-                model.processors = [model.processors; obj];
-            end
+            model.processors = [model.processors; obj];
         end
         
         
@@ -55,9 +50,7 @@ classdef Processor  < LayeredNetworkElement
         function obj = addTask(obj, newTask)
             % OBJ = ADDTASK(OBJ, NEWTASK)
             
-            if(nargin > 1)
-                obj.tasks = [obj.tasks; newTask];
-            end
+            obj.tasks = [obj.tasks; newTask];
         end
         
     end

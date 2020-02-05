@@ -5,8 +5,8 @@ function task = getNodeTask(self,node)
 % All rights reserved.
 G = self.lqnGraph;
 if ischar(node)
-    taskid = findstring(G.Nodes.Name,node);
-    task = G.Nodes.Task{taskid};
+    nodeid = findstring(G.Nodes.Name,node);
+    task = G.Nodes.Task{nodeid};
 else
     task = G.Nodes.Task{node};
 end

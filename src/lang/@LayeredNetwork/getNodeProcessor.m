@@ -6,7 +6,7 @@ function proc = getNodeProcessor(self,node)
 %G = self.lqnGraph;
 if ischar(node)
     id = findstring(self.nodeNames,node);
-    %    proc = G.Nodes.Proc{id};
+    %proc = G.Nodes.Proc{id};
     proc = self.nodeNames{self.nodeDep(id,1)};
 else % index
     %proc = G.Nodes.Proc{node};

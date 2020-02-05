@@ -14,8 +14,7 @@ if isempty(self.layerGraph)
     self.layerGraph = self.getGraphLayers();
 end
 graphLayer = self.layerGraph;
-%graphs are returned with updated Multiplicity fields on the 'inf' tasks
-maxJobs = Distrib.Inf; % maximum number of jobs allowed in a submodel class.
+
 if isempty(self.clientTask)
     for net=1:length(graphLayer)
         self.clientTask{net} = unique(graphLayer{net}.Edges.EndNodes(:,1)');
@@ -51,12 +50,12 @@ for net=1:length(graphLayer)
     serverIndex = self.getNodeIndex(serverName);
     if isBuild
         obj = self.getNodeObject(serverName);
-        switch obj.scheduling
-            case 'inf'
-                node{2} = DelayStation(ensemble{net}, serverName);
-            otherwise
-                node{2} = Queue(ensemble{net}, serverName, obj.scheduling);
-                node{2}.setNumServers(self.nodeMult(serverIndex));
+        isInfServer = strcmpi(obj.scheduling,SchedStrategy.INF);
+        if isInfServer
+            node{2} = DelayStation(ensemble{net}, serverName);
+        else
+            node{2} = Queue(ensemble{net}, serverName, obj.scheduling);
+            node{2}.setNumServers(self.nodeMult(serverIndex));
         end
     end
     
@@ -66,19 +65,11 @@ for net=1:length(graphLayer)
     end
     
     if isBuild
-        for s = 1:length(clientTask{net}) % for all client activities
+        for s=1:length(clientTask{net}) % for all client activities
             entries = self.listEntriesOfTask(clientTask{net}{s});
             taskobj = self.getNodeObject(clientTask{net}{s});
-            if strcmpi(taskobj.scheduling,'ref')
-                isRefTask = true;
-                isRefTaskPopulationLoaded = false;
-            else
-                isRefTask = false;
-            end
-            isDestTask = false;
-            if graphLayer{net}.Edges.EndNodes{s,2}(1) == 'T'
-                isDestTask = true; % otherwise is a processor
-            end
+            isRefTask = strcmpi(taskobj.scheduling,SchedStrategy.REF);
+            isInfTask = strcmpi(taskobj.scheduling,SchedStrategy.INF);
             for e=1:length(entries) % for all entries in the client
                 activities = self.listActivitiesOfEntry(entries{e});
                 entryobj = self.getNodeObject(entries{e});
@@ -89,34 +80,24 @@ for net=1:length(graphLayer)
                 jobclass{end}.completes = false;
                 if isRefTask
                     % if client is a reference task set the clients
-                    if ~isRefTaskPopulationLoaded % load population in first entry of the ref task
+                    if e==1 % load population in first entry of the ref task
                         jobclass{end}.population = taskobj.multiplicity;
-                        isRefTaskPopulationLoaded = true;
                     end
                 else
                     % else this is a non-reference task
-                    if isinf(taskobj.multiplicity) % if the client task uses the inf policy
-                        taskName = clientTask{net}{s};
-                        predecessors = taskGraph.predecessors(taskName);
+                    if isInfTask % if the client task uses the inf policy
+                        predecessors = taskGraph.predecessors(clientTask{net}{s});
                         predecJobs = 0; % number of jobs that can call the task
                         for p=1:length(predecessors)
                             predecJobs = predecJobs + self.nodeMult(self.getNodeIndex(predecessors{p}));
                         end
-                        if isinf(predecJobs)
-                            predecJobs = maxJobs;
-                            self.nodeMult(self.getNodeIndex(clientTask{net}{s})) = Inf; % problem if set to maxJobs, but worth retrying
-                            %taskGraph.Nodes.Mult(self.getNodeIndexInTaskGraph(clientTask{net}{s})) = Inf;
-                        else
-                            self.nodeMult(self.getNodeIndex(clientTask{net}{s})) = predecJobs;
-                            %taskGraph.Nodes.Mult(self.getNodeIndexInTaskGraph(clientTask{net}{s})) = predecJobs;
-                        end
+                        self.nodeMult(self.getNodeIndex(clientTask{net}{s})) = predecJobs;
                         jobclass{end}.population = predecJobs;
-                    else % else use the number of servers
+                    else % else set the population to the number of servers
                         jobclass{end}.population = taskobj.multiplicity;
                     end
                 end
                 
-                isEntryCallingDestTask = false;
                 for a=1:length(activities) % for all activities in the entry
                     actobj = self.getNodeObject(activities{a});
                     
@@ -132,9 +113,6 @@ for net=1:length(graphLayer)
                         nJobs = 0;
                         destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.synchCallDests{d})};
                         className = [activities{a},'=>',destEntry];
-                        if isDestTask
-                            isEntryCallingDestTask = true;
-                        end
                         jobclass{end+1} = ClosedClass(ensemble{net}, className, nJobs, node{1}, 0);
                         jobclass{end}.completes = false;
                     end
@@ -143,20 +121,12 @@ for net=1:length(graphLayer)
                     for d=1:length(actobj.asynchCallDests)
                         myP = initclass(myP,length(node),length(jobclass));
                         nJobs = 0;
-                        
                         destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asynchCallDests{d})};
                         className = [activities{a},'->',destEntry];
-                        if isDestTask
-                            isEntryCallingDestTask = true;
-                        end
-                        
                         jobclass{end+1} = ClosedClass(ensemble{net}, className, nJobs, node{1}, 0);
                         jobclass{end}.completes = false;
                     end
-                    %                    if isDestTask && ~isEntryCallingDestTask
-                    %                        jobclass{entryJobClass}.population = 0;
-                    %                    end
-                end
+                 end
             end
         end
     end
@@ -165,7 +135,8 @@ for net=1:length(graphLayer)
     for s = 1:length(clientTask{net}) % for all clients
         entries = self.listEntriesOfTask(clientTask{net}{s});
         taskobj = self.getNodeObject(clientTask{net}{s});
-        isRefTask = strcmpi(taskobj.scheduling,'ref');
+        isRefTask = strcmpi(taskobj.scheduling,SchedStrategy.REF);
+        isProcessorInSubmodel = strcmpi(self.getNodeProcessor(clientTask{net}{s}), serverName);
         for e=1:length(entries) % for all entries in the client task
             activities = self.listActivitiesOfEntry(entries{e});
             entryobj = self.getNodeObject(entries{e});
@@ -195,23 +166,19 @@ for net=1:length(graphLayer)
                     interArrivalFromUpperLayer = jobclass{class_entry}.population*(1-utilUpperLayerEntry) / tputUpperLayerEntry;
                 end
             end
-            isProcessorInSubmodel = strcmpi(self.getNodeProcessor(entries{e}), serverName);
             
-            thinkTime = taskobj.thinkTimeMean; if isnan(thinkTime), thinkTime = 0; end
-            destEntryRate = min(Distrib.InfRate,1/(thinkTime + interArrivalFromUpperLayer));
-            if thinkTime == 0
+            thinkTimeMean = taskobj.thinkTimeMean;
+            thinkTimeSCV = taskobj.thinkTimeSCV;
+            destEntryRate = min(Distrib.InfRate,1/(thinkTimeMean + interArrivalFromUpperLayer));
+            if thinkTimeMean == 0
                 destEntryProcess = Exp(destEntryRate);
                 if ~isBuild
-                    demandMu = destEntryRate;
-                    demandPhi = 1.0;
+                    [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(1/destEntryRate, 1.0);
                 end
             elseif interArrivalFromUpperLayer == 0
                 destEntryProcess = taskobj.thinkTime;
-                if isempty(destEntryProcess)
-                    destEntryProcess = Exp(Distrib.InfRate);
-                end
                 if ~isBuild
-                    [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(taskobj.thinkTimeMean, taskobj.thinkTimeSCV);
+                    [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(thinkTimeMean, thinkTimeSCV);
                 end
             else % convolution of thinkTime and interArrivalFromUpperLayer processes
                 % The code will never enter this section since thinkTime is available only
@@ -241,7 +208,7 @@ for net=1:length(graphLayer)
                 qn.phi{1,jobclass{class_entry}.index} = demandPhi;
                 qn.proc{1,jobclass{class_entry}.index} = cx;
                 if deepUpdate
-                    node{1}.setService(jobclass{class_entry},  destEntryProcess);
+                    node{1}.setService(jobclass{class_entry}, destEntryProcess);
                 end
             end
             classlast = class_entry;
@@ -263,33 +230,30 @@ for net=1:length(graphLayer)
                     if isBuild
                         if isBoundToEntry
                             if isRefTask
-                                myP{classlast, class_hostdemand}(stationlast,2) = 1/length(entries); % visit first the activity bound to entry
-                                for h=setdiff(1:length(entries),e) % for all other entries in the client ref task
+                                for h=1:length(entries) % for all entries in the client ref task
                                     classhEntryName = entries{h};
                                     classh_entry = cellfun(@(c) strcmpi(c.name,classhEntryName),jobclass);
-                                    myP{classlast, classh_entry}(stationlast,stationlast) = 1/length(entries); % visit first the activity bound to entry
+                                    myP{classh_entry, class_hostdemand}(stationlast,2) = 1/length(entries); % visit first the activity bound to entry
                                 end
                             else
                                 myP{classlast, class_hostdemand}(stationlast,2) = 1; % visit first the activity bound to entry
                             end
                         end
-                        demandRate = 1/actobj.hostDemandMean;
-                        if isnan(demandRate), demandRate = Distrib.InfRate; end
-                        if isBuild
-                            node{1}.setService(jobclass{class_hostdemand}, Disabled());
-                            %node{2}.setService(jobclass{class_hostdemand}, Exp(demandRate));
+                    end
+                    if isBuild
+                        node{1}.setService(jobclass{class_hostdemand}, Disabled());
+                        node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
+                    else
+                        if deepUpdate
                             node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
-                        else
-                            if deepUpdate
-                                %node{2}.setService(jobclass{class_hostdemand}, Exp(demandRate));
-                                node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
-                            end
-                            qn.rates(2,jobclass{class_hostdemand}.index) = destEntryRate;
-                            [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
-                            qn.mu{2,jobclass{class_hostdemand}.index} = demandMu;
-                            qn.phi{2,jobclass{class_hostdemand}.index} = demandPhi;
-                            qn.proc{2,jobclass{class_hostdemand}.index} = cx.getRepresentation;
                         end
+                        qn.rates(2,jobclass{class_hostdemand}.index) = destEntryRate;
+                        [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
+                        qn.mu{2,jobclass{class_hostdemand}.index} = demandMu;
+                        qn.phi{2,jobclass{class_hostdemand}.index} = demandPhi;
+                        qn.proc{2,jobclass{class_hostdemand}.index} = cx.getRepresentation;
+                    end
+                    if isBuild
                         stationlast = 2; % store that we last visited the server
                         classlast = class_hostdemand; % store class for return path
                     end
@@ -297,8 +261,18 @@ for net=1:length(graphLayer)
                     % if the processor of this client is in another submodel
                     % spend time in the delay equivalent to response time
                     % of this activity
-                    if isBoundToEntry
-                        myP{classlast, class_hostdemand}(stationlast,1) = 1; % visit first the activity bound to entry
+                    if isBuild
+                        if isBoundToEntry
+                            if isRefTask
+                                for h=1:length(entries) % for all entries in the client ref task
+                                    classhEntryName = entries{h};
+                                    classh_entry = cellfun(@(c) strcmpi(c.name,classhEntryName),jobclass);
+                                    myP{classh_entry, class_hostdemand}(stationlast,1) = 1/length(entries); % visit first the activity bound to entry
+                                end
+                            else
+                                myP{classlast, class_hostdemand}(stationlast,1) = 1; % visit first the activity bound to entry
+                            end
+                        end
                     end
                     destEntryW = self.param.Nodes.RespT(self.getNodeIndex(activities{a}));
                     destEntryRate = 1/destEntryW;
@@ -333,7 +307,7 @@ for net=1:length(graphLayer)
                     end
                 end
                 
-                selfLoopProb = 0; skipProb = 0;
+                selfLoopProb = 0;
                 %% setup the synchronous calls
                 for d=1:length(actobj.synchCallDests)
                     % first return to the delay in the appropriate class

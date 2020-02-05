@@ -5,9 +5,7 @@ classdef Entry < LayeredNetworkElement
     % All rights reserved.
     
     properties
-        type;
         parent;
-        activities = [];
         replyActivity = {};
     end
     
@@ -15,17 +13,14 @@ classdef Entry < LayeredNetworkElement
         %public methods, including constructor
         
         %constructor
-        function obj = Entry(model, name, type)
-            % OBJ = ENTRY(MODEL, NAME, TYPE)
+        function obj = Entry(model, name)
+            % OBJ = ENTRY(MODEL, NAME)
             
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
             obj@LayeredNetworkElement(name);
-            if ~exist('type','var')
-                type = 'Graph';
-            end
-            obj.type = type;
+            
             model.objects.entries{end+1} = obj;
         end
         
@@ -34,16 +29,6 @@ classdef Entry < LayeredNetworkElement
             
             parent.addEntry(obj);
             obj.parent = parent;
-        end
-        
-        %addActivity
-        function obj = addActivity(obj, newActivity)
-            % OBJ = ADDACTIVITY(OBJ, NEWACTIVITY)
-            
-            if(nargin > 1)
-                newActivity.setParent(obj.name);
-                obj.activities = [obj.activities; newActivity];
-            end
         end
         
     end

@@ -7,12 +7,11 @@ classdef Task < LayeredNetworkElement
     properties
         multiplicity;       %int
         scheduling;         %string
-        thinkTime;          %double
+        thinkTime;
         thinkTimeMean;      %double
         thinkTimeSCV;       %double
         entries = [];
-        activities = Activity.empty();     %task-activities
-        initActID = 0;      %integer that indicates which is the initial activity
+        activities = [];
         precedences = [];
         replyEntry;
     end
@@ -29,6 +28,7 @@ classdef Task < LayeredNetworkElement
                 error('Constructor requires to specify at least a name.');
             end
             obj@LayeredNetworkElement(name);
+            
             if ~exist('multiplicity','var')
                 multiplicity = 1;
             end
@@ -36,19 +36,12 @@ classdef Task < LayeredNetworkElement
                 scheduling = SchedStrategy.INF;
             end
             if ~exist('thinkTime','var')
-                thinkTime = NaN;
+                thinkTime = 0.0;
             end
+            
             obj.multiplicity = multiplicity;
             obj.scheduling = scheduling;
-            if isnumeric(thinkTime)
-                obj.thinkTime = Exp(1/thinkTime);
-                obj.thinkTimeMean = thinkTime;
-                obj.thinkTimeSCV = 1.0;
-            elseif isa(thinkTime,'Distrib')
-                obj.thinkTime = thinkTime;
-                obj.thinkTimeMean = thinkTime.getMean();
-                obj.thinkTimeSCV = thinkTime.getSCV();
-            end
+            obj.setThinkTime(thinkTime);
             model.objects.tasks{end+1} = obj;
         end
         
@@ -68,9 +61,15 @@ classdef Task < LayeredNetworkElement
             % OBJ = SETTHINKTIME(OBJ, THINKTIME)
             
             if isnumeric(thinkTime)
-                obj.thinkTime = Exp(1/thinkTime);
-                obj.thinkTimeMean = thinkTime;
-                obj.thinkTimeSCV = 1.0;
+                if thinkTime <= 0.0
+                    obj.thinkTime = Immediate();
+                    obj.thinkTimeMean = 0.0;
+                    obj.thinkTimeSCV = 0.0;
+                else
+                    obj.thinkTime = Exp(1/thinkTime);
+                    obj.thinkTimeMean = thinkTime;
+                    obj.thinkTimeSCV = 1.0;
+                end
             elseif isa(thinkTime,'Distrib')
                 obj.thinkTime = thinkTime;
                 obj.thinkTimeMean = thinkTime.getMean();
@@ -82,62 +81,34 @@ classdef Task < LayeredNetworkElement
         function obj = addEntry(obj, newEntry)
             % OBJ = ADDENTRY(OBJ, NEWENTRY)
             
-            if(nargin > 1)
-                obj.entries = [obj.entries; newEntry];
-            end
+            obj.entries = [obj.entries; newEntry];
         end
         
         %addActivity
         function obj = addActivity(obj, newAct)
             % OBJ = ADDACTIVITY(OBJ, NEWACT)
             
-            if(nargin > 1)
-                newAct.setParent(obj.name);
-                obj.activities = [obj.activities; newAct];
-            end
+            newAct.setParent(obj.name);
+            obj.activities = [obj.activities; newAct];
         end
         
         %setActivity
         function obj = setActivity(obj, newAct, index)
             % OBJ = SETACTIVITY(OBJ, NEWACT, INDEX)
             
-            if(nargin > 2)
-                %if length(obj.activities) < index
-                %    obj.activities = [obj.activities; LayeredNetwork.Activity.empty(index-length(obj.activities),0)];
-                %end
-                obj.activities(index,1) = newAct;
-            end
+            obj.activities(index,1) = newAct;
         end
         
-        %remove activity
+        %removeActivity
         function obj = removeActivity(obj, index)
             % OBJ = REMOVEACTIVITY(OBJ, INDEX)
             
-            if(nargin > 1)
-                if length(obj.activities) < index
-                    % throw exception - attempted to remove unexisting activity
-                    errID = 'LQN:Task:NonExistingActivity';
-                    errMsg = 'LQN Task %s has %d activities, but activity %d was tried to me removed.';
-                    err = MException(errID, errMsg, obj.name, length(obj.activities), index);
-                    throw(err)
-                else
-                    idxToKeep = [1:index-1 index+1:length(obj.activities)];
-                    obj.activities = obj.activities(idxToKeep);
-                    obj.actNames = obj.actNames(idxToKeep);
-                end
-            end
+            idxToKeep = [1:index-1,index+1:length(obj.activities)];
+            obj.activities = obj.activities(idxToKeep);
+            obj.actNames = obj.actNames(idxToKeep);
         end
         
-        %setInitActivity
-        function obj = setInitActivity(obj, initActID)
-            % OBJ = SETINITACTIVITY(OBJ, INITACTID)
-            
-            if(nargin > 1)
-                obj.initActID = initActID;
-            end
-        end
-        
-        %set
+        %addPrecedence
         function obj = addPrecedence(obj, newPrec)
             % OBJ = ADDPRECEDENCE(OBJ, NEWPREC)
             
@@ -154,9 +125,7 @@ classdef Task < LayeredNetworkElement
         function obj = setReplyEntry(obj, newReplyEntry)
             % OBJ = SETREPLYENTRY(OBJ, NEWREPLYENTRY)
             
-            if(nargin > 1)
-                obj.replyEntry = newReplyEntry;
-            end
+            obj.replyEntry = newReplyEntry;
         end
         
         function meanHostDemand = getMeanHostDemand(obj, entryName)
@@ -172,7 +141,8 @@ classdef Task < LayeredNetworkElement
                     break;
                 end
             end
-            
         end
+        
     end
+    
 end

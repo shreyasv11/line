@@ -22,35 +22,27 @@ classdef SolverLQNS < LayeredNetworkSolver
             tic;
             options = self.getOptions;
             filename = [tempname,'.lqnx'];
-            try
-                self.model.writeXML(filename);
-                switch options.method
-                    case {'default','lqns'}
-                        system(['lqns -i ',num2str(options.iter_max),' -x ',filename]);
-                    case {'srvn'}
-                        system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -x ',filename]);
-                    case {'exact'}
-                        system(['lqns -i ',num2str(options.iter_max),' -Pmva=exact -x ',filename]);
-                    case {'srvnexact'}
-                        system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -Pmva=exact -x ',filename]);
-                    case {'sim','lqsim'}
-                        system(['lqsim -A ',num2str(options.samples),',3 -x ',filename]);
-                    case {'lqnsdefault'}
-                        system(['lqns -x ',filename]);
-                    otherwise
-                        system(['lqns -i ',num2str(options.iter_max),' -x ',filename]);
-                end
-                self.parseXMLResults(filename);
-                if ~options.keep
-                    [filepath,name] = fileparts(filename);
-                    delete([filepath,filesep,name,'*'])
-                end
-            catch exception
-                if ~options.keep
-                    [filepath,name] = fileparts(filename);
-                    delete([filepath,filesep,name,'*'])
-                end
-                rethrow(exception)
+            self.model.writeXML(filename);
+            switch options.method
+                case {'default','lqns'}
+                    system(['lqns -i ',num2str(options.iter_max),' -Pstop-on-message-loss=false -x ',filename]);
+                case {'srvn'}
+                    system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -Pstop-on-message-loss=false -x ',filename]);
+                case {'exact'}
+                    system(['lqns -i ',num2str(options.iter_max),' -Pmva=exact -Pstop-on-message-loss=false -x ',filename]);
+                case {'srvnexact'}
+                    system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -Pmva=exact -Pstop-on-message-loss=false -x ',filename]);
+                case {'sim','lqsim'}
+                    system(['lqsim -A ',num2str(options.samples),',3 -Pstop-on-message-loss=off -x ',filename]);
+                case {'lqnsdefault'}
+                    system(['lqns -x ',filename]);
+                otherwise
+                    system(['lqns -i ',num2str(options.iter_max),' -Pstop-on-message-loss=false -x ',filename]);
+            end
+            self.parseXMLResults(filename);
+            if ~options.keep
+                [filepath,name] = fileparts(filename);
+                delete([filepath,filesep,name,'*'])
             end
             runtime = toc;
         end
@@ -122,10 +114,6 @@ classdef SolverLQNS < LayeredNetworkSolver
             Avg.Edges.Waiting = NaN*ones(numOfEdges,1);
             verbose = self.options.verbose;
             
-            if nargin == 1
-                verbose = 0;
-            end
-            
             % init Java XML parser and load file
             dbFactory = DocumentBuilderFactory.newInstance();
             dBuilder = dbFactory.newDocumentBuilder();
@@ -133,16 +121,14 @@ classdef SolverLQNS < LayeredNetworkSolver
             [fpath,fname,~] = fileparts(filename);
             resultFilename = [fpath,filesep,fname,'.lqxo'];
             if verbose > 0
-                w = warning('query');
-                %warning off;
                 fprintf(1,'Parsing LQNS result file: %s\n',resultFilename);
-                warning(w);
+                warning(warning('query'));
             end
             
             doc = dBuilder.parse(resultFilename);
             doc.getDocumentElement().normalize();
             
-            %NodeList
+            %solver-params
             solverParams = doc.getElementsByTagName('solver-params');
             for i = 0:solverParams.getLength()-1
                 solverParam = solverParams.item(i);
@@ -152,7 +138,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             
             procList = doc.getElementsByTagName('processor');
             for i = 0:procList.getLength()-1
-                %Node - Processor
+                %Element - Processor
                 procElement = procList.item(i);
                 procName = char(procElement.getAttribute('name'));
                 procPos = findstring(lqnGraph.Nodes.Node,procName);
@@ -162,7 +148,7 @@ classdef SolverLQNS < LayeredNetworkSolver
                 
                 taskList = procElement.getElementsByTagName('task');
                 for j = 0:taskList.getLength()-1
-                    %Node - Task
+                    %Element - Task
                     taskElement = taskList.item(j);
                     taskName = char(taskElement.getAttribute('name'));
                     taskPos = findstring(lqnGraph.Nodes.Node,taskName);
@@ -180,7 +166,7 @@ classdef SolverLQNS < LayeredNetworkSolver
                     
                     entryList = taskElement.getElementsByTagName('entry');
                     for k = 0:entryList.getLength()-1
-                        %Node - Entry
+                        %Element - Entry
                         entryElement = entryList.item(k);
                         entryName = char(entryElement.getAttribute('name'));
                         entryPos = findstring(lqnGraph.Nodes.Node,entryName);
@@ -201,12 +187,13 @@ classdef SolverLQNS < LayeredNetworkSolver
                         Avg.Nodes.ProcUtilization(entryPos) = puRes;
                     end
                     
-                 %% task-activities
-                    taskActivities = taskElement.getElementsByTagName('task-activities');
-                    if taskActivities.getLength > 0
-                        actList = taskActivities.item(0).getElementsByTagName('activity');
+                    %task-activities
+                    taskActsList = taskElement.getElementsByTagName('task-activities');
+                    if taskActsList.getLength > 0
+                        taskActsElement = taskActsList.item(0);
+                        actList = taskActsElement.getElementsByTagName('activity');
                         for l = 0:actList.getLength()-1
-                            %Node - Activity
+                            %Element - Activity
                             actElement = actList.item(l);
                             if strcmp(char(actElement.getParentNode().getNodeName()),'task-activities')
                                 actName = char(actElement.getAttribute('name'));
@@ -224,9 +211,9 @@ classdef SolverLQNS < LayeredNetworkSolver
                                 Avg.Nodes.ProcUtilization(actPos) = puRes;
                                 
                                 actID = lqnGraph.Nodes.Name{actPos};
+                                %synch-call
                                 synchCalls = actElement.getElementsByTagName('synch-call');
                                 for m = 0:synchCalls.getLength()-1
-                                    %Call - Synchronous
                                     callElement = synchCalls.item(m);
                                     destName = char(callElement.getAttribute('dest'));
                                     destPos = findstring(lqnGraph.Nodes.Node,destName);
@@ -236,10 +223,9 @@ classdef SolverLQNS < LayeredNetworkSolver
                                     wRes = str2double(callResult.item(0).getAttribute('waiting'));
                                     Avg.Edges.Waiting(callPos) = wRes;
                                 end
-                                
+                                %asynch-call
                                 asynchCalls = actElement.getElementsByTagName('asynch-call');
                                 for m = 0:asynchCalls.getLength()-1
-                                    %Call - Asynchronous
                                     callElement = asynchCalls.item(m);
                                     destName = char(callElement.getAttribute('dest'));
                                     destPos = findstring(lqnGraph.Nodes.Node,destName);
@@ -286,7 +272,6 @@ classdef SolverLQNS < LayeredNetworkSolver
             options = lineDefaults('LQNS');
         end
         
-        
         function bool = isAvailable()
             % BOOL = ISAVAILABLE()
             
@@ -302,31 +287,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                     warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
                     bool = false;
                 end
-            else %linux
+            else % linux
                 [~,ret] = unix('lqns -V -H');
-                if containsstr(ret,'command not found')
-                    bool = false;
-                end
-                if containsstr(ret,'Version 5') || containsstr(ret,'Version 4') ...
-                        || containsstr(ret,'Version 3') || containsstr(ret,'Version 2') ...
-                        || containsstr(ret,'Version 1')
-                    warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
-                    bool = false;
-                end
-            end
-            if ispc % windows
-                [~,ret] = dos('lqsim -V -H');
-                if containsstr(ret,'not recognized')
-                    bool = false;
-                end
-                if containsstr(ret,'Version 5') || containsstr(ret,'Version 4') ...
-                        || containsstr(ret,'Version 3') || containsstr(ret,'Version 2') ...
-                        || containsstr(ret,'Version 1')
-                    warning('Unsupported LQNS version. LINE requires Version 6.0 or greater.');
-                    bool = false;
-                end
-            else %linux
-                [~,ret] = unix('lqsim -V -H');
                 if containsstr(ret,'command not found')
                     bool = false;
                 end

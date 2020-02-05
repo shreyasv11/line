@@ -99,7 +99,7 @@ classdef Exp < MarkovianDistribution
     
     methods (Static)
         function ex = fit(MEAN, SCV, SKEW)
-            % EX = FIT(MEAN, SCV, SKEW)            
+            % EX = FIT(MEAN, SCV, SKEW)
             % Fit the distribution from three standard moments (mean,
             % scv, skewness)
             ex = Exp(1);
@@ -107,19 +107,19 @@ classdef Exp < MarkovianDistribution
         end
         
         function ex = fitMean(MEAN)
-            % EX = FITMEAN(MEAN)            
+            % EX = FITMEAN(MEAN)
             % Fit exponential distribution with given mean
             ex = Exp(1/MEAN);
         end
         
         function ex = fitRate(RATE)
-            % EX = FITRATE(RATE)            
+            % EX = FITRATE(RATE)
             % Fit exponential distribution with given rate
             ex = Exp(RATE);
         end
         
         function ex = fitMeanAndSCV(MEAN, SCV)
-            % EX = FITMEANANDSCV(MEAN, SCV)            
+            % EX = FITMEANANDSCV(MEAN, SCV)
             % Fit exponential distribution with given mean and squared coefficient of variation (SCV=variance/mean^2)
             if abs(SCV-1) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit SCV != 1, changing SCV to 1.');
@@ -128,7 +128,7 @@ classdef Exp < MarkovianDistribution
         end
         
         function Qcell = fromMatrix(Lambda)
-            % QCELL = FROMMATRIX(LAMBDA)            
+            % QCELL = FROMMATRIX(LAMBDA)
             % Instantiates a cell array of Exp objects, each with rate
             % given by the entries of the input matrix
             Qcell = cell(size(Lambda));
@@ -138,6 +138,6 @@ classdef Exp < MarkovianDistribution
                 end
             end
         end
-        
     end
+    
 end

@@ -5,7 +5,6 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
     % All rights reserved.
     
     methods (Static)
-        
         function cx  = fit(MEAN,SCV,SKEW)
             % CX = FIT(MEAN,SCV,SKEW)
             
@@ -83,6 +82,6 @@ classdef (Sealed)  Cox2 < MarkovianDistribution
             end
             cx = Coxian(l0,l1,p);
         end
-        
     end
+    
 end
