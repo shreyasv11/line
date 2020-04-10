@@ -83,6 +83,11 @@ for i=1:numOfStations
             %        if currentClass.isReferenceStation(currentNode)
             classPopulationNode = simDoc.createElement('classPopulation');
             switch currentClass.type
+                case 'open'
+                    isReferenceNode = 1;
+                    classPopulationNode.setAttribute('population', sprintf('%d',round(nir(r))));
+                    classPopulationNode.setAttribute('refClass', currentClass.name);
+                    stationPopulationsNode.appendChild(classPopulationNode);                    
                 case 'closed'
                     isReferenceNode = 1;
                     %                    classPopulationNode.setAttribute('population', sprintf('%d',currentClass.population));

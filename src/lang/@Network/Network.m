@@ -1027,7 +1027,7 @@ classdef Network < Model
                     % check with SEPT/LEPT
                     for i=1:length(self.nodes)
                         switch class(self.nodes{i})
-                            case {'DelayStation','Queue'}
+                            case {'Delay','DelayStation','Queue'}
                                 self.nodes{i}.schedStrategyPar = self.nodes{i}.schedStrategyPar(remaining);
                                 self.nodes{i}.serviceProcess = self.nodes{i}.serviceProcess(remaining);
                                 self.nodes{i}.classCap = self.nodes{i}.classCap(remaining);

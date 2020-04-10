@@ -22,7 +22,7 @@ classdef SolverEnv < EnsembleSolver
             for e=1:length(self.env)
                 self.setSolver(solverFactory(models{e}),e);
             end
-
+            
             for e=1:length(self.env)
                 for h=1:length(self.env)
                     self.resetFromMarginal{e,h} = renv.resetFun{e,h};
@@ -76,11 +76,11 @@ classdef SolverEnv < EnsembleSolver
         
         
         function init(self)
-            % INIT()            
-            options = self.options;            
+            % INIT()
+            options = self.options;
             if isfield(options,'seed')
                 Solver.resetRandomGeneratorSeed(options.seed);
-            end            
+            end
             self.envObj.init();
         end
         
@@ -92,7 +92,7 @@ classdef SolverEnv < EnsembleSolver
                     if isinf(self.getSolver(e).options.timespan(2))
                         [QN,~,~,~] = self.getSolver(e).getAvg();
                     else
-                        [QNt,~,~] = self.getSolver(e).getTranAvg();                        
+                        [QNt,~,~] = self.getSolver(e).getTranAvg();
                         QN = cellfun(@(q) q.metric(end), QNt);
                     end
                     self.ensemble{e}.initFromMarginal(QN);
@@ -111,7 +111,7 @@ classdef SolverEnv < EnsembleSolver
             runtime = toc(T0);
             %% initialize
             [Qt,Ut,Tt] = self.ensemble{e}.getTranHandles;
-            %[results_e.Avg.Q, results_e.Avg.U, results_e.Avg.R, results_e.Avg.T] = self.solvers{e}.getAvg();       
+            %[results_e.Avg.Q, results_e.Avg.U, results_e.Avg.R, results_e.Avg.T] = self.solvers{e}.getAvg();
             [QNt,UNt,TNt] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);
             results_e.Tran.Avg.Q = QNt; %cellfun(@(c) c.metric, QNt,'UniformOutput',false);
             results_e.Tran.Avg.U = UNt; %cellfun(@(c) c.metric, UNt,'UniformOutput',false);
@@ -137,14 +137,14 @@ classdef SolverEnv < EnsembleSolver
                         end
                     end
                 end
-            end 
+            end
             
             Qentry = cell(1,E); % average entry queue-length
             for e = 1:E
                 Qentry{e} = zeros(size(Qexit{e}));
                 for h=1:E
-                    % probability of coming from h to e \times resetFun(Qexit from h to e 
-                    if self.envObj.probOrig(h,e) > 0                    
+                    % probability of coming from h to e \times resetFun(Qexit from h to e
+                    if self.envObj.probOrig(h,e) > 0
                         Qentry{e} = Qentry{e} + self.envObj.probOrig(h,e) * self.resetFromMarginal{h,e}(Qexit{h,e});
                     end
                 end
@@ -162,12 +162,14 @@ classdef SolverEnv < EnsembleSolver
                 QExit{e}=[];
                 UExit{e}=[];
                 TExit{e}=[];
-                for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
-                    for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
-                        w{e} = [0, map_cdf(self.envObj.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.envObj.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
-                        QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e}/sum(w{e});
-                        UExit{e}(i,r) = self.results{it,e}.Tran.Avg.U{i,r}.metric'*w{e}/sum(w{e});
-                        TExit{e}(i,r) = self.results{it,e}.Tran.Avg.T{i,r}.metric'*w{e}/sum(w{e});
+                if it>0
+                    for i=1:size(self.results{it,e}.Tran.Avg.Q,1)
+                        for r=1:size(self.results{it,e}.Tran.Avg.Q,2)
+                            w{e} = [0, map_cdf(self.envObj.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(2:end)) - map_cdf(self.envObj.holdTime{e}, self.results{it,e}.Tran.Avg.Q{i,r}.t(1:end-1))]';
+                            QExit{e}(i,r) = self.results{it,e}.Tran.Avg.Q{i,r}.metric'*w{e}/sum(w{e});
+                            UExit{e}(i,r) = self.results{it,e}.Tran.Avg.U{i,r}.metric'*w{e}/sum(w{e});
+                            TExit{e}(i,r) = self.results{it,e}.Tran.Avg.T{i,r}.metric'*w{e}/sum(w{e});
+                        end
                     end
                 end
                 %                 for h = 1:E
@@ -208,6 +210,14 @@ classdef SolverEnv < EnsembleSolver
             name = mfilename;
         end
         
+        function [infGen, eventFilt] = getGenerator(self)
+            % [infGen, eventFilt] = getGenerator(self)
+            E = self.getNumberOfModels;
+            for e=1:E
+                [infGen{e}, eventFilt{e}] = self.solvers{e}.getGenerator();
+            end
+        end
+        
         function [QNclass, UNclass, TNclass] = getAvg(self)
             % [QNCLASS, UNCLASS, TNCLASS] = GETAVG()
             
@@ -226,9 +236,9 @@ classdef SolverEnv < EnsembleSolver
         end
         
         function [AvgTable,QT,UT,TT] = getAvgTable(self,keepDisabled)
-            % [AVGTABLE,QT,UT,TT] = GETAVGTABLE(SELF,KEEPDISABLED)            
+            % [AVGTABLE,QT,UT,TT] = GETAVGTABLE(SELF,KEEPDISABLED)
             % Return table of average station metrics
-
+            
             if ~exist('keepDisabled','var')
                 keepDisabled = false;
             end
@@ -287,7 +297,7 @@ classdef SolverEnv < EnsembleSolver
                 TT = Table(Station,Class,Tput);
                 AvgTable = Table(Station,Class,QLen,Util,Tput);
             end
-        end        
+        end
     end
     
     methods (Static)

@@ -46,7 +46,11 @@ classdef NetworkSolver < Solver
             % Return true if the solver has computed transient average metrics.
             bool = false;
             if self.hasResults
-                bool = isfield(self.result.Tran.Avg,'Qt');
+                if isfield(self.result,'Tran')
+                    if isfield(self.result.Tran,'Avg')
+                        bool = isfield(self.result.Tran.Avg,'Qt');
+                    end
+                end
             end
         end
         

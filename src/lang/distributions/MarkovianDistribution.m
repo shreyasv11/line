@@ -57,6 +57,20 @@ classdef MarkovianDistribution < ContinuousDistrib
             Ft = map_cdf(self.getRepresentation,t);
         end
         
+        function alpha = getInitProb(self)
+            % ALPHA = GETINITPROB()            
+            aph = self.getRepresentation;
+            alpha = map_pie(aph);
+        end
+        
+        function T = getGenerator(self)
+            % T = GETGENERATOR()            
+            
+            % Get generator
+            aph = self.getRepresentation;
+            T = aph{2};
+        end        
+        
         function mu = getMu(self)
             % MU = GETMU()
             

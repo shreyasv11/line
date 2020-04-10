@@ -71,13 +71,17 @@ if isfinite(self.options.timespan(2))
     end
 end
 
+if length(t) < 1+numEvents
+    warning('LINE could not estimate correctly the JMT simulation length to return the desired number of events at the specified node. Try to re-run increasing the number of events.');
+end
+
 stationStateAggr = struct();
 stationStateAggr.handle = node;
 stationStateAggr.t = t;
-stationStateAggr.t = stationStateAggr.t(1:(1+numEvents),:);
+stationStateAggr.t = stationStateAggr.t(1:min(length(t),1+numEvents),:);
 stationStateAggr.t = [0; stationStateAggr.t(1:end-1)];
 stationStateAggr.state = cell2mat(nir);
-stationStateAggr.state = stationStateAggr.state(1:(1+numEvents),:);
+stationStateAggr.state = stationStateAggr.state(1:min(length(t),1+numEvents),:);
 
 event = cellmerge(event);
 event = {event{cellisa(event,'Event')}}';

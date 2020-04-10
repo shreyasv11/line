@@ -11,7 +11,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             self@LayeredNetworkSolver(model, mfilename);
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             if ~SolverLQNS.isAvailable()
-                error('SolverLQNS requires the lqns and lqsim commands to be available on the system path.');
+                error('SolverLQNS requires the lqns and lqsim commands to be available on the system path. Please visit: http://www.sce.carleton.ca/rads/lqns/');
             end
         end
         

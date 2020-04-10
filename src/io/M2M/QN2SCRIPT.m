@@ -39,6 +39,10 @@ for i= 1:qn.nnodes
             end
         case NodeType.Router
             fprintf(fid,'node{%d} = Router(model, ''%s'');\n',i,qn.nodenames{i});
+        case NodeType.Fork
+            fprintf(fid,'node{%d} = Fork(model, ''%s'');\n',i,qn.nodenames{i});
+        case NodeType.Join
+            fprintf(fid,'node{%d} = Join(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Sink
             fprintf(fid,'node{%d} = Sink(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.ClassSwitch
@@ -93,50 +97,52 @@ fprintf(fid,'\n');
 %% arrival and service processes
 for k=1:qn.nclasses
     for i=1:qn.nstations
-        if isprop(model.stations{i},'serviceProcess') && strcmp(class(model.stations{i}.serviceProcess{k}),'Replayer')
-            switch qn.sched{i}
-                case SchedStrategy.EXT
-                    fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Replayer(''%s'')); %% (%s,%s)\n',qn.stationToNode(i),k,model.stations{i}.serviceProcess{k}.params{1}.paramValue,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                otherwise
-                    fprintf(fid,'node{%d}.setService(jobclass{%d}, Replayer(''%s'')); %% (%s,%s)\n',qn.stationToNode(i),k,model.stations{i}.serviceProcess{k}.params{1}.paramValue,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-            end
-        else
-            SCVik = map_scv(PH{i,k});
-            if SCVik >= 0.5
+        if qn.nodetype(qn.stationToNode(i)) ~= NodeType.Join
+            if isprop(model.stations{i},'serviceProcess') && strcmp(class(model.stations{i}.serviceProcess{k}),'Replayer')
                 switch qn.sched{i}
                     case SchedStrategy.EXT
-                        if SCVik == 1
-                            fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Exp.fitMean(%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        else
-                            fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Cox2.fitMeanAndSCV(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),SCVik,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        end
+                        fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Replayer(''%s'')); %% (%s,%s)\n',qn.stationToNode(i),k,model.stations{i}.serviceProcess{k}.params{1}.paramValue,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
                     otherwise
-                        if SCVik == 1
-                            fprintf(fid,'node{%d}.setService(jobclass{%d}, Exp.fitMean(%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        else
-                            fprintf(fid,'node{%d}.setService(jobclass{%d}, Cox2.fitMeanAndSCV(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),SCVik,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        end
+                        fprintf(fid,'node{%d}.setService(jobclass{%d}, Replayer(''%s'')); %% (%s,%s)\n',qn.stationToNode(i),k,model.stations{i}.serviceProcess{k}.params{1}.paramValue,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
                 end
             else
-                % this could be made more precised by fitting into a 2-state
-                % APH, especially if SCV in [0.5,0.1]
-                nPhases = max(1,round(1/SCVik));
-                switch qn.sched{i}
-                    case SchedStrategy.EXT
-                        if isnan(PH{i,k}{1})
-                            fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Disabled()); %% (%s,%s)\n',qn.stationToNode(i),k,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        else
-                            fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Erlang(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,nPhases/map_mean(PH{i,k}),nPhases,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        end
-                    otherwise
-                        if isnan(PH{i,k}{1})
-                            fprintf(fid,'node{%d}.setService(jobclass{%d}, Disabled()); %% (%s,%s)\n',qn.stationToNode(i),k,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        else
-                            fprintf(fid,'node{%d}.setService(jobclass{%d}, Erlang(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,nPhases/map_mean(PH{i,k}),nPhases,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
-                        end
+                SCVik = map_scv(PH{i,k});
+                if SCVik >= 0.5
+                    switch qn.sched{i}
+                        case SchedStrategy.EXT
+                            if SCVik == 1
+                                fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Exp.fitMean(%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            else
+                                fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Cox2.fitMeanAndSCV(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),SCVik,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            end
+                        otherwise
+                            if SCVik == 1
+                                fprintf(fid,'node{%d}.setService(jobclass{%d}, Exp.fitMean(%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            else
+                                fprintf(fid,'node{%d}.setService(jobclass{%d}, Cox2.fitMeanAndSCV(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),SCVik,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            end
+                    end
+                else
+                    % this could be made more precised by fitting into a 2-state
+                    % APH, especially if SCV in [0.5,0.1]
+                    nPhases = max(1,round(1/SCVik));
+                    switch qn.sched{i}
+                        case SchedStrategy.EXT
+                            if isnan(PH{i,k}{1})
+                                fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Disabled()); %% (%s,%s)\n',qn.stationToNode(i),k,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            else
+                                fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Erlang(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,nPhases/map_mean(PH{i,k}),nPhases,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            end
+                        otherwise
+                            if isnan(PH{i,k}{1})
+                                fprintf(fid,'node{%d}.setService(jobclass{%d}, Disabled()); %% (%s,%s)\n',qn.stationToNode(i),k,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            else
+                                fprintf(fid,'node{%d}.setService(jobclass{%d}, Erlang(%f,%f)); %% (%s,%s)\n',qn.stationToNode(i),k,nPhases/map_mean(PH{i,k}),nPhases,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
+                            end
+                    end
                 end
             end
-        end
+        end        
     end
 end
 

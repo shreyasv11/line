@@ -1,4 +1,4 @@
-function [XN,QN,UN,CN,lGN,isNumStable]=pfqn_mvald(L,N,Z,mu)
+function [XN,QN,UN,CN,lGN,isNumStable,pi]=pfqn_mvald(L,N,Z,mu)
 % [XN,QN,UN,CN,LGN]=PFQN_MVALD(L,N,Z,MU)
 
 warn = true;
@@ -59,7 +59,7 @@ while n~=-1
     last_nnz = max(find(n>0));
     if sum(n(1:last_nnz-1)) == sum(N(1:last_nnz-1)) & sum(n((last_nnz+1):R))==0
         logX = log(Xs(last_nnz,hashpop(n,N)));
-        hashpop(n,N)
+        %hashpop(n,N)
         if ~isempty(logX)
             lGN(end+1) = lGN(end) - logX;
         end
@@ -69,9 +69,10 @@ while n~=-1
 end
 X=Xs(:,hashpop(N,N));
 XN=X';
-%pi=pi(:,:,hashpop(N,N));
+pi=pi(:,:,hashpop(N,N));
 QN = WN.*repmat(XN,M,1);
-UN = repmat(XN,M,1) .* L;
+%UN = repmat(XN,M,1) .* L;
+UN = 1-pi(:,1);
 CN = N./XN - Z; % cycle time exclusive of think time
 end
 
