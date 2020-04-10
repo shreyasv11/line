@@ -68,7 +68,7 @@ classdef MarkovianDistribution < ContinuousDistrib
             
             % Get generator
             aph = self.getRepresentation;
-            T = aph{2};
+            T = aph{1};
         end        
         
         function mu = getMu(self)
