@@ -82,6 +82,7 @@ for ind=1:qn.nnodes
 end
 
 state = cell2mat(stateCell');
+statelen = cellfun(@length, stateCell);
 tranSync = zeros(samples_collected,1);
 tranState = zeros(1+length(state),samples_collected);
 tranState(1:(1+length(state)),1) = [0, state]';
@@ -182,9 +183,31 @@ while samples_collected < options.samples && cur_time <= options.timespan(2)
     firing_ctr = 1 + max([0,find( rand > cum_rate )]); % select action
     last_node_a = node_a{enabled_sync{firing_ctr}};
     last_node_p = node_p{enabled_sync{firing_ctr}};
+
+    % this part is needed to ensure that when the state vector grows the
+    % padding of zero is done on the left
+    for ind=1:qn.nnodes
+        if qn.isstation(ind)
+            isf = qn.nodeToStateful(ind);                        
+            deltalen = length(stateCell{isf}) > statelen(isf);
+            if deltalen>0
+                statelen(isf) = length(stateCell{isf});
+                % here do padding
+                if ind==1
+                    shift = 0;
+                else
+                    shift = sum(statelen(1:isf-1));
+                end                
+                pad = zeros(deltalen, size(tranState,2));                
+                tranState = [tranState(1:(shift+1), :); pad ; tranState((shift+1+deltalen):end, :)];
+            end
+        end
+    end
+    
     state = cell2mat(stateCell');
     dt = -(log(rand)/tot_rate);
     cur_time = cur_time + dt;
+
     tranState(1:(1+length(state)),samples_collected) = [dt, state]';
     tranSync(samples_collected,1) = enabled_sync{firing_ctr};
     
@@ -220,7 +243,6 @@ end
 %output = output((transient+1):end,:);
 tranState = tranState';
 
-%tranState = [0, init_state;tranState];
 [u,ui,uj] = unique(tranState(:,2:end),'rows');
 statesz = cellfun(@length, stateCell)';
 tranSysState = cell(1,length(stateCell)+1);

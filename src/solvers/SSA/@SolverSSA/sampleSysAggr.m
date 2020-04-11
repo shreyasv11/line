@@ -19,7 +19,7 @@ switch options.method
         tranSysState.state = {tranSystemState{2:end}};
         tranSysState.event = tranSync;
         event = tranSync;
-        
+                
         for isf=1:self.model.getNumberOfStatefulNodes
             if size(tranSysState.state{isf},1) > numSamples
                 tranSysState.t = tranSystemState(1:numSamples);

@@ -18,7 +18,6 @@ pie = qn.pie;
 outspace = [];
 outrate = [];
 outprob = 1;
-
 % ind: node index
 isf = qn.nodeToStateful(ind);
 

@@ -34,8 +34,8 @@ classdef NetworkStruct <handle
         nodevisits;  % visits placed by classes at the nodes
         nodetype; % server type in each node
         phases; % number of phases in each service or arrival process
-        phasessz; % shift for number of phases
-        phaseshift; % shift for number of phases
+        phasessz; % number of phases
+        phaseshift; % shift for phases
         pie;        % probability of entry in each each service phase
         phi;         % probability of service completion in each service phase,
         % for each job class in each station
