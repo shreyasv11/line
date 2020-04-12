@@ -1,9 +1,10 @@
 ## LINE: Performance and Reliability Analysis Engine
 
 Website: http://line-solver.sourceforge.net/
-[![View LINE on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/71486-line)
 
 Latest stable release: https://sourceforge.net/projects/line-solver/files/latest/download
+
+Mathworks File Exchange: [![View LINE on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/71486-line)
 
 LINE is a MATLAB toolbox for performance and reliability analysis of systems and processes that can be modeled using queueing theory. The engine offers a solver-agnostic language to specify queueing networks, which therefore decouples model description from the solvers used for their solution. This is done through model-to-model transformations that automatically translate the model specification into the input format (or data structure) accepted by the target solver.
 
