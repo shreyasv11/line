@@ -42,7 +42,10 @@ classdef SolverJMT < NetworkSolver
             self.maxEvents = -1;
             jarPath = jmtGetPath;
             self.setJMTJarPath(jarPath);
-            filePath = tempdir;
+            %filePath = tempdir;
+            userName = getenv('username');
+            userName(isspace(userName))=[];
+            filePath = [tempdir,'line.',userName,filesep];            
             self.filePath = filePath;
             [~,fileName]=fileparts(tempname);
             self.fileName = fileName;

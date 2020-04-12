@@ -33,7 +33,12 @@ for i= 1:cdfmodel.getNumberOfStations
 end
 Plinked = self.model.getLinkedRoutingMatrix();
 isNodeLogged = max(isNodeClassLogged,[],2);
-logpath = tempdir;
+
+%logpath = tempdir;
+userName = getenv('username');
+userName(isspace(userName))=[];
+logpath = [tempdir,'line.',userName,filesep];  
+
 cdfmodel.linkAndLog(Plinked, isNodeLogged, logpath);
 SolverJMT(cdfmodel, self.getOptions).getAvg(); % log data
 logData = SolverJMT.parseLogs(cdfmodel, isNodeLogged, Metric.RespT);

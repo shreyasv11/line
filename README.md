@@ -1,6 +1,7 @@
 ## LINE: Performance and Reliability Analysis Engine
 
 Website: http://line-solver.sourceforge.net/
+[![View LINE on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/71486-line)
 
 Latest stable release: https://sourceforge.net/projects/line-solver/files/latest/download
 
