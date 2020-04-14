@@ -31,21 +31,31 @@ classdef MarkovianDistribution < ContinuousDistrib
         end
         
         function MEAN = getMean(self)
-            % MEAN = GETMEAN()
-            
-            MEAN = map_mean(self.getRepresentation);
+            % MEAN = GETMEAN()            
+            if isfinite(self.getRepresentation{1})
+                MEAN = map_mean(self.getRepresentation);
+            else
+                MEAN = NaN;
+            end                
         end
         
         function SCV = getSCV(self)
             % SCV = GETSCV()
             % Get the squared coefficient of variation of the distribution (SCV = variance / mean^2)
-            SCV = map_scv(self.getRepresentation);
+            if isfinite(self.getRepresentation{1})
+                SCV = map_scv(self.getRepresentation);
+            else
+                SCV = NaN;
+            end
         end
         
         function SKEW = getSkewness(self)
             % SKEW = GETSKEWNESS()
-            
-            SKEW = map_skew(self.getRepresentation);
+            if isfinite(self.getRepresentation{1})
+                SKEW = map_skew(self.getRepresentation);
+            else
+                SKEW = NaN;
+            end
         end
         
         function Ft = evalCDF(self,t)

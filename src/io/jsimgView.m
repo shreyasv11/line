@@ -8,7 +8,7 @@ function jsimgView(filename)
 if isempty(path)
     filename=[pwd,filesep,filename];
 end
-cmd = ['java -illegal-access=permit -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];
+cmd = ['java  --illegal-access=permit -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];
 [status] = system(cmd);
 if  status > 0
     cmd = ['java  -cp "',jmtGetPath,filesep,'JMT.jar" jmt.commandline.Jmt jsimg "',filename,'"'];

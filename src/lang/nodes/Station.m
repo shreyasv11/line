@@ -115,8 +115,28 @@ classdef Station < StatefulNode
                         end
                 end
             end
-        end    
+        end
         
+%         function svcProc = getService(self)
+%             % svcProc = GETSERVICE()
+% 
+%             % RETURN SERVICE PROCESSES FOR ALL CLASSES
+%             
+%             svcProc = {};
+%             for r=1:nclasses
+%                 if isempty(self.server.serviceProcess{r})
+%                     self.server.serviceProcess{r} = {[],ServiceStrategy.LI,Disabled()};
+%                     svcProc{r} = Disabled();
+%                 elseif self.server.serviceProcess{r}{end}.isImmediate()
+%                     svcProc{r} = Immediate();
+%                 elseif ~self.server.serviceProcess{r}{end}.isDisabled()
+%                     svcProc{r} = serviceProcess{r}{end};
+%                 else
+%                     svcProc{r} = [];
+%                 end
+%             end
+%         end    
+
         function [map, mu, phi] = getMarkovianSourceRates(self)
             % [PH,MU,PHI] = GETPHSOURCERATES()
             
@@ -156,7 +176,7 @@ classdef Station < StatefulNode
                     phi{r}  = NaN;
                 end
             end
-        end        
+        end
         
         function [map,mu,phi] = getMarkovianServiceRates(self)
             % [PH,MU,PHI] = GETPHSERVICERATES()
@@ -198,6 +218,6 @@ classdef Station < StatefulNode
                 end
             end
         end
-                
+        
     end
 end

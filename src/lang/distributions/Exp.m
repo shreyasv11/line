@@ -71,19 +71,19 @@ classdef Exp < MarkovianDistribution
             %            if abs(KURT-9) > Distrib.Tol
             %                warning('Warning: the exponential distribution cannot fit kurtosis != 9, changing kurtosis to 9.');
             %            end
-            self.getParam(1).paramValue = 1 / MEAN;
+            self.params{1}.paramValue = 1 / MEAN;
         end
         
         function updateMean(self,MEAN)
             % UPDATEMEAN(SELF,MEAN)            
             % Update parameters to match the given mean
-            self.getParam(1).paramValue = 1 / MEAN;
+            self.params{1}.paramValue = 1 / MEAN;
         end
         
         function updateRate(self,RATE)
             % UPDATERATE(SELF,RATE)            
             % Update rate parameter
-            self.getParam(1).paramValue = RATE;
+            self.params{1}.paramValue = RATE;
         end
         
         function updateMeanAndSCV(self,MEAN,SCV)
@@ -92,7 +92,7 @@ classdef Exp < MarkovianDistribution
             if abs(SCV-1) > Distrib.Tol
                 warning('Warning: the exponential distribution cannot fit SCV != 1, changing SCV to 1.');
             end
-            self.getParam(1).paramValue = 1 / MEAN;
+            self.params{1}.paramValue = 1 / MEAN;
         end
         
     end

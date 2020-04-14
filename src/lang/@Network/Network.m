@@ -359,7 +359,10 @@ classdef Network < Model
         
         function classIndex = getClassIndex(self, name)
             % CLASSINDEX = GETCLASSINDEX(NAME)
-            
+                if isa(name,'JobClass')
+                jobclass = name;
+                name = jobclass.getName();
+            end        
             classIndex = find(cellfun(@(c) strcmp(c,name),self.getClassNames));
         end
         

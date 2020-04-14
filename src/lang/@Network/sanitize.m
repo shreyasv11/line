@@ -49,26 +49,28 @@ if isempty(self.qn)
                         if length(unique(svcTime)) ~= K
                             error('SEPT does not support identical service time means.');
                         end
-                        svcTime(isnan(svcTime)) = 0;
                         [svcTimeSorted] = sort(unique(svcTime));
                         self.nodes{i}.schedStrategyPar = zeros(1,K);
                         for k=1:K
-                            self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
-                        end                        
+                            if ~isnan(svcTime(k))
+                                self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
+                            else
+                                self.nodes{i}.schedStrategyPar(k) = find(isnan(svcTimeSorted));
+                            end
+                        end
                     case SchedStrategy.LEPT
-                        svcTime = zeros(1,K);                        
+                        svcTime = zeros(1,K);
                         for k=1:K
                             svcTime(k) = self.nodes{i}.serviceProcess{k}.getMean;
                         end
                         if length(unique(svcTime)) ~= K
                             error('LEPT does not support identical service time means.');
-                        end
-                        svcTime(isnan(svcTime)) = 0;
+                        end                        
                         [svcTimeSorted] = sort(unique(svcTime),'descend');
                         self.nodes{i}.schedStrategyPar = zeros(1,K);
                         for k=1:K
                             self.nodes{i}.schedStrategyPar(k) = find(svcTimeSorted == svcTime(k));
-                        end                        
+                        end
                 end
             case 'Delay'
                 for k=1:K

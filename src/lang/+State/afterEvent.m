@@ -340,11 +340,11 @@ if qn.isstation(ind)
                                     end
                                 case {SchedStrategy.ID_SEPT,SchedStrategy.ID_LEPT} % move last job in service
                                     rate = zeros(size(space_srv,1),1);
-                                    rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); % this is for states not in en_wbuf
+                                    rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); % this is for states not in en_buf
                                     space_srv = inspace(:,end-sum(K)+1:end); % server state
                                     space_srv(en,Ks(class)+k) = space_srv(en,Ks(class)+k) - 1; % record departure
                                     space_buf = inspace(:,1:(end-sum(K))); % buffer state
-                                    % in SEPT, the scheduling parameter is the priority order of the class 
+                                    % in SEPT, the scheduling parameter is the priority order of the class means
                                     % en_wbuf: states where the buffer is non-empty
                                     % sept_class: class to pick in service
                                     [en_wbuf, first_class_inrow] = max(space_buf(:,qn.schedparam(ist,:))~=0, [], 2);

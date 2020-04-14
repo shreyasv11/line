@@ -25,11 +25,7 @@ end
 % apply logging to the copied model
 Plinked = self.model.getLinkedRoutingMatrix();
 isNodeLogged = max(isNodeClassLogged,[],2);
-%logpath = tempdir;
-userName = getenv('username');
-userName(isspace(userName))=[];
-logpath = [tempdir,'line.',userName,filesep];  
-
+logpath = tempdir;
 modelCopy.linkAndLog(Plinked, isNodeLogged, logpath);
 % simulate the model copy and retrieve log data
 solverjmt = SolverJMT(modelCopy, self.getOptions);

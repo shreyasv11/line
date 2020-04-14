@@ -131,9 +131,9 @@ classdef Queue < Station
             sections = {self.input, self.server, self.output};
         end
         
-        function distrib = getServiceProcess(self, oclass)
-            distrib = self.serviceProcess{oclass};
-        end
+%        function distrib = getServiceProcess(self, oclass)
+%            distrib = self.serviceProcess{oclass};
+%        end
         
     end
 end
