@@ -1,4 +1,4 @@
-function [nodeStateSpace, qn, capacityc] = spaceGeneratorNodes(qn, cutoff)
+function [nodeStateSpace, qn, capacityc] = spaceGeneratorNodes(qn, cutoff, options)
 N = qn.njobs';
 qn.space = {};
 capacityc = zeros(qn.nnodes, qn.nclasses);
@@ -20,7 +20,7 @@ for ind=1:qn.nnodes
                 end
             end
         end
-        qn.space{isf} = State.fromMarginalBounds(qn, ind, [], capacityc(ind,:), qn.cap(ist));
+        qn.space{isf} = State.fromMarginalBounds(qn, ind, [], capacityc(ind,:), qn.cap(ist), options);
         if isinf(qn.nservers(ist))
             qn.nservers(ist) = sum(capacityc(ind,:));
         end
@@ -40,7 +40,7 @@ for ind=1:qn.nnodes
                 capacityc(ind,:) =  1; %
         end
         state_var = State.spaceLocalVars(qn, ind);
-        state_bufsrv = State.fromMarginalBounds(qn, ind, [], capacityc(ind,:), 1);
+        state_bufsrv = State.fromMarginalBounds(qn, ind, [], capacityc(ind,:), 1, options);
         qn.space{isf} = State.decorate(state_bufsrv,state_var); % generate all possible states for local variables
     end
 end

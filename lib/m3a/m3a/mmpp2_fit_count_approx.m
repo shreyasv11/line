@@ -1,4 +1,5 @@
-function [FIT] = mmpp2_fit_count_approx(a, bt1, bt2, binf, m3t2, t1, t2)
+function [FIT] = mmpp2_fit_count_approx(a, bt1, bt2, binf, m3t2, ...
+    t1, t2)
 % Fits a second-order Marked MMPP.
 % a: arrival rate
 % bt1: IDC at scale t1
@@ -26,7 +27,6 @@ guess.x1 = a*3/4;
 guess.x2 = a*3/2;
 guess.x3 = 1/3;
 guess.x4 = 2/3;
-solve(prob, guess);
 [xopt, fxopt] = solve(prob, guess);
 
 %fprintf('Unified fitting error: %f\n', fxopt);

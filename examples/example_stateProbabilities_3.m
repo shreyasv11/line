@@ -67,8 +67,8 @@ options.verbose=1;
 %options.samples=1e5;
 
 n=[0,0,0,0;
-   0,0,0,0;
-   N(1),N(2),N(3),N(4)];
+    0,0,0,0;
+    N(1),N(2),N(3),N(4)];
 for i=1:M
     node{i}.setState(n(i,:));
 end
@@ -77,6 +77,7 @@ state = model.getState;
 solver = SolverCTMC(model,options);
 Pr_ctmc = solver.getProbSysAggr()
 
+options.method = 'exact';
 solver = SolverNC(model,options);
 Pr_nc = solver.getProbSysAggr()
 

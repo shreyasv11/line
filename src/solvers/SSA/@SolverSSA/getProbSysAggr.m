@@ -9,7 +9,10 @@ qn = self.model.getStruct;
 nir = zeros(qn.nstateful,qn.nclasses);
 for isf=1:qn.nstateful
     ind = qn.statefulToNode(isf);
-    [~,nir(isf,:)] = State.toMarginal(qn, ind, state{isf});
+    if size(state{isf},1) > 1
+        warning('Some states at node %d will be ignored. Please assign the node with a specific state.', ind);
+    end
+    [~,nir(isf,:)] = State.toMarginal(qn, ind, state{isf}(1,:));
 end
 nir = nir';
 rows = findrows(TSS(:,2:end), nir(:)');

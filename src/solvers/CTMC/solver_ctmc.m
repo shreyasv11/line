@@ -14,7 +14,7 @@ if isoctave
     %warning off;
 end
 
-[SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff);
+[SS,SSh,qnc] = State.spaceGenerator(qn.copy, options.cutoff, options);
 qn.space = qnc.space;
 if options.verbose
     fprintf(1,'State space size: %d states.\n',size(SS,1));

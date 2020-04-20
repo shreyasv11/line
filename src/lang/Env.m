@@ -26,7 +26,7 @@ classdef Env < Ensemble
             self.envGraph.Nodes.Type = cell(0);
         end
         
-        function name = addStage(self, name, type, model)
+        function name = addStage(self, name, type, model)            
             wcfg = warning; % store warning configuration
             warning('off','MATLAB:table:RowsAddedExistingVars');
             self.envGraph = self.envGraph.addnode(name);
@@ -34,6 +34,11 @@ classdef Env < Ensemble
             self.envGraph.Nodes.Model{end} = model;
             self.envGraph.Nodes.Type{end} = type;
             E = height(self.envGraph.Nodes);
+            if E>1
+                if self.envGraph.Nodes.Model{1}.getNumberOfStatefulNodes ~= model.getNumberOfStatefulNodes
+                    error('Unsupported feature. Random environment stages must map to networks with identical number of stateful nodes.');
+                end
+            end
             for e=E
                 for h=1:E
                     self.env{e,h} = Disabled();

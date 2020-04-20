@@ -31,6 +31,7 @@ alpha(~isfinite(alpha))=0;
 alpha(alpha<1e-12)=0;
 eta_1 = zeros(1,M);
 eta = ones(1,M);
+ca_1 = ones(1,M);
 if findstring(sched,'fcfs') == -1, options.iter_max=1; end
 
 it = 0;
@@ -185,34 +186,37 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         end
     end
     
+    if it==1
+        ca_1 = ones(M,1);
+    end
+    
     for i=1:M
         sd = ST0(i,:)>0;
         switch sched{i}
             case SchedStrategy.FCFS
-                %if range(ST0(i,sd))>0 % check if non-product-form
-                rho(i) = sum(U(i,:)); % true utilization of each server, critical to use this
-                ca(i) = 0;
-                for j=1:M
-                    for r=1:K
-                        if ST0(j,r)>0
-                            for s=1:K
-                                if ST0(i,s)>0
-                                    pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
-                                    ca(i) = ca(i) + SCV(j,r)*T(j,r)*pji_rs/sum(T(i,sd));
+                if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Tol || min(SCV(i,sd))<1 + Distrib.Tol) % check if non-product-form
+                    rho(i) = sum(U(i,:)); % true utilization of each server, critical to use this
+                    ca(i) = 0;
+                    for j=1:M
+                        for r=1:K
+                            if ST0(j,r)>0
+                                for s=1:K
+                                    if ST0(i,s)>0
+                                        pji_rs = qn.rt((j-1)*qn.nclasses + r, (i-1)*qn.nclasses + s);
+                                        ca(i) = ca(i) + (T(j,r)*pji_rs/sum(T(i,sd)))*(1 - pji_rs + pji_rs*((1-rho(j)^2)*ca_1(j) + rho(j)^2*SCV(j,r)));
+                                    end
                                 end
                             end
                         end
                     end
+                    
+                    %ca(i) = 1;
+                    cs(i) = (SCV(i,sd)*T(i,sd)')/sum(T(i,sd));
+                    % asymptotic decay rate (diffusion approximation, Kobayashi JACM)
+                    eta(i) = exp(-2*(1-rho(i))/(cs(i)+ca(i)*rho(i)));
                 end
-                
-                %ca(i) = 1;
-                cs(i) = (SCV(i,sd)*T(i,sd)')/sum(T(i,sd));
-                % asymptotic decay rate (diffusion approximation, Kobayashi JACM)
-                eta(i) = exp(-2*(1-rho(i))/(cs(i)+ca(i)*rho(i)));
-                %end
                 %eta(i) = rho(i);
                 %eta(i) = (rho(i)^nservers(i)+rho(i))/2; % multi-server
-                
         end
     end
     
@@ -220,19 +224,21 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         sd = ST0(i,:)>0;
         switch sched{i}
             case SchedStrategy.FCFS
-                %if range(ST0(i,sd))>0 % check if non-product-form
-                for k=1:K
-                    if sum(Q(i,ST(i,:)>0)) < nservers(i)
+                if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Tol || min(SCV(i,sd))<1 + Distrib.Tol) % check if non-product-form
+                    for k=1:K
                         if ST0(i,k)>0
-                            ST(i,k) = ST0(i,k);
-                        end
-                    else % sum(Q(i,ST(i,:)>0)) >= S(i)
-                        if ST0(i,k)>0
-                            ST(i,k) = eta(i)*nservers(i)/sum(T(i,sd));
+                            ST(i,k) = (1-rho(i)^2)*ST0(i,k) + rho(i)^2 * eta(i)*nservers(i)/sum(T(i,sd));
+                            %                             if sum(Q(i,ST(i,:)>0)) < nservers(i)
+                            %                                 if ST0(i,k)>0
+                            %                                     ST(i,k) = ST0(i,k);
+                            %                                 end
+                            %                             else % sum(Q(i,ST(i,:)>0)) >= S(i)
+                            %                                 if ST0(i,k)>0
+                            %                                     ST(i,k) = eta(i)*nservers(i)/sum(T(i,sd));
+                            %                                 end
                         end
                     end
                 end
-                %end
         end
     end
 end

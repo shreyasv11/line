@@ -1,8 +1,12 @@
-function space = fromMarginalBounds(qn, ind, lb, ub, cap)
-% SPACE = FROMMARGINALBOUNDS(QN, IND, LB, UB, CAP)
+function space = fromMarginalBounds(qn, ind, lb, ub, cap, options)
+% SPACE = FROMMARGINALBOUNDS(QN, IND, LB, UB, CAP, OPTIONS)
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
+
+if ~exist('options','var')
+    options = Solver.defaultOptions;
+end
 
 % ind: node index
 ist = qn.nodeToStation(ind);
@@ -18,10 +22,10 @@ if length(ub) == 1, isVectorUB =0; else, isVectorUB = 1; end
 if isVectorLB~=isVectorUB, error('Bounds must either be both vectors or both scalars'); end
 
 if isVectorUB && isVectorLB
-    nmax = State.fromMarginal(qn, ind, ub);
+    nmax = State.fromMarginal(qn, ind, ub, options);
     n = pprodcon(lb,ub);
     while n ~= -1
-        state = State.fromMarginal(qn, ind, n);
+        state = State.fromMarginal(qn, ind, n, options);
         space(end+1:end+size(state,1),(size(nmax,2)-size(state,2)+1):size(nmax,2)) = state;
         n = pprodcon(n,lb,ub);
     end

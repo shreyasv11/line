@@ -33,7 +33,7 @@ for i= 1:qn.nnodes
         case NodeType.Delay
             fprintf(fid,'node{%d} = DelayStation(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Queue
-            fprintf(fid,'node{%d} = Queue(model, ''%s'', SchedStrategy.%s); ', i, qn.nodenames{i}, SchedStrategy.toProperty(qn.sched{qn.nodeToStation(i)}));
+            fprintf(fid,'node{%d} = Queue(model, ''%s'', SchedStrategy.%s);\n', i, qn.nodenames{i}, SchedStrategy.toProperty(qn.sched{qn.nodeToStation(i)}));
             if qn.nservers(qn.nodeToStation(i))>1
                 fprintf(fid,'node{%d}.setNumServers(%d);\n', i, qn.nservers(qn.nodeToStation(i)));
             end
@@ -46,28 +46,29 @@ for i= 1:qn.nnodes
         case NodeType.Sink
             fprintf(fid,'node{%d} = Sink(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.ClassSwitch
-            csMatrix = zeros(qn.nclasses);
-            fprintf(fid,'csMatrix%d = zeros(%d);\n',i,qn.nclasses);
-            for k = 1:qn.nclasses
-                for c = 1:qn.nclasses
-                    for m=1:qn.nnodes
-                        % routing matrix for each class
-                        csMatrix(k,c) = csMatrix(k,c) + rtnodes((i-1)*qn.nclasses+k,(m-1)*qn.nclasses+c);
-                    end
-                end
-            end
-            for k = 1:qn.nclasses
-                for c = 1:qn.nclasses
-                    if csMatrix(k,c)>0
-                        fprintf(fid,'csMatrix%d(%d,%d) = %f; %% %s -> %s\n',i,k,c,csMatrix(k,c),qn.classnames{k},qn.classnames{c});
-                    end
-                end
-            end
-            fprintf(fid,'node{%d} = ClassSwitch(model, ''%s'', csMatrix%d);\n',i,qn.nodenames{i},i);
+%            csMatrix = eye(qn.nclasses);
+%            fprintf(fid,'\ncsMatrix%d = zeros(%d);\n',i,qn.nclasses);
+%             for k = 1:qn.nclasses
+%                 for c = 1:qn.nclasses
+%                     for m=1:qn.nnodes
+%                         % routing matrix for each class
+%                         csMatrix(k,c) = csMatrix(k,c) + rtnodes((i-1)*qn.nclasses+k,(m-1)*qn.nclasses+c);
+%                     end
+%                 end
+%             end
+%            for k = 1:qn.nclasses
+%                for c = 1:qn.nclasses
+%                    if csMatrix(k,c)>0
+%                        fprintf(fid,'csMatrix%d(%d,%d) = %f; %% %s -> %s\n',i,k,c,csMatrix(k,c),qn.classnames{k},qn.classnames{c});
+%                    end
+%                end
+%            end
+            %fprintf(fid,'node{%d} = ClassSwitch(model, ''%s'', csMatrix%d);\n',i,qn.nodenames{i},i);
+            fprintf(fid,'node{%d} = ClassSwitch(model, ''%s'', eye(%d)); %% Class switching is embedded in the routing matrix P \n',i,qn.nodenames{i},qn.nclasses);
     end
 end
 %% write classes
-fprintf(fid,'\n\n%%%% Block 2: classes\n');
+fprintf(fid,'\n%%%% Block 2: classes\n');
 for k = 1:qn.nclasses
     if qn.njobs(k)>0
         if isinf(qn.njobs(k))

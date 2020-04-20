@@ -96,6 +96,11 @@ classdef Queue < Station
             end
         end
         
+        function distrib = getServiceProcess(self, oclass)
+            distrib = self.getService{oclass};
+        end
+        
+        
         function setService(self, class, distribution, weight)
             % SETSERVICE(CLASS, DISTRIBUTION, WEIGHT)
             if ~exist('weight','var')
@@ -131,9 +136,9 @@ classdef Queue < Station
             sections = {self.input, self.server, self.output};
         end
         
-%        function distrib = getServiceProcess(self, oclass)
-%            distrib = self.serviceProcess{oclass};
-%        end
+        %        function distrib = getServiceProcess(self, oclass)
+        %            distrib = self.serviceProcess{oclass};
+        %        end
         
     end
 end

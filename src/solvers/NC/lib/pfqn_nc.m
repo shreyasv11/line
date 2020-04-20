@@ -50,8 +50,9 @@ Znnzd = Z(:,nonzeroDemandClasses);
 
 % first try rather efficient methods
 if M==1 % single node
-    if (K==1 && N<30) || strcmp(options.method,'exact')
-        options.method = 'exact';
+    methods = {options.method};
+    if strcmp(options.method,'exact') %|| ((K==1 && N<30)  && strcmpi(options.method,'default'))
+        %options.method = 'exact';
         logI = sub_method(Lnnzd, Nnnzd, Znnzd, options);
         lGn =  lGz + logI;
         return
@@ -65,11 +66,12 @@ if M==1 % single node
             lGn =  lGz + logI;
             return;
         end
+    else
+        methods = {'pnc2','imci'};
     end
     
     % cycle solution methods
-    % 'pnc' excluded because if one of the Zs is zero produces bad results
-    methods = {'pnc2','imci'};
+    % 'pnc' excluded because if one of the Zs is zero produces bad results    
     if options.samples < 1e5
         if options.verbose == 2
             warning('options.samples value is too low for SolverNC. Setting to 1e5.');

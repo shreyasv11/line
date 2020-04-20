@@ -65,7 +65,7 @@ switch options.method
                                 %                                             if rates0(j,r)>0
                                 %                                                 for s=1:K
                                 %                                                     if rates0(i,s)>0
-                                %                                                         pji_rs = qn.rt((i-1)*qn.nclasses + r, (j-1)*qn.nclasses + s);
+                                %                                                         pji_rs = qn.rt((j-1)*qn.nclasses + r, (i-1)*qn.nclasses + s);
                                 %                                                         ca(i) = ca(i) + (SCV(j,r))*Tfull(j,r)*pji_rs/sum(Tfull(i,sd));
                                 %                                                     end
                                 %                                                 end

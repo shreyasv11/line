@@ -6,13 +6,13 @@ if ~isfield(self.options,'keep')
 end
 T0 = tic;
 qn = self.model.getStruct;
-if self.model.isStateValid
+%if self.model.isStateValid
     Pn = solver_ctmc_jointaggr(qn, self.options);
     self.result.('solver') = self.getName();
     self.result.Prob.joint = Pn;
-else
-    error('The model state is invalid.');
-end
+%else
+%    error('The model state is invalid.');
+%end
 runtime = toc(T0);
 self.result.runtime = runtime;
 end

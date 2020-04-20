@@ -1,4 +1,4 @@
-function [SS,SSh,qn] = spaceGenerator(qn, cutoff)
+function [SS,SSh,qn] = spaceGenerator(qn, cutoff, options)
 % [SS,SSH,QN] = SPACEGENERATOR(QN, CUTOFF)
 
 % Copyright (c) 2012-2020, Imperial College London
@@ -19,7 +19,7 @@ if prod(size(cutoff))==1
     cutoff = cutoff * ones(qn.nstations, qn.nclasses);
 end
 
-[~, qn, capacityc] = State.spaceGeneratorNodes(qn, cutoff);
+[~, qn, capacityc] = State.spaceGeneratorNodes(qn, cutoff, options);
 
 %%
 isOpenClass = isinf(Np);

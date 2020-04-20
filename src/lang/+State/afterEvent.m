@@ -536,11 +536,12 @@ elseif qn.isstateful(ind)
                                         space_srv_e(hitclass(class)) = space_srv_e(hitclass(class)) + 1;
                                         i = min(find(posk <= cumsum(m)));
                                         j = posk - sum(m(1:i-1));
+                                        
                                         switch rpolicy_id
                                             case ReplacementStrategy.ID_FIFO
                                                 if isSimulation
                                                     varp = var;
-                                                    inew = i-1+probchoose(ac{class,k}(i,i:end)); % can choose i
+                                                    inew = i-1+probchoose(ac{class,k}(i,i:end)/sum(ac{class,k}(i,i:end)))-1; % can choose i
                                                     if inew~=i
                                                         varp(cpos(i,j)) = var(cpos(inew,m(inew)));
                                                         varp(cpos(inew,2):cpos(inew,m(inew))) = var(cpos(inew,1):cpos(inew,m(inew)-1));
@@ -567,7 +568,7 @@ elseif qn.isstateful(ind)
                                                 end
                                             case ReplacementStrategy.ID_RAND
                                                 if isSimulation
-                                                    inew = i-1+probchoose(ac{class,k}(i,i:end)); % can choose i
+                                                    inew = i-1+probchoose(ac{class,k}(i,i:end)/sum(ac{class,k}(i,i:end)))-1; % can choose i
                                                     varp = var;
                                                     r = randi(m(inew),1,1);
                                                     varp(cpos(i,j)) = var(cpos(inew,r));
@@ -591,7 +592,7 @@ elseif qn.isstateful(ind)
                                             case {ReplacementStrategy.ID_LRU, ReplacementStrategy.ID_SFIFO}
                                                 if isSimulation
                                                     varp = var;
-                                                    inew = i-1+probchoose(ac{class,k}(i,i:end)); % can choose i
+                                                    inew = i-1+ probchoose(ac{class,k}(i,i:end)/sum(ac{class,k}(i,i:end)))-1; % can choose i
                                                     varp(cpos(i,2):cpos(i,j)) = var(cpos(i,1):cpos(i,j-1));
                                                     varp(cpos(i,1)) = var(cpos(inew,m(inew)));
                                                     varp(cpos(inew,2):cpos(inew,m(inew))) = var(cpos(inew,1):cpos(inew,m(inew)-1));

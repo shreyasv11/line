@@ -29,10 +29,11 @@ for i=1:qn.nstations
 end
 
 [Q,~,SSq,~,~,~,qn] = solver_ctmc(qn, options);
+% SSq is an aggregate state space
 if options.keep
     fname = tempname;
     save([fname,'.mat'],'Q','SSq')
-    fprintf(1,'CTMC generator and state space saved in: ');
+    fprintf(1,'CTMC generator and aggregate state space saved in: ');
     disp([fname, '.mat'])
 end
 pi = ctmc_solve(Q);

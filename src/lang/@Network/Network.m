@@ -680,7 +680,10 @@ classdef Network < Model
             sir = [];
             for ist=1:qn.nstations
                 isf = qn.stationToStateful(ist);
-                [~, nir(ist,:), sir(ist,:), ~] = State.toMarginal(qn, qn.stationToNode(ist), qn.state{isf});
+                if size(qn.state{isf},1)>1
+                    warning('isStateValid will ignore some node %d states, define a single initial state to resolve this problem.',qn.stationToNode(ist));
+                end
+                [~, nir(ist,:), sir(ist,:), ~] = State.toMarginal(qn, qn.stationToNode(ist), qn.state{isf}(1,:));
             end
             isvalid = State.isValid(qn, nir, sir);
         end

@@ -4,7 +4,7 @@ if ~isoctave(), clearvars -except exampleName; end
 model = Network('model');
 
 source = Source(model, 'Source');
-queue = QueueingStation(model, 'Queue1', SchedStrategy.PS);
+queue = QueueingStation(model, 'Queue1', SchedStrategy.FCFS);
 sink = Sink(model, 'Sink');
 vsink1 = Router(model, 'VSink1');
 vsink2 = Router(model, 'VSink2');
