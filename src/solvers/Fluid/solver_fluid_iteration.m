@@ -31,7 +31,7 @@ rategap = log10(max(nonZeroRates)/min(nonZeroRates)); % if the max rate is Distr
 T0 = timespan(1);
 %opt = odeset();
 %opt = odeset('AbsTol', min(10^(-rategap),1e-4), 'RelTol', 1e-3, 'NonNegative', 1:length(y0));
-opt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ymean{1}));
+odeopt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ymean{1}));
 T = 0;
 while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
     iter = iter + 1;
@@ -48,23 +48,18 @@ while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
     else
         T = min(timespan(2),abs(10*iter/min(nonZeroRates)));
     end
+    trange = [T0, T];
     
     try
         if stiff
-            [t_iter, ymean_t_iter] = solveodestiff(y0);
+            [t_iter, ymean_t_iter] = solveodestiff(ode_h, trange, y0, odeopt, options);
         else
-            [t_iter, ymean_t_iter] = solveode(y0);
+            [t_iter, ymean_t_iter] = solveode(ode_h, trange, y0, odeopt, options);
         end
     catch me
-        %        switch me.identifier
-        %            case 'MATLAB:odearguments:SizeIC' % if the cached initial point fails
-        fprintf(1,'Supplied initial point failed, Fluid solver switching to default initialization.\n');
-        opt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ydefault));
-        [t_iter, ymean_t_iter] = solveode(ydefault);
-        %           otherwise
-        %               me
-        %               error('Unspecified ODE solver exception.');
-        %        end
+        fprintf(1,'The initial point is invalid, Fluid solver switching to default initialization.\n');
+        odeopt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(ydefault));
+        [t_iter, ymean_t_iter] = solveode(ode_h, trange, ydefault, odeopt, options);
     end
     ymean_t(end+1:end+size(ymean_t_iter,1),:) = ymean_t_iter;
     t(end+1:end+size(t_iter,1),:) = t_iter;
@@ -102,32 +97,4 @@ while (isfinite(timespan(2)) && T < timespan(2)) || (goon && iter < iter_max)
     end
 end
 
-    function [t, yt_e] = solveode(y0)
-        % [T, YT_E] = SOLVEODE(Y0)
-        
-        if tol <= 1e-3
-            if isoctave
-              [t, yt_e] = ode23(ode_h, [T0 T], y0, opt);
-            else
-              [t, yt_e] = feval(options.odesolvers.accurateOdeSolver, ode_h, [T0 T], y0, opt);
-            end
-        else
-            if isoctave
-              [t, yt_e] = lsode(ode_h, [T0 T], y0, opt);
-            else
-              [t, yt_e] = feval(options.odesolvers.fastOdeSolver, ode_h, [T0 T], y0, opt);
-            end
-        end
-    end
-
-    function [t, yt_e] = solveodestiff(y0)
-        % [T, YT_E] = SOLVEODESTIFF(Y0)
-        
-        if tol <= 1e-3
-            [t, yt_e] = feval(options.odesolvers.accurateStiffOdeSolver, ode_h, [T0 T], y0, opt);
-        else
-            opt.NonNegative = []; % not supported by ode23s
-            [t, yt_e] = feval(options.odesolvers.fastStiffOdeSolver, ode_h, [T0 T], y0, opt);
-        end
-    end
 end
