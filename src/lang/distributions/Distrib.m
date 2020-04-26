@@ -13,10 +13,11 @@ classdef Distrib < Copyable
     end
     
     properties (Constant)
+        Zero = 1e-10; % Right neighborhood of zero
         Tol = 1e-3; % Tolerance for distribution fitting
         Inf = 1e10; % Generic representation of infinity
-        InfTime = 1e10; % Conventional value associated to an infinite time
-        InfRate = 1e10; % Conventional value associated to an infinite rate
+        InfTime = 1e10; % Representation of an infinite time
+        InfRate = 1e10; % Representation of an infinite rate
     end
     
     methods %(Abstract)

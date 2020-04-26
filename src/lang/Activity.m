@@ -31,7 +31,7 @@ classdef Activity < LayeredNetworkElement
             obj@LayeredNetworkElement(name);
             
             if ~exist('hostDemand','var')
-                hostDemand = 0.0;
+                hostDemand = Distrib.Zero;
             end
             if ~exist('boundToEntry','var')
                 boundToEntry = '';
@@ -69,10 +69,10 @@ classdef Activity < LayeredNetworkElement
             % OBJ = SETHOSTDEMAND(OBJ, HOSTDEMAND)
             
             if isnumeric(hostDemand)
-                if hostDemand <= 0.0
+                if hostDemand <= Distrib.Zero
                     obj.hostDemand = Immediate();
-                    obj.hostDemandMean = 0.0;
-                    obj.hostDemandSCV = 0.0;
+                    obj.hostDemandMean = Distrib.Zero;
+                    obj.hostDemandSCV = Distrib.Zero;
                 else
                     obj.hostDemand = Exp(1/hostDemand);
                     obj.hostDemandMean = hostDemand;

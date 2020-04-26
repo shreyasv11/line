@@ -54,6 +54,10 @@ classdef Exp < MarkovianDistribution
             L = lambda / (lambda + s);
         end
         
+        function scv = getSCV(self)
+            scv = 1.0; 
+        end
+        
         function update(self,varargin)
             % UPDATE(SELF,VARARGIN)            
             % Update parameters to match the first n central moments

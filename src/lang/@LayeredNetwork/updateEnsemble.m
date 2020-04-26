@@ -170,12 +170,12 @@ for net=1:length(graphLayer)
             thinkTimeMean = taskobj.thinkTimeMean;
             thinkTimeSCV = taskobj.thinkTimeSCV;
             destEntryRate = min(Distrib.InfRate,1/(thinkTimeMean + interArrivalFromUpperLayer));
-            if thinkTimeMean == 0
+            if thinkTimeMean <= Distrib.Zero
                 destEntryProcess = Exp(destEntryRate);
                 if ~isBuild
                     [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(1/destEntryRate, 1.0);
                 end
-            elseif interArrivalFromUpperLayer == 0
+            elseif interArrivalFromUpperLayer <= Distrib.Zero
                 destEntryProcess = taskobj.thinkTime;
                 if ~isBuild
                     [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(thinkTimeMean, thinkTimeSCV);
@@ -248,10 +248,16 @@ for net=1:length(graphLayer)
                             node{2}.setService(jobclass{class_hostdemand}, actobj.hostDemand);
                         end
                         qn.rates(2,jobclass{class_hostdemand}.index) = destEntryRate;
-                        [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
+                        if actobj.hostDemand.isImmediate()
+                            qn.mu{2,jobclass{class_hostdemand}.index} = Distrib.InfRate;
+                            qn.phi{2,jobclass{class_hostdemand}.index} = 1;
+                            qn.proc{2,jobclass{class_hostdemand}.index} = Exp(Distrib.InfRate).getRepresentation;
+                        else
+                            [cx,demandMu,demandPhi] = Coxian.fitMeanAndSCV(actobj.hostDemandMean, actobj.hostDemandSCV);
                         qn.mu{2,jobclass{class_hostdemand}.index} = demandMu;
                         qn.phi{2,jobclass{class_hostdemand}.index} = demandPhi;
                         qn.proc{2,jobclass{class_hostdemand}.index} = cx.getRepresentation;
+                        end
                     end
                     if isBuild
                         stationlast = 2; % store that we last visited the server

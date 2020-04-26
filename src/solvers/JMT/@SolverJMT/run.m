@@ -1,10 +1,10 @@
-function Trun = run(self)
+function runtime = run(self)
 % TSIM = RUN()
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
-T0=tic;
+Tstart=tic;
 if ~exist('options','var')
     options = self.getOptions;
 end
@@ -69,11 +69,11 @@ switch options.method
             self.writeJSIM;
             cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt sim "',self.getFilePath(),'jsimg',filesep,self.getFileName(),'.jsimg" -seed ',num2str(options.seed),' --illegal-access=permit'];
             if options.verbose
-                fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jsimg',filesep,self.getFileName(),'.jsimg']);
-                fprintf(1,'JMT Command: %s\n',cmd);
+                fprintf(1,'JMT model: %s\n',[self.getFilePath(),'jsimg',filesep,self.getFileName(),'.jsimg']);
+                fprintf(1,'JMT command: %s\n',cmd);
             end
             [~, result] = system(cmd);
-            Trun = toc(T0);
+            runtime = toc(Tstart);
             self.getResults;
             if ~options.keep
                 delete([self.getFilePath(),'jsimg',filesep,self.getFileName(),'*']);
@@ -144,11 +144,11 @@ switch options.method
                         end
                     end
                 end
-                Trun = toc(T0);
+                runtime = toc(Tstart);
                 RNt = [];
                 CNt = [];
                 XNt = [];
-                self.setTranAvgResults(QNt,UNt,RNt,TNt,CNt,XNt,Trun);
+                self.setTranAvgResults(QNt,UNt,RNt,TNt,CNt,XNt,runtime);
                 self.result.Tran.Avg.U = UNt;
                 self.result.Tran.Avg.T = TNt;
                 self.result.Tran.Avg.Q = QNt;
@@ -156,18 +156,18 @@ switch options.method
             self.options.seed = initSeed;
             self.options.timespan = initTimeSpan;
             self.result.('solver') = self.getName();
-            self.result.runtime = Trun;
+            self.result.runtime = runtime;
         end
     case {'jmva','jmva.amva','jmva.mva','jmva.recal','jmva.comom','jmva.chow','jmva.bs','jmva.aql','jmva.lin','jmva.dmlin','jmva.ls',...
           'jmt.jmva','jmt.jmva.mva','jmt.jmva.amva','jmt.jmva.recal','jmt.jmva.comom','jmt.jmva.chow','jmt.jmva.bs','jmt.jmva.aql','jmt.jmva.lin','jmt.jmva.dmlin','jmt.jmva.ls'}
         fname = self.writeJMVA([self.getFilePath(),'jmva',filesep,self.getFileName(),'.jmva']);
         cmd = ['java -cp "',self.getJMTJarPath(),filesep,'JMT.jar" jmt.commandline.Jmt mva "',fname,'" -seed ',num2str(options.seed),' --illegal-access=permit'];
         if options.verbose
-            fprintf(1,'JMT Model: %s\n',[self.getFilePath(),'jmva',filesep,self.getFileName(),'.jmva']);
-            fprintf(1,'JMT Command: %s\n',cmd);
+            fprintf(1,'JMT model: %s\n',[self.getFilePath(),'jmva',filesep,self.getFileName(),'.jmva']);
+            fprintf(1,'JMT command: %s\n',cmd);
         end
         [~, result] = system(cmd);
-        Trun = toc(T0);
+        runtime = toc(Tstart);
         self.getResults;
         if ~options.keep
             delete([self.getFilePath(),'jmva',filesep,self.getFileName(),'*']);
@@ -175,6 +175,10 @@ switch options.method
     otherwise
         warning('This solver does not support the specified method. Setting to default.');
         self.options.method  = 'default';
-        Trun = run(self);
+        runtime = run(self);
+end
+
+if options.verbose > 0
+    fprintf(1,'JMT analysis completed in %f sec\n',runtime);
 end
 end

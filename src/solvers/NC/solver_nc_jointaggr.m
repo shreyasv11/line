@@ -174,7 +174,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         eta(i) = sum(U(i,:));
         switch sched{i}
             case SchedStrategy.FCFS
-                %if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Tol || min(SCV(i,sd))<1 + Distrib.Tol) % check if non-product-form
+                %if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Zero || min(SCV(i,sd))<1 + Distrib.Zero) % check if non-product-form
                 rho(i) = sum(U(i,:)); % true utilization of each server
                 ca(i) = 0;
                 for j=1:M
@@ -206,7 +206,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
         sd = ST0(i,:)>0;
         switch sched{i}
             case SchedStrategy.FCFS
-                %if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Tol || min(SCV(i,sd))<1 + Distrib.Tol) % check if non-product-form
+                %if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Zero || min(SCV(i,sd))<1 + Distrib.Zero) % check if non-product-form
                 for k=1:K
                     if ST0(i,k)>0
                         ST(i,k) = (1-rho(i)^2)*ST0(i,k) + rho(i)^2 * eta(i)*nservers(i)/sum(T(i,sd));

@@ -36,7 +36,7 @@ classdef Task < LayeredNetworkElement
                 scheduling = SchedStrategy.INF;
             end
             if ~exist('thinkTime','var')
-                thinkTime = 0.0;
+                thinkTime = Distrib.Zero;
             end
             
             obj.multiplicity = multiplicity;
@@ -61,10 +61,10 @@ classdef Task < LayeredNetworkElement
             % OBJ = SETTHINKTIME(OBJ, THINKTIME)
             
             if isnumeric(thinkTime)
-                if thinkTime <= 0.0
+                if thinkTime <= Distrib.Zero
                     obj.thinkTime = Immediate();
-                    obj.thinkTimeMean = 0.0;
-                    obj.thinkTimeSCV = 0.0;
+                    obj.thinkTimeMean = Distrib.Zero;
+                    obj.thinkTimeSCV = Distrib.Zero;
                 else
                     obj.thinkTime = Exp(1/thinkTime);
                     obj.thinkTimeMean = thinkTime;

@@ -227,6 +227,7 @@ for i=1:length(node_name)
                         par={xarv_sec{i}{r}.subParameter}; par=par{2};
                         node{i}.setArrival(jobclass{r}, Replayer(par.value));
                     otherwise
+						error('The model includes an arrival distribution not supported by the model-to-model transformation from JMT.')
                         xarv_statdistrib{i}{r}{1}.name
                         node{i}.setArrival(jobclass{r}, Exp(1)); %TODO
                 end

@@ -254,11 +254,11 @@ for i=1:Mplus
                 pSum = pSum + P{r,s}(i,j);
             end            
         end
-        if pSum > 1.0 + Distrib.Tol
+        if pSum > 1.0 + Distrib.Zero
             if self.nodes{i}.schedStrategy ~= SchedStrategy.FORK
                 error('The total routing probability for jobs leaving node %s in class %s is greater than 1.0.',self.nodes{i}.name,self.classes{r}.name);
             end
-%        elseif pSum < 1.0 - Distrib.Tol % we cannot check this case as class r may not reach station i, in which case its outgoing routing prob is zero
+%        elseif pSum < 1.0 - Distrib.Zero % we cannot check this case as class r may not reach station i, in which case its outgoing routing prob is zero
 %            if self.nodes{i}.schedStrategy ~= SchedStrategy.EXT % if not a sink
 %                error('The total routing probability for jobs leaving node %s in class %s is less than 1.0.',self.nodes{i}.name,self.classes{r}.name);
 %            end

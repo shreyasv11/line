@@ -84,13 +84,13 @@ for i=1:self.getNumberOfNodes()
                         % up with routing chain CTMC solution
                         for j=1:self.getNumberOfNodes()
                             if connMatrix(i,j)>0
-                                %rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                                %rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Zero;
                             end
                         end
                     otherwise
                         for j=1:self.getNumberOfNodes()
                             if connMatrix(i,j)>0
-                                rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Tol;
+                                rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Zero;
                             end
                         end
                         %error([self.nodes{i}.output.outputStrategy{k}{2},' routing policy is not yet supported.']);

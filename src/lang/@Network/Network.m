@@ -5,6 +5,7 @@ classdef Network < Model
     % All rights reserved.
     
     properties (GetAccess = 'private', SetAccess='private')
+        version;
         usedFeatures; % structure of booleans listing the used classes
         % it must be accessed via getUsedLangFeatures that updates
         % the Distribution classes dynamically
@@ -94,11 +95,16 @@ classdef Network < Model
     
     % PUBLIC METHODS
     methods (Access=public)
+        
+        function v = getVersion(self)
+            v = self.version;
+        end
+        
         %Constructor
         function self = Network(modelName)
-            % SELF = NETWORK(MODELNAME)
-            
+            % SELF = NETWORK(MODELNAME)            
             self@Model(modelName);
+            self.version = '2.0';
             self.nodes = {};
             self.stations = {};
             self.classes = {};

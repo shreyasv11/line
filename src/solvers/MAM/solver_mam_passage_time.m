@@ -70,7 +70,7 @@ if M==2 && all(isinf(N))
         sigma(k) = sqrt(map_var(RDph{k}));
         mean(k) = map_mean(RDph{k});
         n = 5;
-        while map_cdf(RDph{k},mean(k)+n*sigma(k)) < 1-Distrib.Tol
+        while map_cdf(RDph{k},mean(k)+n*sigma(k)) < 1-Distrib.Zero
             n = n+1;
         end
         % generate 10000 CDF points

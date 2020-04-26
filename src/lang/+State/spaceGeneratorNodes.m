@@ -1,4 +1,7 @@
 function [nodeStateSpace, qn, capacityc] = spaceGeneratorNodes(qn, cutoff, options)
+if nargin<3
+    options = Solver.defaultOptions;
+end
 N = qn.njobs';
 qn.space = {};
 capacityc = zeros(qn.nnodes, qn.nclasses);
