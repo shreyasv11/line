@@ -37,10 +37,24 @@ end
 R = ch.accost;
 gamma = mucache_gamma_lp(lambda,R);
 
-[~,missRate] = mucache_miss_asy(gamma,m,lambda);
+switch options.method
+    case 'exact'
+        [~,~,pij] = mucache_mva(gamma, m);
+        pij = [abs(1-sum(pij,2)),pij];
+        missRate = zeros(1,u);
+        for v=1:u
+            missRate(v) = lambda(v,:,1)*pij(:,1);
+        end
+    otherwise
+        pij = mucache_prob_asy(gamma,m); % FPI method
+        missRate = zeros(1,u);
+        for v=1:u
+            missRate(v) = lambda(v,:,1)*pij(:,1);
+        end
+end
 
 for r = 1:qn.nclasses
-    if length(ch.hitclass)>=r
+    if length(ch.hitclass)>=r & ch.missclass(r)>0 & ch.hitclass(r)>0
         XN(ch.missclass(r)) = XN(ch.missclass(r)) + missRate(r);
         XN(ch.hitclass(r)) = XN(ch.hitclass(r)) + (sourceRate(r) - missRate(r));
     end

@@ -1,5 +1,5 @@
-function [QN,UN,RN,TN,CN,XN,lG,runtime] = solver_nc_cache_analysis(qn, options)
-% [Q,U,R,T,C,X,LG,RUNTIME] = SOLVER_NC_CACHE_ANALYSIS(QN, OPTIONS)
+function [QN,UN,RN,TN,CN,XN,lG,pij,runtime] = solver_nc_cache_analysis(qn, options)
+% [Q,U,R,T,C,X,LG,PIJ,RUNTIME] = SOLVER_NC_CACHE_ANALYSIS(QN, OPTIONS)
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
@@ -40,11 +40,24 @@ for v=1:u
 end
 
 R = ch.accost;
+pij = [];
 gamma = mucache_gamma_lp(lambda,R);
-[~,missRate] = mucache_miss_rayint(gamma,m,lambda);
+switch options.method
+    case 'exact'
+        [pij] = mucache_prob_erec(gamma, m)
+        %         [pij,~] = mucache_sim_rr(lambda,m,R,options.samples);
+        missRate = zeros(1,u);
+        for v=1:u
+            missRate(v) = lambda(v,:,1)*pij(:,1);
+        end
+    otherwise
+        [~,missRate,~,~,lE] = mucache_miss_rayint(gamma, m, lambda);
+        %pij = pi0(:); % temporary, only miss rates
+        [pij] = mucache_prob_rayint(gamma,m, lE);
+end
 
 for r = 1:qn.nclasses
-    if length(ch.hitclass)>=r
+    if length(ch.hitclass)>=r & ch.missclass(r)>0 & ch.hitclass(r)>0
         XN(ch.missclass(r)) = XN(ch.missclass(r)) + missRate(r);
         XN(ch.hitclass(r)) = XN(ch.hitclass(r)) + (sourceRate(r) - missRate(r));
     end

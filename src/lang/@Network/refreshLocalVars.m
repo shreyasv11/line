@@ -26,8 +26,8 @@ for ind=1:self.getNumberOfNodes
                 end
             end
             varsparam{ind}.rpolicy = self.nodes{ind}.replacementPolicy;
-            varsparam{ind}.hitclass = self.nodes{ind}.server.hitClass;
-            varsparam{ind}.missclass = self.nodes{ind}.server.missClass;
+            varsparam{ind}.hitclass = round(self.nodes{ind}.server.hitClass);
+            varsparam{ind}.missclass = round(self.nodes{ind}.server.missClass);
     end
     switch self.qn.routing(ind)
         case RoutingStrategy.ID_RR

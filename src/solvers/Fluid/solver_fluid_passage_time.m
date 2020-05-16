@@ -45,61 +45,66 @@ for i = 1:qn.nstations
     for k = 1:nChains %once for each chain
         idxClassesInChain = find(chains(k,:)==1);
         for c = idxClassesInChain
-            
-            [Kc, ode_h_c, y0_c, phases_c, fluid_c] = generate_odes_passagetime(k,c);
-            
-            % determine max integration time
-            nonZeroRates = slowrate(:);
-            nonZeroRates = nonZeroRates( nonZeroRates >0 );
-            T = abs(100/min(nonZeroRates)); % solve ode until T = 100 events with slowest exit rate
-            
-            % indices of new classes at station i
-            idxN = [];
-            for j = i % this used to be at all stations
-                idxN = [idxN sum(sum(phases_c(1:j-1,: ) )) + sum(phases_c(j,1:K)) + [1:sum(phases_c(j,K+1:Kc))] ];
-            end
-            
-            %% ODE analysis
-            fullt = [];
-            fully = [];
-            iter = 1;
-            finished = 0;
-            tref = 0;
-            odeopt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(y0_c));
-            while iter <= iter_max && finished == 0
-                trange = [T0, T];
-                % solve ode - ymean_t_iter is the transient solution in stage e
-                try
-                    if stiff
-                        [t_iter, ymean_t_iter] = solveodestiff(ode_h_c, trange, y0_c, odeopt, options);
-                    else
-                        [t_iter, ymean_t_iter] = solveode(ode_h_c, trange, y0_c, odeopt, options);
+            if phases(i,c) > 0
+                [Kc, ode_h_c, y0_c, phases_c, fluid_c] = generate_odes_passagetime(k,c);
+                
+                % determine max integration time
+                nonZeroRates = slowrate(:);
+                nonZeroRates = nonZeroRates( nonZeroRates >0 );
+                T = abs(100/min(nonZeroRates)); % solve ode until T = 100 events with slowest exit rate
+                
+                % indices of new classes at station i
+                idxN = [];
+                for j = i % this used to be at all stations
+                    idxN = [idxN sum(sum(phases_c(1:j-1,: ) )) + sum(phases_c(j,1:K)) + [1:sum(phases_c(j,K+1:Kc))] ];
+                end
+                
+                %% ODE analysis
+                fullt = [];
+                fully = [];
+                iter = 1;
+                finished = 0;
+                tref = 0;
+                odeopt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(y0_c));
+                while iter <= iter_max && finished == 0
+                    trange = [T0, T];
+                    % solve ode - ymean_t_iter is the transient solution in stage e
+                    try
+                        if stiff
+                            [t_iter, ymean_t_iter] = solveodestiff(ode_h_c, trange, y0_c, odeopt, options);
+                        else
+                            [t_iter, ymean_t_iter] = solveode(ode_h_c, trange, y0_c, odeopt, options);
+                        end
+                    catch me
+                        fprintf(1,'ODE solver failed. Fluid solver switching to default initialization.\n');
+                        odeopt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(y0_c));
+                        try
+                            [t_iter, ymean_t_iter] = solveode(ode_h_c, trange, y0_c, odeopt, options);
+                        catch
+                            keyboard
+                        end
                     end
-                catch me
-                    fprintf(1,'Supplied initial point failed, Fluid solver switching to default initialization.\n');
-                    odeopt = odeset('AbsTol', tol, 'RelTol', tol, 'NonNegative', 1:length(y0_c));
-                    [t_iter, ymean_t_iter] = solveode(ode_h_c, trange, y0_c, odeopt, options);
+                    %%%
+                    iter = iter + 1;
+                    fullt = [fullt; t_iter+tref];
+                    fully = [fully; ymean_t_iter];
+                    if sum(ymean_t_iter(end,idxN )) < 10e-10
+                        finished = 1;
+                    end
+                    tref = tref + t_iter(end);
+                    y0_c = ymean_t_iter(end,:);
                 end
-                %%%
-                iter = iter + 1;
-                fullt = [fullt; t_iter+tref];
-                fully = [fully; ymean_t_iter];
-                if sum(ymean_t_iter(end,idxN )) < 10e-10
-                    finished = 1;
+                
+                % retrieve response time CDF for class k
+                RT{i,c,1} = fullt;
+                if fluid_c > 0
+                    RT{i,c,2} = 1 - sum(fully(:,idxN ),2)/fluid_c;
+                else
+                    RT{i,c,2} = ones(size(fullt));
                 end
-                tref = tref + t_iter(end);
-                y0_c = ymean_t_iter(end,:);
-            end
-            
-            % retrieve response time CDF for class k
-            RT{i,c,1} = fullt;
-            if fluid_c > 0
-                RT{i,c,2} = 1 - sum(fully(:,idxN ),2)/fluid_c;
-            else
-                RT{i,c,2} = ones(size(fullt));
-            end
-            if iter > iter_max
-                warning('Maximum number of iterations reached when computing the response time distribution. Response time distributions may be inaccurate. Increase option.iter_max (currently at %s).',num2str(iter_max));
+                if iter > iter_max
+                    warning('Maximum number of iterations reached when computing the response time distribution. Response time distributions may be inaccurate. Increase option.iter_max (currently at %s).',num2str(iter_max));
+                end
             end
         end
     end
@@ -178,7 +183,7 @@ return
         end
         
         % setup the ODEs for the new QN
-        options.method  = 'statedep'; % default doesn't seem to work in some models
+        %        options.method  = 'statedep'; % default doesn't seem to work in some models
         [ode_h_c, ~] = solver_fluid_odes(N, reshape({newLambda{:,:}},M,Kc), reshape({new_pi{:,:}},M,Kc), new_proc, new_rt, S, qn.sched, qn.schedparam, options);
         
         % setup initial point

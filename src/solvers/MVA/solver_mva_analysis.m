@@ -70,11 +70,10 @@ switch options.method
             [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
         else % if open same as running amva
             [~,~,Rchain,Tchain,~, Xchain, lG] = solver_mva(STchain, Vchain, Nchain, S, options, qn.sched, refstatchain);
-            %[~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
         end
     case {'default','amva'}
-        lG = NaN;
-        [~,~,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+        [~,Uchain,Rchain,Tchain,~, Xchain] = solver_amva(STchain, Vchain, Nchain, S, SCVchain, options, qn.sched, qn.schedparam, refstatchain);
+        lG = - log(prod(1-sum(Uchain,2))); % approximation
     otherwise
         error('Unsupported SolverMVA method.');
 end

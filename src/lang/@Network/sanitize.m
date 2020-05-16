@@ -27,6 +27,8 @@ if isempty(self.qn)
                         end
                     end
                 end
+                self.nodes{i}.server.hitClass = round(self.nodes{i}.server.hitClass);
+                self.nodes{i}.server.missClass = round(self.nodes{i}.server.missClass);
             case 'Logger'
                 %no-op
             case 'ClassSwitch'

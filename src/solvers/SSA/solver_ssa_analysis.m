@@ -160,8 +160,13 @@ switch options.method
                     if length(qnc.varsparam{ind}.hitclass)>=k
                         h = qnc.varsparam{ind}.hitclass(k);
                         m = qnc.varsparam{ind}.missclass(k);
-                        qn.varsparam{ind}.actualhitprob(k) = TNcache(isf,h)/sum(TNcache(isf,[h,m]));
-                        qn.varsparam{ind}.actualmissprob(k) = TNcache(isf,m)/sum(TNcache(isf,[h,m]));
+                        if h==0 | m==0
+                            qn.varsparam{ind}.actualhitprob(k) = NaN;
+                            qn.varsparam{ind}.actualmissprob(k) = NaN;
+                        else
+                            qn.varsparam{ind}.actualhitprob(k) = TNcache(isf,h)/sum(TNcache(isf,[h,m]));
+                            qn.varsparam{ind}.actualmissprob(k) = TNcache(isf,m)/sum(TNcache(isf,[h,m]));
+                        end
                     end
                 end
             end

@@ -1,10 +1,10 @@
-function [M,MU,MI,pi0]=mucache_miss_rayint(gamma,m,lambda)
+function [M,MU,MI,pi0,lE]=mucache_miss_rayint(gamma,m,lambda)
 % M: global miss rate
 % MU: per-user miss rate
 % MI: per-item miss rate
 ma=m; ma(1)=ma(1)+1;
-[E,lE,xi] = mucache_rayint(gamma,m);
-[Ea,lEa,~] = mucache_rayint(gamma,ma);
+[~,lE,xi] = mucache_rayint(gamma,m);
+[~,lEa,~] = mucache_rayint(gamma,ma);
 M =  exp(lEa - lE);
 if nargin>2
     u=size(lambda,1);

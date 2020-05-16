@@ -1,5 +1,4 @@
 function [gamma,u,n,h]=mucache_gamma_lp(lambda,R)
-% formerly mucache_gamma_tree_linearpath.m
 u=size(lambda,1); % number of users
 n=size(lambda,2); % number of items
 h=size(lambda,3)-1; % number of lists
@@ -12,8 +11,13 @@ for i = 1:n % for all items
         for v=1:u
             Rvi = Rvi + R{v,i};
         end
-        Gvi = digraph(Rvi); % we take the topology from stream v
-        Pij = [Gvi.shortestpath(1,1+j)];
+        Pij =[];
+        pr_j = par(Rvi, 1+j);
+        while ~isempty(pr_j)
+            Pij(end+1) = pr_j;
+            pr_j = par(Rvi, pr_j);
+        end
+        Pij  = [Pij,1+j];
         if isempty(Pij)
             gamma(i,j)=0;
         else
@@ -33,4 +37,12 @@ for i = 1:n % for all items
     end
 end
 
+end
+
+function parent = par(R, j)
+% finds the parent of j according to the access probabilities in R
+    parent = find(R(1:(j-1),j));
+    if length(parent) > 1
+        error('A cache has a list with more than one parent, but the structure must be a tree.');
+    end
 end
