@@ -121,7 +121,7 @@
 %                     for h=1:E
 %                         Q0{e} = Q0{e} + psrc(h,e) * QE{h};
 %                     end
-%                     self.solversIter{e}.reset();
+%                     self.solversIter{e}.resetResults();
 %                     self.models{e}.initFromMarginal(Q0{e});
 %                 end
 %                 s0 = cell2mat(s0);

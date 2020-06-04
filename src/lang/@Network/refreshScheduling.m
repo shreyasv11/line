@@ -1,5 +1,5 @@
-function [sched, schedid, schedparam] = refreshScheduling(self, rates)
-% [SCHED, SCHEDID, SCHEDPARAM] = REFRESHSCHEDULING(RATES)
+function [sched, schedid, schedparam] = refreshScheduling(self)
+% [SCHED, SCHEDID, SCHEDPARAM] = REFRESHSCHEDULING()
 %
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.

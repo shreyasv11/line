@@ -94,7 +94,7 @@ for k=1:K
         switch sched{i}
             case SchedStrategy.INF
                 UNt{i,k} = QNt{i,k};
-            case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.RAND, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF}
+            case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.SIRO, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF}
                 if ~isempty(PH{i,k})
                     UNt{i,k} = occupancy_t*min(StateSpaceAggr(:,(i-1)*K+k),S(i))/S(i);
                 end

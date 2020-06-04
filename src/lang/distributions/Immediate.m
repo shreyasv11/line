@@ -43,6 +43,21 @@ classdef Immediate < Distrib
             SCV = 0;
         end
         
+        function mu = getMu(self)
+            % MU = GETMU()
+            
+            % Return total outgoing rate from each state
+            mu = Distrib.InfRate;
+        end
+        
+        function phi = getPhi(self)
+            % PHI = GETPHI()
+            
+            % Return the probability that a transition out of a state is
+            % absorbing
+            phi = 1.0;
+        end
+        
         function Ft = evalCDF(self,t)
             % FT = EVALCDF(SELF,T)
             
@@ -59,6 +74,10 @@ classdef Immediate < Distrib
             
             L = 1; % as in Det(0)
         end        
+        
+        function PH = getRepresentation(self)
+            PH = {[-Distrib.InfRate] ,[Distrib.InfRate]};
+        end
     end
     
 end

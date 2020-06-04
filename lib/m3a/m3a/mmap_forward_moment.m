@@ -21,7 +21,9 @@ C = length(MMAP)-2;
 K = length(ORDERS);
 
 if (map_issym(MMAP))
-    MOMENTS = sym(zeros(C,K));
+    if ~isdeployed
+        MOMENTS = sym(zeros(C,K));
+    end
 else
     MOMENTS = zeros(C,K);
 end

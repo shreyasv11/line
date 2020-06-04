@@ -15,6 +15,8 @@ options.iter_tol = 1e-4; % convergence tolerance to stop iterations
 options.tol = 1e-4; % tolerance for all other uses
 options.keep = false;
 options.method = 'default';
+options.remote = false;
+options.remote_endpoint = '127.0.0.1';
 
 odesfun = struct();
 odesfun.fastOdeSolver = Solver.fastOdeSolver;

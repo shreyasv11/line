@@ -53,7 +53,7 @@ if nargin > 2 && ~isempty(s)
             % if more running jobs than servers
             if sum(s(ist,:)) > qn.nservers(ist)
                 switch qn.sched{ist} % don't flag invalid if ps
-                    case {SchedStrategy.FCFS,SchedStrategy.RAND,SchedStrategy.LCFS,SchedStrategy.HOL}
+                    case {SchedStrategy.FCFS,SchedStrategy.SIRO,SchedStrategy.LCFS,SchedStrategy.HOL}
                         isValid = false;
                         return
                 end

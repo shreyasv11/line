@@ -20,9 +20,9 @@ extSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.EXT),sched));
 infSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.INF),sched));
 fcfsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.FCFS),sched));
 if K==1
-    pfSET = union(fcfsSET,union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.RAND),sched))));
+    pfSET = union(fcfsSET,union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.SIRO),sched))));
 else
-    pfSET = union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.RAND),sched)));
+    pfSET = union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.SIRO),sched)));
 end
 
 U = zeros(M,K);

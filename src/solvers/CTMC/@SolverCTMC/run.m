@@ -24,6 +24,7 @@ if ~self.supports(self.model)
 end
 
 qn = self.getStruct();
+
 if any(isinf(qn.njobs))
     if isinf(options.cutoff)
         error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., SolverCTMC(model,''cutoff'',1).');
@@ -67,7 +68,8 @@ if isinf(options.timespan(1))
     self.result.spaceAggr = SSq;
     self.result.nodeSpace = qn.space;
     self.result.eventFilt = Dfilt;
-    runtime=toc(T0);
+    runtime = toc(T0);
+    qn.space = {};
     self.setAvgResults(QN,UN,RN,TN,CN,XN,runtime,options.method);
 else
     lastSol= [];
@@ -89,7 +91,7 @@ else
             self.result.spaceAggr = SSq;
             self.result.infGen = Q;
             self.result.eventFilt = Dfilt;
-            qn.space = SS;
+            %qn.space = SS;
             setTranProb(self,t,pit,SS,runtime_t);
             if isempty(self.result) || ~isfield(self.result,'Tran') || ~isfield(self.result.Tran,'Avg') || ~isfield(self.result.Tran.Avg,'Q')
                 self.result.Tran.Avg.Q = cell(M,K);
@@ -123,6 +125,7 @@ else
         s0_id=pprod(s0_id,s0_sz-1); % update initial state
     end
     runtime = toc(T0);
+    qn.space = {};
     self.result.('solver') = self.getName();
     self.result.runtime = runtime;
     self.result.solverSpecific = lastSol;

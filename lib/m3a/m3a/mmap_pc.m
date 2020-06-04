@@ -5,7 +5,9 @@ function pc = mmap_pc(MMAP)
 m = length(MMAP)-2;
 
 if map_issym(MMAP)
-    pc = sym(zeros(m,1));
+    if ~isdeployed
+        pc = sym(zeros(m,1));
+    end
 else
     pc = zeros(m,1);
 end

@@ -71,7 +71,7 @@ switch qn.nodetype(ind)
                     state = State.decorate(state,init);
                 end
                 space = State.decorate(space,state);
-            case {SchedStrategy.RAND, SchedStrategy.LEPT, SchedStrategy.SEPT}
+            case {SchedStrategy.SIRO, SchedStrategy.LEPT, SchedStrategy.SEPT}
                 % in these policies we track an un-ordered buffer and
                 % the jobs in the servers
                 % build list of job classes in the node, with repetition

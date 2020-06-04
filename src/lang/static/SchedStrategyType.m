@@ -31,7 +31,7 @@ classdef (Sealed) SchedStrategyType
             switch strategy
                 case {SchedStrategy.PS, SchedStrategy.DPS, SchedStrategy.GPS}
                     typeId = SchedStrategyType.ID_PR;
-                case {SchedStrategy.FCFS, SchedStrategy.RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT, SchedStrategy.ID_SJF, SchedStrategy.ID_INF}
+                case {SchedStrategy.FCFS, SchedStrategy.SIRO, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT, SchedStrategy.ID_SJF, SchedStrategy.ID_INF}
                     typeId = SchedStrategyType.ID_NP;
                 case SchedStrategy.HOL
                     typeId = SchedStrategyType.ID_NPPrio;

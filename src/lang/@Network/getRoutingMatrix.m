@@ -1,5 +1,5 @@
-function [rt,rtNodes,rtNodesByClass,rtNodesByStation,connMatrix] = getRoutingMatrix(self, arvRates)
-% [RT,RTNODES,RTNODESBYCLASS,RTNODESBYSTATION,CONNMATRIX] = GETROUTINGMATRIX(ARVRATES)
+function [rt,rtNodes,connMatrix,rtNodesByClass,rtNodesByStation] = getRoutingMatrix(self, arvRates)
+% [RT,RTNODES,CONNMATRIX,RTNODESBYCLASS,RTNODESBYSTATION] = GETROUTINGMATRIX(ARVRATES)
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
@@ -18,22 +18,25 @@ for r=1:size(self.links,1)
     j=findstring(nodeNames,self.links{r}{2}.name);
     connMatrix(i,j) = 1;
 end
-
+rtNodesByClass = {};
+rtNodesByStation = {};
+hasOpenClasses = self.hasOpenClasses();
 if ~exist('arvRates','var')
-    if self.hasOpenClasses()
+    if hasOpenClasses
         error('getRoutingMatrix requires arrival rates for open classes.');
     end
 end
 
+M = self.getNumberOfNodes;
 K = self.getNumberOfClasses;
 NK = self.getNumberOfJobs;
-rtNodes = zeros(self.getNumberOfNodes()*K);
+rtNodes = zeros(M*K);
 % The first loop considers the class at which a job enters the
 % target station
-for i=1:self.getNumberOfNodes()
+for i=1:M
     switch class(self.nodes{i}.output)
         case 'Forker'
-            for j=1:self.getNumberOfNodes()
+            for j=1:M
                 for k=1:K
                     if connMatrix(i,j)>0
                         rtNodes((i-1)*K+k,(j-1)*K+k)=1.0;
@@ -54,24 +57,6 @@ for i=1:self.getNumberOfNodes()
         otherwise
             for k=1:K
                 switch self.nodes{i}.output.outputStrategy{k}{2}
-                    case {RoutingStrategy.RAND, RoutingStrategy.RR, RoutingStrategy.JSQ}
-                        if isinf(NK(k)) % open class
-                            for j=1:self.getNumberOfNodes()
-                                if connMatrix(i,j)>0
-                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
-                                end
-                            end
-                        elseif (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink') && ~isa(self.nodes{j},'Sink')) % don't route closed classes out of source nodes
-                            connMatrixClosed = connMatrix;
-                            if connMatrixClosed(i,self.getNodeIndex(self.getSink))
-                                connMatrixClosed(i,self.getNodeIndex(self.getSink)) = 0;
-                            end
-                            for j=1:self.getNumberOfNodes()
-                                if connMatrixClosed(i,j)>0
-                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/(sum(connMatrixClosed(i,:)));
-                                end
-                            end
-                        end
                     case RoutingStrategy.PROB
                         if isinf(NK(k)) || ~isa(self.nodes{i},'Sink')
                             for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
@@ -82,13 +67,31 @@ for i=1:self.getNumberOfNodes()
                     case RoutingStrategy.DISABLED
                         % set a small numerical tolerance to avoid messing
                         % up with routing chain CTMC solution
-                        for j=1:self.getNumberOfNodes()
+                        for j=1:M
                             if connMatrix(i,j)>0
                                 %rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Zero;
                             end
                         end
+                    case {RoutingStrategy.RAND, RoutingStrategy.RR, RoutingStrategy.JSQ}
+                        if isinf(NK(k)) % open class
+                            for j=1:M
+                                if connMatrix(i,j)>0
+                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
+                                end
+                            end
+                        elseif (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink') && ~isa(self.nodes{j},'Sink')) % don't route closed classes out of source nodes
+                            connMatrixClosed = connMatrix;
+                            if connMatrixClosed(i,self.getNodeIndex(self.getSink))
+                                connMatrixClosed(i,self.getNodeIndex(self.getSink)) = 0;
+                            end
+                            for j=1:M
+                                if connMatrixClosed(i,j)>0
+                                    rtNodes((i-1)*K+k,(j-1)*K+k)=1/(sum(connMatrixClosed(i,:)));
+                                end
+                            end
+                        end
                     otherwise
-                        for j=1:self.getNumberOfNodes()
+                        for j=1:M
                             if connMatrix(i,j)>0
                                 rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Zero;
                             end
@@ -102,24 +105,26 @@ end
 % The second loop corrects the first one at nodes that change
 % the class of the job in the service section.
 
+
 for i=1:self.getNumberOfNodes % source
     if isa(self.nodes{i}.server,'StatelessClassSwitcher')
         Pi = rtNodes(((i-1)*K+1):i*K,:);
-        for r=1:K
-            for s=1:K
-                Pcs(r,s) = self.nodes{i}.server.csFun(r,s);
-            end
-        end
+        Pcs = self.nodes{i}.server.csFun(1:K,1:K);
+        %for r=1:K
+        %    for s=1:K
+        %        Pcs(r,s) = self.nodes{i}.server.csFun(r,s);
+        %    end
+        %end
         rtNodes(((i-1)*K+1):i*K,:) = 0;
-        for j=1:self.getNumberOfNodes() % destination
-            Pij = Pi(1:K,((j-1)*K+1):j*K); %Pij(r,s)
-            for r=1:self.getNumberOfClasses()
-                for s=1:self.getNumberOfClasses()
+        for j=1:M % destination
+            Pij = Pi(1:K,((j-1)*K+1):j*K); %Pij(r,s)            
+           % for r=1:K
+                for s=1:K
                     % Find the routing probability section determined by the router section in the first loop
                     %Pnodes(((i-1)*K+1):i*K,((j-1)*K+1):j*K) = Pcs*Pij;
-                    rtNodes((i-1)*K+r,(j-1)*K+s) = Pcs(r,s)*Pij(s,s);
+                    rtNodes(((i-1)*K+1) : ((i-1)*K+K),(j-1)*K+s) = Pcs(1:K,s)*Pij(s,s);
                 end
-            end
+            %end
         end
     elseif isa(self.nodes{i}.server,'StatefulClassSwitcher')
         Pi = rtNodes(((i-1)*K+1):i*K,:);
@@ -136,17 +141,17 @@ for i=1:self.getNumberOfNodes % source
                 end
             end
             
-            for r=1:self.getNumberOfClasses()
+            for r=1:K
                 if (isempty(find(r == self.nodes{i}.server.hitClass)) && isempty(find(r == self.nodes{i}.server.missClass)))
-                    for j=1:self.getNumberOfNodes() % destination
-                        for s=1:self.getNumberOfClasses()
+                    for j=1:M % destination
+                        for s=1:K
                             Pi((i-1)*K+r,(j-1)*K+s) = 0;
                         end
                     end
                 end
             end      
             
-            for r=1:self.getNumberOfClasses()
+            for r=1:K
                 if length(self.nodes{i}.server.actualHitProb)>=r && length(self.nodes{i}.server.hitClass)>=r
                     ph = self.nodes{i}.server.actualHitProb(r);
                     pm = self.nodes{i}.server.actualMissProb(r);
@@ -164,11 +169,11 @@ for i=1:self.getNumberOfNodes % source
                 end
             end
             
-            for j=1:self.getNumberOfNodes() % destination
+            for j=1:M % destination
                 Pij = Pi(1:K,((j-1)*K+1):j*K); %Pij(r,s)
-                for r=1:self.getNumberOfClasses()
+                for r=1:K
                     if ~(isempty(find(r == self.nodes{i}.server.hitClass)) && isempty(find(r == self.nodes{i}.server.missClass)))
-                        for s=1:self.getNumberOfClasses()
+                        for s=1:K
                             % Find the routing probability section determined by the router section in the first loop
                             %Pnodes(((i-1)*K+1):i*K,((j-1)*K+1):j*K) = Pcs*Pij;
                             rtNodes((i-1)*K+r,(j-1)*K+s) = Pcs(r,s)*Pij(s,s);
@@ -240,9 +245,7 @@ for i=1:self.getNumberOfNodes % source
     
     % Hide the nodes that are not stateful
     rt = dtmc_stochcomp(rtNodes,statefulNodesClasses);
-    if nargout >= 3
-        M = self.getNumberOfNodes();
-        K = self.getNumberOfClasses();
+    if nargout >= 4
         rtNodesByClass = cellzeros(K,K,M,M);
         for i=1:M
             for j=1:M
@@ -255,9 +258,7 @@ for i=1:self.getNumberOfNodes % source
         end
     end
     
-    if nargout >= 4
-        M = self.getNumberOfNodes();
-        K = self.getNumberOfClasses();
+    if nargout >= 5
         rtNodesByStation = cellzeros(M,M,K,K);
         for i=1:M
             for j=1:M

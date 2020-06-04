@@ -6,7 +6,12 @@ local = self.getNumberOfNodes+1;
 nclasses = qn.nclasses;
 sync = {};
 emptystate = cellzeros(qn.nnodes,1,0,0);
-rtmask = self.qn.rtfun(emptystate, emptystate);
+if any(qn.isstatedep(:))
+    rtmask = self.qn.rtfun(emptystate, emptystate);
+else
+    rtmask = ceil(self.qn.rt);
+end
+
 for ind=1:qn.nnodes
     for r=1:qn.nclasses
         if qn.isstation(ind) && qn.phases(qn.nodeToStation(ind),r)> 1

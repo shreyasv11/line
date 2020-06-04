@@ -10,3 +10,6 @@
 [submodule "lib/kpctoolbox"]
 	path = lib/kpctoolbox
 	url = https://github.com/kpctoolboxteam/kpc-toolbox
+[submodule "modules"]
+	path = modules
+	url = https://github.com/kpctoolboxteam/kpc-toolbox

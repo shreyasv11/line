@@ -18,7 +18,8 @@ end
 if ~exist('relprio','var')
     weight = ones(M,R);
 end
-XN=0;
+XN=zeros(1,R);
+UN=zeros(M,R);
 for it=1:maxiter
     QN_1 = QN;
     for i=1:M
@@ -49,7 +50,7 @@ for it=1:maxiter
             UN(i,r) = XN(r)*L(i,r);
         end
     end
-    if max(abs(QN-QN_1)./QN_1) < tol
+    if max(abs(1-QN./QN_1)) < tol
         break
     end
 end

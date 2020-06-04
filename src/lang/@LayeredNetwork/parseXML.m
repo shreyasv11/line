@@ -121,7 +121,7 @@ for i = 0:procList.getLength()-1
                         elseif hostDemandSCV < 1.0
                             hostDemand = Gamma.fitMeanAndSCV(hostDemandMean, hostDemandSCV);
                         elseif hostDemandSCV == 1.0
-                            hostDemand = Exp.fitMeanAndSCV(hostDemandMean, hostDemandSCV);
+                            hostDemand = Exp.fitMean(hostDemandMean);
                         else
                             hostDemand = HyperExp.fitMeanAndSCV(hostDemandMean, hostDemandSCV);
                         end

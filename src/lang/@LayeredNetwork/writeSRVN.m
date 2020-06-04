@@ -21,7 +21,7 @@ for p=1:length(self.processors)
             fprintf(fid,['p ',curProc.name,' f m ',num2str(curProc.multiplicity),'\n']);
         case SchedStrategy.PS
             fprintf(fid,['p ',curProc.name,' s ',num2str(curProc.quantum),' m ',num2str(curProc.multiplicity),'\n']);
-        case SchedStrategy.RAND
+        case SchedStrategy.SIRO
             fprintf(fid,['p ',curProc.name,' r m ',num2str(curProc.multiplicity),'\n']);
         case SchedStrategy.HOL
             fprintf(fid,['p ',curProc.name,' h m ',num2str(curProc.multiplicity),'\n']);

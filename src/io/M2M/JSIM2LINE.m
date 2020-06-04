@@ -106,7 +106,7 @@ for i=1:length(node_name)
                                 case 'HeadStrategy'
                                     strategy{i} = SchedStrategy.LCFS;
                                 case 'RandStrategy'
-                                    strategy{i} = SchedStrategy.RAND;
+                                    strategy{i} = SchedStrategy.SIRO;
                                 case 'SJFStrategy'
                                     strategy{i} = SchedStrategy.SJF;
                                 case 'SEPTStrategy'

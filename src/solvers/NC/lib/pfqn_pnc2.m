@@ -11,5 +11,8 @@ f= @(u) (2*u'.*exp(-(u.^2)').*prod((Z(nonzeroClasses)+L(nonzeroClasses).*repmat(
 
 p = 1-10^-order;
 exp1prctile = -log(1-p)/1; % cutoff for exponential term
+w = warning ;
+warning off;
 logG = log(integral(f,0,exp1prctile,'AbsTol',10^-order)) - sum(factln(N));
+warning(w);
 end

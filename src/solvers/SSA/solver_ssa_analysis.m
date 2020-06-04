@@ -17,6 +17,7 @@ tranSysState = [];
 tranSync = [];
 
 qnc = qn.copy;
+qnc.space = qn.state; % SSA progressively grows this cell array into the simulated state space
 switch options.method
     case {'serial.hash','serial.hashed','hashed'}
         options.samples = options.samples + 1;

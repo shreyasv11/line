@@ -3,71 +3,71 @@ function fname = writeJSIM(self)
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
-[simElem, simDoc] = saveXMLHeader(self, self.model.getLogPath);
-[simElem, simDoc] = saveClasses(self, simElem, simDoc);
+[simXMLElem, simXMLDoc] = saveXMLHeader(self, self.model.getLogPath);
+[simXMLElem, simXMLDoc] = saveClasses(self, simXMLElem, simXMLDoc);
 
 numOfClasses = length(self.model.classes);
 numOfNodes = length(self.model.nodes);
 for i=1:(numOfNodes)
     currentNode = self.model.nodes{i,1};
-    node = simDoc.createElement('node');
+    node = simXMLDoc.createElement('node');
     node.setAttribute('name', currentNode.name);
     
     nodeSections = getSections(currentNode);
     for j=1:length(nodeSections)
-        section = simDoc.createElement('section');
+        xml_section = simXMLDoc.createElement('section');
         currentSection = nodeSections{1,j};
         if ~isempty(currentSection)
-            section.setAttribute('className', currentSection.className);
+            xml_section.setAttribute('className', currentSection.className);
             switch currentSection.className
                 case 'Buffer'
-                    section.setAttribute('className', 'Queue'); %overwrite with JMT class name
-                    [simDoc, section] = saveBufferCapacity(self, simDoc, section, currentNode);
-                    [simDoc, section] = saveDropStrategy(self, simDoc, section);
-                    [simDoc, section] = saveGetStrategy(self, simDoc, section, currentNode);
-                    [simDoc, section] = savePutStrategy(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'Queue'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveBufferCapacity(self, simXMLDoc, xml_section, currentNode);
+                    [simXMLDoc, xml_section] = saveDropStrategy(self, simXMLDoc, xml_section);
+                    [simXMLDoc, xml_section] = saveGetStrategy(self, simXMLDoc, xml_section, currentNode);
+                    [simXMLDoc, xml_section] = savePutStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'Server'
-                    [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode);
-                    [simDoc, section] = saveServerVisits(self, simDoc, section);
-                    [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode);
+                    [simXMLDoc, xml_section] = saveNumberOfServers(self, simXMLDoc, xml_section, currentNode);
+                    [simXMLDoc, xml_section] = saveServerVisits(self, simXMLDoc, xml_section);
+                    [simXMLDoc, xml_section] = saveServiceStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'SharedServer'
-                    section.setAttribute('className', 'PSServer'); %overwrite with JMT class name
-                    [simDoc, section] = saveNumberOfServers(self, simDoc, section, currentNode);
-                    [simDoc, section] = saveServerVisits(self, simDoc, section);
-                    [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode);
-                    [simDoc, section] = savePreemptiveStrategy(self, simDoc, section, currentNode);
-                    [simDoc, section] = savePreemptiveWeights(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'PSServer'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveNumberOfServers(self, simXMLDoc, xml_section, currentNode);
+                    [simXMLDoc, xml_section] = saveServerVisits(self, simXMLDoc, xml_section);
+                    [simXMLDoc, xml_section] = saveServiceStrategy(self, simXMLDoc, xml_section, currentNode);
+                    [simXMLDoc, xml_section] = savePreemptiveStrategy(self, simXMLDoc, xml_section, currentNode);
+                    [simXMLDoc, xml_section] = savePreemptiveWeights(self, simXMLDoc, xml_section, currentNode);
                 case 'InfiniteServer'
-                    section.setAttribute('className', 'Delay'); %overwrite with JMT class name
-                    [simDoc, section] = saveServiceStrategy(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'Delay'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveServiceStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'LogTunnel'
-                    [simDoc, section] = saveLogTunnel(self, simDoc, section, currentNode);
+                    [simXMLDoc, xml_section] = saveLogTunnel(self, simXMLDoc, xml_section, currentNode);
                 case 'Dispatcher'
-                    section.setAttribute('className', 'Router'); %overwrite with JMT class name
-                    [simDoc, section] = saveRoutingStrategy(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'Router'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveRoutingStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'StatelessClassSwitcher'
-                    section.setAttribute('className', 'ClassSwitch'); %overwrite with JMT class name
-                    [simDoc, section] = saveClassSwitchStrategy(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'ClassSwitch'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveClassSwitchStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'RandomSource'
-                    [simDoc, section] = saveArrivalStrategy(self, simDoc, section, currentNode);
+                    [simXMLDoc, xml_section] = saveArrivalStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'Joiner'
-                    section.setAttribute('className', 'Join'); %overwrite with JMT class name
-                    [simDoc, section] = saveJoinStrategy(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'Join'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveJoinStrategy(self, simXMLDoc, xml_section, currentNode);
                 case 'Forker'
-                    section.setAttribute('className', 'Fork'); %overwrite with JMT class name
-                    [simDoc, section] = saveForkStrategy(self, simDoc, section, currentNode);
+                    xml_section.setAttribute('className', 'Fork'); %overwrite with JMT class name
+                    [simXMLDoc, xml_section] = saveForkStrategy(self, simXMLDoc, xml_section, currentNode);
             end
-            node.appendChild(section);
+            node.appendChild(xml_section);
         end
     end
-    simElem.appendChild(node);
+    simXMLElem.appendChild(node);
 end
 
-[simElem, simDoc] = saveMetrics(self, simElem, simDoc);
-[simElem, simDoc] = saveLinks(self, simElem, simDoc);
+[simXMLElem, simXMLDoc] = saveMetrics(self, simXMLElem, simXMLDoc);
+[simXMLElem, simXMLDoc] = saveLinks(self, simXMLElem, simXMLDoc);
 
 hasReferenceNodes = 0;
-preloadNode = simDoc.createElement('preload');
+preloadNode = simXMLDoc.createElement('preload');
 s0 = self.model.getState;
 qn = self.model.getStruct;
 numOfStations = length(self.model.stations);
@@ -76,12 +76,12 @@ for i=1:numOfStations
     currentNode = self.model.nodes{qn.stationToNode(i),1};
     if (~isa(self.model.stations{i},'Source') && ~isa(self.model.stations{i},'Join'))
         [~, nir] = State.toMarginal(self.model,qn.stationToNode(i),s0{qn.stationToStateful(i)});
-        stationPopulationsNode = simDoc.createElement('stationPopulations');
+        stationPopulationsNode = simXMLDoc.createElement('stationPopulations');
         stationPopulationsNode.setAttribute('stationName', currentNode.name);
         for r=1:(numOfClasses)
             currentClass = self.model.classes{r,1};
             %        if currentClass.isReferenceStation(currentNode)
-            classPopulationNode = simDoc.createElement('classPopulation');
+            classPopulationNode = simXMLDoc.createElement('classPopulation');
             switch currentClass.type
                 case 'open'
                     isReferenceNode = 1;
@@ -104,15 +104,15 @@ for i=1:numOfStations
     hasReferenceNodes = hasReferenceNodes + isReferenceNode;
 end
 if hasReferenceNodes
-    simElem.appendChild(preloadNode);
+    simXMLElem.appendChild(preloadNode);
 end
 fname = getJSIMTempPath(self);
 try
-    xmlwrite(fname, simDoc);
+    xmlwrite(fname, simXMLDoc);
 catch
     javaaddpath(which('xercesImpl-2.11.0.jar'));
     javaaddpath(which('xml-apis-2.11.0.jar'));
     pkg load io;
-    xmlwrite(fname, simDoc);
+    xmlwrite(fname, simXMLDoc);
 end
 end

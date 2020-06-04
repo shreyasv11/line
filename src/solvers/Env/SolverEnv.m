@@ -112,6 +112,7 @@ classdef SolverEnv < EnsembleSolver
             %% initialize
             [Qt,Ut,Tt] = self.ensemble{e}.getTranHandles;
             %[results_e.Avg.Q, results_e.Avg.U, results_e.Avg.R, results_e.Avg.T] = self.solvers{e}.getAvg();
+            self.solvers{e}.resetResults;
             [QNt,UNt,TNt] = self.solvers{e}.getTranAvg(Qt,Ut,Tt);
             results_e.Tran.Avg.Q = QNt; %cellfun(@(c) c.metric, QNt,'UniformOutput',false);
             results_e.Tran.Avg.U = UNt; %cellfun(@(c) c.metric, UNt,'UniformOutput',false);
@@ -148,7 +149,7 @@ classdef SolverEnv < EnsembleSolver
                         Qentry{e} = Qentry{e} + self.envObj.probOrig(h,e) * self.resetFromMarginal{h,e}(Qexit{h,e});
                     end
                 end
-                self.solvers{e}.reset();
+                self.solvers{e}.resetResults();
                 self.ensemble{e}.initFromMarginal(Qentry{e});
             end
         end

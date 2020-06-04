@@ -18,7 +18,7 @@ for i=1:(numOfClasses)
     queuePutStrategyNode.appendChild(refClassNode2);
     %                switch currentNode.input.inputJobClasses{i}{2}
     switch currentNode.schedStrategy
-        case SchedStrategy.RAND
+        case SchedStrategy.SIRO
             subParameterNode2 = simDoc.createElement('subParameter');
             subParameterNode2.setAttribute('classPath', 'jmt.engine.NetStrategies.QueuePutStrategies.RandStrategy');
             subParameterNode2.setAttribute('name', 'RandStrategy');

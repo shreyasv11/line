@@ -44,7 +44,6 @@ end
 %tput = N./Z; % balanced job bounds
 
 %% IMCI
-
 if strcmpi(variant,'imci') % improved mci
     tput = pfqn_amvabs(D,N,Z);
     util = D*tput';
@@ -88,12 +87,13 @@ try
     lZ = -(ones(1,M) - gamma) * V' - sum(log(gamma)) - sum(logfact) + N*log(V*D+ZI)';
     
     
-    lG = logmeanexp(lZ); % return average
-    
+    lG = logmeanexp(lZ); % return average    
     if isinf(lG)
         %    warning('Floating-point range exception, Monte Carlo integration will return an approximation.');
         lG = max(lZ);
     end
-    G=exp(lG);
-    
+    G=exp(lG);    
+catch ME
+ME
+end
 end

@@ -34,7 +34,7 @@ extSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.EXT),sched));
 infSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.INF),sched));
 dpsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.DPS),sched));
 fcfsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.FCFS),sched));
-pfSET = union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.RAND),sched)));
+pfSET = union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.SIRO),sched)));
 
 if ~exist('tol','var')
     tol = 1e-6;

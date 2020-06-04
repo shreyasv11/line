@@ -104,9 +104,11 @@ classdef SolverAuto < NetworkSolver
             % SOLVER = CHOOSESOLVER()
             
             model = self.model;
+            ncoptions = self.options;
             if model.hasProductFormSolution
                 if model.hasSingleChain
-                    ncoptions = SolverNC.defaultOptions; ncoptions.method = 'exact';
+                    %ncoptions = SolverNC.defaultOptions; 
+                    ncoptions.method = 'exact';
                     solver = SolverNC(model, ncoptions);
                 else % MultiChain
                     if model.hasHomogeneousScheduling(SchedStrategy.INF)
@@ -117,8 +119,9 @@ classdef SolverAuto < NetworkSolver
                         elseif sum(model.getNumberOfJobs) / sum(model.getNumberOfChains) > 10 % mid/heavy load
                             solver = SolverMVA(model);
                         elseif sum(model.getNumberOfJobs) < 5 % light load
-                            ncoptions = SolverNC.defaultOptions; ncoptions.method = 'exact';
-                            solver = SolverNC(model);
+                            %ncoptions = SolverNC.defaultOptions; 
+                            ncoptions.method = 'exact';
+                            solver = SolverNC(model, ncoptions);
                         else
                             solver = SolverMVA(model);
                         end

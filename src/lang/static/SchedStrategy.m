@@ -8,7 +8,7 @@ classdef (Sealed) SchedStrategy
         INF = 'inf'; % infinite server
         FCFS = 'fcfs';
         LCFS = 'lcfs';
-        RAND = 'rand';
+        SIRO = 'siro'; % service in random order
         SJF = 'sjf';
         LJF = 'ljf';
         PS = 'ps'; % egalitarian PS
@@ -24,7 +24,7 @@ classdef (Sealed) SchedStrategy
         ID_INF = 0;
         ID_FCFS = 1;
         ID_LCFS = 2;
-        ID_RAND = 3;
+        ID_SIRO = 3;
         ID_SJF = 4;
         ID_LJF = 5;
         ID_PS = 6;
@@ -49,7 +49,7 @@ classdef (Sealed) SchedStrategy
                     id = 1;
                 case SchedStrategy.LCFS
                     id = 2;
-                case SchedStrategy.RAND
+                case SchedStrategy.SIRO
                     id = 3;
                 case SchedStrategy.SJF
                     id = 4;
@@ -86,8 +86,8 @@ classdef (Sealed) SchedStrategy
                     property = 'FCFS';
                 case 'lcfs'
                     property = 'LCFS';
-                case 'rand'
-                    property = 'RAND';
+                case 'siro'
+                    property = 'SIRO';
                 case 'sjf'
                     property = 'SJF';
                 case 'ljf'
@@ -126,8 +126,8 @@ classdef (Sealed) SchedStrategy
                     text = 'SchedStrategy_FCFS';
                 case SchedStrategy.LCFS
                     text = 'SchedStrategy_LCFS';
-                case SchedStrategy.RAND
-                    text = 'SchedStrategy_RAND';
+                case SchedStrategy.SIRO
+                    text = 'SchedStrategy_SIRO';
                 case SchedStrategy.SJF
                     text = 'SchedStrategy_SJF';
                 case SchedStrategy.LJF

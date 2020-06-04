@@ -6,6 +6,7 @@ function [rates, scv] = refreshRates(self)
 
 M = self.getNumberOfStations();
 K = self.getNumberOfClasses();
+hasOpenClasses = self.hasOpenClasses;
 rates = zeros(M,K);
 % determine rates
 for i=1:M
@@ -30,7 +31,7 @@ for i=1:M
                         scv(i,r) = 0;
                 end
             otherwise
-                if isempty(self.getIndexSourceStation) || i ~= self.getIndexSourceStation
+                if ~hasOpenClasses || i ~= self.getIndexSourceStation
                     if isempty(self.stations{i}.server.serviceProcess{r}) || self.stations{i}.server.serviceProcess{r}{end}.isDisabled
                         rates(i,r) = NaN;
                         scv(i,r) = NaN;

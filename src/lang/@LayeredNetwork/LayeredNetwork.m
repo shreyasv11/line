@@ -79,6 +79,8 @@ classdef LayeredNetwork < Model & Ensemble
         end
         
         ensemble = updateEnsemble(self, isBuild, deepUpdate)
+        ensemble = buildEnsemble(self)
+        ensemble = refreshEnsemble(self, deepUpdate)
         
         self = generateGraph(self);
         [lqnGraph,taskGraph] = getGraph(self)

@@ -80,7 +80,7 @@ if qn.isstation(ind)
                         % job enters service immediately
                         space_srv_k(:,Ks(class)+kentry) = space_srv_k(:,Ks(class)+kentry) + 1;
                         outprob_k = pentry(kentry)*ones(size(space_srv_k,1));
-                    case {SchedStrategy.ID_RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
+                    case {SchedStrategy.ID_SIRO, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
                         if ni<S(ist)
                             space_srv_k(:,Ks(class)+kentry) = space_srv_k(:,Ks(class)+kentry) + 1;
                             outprob_k = pentry(kentry)*ones(size(space_srv_k,1));
@@ -306,7 +306,7 @@ if qn.isstation(ind)
                                         outprob = [outprob; ones(size(rate(en,:),1),1)];
                                         space_srv(en_wbuf,Ks(start_svc_class)+kentry) = space_srv(en_wbuf,Ks(start_svc_class)+kentry) - 1;
                                     end
-                                case SchedStrategy.ID_RAND
+                                case SchedStrategy.ID_SIRO
                                     rate = zeros(size(space_srv,1),1);
                                     rate(en) = mu{ist,class}(k)*(phi{ist,class}(k)).*kir(:,class,k); % this is for states not in en_buf
                                     space_srv = inspace(:,end-sum(K)+1:end); % server state
@@ -425,7 +425,7 @@ if qn.isstation(ind)
                                     w_i = qn.schedparam(ist,:); w_i = w_i / sum(w_i);
                                     rate = ph{ist,class}{1}(k,kdest)*kir(:,class,k)/nir(class)*w_i(class)/(w_i*cir(:)); % assume active
                                     
-                                case {SchedStrategy.ID_FCFS, SchedStrategy.ID_HOL, SchedStrategy.ID_LCFS, SchedStrategy.ID_RAND, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
+                                case {SchedStrategy.ID_FCFS, SchedStrategy.ID_HOL, SchedStrategy.ID_LCFS, SchedStrategy.ID_SIRO, SchedStrategy.ID_SEPT, SchedStrategy.ID_LEPT}
                                     rate = ph{ist,class}{1}(k,kdest)*kir(:,class,k); % assume active
                             end
                             % if the class cannot be served locally,
@@ -512,7 +512,7 @@ elseif qn.isstateful(ind)
                                                         outrate(end+1,1) = ac{class,k}(1,l) * p(k) * Distrib.InfRate;
                                                     end
                                                 end
-                                            case ReplacementStrategy.ID_RAND
+                                            case ReplacementStrategy.ID_RR
                                                 if isSimulation
                                                     varp = var;
                                                     r = randi(m(1),1,1);
@@ -550,8 +550,7 @@ elseif qn.isstateful(ind)
                                                     %varp(cpos(i,j)) = var(cpos(i+1,m(i+1)));
                                                     %varp(cpos(i+1,2):cpos(i+1,m(i+1))) = var(cpos(i+1,1):cpos(i+1,m(i+1)-1));
                                                     %varp(cpos(i+1,1)) = k;
-                                                    
-                                                    
+                                                                                                        
                                                     space_srv_k = [space_srv_k; space_srv_e];
                                                     space_var_k = [space_var_k; varp];
                                                     outrate(end+1,1) = Distrib.InfRate;
@@ -566,7 +565,7 @@ elseif qn.isstateful(ind)
                                                         outrate(end+1,1) = ac{class,k}(1+i,1+inew) * p(k) * Distrib.InfRate;
                                                     end
                                                 end
-                                            case ReplacementStrategy.ID_RAND
+                                            case ReplacementStrategy.ID_RR
                                                 if isSimulation
                                                     inew = i-1+probchoose(ac{class,k}(i,i:end)/sum(ac{class,k}(i,i:end)))-1; % can choose i
                                                     varp = var;
@@ -618,7 +617,7 @@ elseif qn.isstateful(ind)
                                         i=h;
                                         j = posk - sum(m(1:i-1));
                                         switch rpolicy_id
-                                            case ReplacementStrategy.ID_RAND
+                                            case ReplacementStrategy.ID_RR
                                                 space_srv_k = [space_srv_k; space_srv_e];
                                                 space_var_k = [space_var_k; (var)];
                                                 if isSimulation

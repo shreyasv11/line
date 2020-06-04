@@ -42,8 +42,7 @@ classdef Solver < handle
             % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             % Solve the model
-            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
-            
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');            
         end
     end
     
@@ -92,7 +91,13 @@ classdef Solver < handle
             options = self.options;
         end
         
-        function reset(self)
+		function reset(self)
+            % RESET()
+            % Dispose previously stored results
+			self.resetResults();
+		end
+		
+        function resetResults(self)
             % RESET()
             % Dispose previously stored results
             self.result = [];

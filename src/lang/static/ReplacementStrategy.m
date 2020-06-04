@@ -5,12 +5,12 @@ classdef (Sealed) ReplacementStrategy
     % All rights reserved.
     
     properties (Constant)
-        RAND = 'rand'; % random replacement
+        RR = 'rr'; % random replacement
         FIFO = 'fifo';
         SFIFO = 'sfifo'; % strict fifo
         LRU = 'lru';
         
-        ID_RAND = 0;
+        ID_RR = 0;
         ID_FIFO = 1;
         ID_SFIFO = 2; % strict fifo
         ID_LRU = 3;
@@ -21,8 +21,8 @@ classdef (Sealed) ReplacementStrategy
             % ID = TOID(TYPE)
             
             switch type
-                case ReplacementStrategy.RAND
-                    id = ReplacementStrategy.ID_RAND;
+                case ReplacementStrategy.RR
+                    id = ReplacementStrategy.ID_RR;
                 case ReplacementStrategy.FIFO
                     id = ReplacementStrategy.ID_FIFO;
                 case ReplacementStrategy.SFIFO
@@ -36,8 +36,8 @@ classdef (Sealed) ReplacementStrategy
             % PROPERTY = TOPROPERTY(TEXT)
             
             switch text
-                case 'rand' % rrom replacement
-                    property = 'RAND';
+                case 'rr' % rrom replacement
+                    property = 'RR';
                 case 'fifo'
                     property = 'FIFO';
                 case 'strict-fifo'
@@ -51,8 +51,8 @@ classdef (Sealed) ReplacementStrategy
             % TEXT = TOFEATURE(TYPE)
             
             switch type
-                case ReplacementStrategy.RAND
-                    text = 'ReplacementStrategy_RAND';
+                case ReplacementStrategy.RR
+                    text = 'ReplacementStrategy_RR';
                 case ReplacementStrategy.FIFO
                     text = 'ReplacementStrategy_FIFO';
                 case ReplacementStrategy.SFIFO

@@ -1,5 +1,5 @@
-function [chains, visits, rt] = refreshChains(self, rates, wantVisits)
-% [CHAINS, VISITS, RT] = REFRESHCHAINS(RATES, WANTVISITS)
+function [chains, visits, rt] = refreshChains(self, wantVisits)
+% [CHAINS, VISITS, RT] = REFRESHCHAINS(WANTVISITS)
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
@@ -11,11 +11,10 @@ end
 if nargin == 1
     if isempty(self.qn)
         error('refreshRoutingMatrix cannot retrieve station rates, please pass them as an input parameters.');
-    else
-        rates = self.qn.rates;
     end
 end
 
+rates = self.qn.rates;
 I = self.getNumberOfNodes();
 M = self.getNumberOfStatefulNodes();
 K = self.getNumberOfClasses();

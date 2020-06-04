@@ -2,7 +2,6 @@ function runtime = run(self, options)
 % RUNTIME = RUN()
 % Run the solver
 
-self.reset();
 T0=tic;
 if ~exist('options','var')
     options = self.getOptions;

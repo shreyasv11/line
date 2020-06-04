@@ -4,6 +4,14 @@ function [QN,UN,RN,TN,CN,XN,InfGen,StateSpace,StateSpaceAggr,EventFiltration,run
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
 
+%if options.remote
+%    qn.rtfun = {};
+%    qn.lst = {};
+%    qn_json = jsonencode(qn);
+%    qn = NetworkStruct.fromJSON(qn_json)
+    %return
+%end
+
 M = qn.nstations;    %number of stations
 K = qn.nclasses;    %number of classes
 rt = qn.rt;
@@ -98,7 +106,7 @@ for k=1:K
                 UN(i,k) = QN(i,k);
             otherwise
                 if ~isempty(PH{i,k})
-                    UN(i,k) = pi*arvRates(wset,i,k)*map_mean(PH{i,k})/S(i);
+                    UN(i,k) = pi*arvRates(wset,isf,k)*map_mean(PH{i,k})/S(i);
                 end
         end
     end

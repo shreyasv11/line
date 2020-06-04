@@ -10,7 +10,7 @@ for ind=1:self.getNumberOfNodes
             nvars(ind) = sum(self.nodes{ind}.itemLevelCap);
             varsparam{ind} = struct();
             varsparam{ind}.nitems = 0;
-            varsparam{ind}.accost = self.nodes{ind}.accessCost;
+            varsparam{ind}.accost = self.nodes{ind}.accessProb;
             for r=1:self.getNumberOfClasses
                 if ~self.nodes{ind}.popularity{r}.isDisabled
                     varsparam{ind}.nitems = max(varsparam{ind}.nitems,self.nodes{ind}.popularity{r}.support(2));

@@ -84,7 +84,7 @@ switch qn.schedid(ist)
         for r=1:R
             nir(:,r) = sir(:,r) + sum(space_buf==r,2); % class-r jobs in station
         end
-    case SchedStrategy.ID_RAND
+    case SchedStrategy.ID_SIRO
         for r=1:R
             nir(:,r) = sir(:,r) + space_buf(:,r); % class-r jobs in station
         end

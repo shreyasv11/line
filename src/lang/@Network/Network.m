@@ -25,6 +25,10 @@ classdef Network < Model
         handles;
         perfIndex;
         links;
+        
+        stationidxs;
+%        sourceidx;
+%        sinkidx;
     end
     
     properties
@@ -45,7 +49,7 @@ classdef Network < Model
         ft = getForks(self, rt) % get fork table
         [chainsObj,chainsMatrix] = getChains(self, rt) % get chain table
         
-        [P,Pnodes,myPc,myPs,links] = getRoutingMatrix(self, arvRates) % get routing matrix
+        [P,Pnodes,links,myPc,myPs] = getRoutingMatrix(self, arvRates) % get routing matrix
         
         nodes = resetNetwork(self)
         self = link(self, P)
@@ -75,20 +79,23 @@ classdef Network < Model
         [ph, mu, phi, phases] = refreshServicePhases(self);
         [rt, rtfun, csmask, rtnodes] = refreshRoutingMatrix(self, rates);
         [lt] = refreshLST(self);
-        sync = refreshSync(self);
         sanitize(self);
     end
     
     methods
+        sync = refreshSync(self);
         classprio = refreshPriorities(self);
-        [sched, schedid, schedparam] = refreshScheduling(self, rates);
+        [sched, schedid, schedparam] = refreshScheduling(self);
+        function setInitialized(self, bool)
+            self.isInitialized = bool;
+        end
         function [rates, mu, phi, phases] = refreshArrival(self) % LINE treats arrival distributions as service distributions of the Source object
             % [RATES, MU, PHI, PHASES] = REFRESHARRIVAL() % LINE TREATS ARRIVAL DISTRIBUTIONS AS SERVICE DISTRIBUTIONS OF THE SOURCE OBJECT
             
             [rates, mu, phi, phases] = self.refreshService();
         end
         [rates, scv, mu, phi, phases] = refreshService(self);
-        [chains, visits, rt] = refreshChains(self, rates, wantVisits)
+        [chains, visits, rt] = refreshChains(self, wantVisits)
         [cap, classcap] = refreshCapacity(self);
         nvars = refreshLocalVars(self);
     end
@@ -120,6 +127,9 @@ classdef Network < Model
             self.logPath = '';
             self.items = {};
             self.env = {};
+            self.stationidxs = [];
+%            self.sourceidx = [];
+%            self.sinkidx = [];
         end
         
         function env = getEnvironment(self)
@@ -177,15 +187,30 @@ classdef Network < Model
             end
         end
         
-        function reset(self, resetState)
+		function resetHandles(self)
+			self.handles = {};
+		end
+		
+		function reset(self, resetState)
             % RESET(RESETSTATE)
             %
             % If RESETSTATE is true, the model requires re-initialization
             % of its state
-            
+            if nargin == 1
+                resetModel(self);
+            else
+                resetModel(self, resetState);
+            end
+		end
+		
+        function resetModel(self, resetState)
+            % RESETMODEL(RESETSTATE)
+            %
+            % If RESETSTATE is true, the model requires re-initialization
+            % of its state
             self.perfIndex.Avg = {};
             self.perfIndex.Tran = {};
-            self.handles = {};
+            self.resetHandles();
             self.qn = [];
             self.ag = [];
             if nargin == 2 && resetState
@@ -194,6 +219,9 @@ classdef Network < Model
             for ind = 1:length(self.getNodes)
                 self.nodes{ind}.reset();
             end
+            self.stationidxs = [];
+%            self.sourceidx = [];
+%            self.sinkidx = [];
         end
                 
         refreshStruct(self);
@@ -413,16 +441,17 @@ classdef Network < Model
         
         
         function [stateSpace,nodeStateSpace] = getStateSpace(self, varargin)
-            try
-                [stateSpace,nodeStateSpace] = SolverCTMC(self,'force',true,'verbose',false,varargin{:}).getStateSpace;
-            catch ME
-                switch ME.identifier
-                    case 'Line:NoCutoff'
-                        error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., model.getStateSpace(''cutoff'',1).');
-                    otherwise
-                        rethrow ME
-                end
-            end
+            error('This method is no longer supported. Use SolverCTMC(model,...).getStateSpace(...) instead.');
+%             try
+%                 [stateSpace,nodeStateSpace] = SolverCTMC(self,'force',true,'verbose',false,varargin{:}).getStateSpace;
+%             catch ME
+%                 switch ME.identifier
+%                     case 'Line:NoCutoff'
+%                         error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., model.getStateSpace(''cutoff'',1).');
+%                     otherwise
+%                         rethrow ME
+%                 end
+%             end
         end
         
         function summary(self)
@@ -611,8 +640,11 @@ classdef Network < Model
         function list = getIndexStations(self)
             % LIST = GETINDEXSTATIONS()
             
-            % returns the ids of nodes that are stations
-            list = find(cellisa(self.nodes, 'Station'))';
+            %if isempty(self.stationidxs)
+                % returns the ids of nodes that are stations
+                self.stationidxs = find(cellisa(self.nodes, 'Station'))';
+            %end
+            list = self.stationidxs;
         end
         
         function list = getIndexStatefulNodes(self)
@@ -1178,7 +1210,7 @@ classdef Network < Model
             % BOOL = HASRAND()
             
             bool = false;
-            i = findstring(self.getStruct.sched,SchedStrategy.RAND);
+            i = findstring(self.getStruct.sched,SchedStrategy.SIRO);
             if i > 0, bool = true; end
         end
         

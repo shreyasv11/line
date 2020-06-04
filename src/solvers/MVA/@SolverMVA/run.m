@@ -16,7 +16,7 @@ if ~self.supports(self.model)
 end
 Solver.resetRandomGeneratorSeed(options.seed);
 
-[qn] = self.model.getStruct();
+qn = self.model.getStruct();
 
 if (strcmp(options.method,'exact')||strcmp(options.method,'mva')) && ~self.model.hasProductFormSolution
     error('The exact method requires the model to have a product-form solution. This model does not have one. You can use Network.hasProductFormSolution() to check before running the solver.');

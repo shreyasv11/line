@@ -10,8 +10,10 @@ n = size(mmap{1},1);
 K = size(mmap,2)-2;
 
 if (map_issym(mmap))
+    if ~isdeployed
     e = sym(ones(n,1));
     lk = sym(zeros(K,1));
+    end
 else
     e = ones(n,1);
     lk = zeros(K,1);

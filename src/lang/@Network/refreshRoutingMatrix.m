@@ -20,25 +20,30 @@ for r = self.getIndexOpenClasses
     arvRates(r) = rates(self.getIndexSourceStation,r);
 end
 
-[rt, rtnodes, ~, ~, linksmat] = self.getRoutingMatrix(arvRates);
+[rt, rtnodes, linksmat] = self.getRoutingMatrix(arvRates);
+
+isStateDep = any(qn.isstatedep(:,3));
 
 rnodefuncell = cell(M*K,M*K);
 stateful = self.getIndexStatefulNodes;
-for ind=1:M % from
-    for jnd=1:M % to
-        for r=1:K
-            for s=1:K
-                if qn.isstatedep(ind,3)
-                    switch qn.routing(ind,r)
-                        case RoutingStrategy.ID_RR
-                            rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) sub_rr(ind, jnd, r, s, linksmat, state_before, state_after);
-                        case RoutingStrategy.ID_JSQ
-                            rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after);
-                        otherwise
-                            rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
+
+if isStateDep
+    for ind=1:M % from
+        for jnd=1:M % to
+            for r=1:K
+                for s=1:K
+                    if qn.isstatedep(ind,3)
+                        switch qn.routing(ind,r)
+                            case RoutingStrategy.ID_RR
+                                rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) sub_rr(ind, jnd, r, s, linksmat, state_before, state_after);
+                            case RoutingStrategy.ID_JSQ
+                                rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(state_before, state_after) sub_jsq(ind, jnd, r, s, linksmat, state_before, state_after);
+                            otherwise
+                                rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
+                        end
+                    else
+                        rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
                     end
-                else
-                    rnodefuncell{(ind-1)*K+r, (jnd-1)*K+s} = @(~,~) rtnodes((ind-1)*K+r, (jnd-1)*K+s);
                 end
             end
         end
@@ -51,21 +56,29 @@ for r=1:K
         for isf=1:length(stateful) % source
             for jsf=1:length(stateful) % source
                 if rt((isf-1)*K+r, (jsf-1)*K+s) > 0
-                    % this is to ensure that we use rt, which is 
-                    % the stochastic complement taken over the stateful 
+                    % this is to ensure that we use rt, which is
+                    % the stochastic complement taken over the stateful
                     % nodes, otherwise sequences of cs can produce a wrong
                     % csmask
                     csmask(r,s) = true;
                 end
-                if r==s
-                    csmask(r,s) = true;
-                else
-                    % this is to ensure that also stateful cs like caches
-                    % are accounted
-                    if isa(self.nodes{ind}.server,'ClassSwitcher')
-                        if self.nodes{ind}.server.csFun(r,s,[],[])>0
-                            csmask(r,s) = true;
-                        end
+            end
+        end
+    end
+end
+
+for isf=1:length(stateful) % source
+    % this is to ensure that also stateful cs like caches
+    % are accounted
+    ind = qn.statefulToNode(isf);
+    isCS = qn.nodetype(ind) == NodeType.Cache | qn.nodetype(ind) == NodeType.ClassSwitch;
+    for r=1:K
+        csmask(r,r) = true;
+        for s=1:K
+            if r~=s
+                if isCS
+                    if self.nodes{ind}.server.csFun(r,s,[],[])>0
+                        csmask(r,s) = true;
                     end
                 end
             end
@@ -86,10 +99,14 @@ for ind=stateful
     statefulNodesClasses(end+1:end+K)= ((ind-1)*K+1):(ind*K);
 end
 
-rtfunraw = @(state_before, state_after) dtmc_stochcomp(cell2mat(cellfun(@(f) f(state_before, state_after), rnodefuncell,'UniformOutput',false)), statefulNodesClasses);
-rtfun = rtfunraw;
-%rtfun = memoize(rtfunraw); % memoize to reduce the number of stoch comp calls
-%rtfun.CacheSize = 6000^2;
+if isStateDep
+    rtfunraw = @(state_before, state_after) dtmc_stochcomp(cell2mat(cellfun(@(f) f(state_before, state_after), rnodefuncell,'UniformOutput',false)), statefulNodesClasses);
+    rtfun = rtfunraw;
+    %rtfun = memoize(rtfunraw); % memoize to reduce the number of stoch comp calls
+    %rtfun.CacheSize = 6000^2;
+else
+    rtfun = @(state_before, state_after) dtmc_stochcomp(rtnodes, statefulNodesClasses);
+end
 
 if ~isempty(self.qn)
     self.qn.rt = rt;

@@ -13,7 +13,7 @@ classdef Cache < StatefulNode
         nLevels;
         itemLevelCap;
         items;
-        accessCost;
+        accessProb;
     end
     
     methods
@@ -33,7 +33,7 @@ classdef Cache < StatefulNode
             self.items = ItemSet(model, [name,'_','Items'], nitems, self);
             self.nLevels = nnz(itemLevelCap);
             self.cap = Inf; % job capacity
-            self.accessCost = {};
+            self.accessProb = {};
             self.itemLevelCap = itemLevelCap; % item capacity
             if sum(itemLevelCap) > nitems
                 error('The number of items is smaller than the capacity of %s.',name);
@@ -107,10 +107,10 @@ classdef Cache < StatefulNode
             end
         end
         
-        function setAccessCosts(self, R)
+        function setAccessProb(self, R)
             % SETACCESSCOSTS(R)
             
-            self.accessCost = R;
+            self.accessProb = R;
         end
         
         function setProbRouting(self, class, destination, probability)

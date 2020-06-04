@@ -17,13 +17,13 @@ if isempty(self.qn)
                         self.nodes{i}.popularity{k} = Disabled();
                     end
                 end
-                if isempty(self.nodes{i}.accessCost)
-                    self.nodes{i}.accessCost = cell(K,self.nodes{i}.items.nitems);
+                if isempty(self.nodes{i}.accessProb)
+                    self.nodes{i}.accessProb = cell(K,self.nodes{i}.items.nitems);
                     for v=1:K
                         for k=1:self.nodes{i}.items.nitems
-							% accessCost{v,k}(l,p) is the cost (probability) for a user-v request to item k in list l to access list p
-                            self.nodes{i}.accessCost{v,k} = diag(ones(1,self.nodes{i}.nLevels),1);
-							self.nodes{i}.accessCost{v,k}(1+self.nodes{i}.nLevels,1+self.nodes{i}.nLevels) = 1;
+							% accessProb{v,k}(l,p) is the cost (probability) for a user-v request to item k in list l to access list p
+                            self.nodes{i}.accessProb{v,k} = diag(ones(1,self.nodes{i}.nLevels),1);
+							self.nodes{i}.accessProb{v,k}(1+self.nodes{i}.nLevels,1+self.nodes{i}.nLevels) = 1;
                         end
                     end
                 end

@@ -5,20 +5,52 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
     % All rights reserved.
     
     properties
+        initNodeAvgTable = {};
+        initCallAvgTable = {};
     end
     
     methods
-        function self = SolverLN(model,solverFactory,varargin)
+        function self = reset(self)
+            self.initNodeAvgTable = {};
+            self.initCallAvgTable = {};
+        end
+        
+        function self = SolverLN(model, solverFactory, varargin)
             % SELF = SOLVERLN(MODEL,SOLVERFACTORY,VARARGIN)
             
             self@LayeredNetworkSolver(model, mfilename);
             self@EnsembleSolver(model, mfilename);
+                        
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             self.model.initDefault;
             self.ensemble = self.model.getEnsemble();
             for e=1:self.getNumberOfModels
                 self.setSolver(solverFactory(self.ensemble{e}),e);
             end
+%            model.refreshLayers;            
+        end
+        
+        function initFromRawAvgTables(self, NodeAvgTable, CallAvgTable)
+            self.initNodeAvgTable = NodeAvgTable;
+            self.initCallAvgTable = CallAvgTable;
+        end
+        
+        function paramFromRawAvgTables(self, NodeAvgTable, CallAvgTable)            
+            self.model.param.Nodes.RespT = NodeAvgTable.Phase1ServiceTime;
+            self.model.param.Nodes.RespT(isnan(self.model.param.Nodes.RespT)) = 0;
+            
+            self.model.param.Nodes.Tput = NodeAvgTable.Throughput;
+            self.model.param.Nodes.Tput(isnan(self.model.param.Nodes.Tput)) = 0;
+            for e = find(strcmpi(NodeAvgTable.NodeType,'Entry'))
+                self.model.param.Nodes.Util(e) = NodeAvgTable.Phase1Utilization(e);
+            end
+            
+            for h = 1:length(CallAvgTable.SourceNode)
+                edgeidx = self.model.findEdgeIndex(CallAvgTable.SourceNode{h}, CallAvgTable.TargetNode{h});
+                etargetidx = self.model.getNodeIndex(CallAvgTable.TargetNode{h});
+                self.model.param.Edges.RespT(edgeidx) = CallAvgTable.Waiting(h) + self.model.param.Nodes.RespT(etargetidx);
+                self.model.param.Nodes.RespT(edgeidx) = abs(self.model.param.Nodes.RespT(edgeidx) - self.model.param.Edges.RespT(edgeidx));
+            end         
         end
         
         function bool = converged(self, it) % convergence test at iteration it
@@ -36,11 +68,11 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
                     end
                 end
                 if self.options.verbose == 2
-                    fprintf(1, sprintf('\nSolverLN error is: %f\n',maxIterErr));
+                    fprintf(1, sprintf('SolverLN error is: %f\n',maxIterErr));
                 end
                 if maxIterErr < self.options.iter_tol
                     if self.options.verbose
-                        fprintf(1, sprintf('\nSolverLN completed in %d iterations.\n',size(self.results,2)));
+                        fprintf(1, sprintf('\nSolverLN completed in %d iterations.\n',size(self.results,1)));
                     end
                     bool = true;
                 end
@@ -49,7 +81,6 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         
         function init(self) % operations before starting to iterate
             % INIT() % OPERATIONS BEFORE STARTING TO ITERATE
-            
             %nop
         end
         
@@ -60,27 +91,30 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function [result, runtime] = analyze(self, it, e)
-            % [RESULT, RUNTIME] = ANALYZE(IT, E)
-            
+            % [RESULT, RUNTIME] = ANALYZE(IT, E)            
             T0 = tic;
-            self.ensemble{e}.reset();
-            self.solvers{e}.reset();
+            %self.ensemble{e}.reset();
+            self.solvers{e}.resetResults();
             result = self.solvers{e}.getAvgTable();
             runtime = toc(T0);
         end
         
         function post(self, it) % operations after an iteration
             % POST(IT) % OPERATIONS AFTER AN ITERATION
-            
             for post_it = 1:2 % do elevator up and down
                 self.model.updateParam({self.results{it,:}});
             end
+            if it == 1 && ~isempty(self.initNodeAvgTable)
+                self.paramFromRawAvgTables(self.initNodeAvgTable, self.initCallAvgTable);
+            end
             self.ensemble = self.model.refreshLayers(); % update Network objects in ensemble
+            %self.model.param.Nodes.RespT
+            %self.model.param.Edges.RespT            
         end
         
-        function finish(self) % operations after interations are completed
+        function finish(self) % operations after iterations are completed
             % FINISH() % OPERATIONS AFTER INTERATIONS ARE COMPLETED
-            
+            %fprintf('\n');
             %nop
         end
         

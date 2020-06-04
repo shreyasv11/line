@@ -36,7 +36,7 @@ classdef Queue < Station
                     case {SchedStrategy.PS, SchedStrategy.DPS,SchedStrategy.GPS}
                         self.schedPolicy = SchedStrategyType.PR;
                         self.server = SharedServer(classes);
-                    case {SchedStrategy.FCFS, SchedStrategy.LCFS, SchedStrategy.RAND, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF, SchedStrategy.LJF}
+                    case {SchedStrategy.FCFS, SchedStrategy.LCFS, SchedStrategy.SIRO, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF, SchedStrategy.LJF}
                         self.schedPolicy = SchedStrategyType.NP;
                         self.server = Server(classes);
                     case SchedStrategy.INF
@@ -125,8 +125,9 @@ classdef Queue < Station
                 self.classCap((length(self.classCap)+1):class.index) = Inf;
             end
             self.setStrategyParam(class, weight);
-            if resetInitState
-                self.model.initDefault(self.model.getNodeIndex(self));
+            if resetInitState % invalidate initial state
+                %self.model.initDefault(self.model.getNodeIndex(self));
+                self.model.setInitialized(false); % this is a better way to invalidate to avoid that sequential calls to setService all trigger an initDefault
             end
         end
         

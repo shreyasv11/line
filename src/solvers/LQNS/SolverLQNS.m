@@ -23,21 +23,26 @@ classdef SolverLQNS < LayeredNetworkSolver
             options = self.getOptions;
             filename = [tempname,'.lqnx'];
             self.model.writeXML(filename);
+            if options.verbose
+                ignoreWarn = '';
+            else
+                ignoreWarn = '-w';
+            end
             switch options.method
                 case {'default','lqns'}
-                    system(['lqns -i ',num2str(options.iter_max),' -Pstop-on-message-loss=false -x ',filename]);
+                    system(['lqns ',ignoreWarn,' -i ',num2str(options.iter_max),' -Pstop-on-message-loss=false -x ',filename]);
                 case {'srvn'}
-                    system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -Pstop-on-message-loss=false -x ',filename]);
+                    system(['lqns ',ignoreWarn,' -i ',num2str(options.iter_max),' -Playering=srvn -Pstop-on-message-loss=false -x ',filename]);
                 case {'exact'}
-                    system(['lqns -i ',num2str(options.iter_max),' -Pmva=exact -Pstop-on-message-loss=false -x ',filename]);
+                    system(['lqns ',ignoreWarn,' -i ',num2str(options.iter_max),' -Pmva=exact -Pstop-on-message-loss=false -x ',filename]);
                 case {'srvnexact'}
-                    system(['lqns -i ',num2str(options.iter_max),' -Playering=srvn -Pmva=exact -Pstop-on-message-loss=false -x ',filename]);
+                    system(['lqns ',ignoreWarn,' -i ',num2str(options.iter_max),' -Playering=srvn -Pmva=exact -Pstop-on-message-loss=false -x ',filename]);
                 case {'sim','lqsim'}
-                    system(['lqsim -A ',num2str(options.samples),',3 -Pstop-on-message-loss=off -x ',filename]);
+                    system(['lqsim ',ignoreWarn,' -A ',num2str(options.samples),',3 -Pstop-on-message-loss=off -x ',filename]);
                 case {'lqnsdefault'}
-                    system(['lqns -x ',filename]);
+                    system(['lqns ',ignoreWarn,' -x ',filename]);
                 otherwise
-                    system(['lqns -i ',num2str(options.iter_max),' -Pstop-on-message-loss=false -x ',filename]);
+                    system(['lqns ',ignoreWarn,' -i ',num2str(options.iter_max),' -Pstop-on-message-loss=false -x ',filename]);
             end
             self.parseXMLResults(filename);
             if ~options.keep

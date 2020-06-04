@@ -40,7 +40,7 @@ end
 
 for c=1:qn.nchains
     inchain = find(qn.chains(c,:));
-    completingclasses = find(qn.chains(c,:) & completes);
+    completingclasses = qn.chains(c,:) & completes;
     for i=1:qn.nstations
         for k=inchain % for all classes within the chain (a class belongs to a single chain, the reference station must be identical for all classes within a chain )
             alpha(i,k) = alpha(i,k) + qn.visits{c}(i,k)/sum(qn.visits{c}(qn.refstat(k),completingclasses));

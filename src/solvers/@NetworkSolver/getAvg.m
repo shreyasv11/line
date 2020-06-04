@@ -8,7 +8,7 @@ function [QNclass,UNclass,RNclass,TNclass] = getAvg(self,Q,U,R,T)
 
 if nargin == 1 % no parameter
     if isempty(self.model.handles) || ~isfield(self.model.handles,'Q') || ~isfield(self.model.handles,'U') || ~isfield(self.model.handles,'R') || ~isfield(self.model.handles,'T') || ~isfield(self.model.handles,'A')
-        self.reset(); % reset in case there are partial results saved
+        self.resetResults(); % reset in case there are partial results saved
     end
     [Q,U,R,T] = self.model.getAvgHandles;
 elseif nargin == 2

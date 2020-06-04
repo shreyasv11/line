@@ -68,7 +68,6 @@ classdef NetworkStruct <handle
         %constructor
         function self = NetworkStruct(nodetype, nodenames, classnames, numservers, njobs, refstat, routing)
             % SELF = NETWORKSTRUCT(NODETYPE, NODENAMES, CLASSNAMES, NUMSERVERS, NJOBS, REFSTAT, ROUTING)
-            
             self.nnodes = numel(nodenames);
             self.nclasses = length(classnames);
             self.nclosedjobs = sum(njobs(isfinite(njobs)));
@@ -338,10 +337,10 @@ classdef NetworkStruct <handle
                 bool = false;
             end
         end
-               
+        
         function bool = isqsys(self)
             % bool = isqsys(self)
-            % True if the model defined an open queueing system.            
+            % True if the model defined an open queueing system.
             bool = false;
             if qn.nstations == 2 && sum(self.nodetype == NodeType.Sink)==1
                 bool = true;
@@ -402,4 +401,59 @@ classdef NetworkStruct <handle
             newObj.varsparam = obj.varsparam;     % parameters for local variables
         end
     end % getIndex
+    
+%     methods (Static, Access = public)
+%         function newObj = fromJSON(qn_json)
+%             % NEWOBJ = FROMJSON(QN_JSON)
+%             qn = jsondecode(qn_json);
+%             if ismatrix(qn.visits)
+%                 qn.visits = {qn.visits'};
+%             end
+%             newObj = NetworkStruct(qn.nodetype, qn.nodenames, qn.classnames, qn.nservers, qn.njobs, qn.refstat, qn.routing);
+%             newObj.cap = qn.cap;     % total buffer size
+%             newObj.chains = qn.chains;     % binary CxK matrix where 1 in entry (i,j) indicates that class j is in chain i.
+%             newObj.classcap = qn.classcap;    % buffer size for each class
+%             newObj.classnames = qn.classnames;  % name of each job class
+%             newObj.classprio = qn.classprio;       % scheduling priorities in each class (optional)
+%             newObj.csmask = qn.csmask; % (r,s) entry if class r can switch into class s somewhere
+%             newObj.isstatedep = qn.isstatedep; % state dependent routing
+%             newObj.isstation = qn.isstation; % element i is true if node i is a station
+%             newObj.isstateful = qn.isstateful; % element i is true if node i is stateful
+%             newObj.isslc = qn.isslc; % element r is true if class r self-loops at its reference station
+%             newObj.lst = qn.lst;          % function handle to Laplace-Stieltjes transform for each service or arrival distribution
+%             newObj.mu = qn.mu;          % service rate in each service phase, for each job class in each station
+%             newObj.nchains = qn.nchains;           % number of chains (int)
+%             newObj.nclasses = qn.nclasses;          % number of classes (int)
+%             newObj.nclosedjobs = qn.nclosedjobs;          % total population (int)
+%             newObj.njobs = qn.njobs;             % initial distribution of jobs in classes (Kx1 int)
+%             newObj.nnodes = qn.nnodes; % number of nodes (Mn int)
+%             newObj.nservers = qn.nservers;   % number of servers per station (Mx1 int)
+%             newObj.nstations = qn.nstations;  % number of stations (int)
+%             newObj.nstateful = qn.nstateful;  % number of stations (int)
+%             newObj.nvars = qn.nvars; % number of local variables
+%             newObj.nodenames = qn.nodenames;   % name of each node
+%             newObj.nodetype = qn.nodetype; % server type in each node
+%             newObj.phases = qn.phases; % number of phases in each service or arrival process
+%             newObj.phasessz = qn.phasessz; % number of phases in each service or arrival process
+%             newObj.phaseshift = qn.phaseshift; % number of phases in each service or arrival process
+%             newObj.phi = qn.phi;         % probability of service completion in each service phase,
+%             newObj.pie = qn.pie;         % probability of service entry in each service phase,
+%             newObj.proc = qn.proc;         % probability of service completion in each service phase,
+%             newObj.rates = qn.rates;       % service rate for each job class in each station
+%             newObj.refstat = qn.refstat;    % index of the reference node for each request class (Kx1 int)
+%             newObj.routing = qn.routing;     % routing strategy type
+%             newObj.rt = qn.rt;         % routing table with class switching
+%             newObj.rtnodes = qn.rtnodes;         % routing table with class switching
+%             newObj.rtfun = qn.rtfun; % local routing functions
+%             newObj.sched = qn.sched;       % scheduling strategy in each station
+%             newObj.schedid = qn.schedid;       % scheduling strategy id in each station (optional)
+%             newObj.schedparam = qn.schedparam;       % scheduling weights in each station and class (optional)
+%             newObj.sync = qn.sync;
+%             newObj.space = qn.space;    % state space
+%             newObj.state = qn.state;    % initial or current state
+%             newObj.scv = qn.scv; % squared coefficient of variation of service times (MxK)
+%             newObj.visits = qn.visits;           % visits placed by classes at the resources
+%             newObj.varsparam = qn.varsparam;     % parameters for local variables
+%         end
+%     end
 end

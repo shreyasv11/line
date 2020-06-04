@@ -126,7 +126,7 @@ for ist=1:qn.nstations
                 else
                     F_i = 1;
                 end
-            case SchedStrategy.ID_RAND
+            case SchedStrategy.ID_SIRO
                 for r=1:K
                     PHr = qn.proc{ist,r};
                     if ~isempty(PHr)
