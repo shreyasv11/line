@@ -3,19 +3,19 @@ classdef Activity < LayeredNetworkElement
     %
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
-    
+        
     properties
         hostDemand;
         hostDemandMean;             %double
         hostDemandSCV;              %double
         parent;
         parentName;                 %string
-        boundToEntry;               %string
+        boundToEntry;               %string 
         callOrder;                  %string \in {'STOCHASTIC', 'DETERMINISTIC'}
-        synchCallDests = cell(0);   %string array
-        synchCallMeans = [];        %integer array
-        asynchCallDests = cell(0);  %string array
-        asynchCallMeans = [];       %integer array
+        syncCallDests = cell(0);   %string array
+        syncCallMeans = [];        %integer array
+        asyncCallDests = cell(0);  %string array
+        asyncCallMeans = [];       %integer array
     end
     
     methods
@@ -43,7 +43,7 @@ classdef Activity < LayeredNetworkElement
             obj.setHostDemand(hostDemand);
             obj.boundToEntry = boundToEntry;
             obj.setCallOrder(callOrder);
-            model.objects.activities{end+1} = obj;
+            model.activities{end+1} = obj;
         end
         
         function obj = setParent(obj, parent)
@@ -130,11 +130,11 @@ classdef Activity < LayeredNetworkElement
                 synchCallMean = 1.0;
             end
             if ischar(synchCallDest)
-                obj.synchCallDests{length(obj.synchCallDests)+1} = synchCallDest;
+                obj.syncCallDests{length(obj.syncCallDests)+1} = synchCallDest;
             else % object
-                obj.synchCallDests{length(obj.synchCallDests)+1} = synchCallDest.name;
+                obj.syncCallDests{length(obj.syncCallDests)+1} = synchCallDest.name;
             end
-            obj.synchCallMeans = [obj.synchCallMeans; synchCallMean];
+            obj.syncCallMeans = [obj.syncCallMeans; synchCallMean];
         end
         
         %asynchCall
@@ -145,11 +145,11 @@ classdef Activity < LayeredNetworkElement
                 asynchCallMean = 1.0;
             end
             if ischar(asynchCallDest)
-                obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest;
+                obj.asyncCallDests{length(obj.asyncCallDests)+1} = asynchCallDest;
             else % object
-                obj.asynchCallDests{length(obj.asynchCallDests)+1} = asynchCallDest.name;
+                obj.asyncCallDests{length(obj.asyncCallDests)+1} = asynchCallDest.name;
             end
-            obj.asynchCallMeans = [obj.asynchCallMeans; asynchCallMean];
+            obj.asyncCallMeans = [obj.asyncCallMeans; asynchCallMean];
         end
         
     end

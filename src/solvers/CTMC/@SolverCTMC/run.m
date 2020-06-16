@@ -59,7 +59,7 @@ if isinf(options.timespan(1))
             case 'Cache'
                 self.model.nodes{qn.statefulToNode(isf)}.server.actualHitProb = qn.varsparam{ind}.actualhitprob;
                 self.model.nodes{qn.statefulToNode(isf)}.server.actualMissProb = qn.varsparam{ind}.actualmissprob;
-                self.model.refreshChains;
+                self.model.refreshChains(true);                
         end
     end
     %qn.space = SS;

@@ -27,7 +27,7 @@ classdef Join < Station
                 addNode(model, self);
             end
             %             if ~exist('joinstrategy','var')
-            %                 joinstrategy = JoinStrategy.Standard;
+            %                 joinstrategy = JoinStrategy.STD;
             %             end
             %             setStrategy(joinstrategy);
         end
@@ -39,6 +39,10 @@ classdef Join < Station
             
             self.input.setStrategy(class,strategy);
         end
+        
+        function setScheduling(self, scheduling)
+            %noop
+        end        
         
         function self = setRequired(self, class, njobs)
             % SELF = SETREQUIRED(CLASS, NJOBS)

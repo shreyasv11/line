@@ -31,6 +31,11 @@ classdef Solver < handle
     end
     
     methods %(Abstract) % implemented with errors for Octave compatibility
+        
+        function model = getModel(self)
+            model = self.model;
+        end
+        
         function bool = supports(self,model)
             % BOOL = SUPPORTS(SELF,MODEL)
             % True if the input model is supported by the solver
@@ -308,7 +313,7 @@ classdef Solver < handle
                     options.method = erase(options.method,'mam.');
                     solver = SolverMAM(model, options);
                 otherwise
-                    solver = NetworkSolverLibrary(model, options);
+                    solver = Library(model, options);
             end
         end
     end

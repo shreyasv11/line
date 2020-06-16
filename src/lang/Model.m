@@ -6,13 +6,17 @@ classdef Model < Copyable
     
     properties
         name;
+        lineVersion;
     end
     
     methods
         %Constructor
         function self = Model(name)
             % SELF = MODEL(NAME)
-            
+            %[~,lineVersion] = system('git describe'); 
+            lineVersion = '2.0.7';
+            lineVersion = strip(lineVersion);
+            self.setVersion(lineVersion);
             self.setName(name);
         end
         
@@ -28,6 +32,15 @@ classdef Model < Copyable
             self.name = name;
         end
         
+        function v = getVersion(self)
+            v = self.version;
+        end        
+        
+        function self = setVersion(self, version)
+            % SELF = SETVERSION(VERSION)
+            
+            self.lineVersion = version;
+        end
     end
     
 end

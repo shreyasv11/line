@@ -26,7 +26,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             if options.verbose
                 ignoreWarn = '';
             else
-                ignoreWarn = '-w';
+                ignoreWarn = '-w -a';
             end
             switch options.method
                 case {'default','lqns'}
@@ -143,7 +143,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             
             procList = doc.getElementsByTagName('processor');
             for i = 0:procList.getLength()-1
-                %Element - Processor
+                %Element - Host
                 procElement = procList.item(i);
                 procName = char(procElement.getAttribute('name'));
                 procPos = findstring(lqnGraph.Nodes.Node,procName);

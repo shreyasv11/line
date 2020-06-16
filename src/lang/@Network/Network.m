@@ -5,21 +5,22 @@ classdef Network < Model
     % All rights reserved.
     
     properties (GetAccess = 'private', SetAccess='private')
-        version;
         usedFeatures; % structure of booleans listing the used classes
         % it must be accessed via getUsedLangFeatures that updates
         % the Distribution classes dynamically
         logPath;
         linkedRoutingTable;
+        modifiedRoutingTable;
         isInitialized;
+        doChecks;
     end
     
     properties (Access=protected)
         items;
+        qn;
     end
     
     properties (Hidden)
-        qn;
         ag;
         env;
         handles;
@@ -27,8 +28,8 @@ classdef Network < Model
         links;
         
         stationidxs;
-%        sourceidx;
-%        sinkidx;
+        sourceidx;
+        sinkidx;
     end
     
     properties
@@ -40,6 +41,9 @@ classdef Network < Model
     methods % public methods in class folder
         refreshAG(self) % get agent representation
         
+        function bool = hasStruct(self)
+            bool = isempty(self.qn);
+        end
         sa = getStruct(self, structType, wantState) % get abritrary representation
         %        cn = getCN(self, wantState) % wrapper of getStruct for cache network representation
         %        ag = getAG(self) % get agent representation
@@ -52,13 +56,15 @@ classdef Network < Model
         [P,Pnodes,links,myPc,myPs] = getRoutingMatrix(self, arvRates) % get routing matrix
         
         nodes = resetNetwork(self)
+        
         self = link(self, P)
-        [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath)
+        [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath)        
         function self = linkNetwork(self, P) % obsolete - old name
             % SELF = LINKNETWORK(P) % OBSOLETE - OLD NAME
             
             self = link(self,  P);
         end
+        
         function [loggerBefore,loggerAfter] = linkNetworkAndLog(self, nodes, classes, P, wantLogger, logPath)% obsolete - old name
             % [LOGGERBEFORE,LOGGERAFTER] = LINKNETWORKANDLOG(NODES, CLASSES, P, WANTLOGGER, LOGPATH)% OBSOLETE - OLD NAME
             
@@ -102,16 +108,11 @@ classdef Network < Model
     
     % PUBLIC METHODS
     methods (Access=public)
-        
-        function v = getVersion(self)
-            v = self.version;
-        end
-        
+                
         %Constructor
         function self = Network(modelName)
             % SELF = NETWORK(MODELNAME)            
             self@Model(modelName);
-            self.version = '2.0';
             self.nodes = {};
             self.stations = {};
             self.classes = {};
@@ -128,8 +129,13 @@ classdef Network < Model
             self.items = {};
             self.env = {};
             self.stationidxs = [];
-%            self.sourceidx = [];
-%            self.sinkidx = [];
+            self.sourceidx = [];
+            self.sinkidx = [];
+            self.setChecks(true);
+        end
+        
+        function self = setChecks(self, bool)
+            self.doChecks = bool;
         end
         
         function env = getEnvironment(self)
@@ -188,6 +194,8 @@ classdef Network < Model
         end
         
 		function resetHandles(self)
+            self.perfIndex.Avg = {};
+            self.perfIndex.Tran = {};
 			self.handles = {};
 		end
 		
@@ -201,15 +209,13 @@ classdef Network < Model
             else
                 resetModel(self, resetState);
             end
-		end
+        end        
 		
         function resetModel(self, resetState)
             % RESETMODEL(RESETSTATE)
             %
             % If RESETSTATE is true, the model requires re-initialization
             % of its state
-            self.perfIndex.Avg = {};
-            self.perfIndex.Tran = {};
             self.resetHandles();
             self.qn = [];
             self.ag = [];
@@ -283,20 +289,28 @@ classdef Network < Model
             c = -1;
         end
         
-        function classnames = getClassNames(self)
+        function classNames = getClassNames(self)
             % CLASSNAMES = GETCLASSNAMES()
-            
+            if ~isempty(self.qn)
+                classNames = self.qn.classnames;
+            else
             for r=1:getNumberOfClasses(self)
-                classnames{r,1}=self.classes{r}.name;
+                classNames{r,1}=self.classes{r}.name;
+            end
             end
         end
         
         function nodeNames = getNodeNames(self)
             % NODENAMES = GETNODENAMES()
-            
-            for i=1:getNumberOfNodes(self)
+            %if ~isempty(self.qn)
+            %    nodeNames = self.qn.nodenames;
+            %else    
+            M = getNumberOfNodes(self);
+            nodeNames = cell(M,1);
+            for i=1:M
                 nodeNames{i,1} = self.nodes{i}.name;
             end
+            %end
         end
         
         function nodeTypes = getNodeTypes(self)
@@ -350,8 +364,8 @@ classdef Network < Model
                             rtTypes(ind,r) = RoutingStrategy.ID_RAND;
                         case RoutingStrategy.PROB
                             rtTypes(ind,r) = RoutingStrategy.ID_PROB;
-                        case RoutingStrategy.RR
-                            rtTypes(ind,r) = RoutingStrategy.ID_RR;
+                        case RoutingStrategy.RRB
+                            rtTypes(ind,r) = RoutingStrategy.ID_RRB;
                         case RoutingStrategy.JSQ
                             rtTypes(ind,r) = RoutingStrategy.ID_JSQ;
                         case RoutingStrategy.DISABLED
@@ -439,6 +453,33 @@ classdef Network < Model
             end
         end
         
+        function nodes = getNodeByIndex(self, idx)
+            % NODES = GETNODEBYINDEX(SELF, NAME)
+            if idx > 0
+                nodes = self.nodes{idx};
+            else
+                nodes = NaN;
+            end
+        end
+        
+        function station = getStationByIndex(self, idx)
+            % STATION = GETSTATIONBYINDEX(SELF, NAME)
+            if idx > 0
+                station = self.stations{idx};
+            else
+                station = NaN;
+            end
+        end
+        
+        function class = getClassByIndex(self, idx)
+            % CLASS = GETCLASSBYINDEX(SELF, NAME)
+            if idx > 0
+                class = self.classes{idx};
+            else
+                class = NaN;
+            end
+        end
+
         
         function [stateSpace,nodeStateSpace] = getStateSpace(self, varargin)
             error('This method is no longer supported. Use SolverCTMC(model,...).getStateSpace(...) instead.');
@@ -640,10 +681,10 @@ classdef Network < Model
         function list = getIndexStations(self)
             % LIST = GETINDEXSTATIONS()
             
-            %if isempty(self.stationidxs)
+            if isempty(self.stationidxs)
                 % returns the ids of nodes that are stations
                 self.stationidxs = find(cellisa(self.nodes, 'Station'))';
-            %end
+            end
             list = self.stationidxs;
         end
         
@@ -754,9 +795,13 @@ classdef Network < Model
             end
         end
         
+        function initFromAvgTableQLen(self, AvgTable)
+            QN = reshape(AvgTable.QLen,self.getNumberOfClasses,self.getNumberOfStations)';
+            self.initFromAvgQLen(QN);
+        end
+        
         function initFromAvgQLen(self, AvgQLen)
-            % INITFROMAVGQLEN(AVGQLEN)
-            
+            % INITFROMAVGQLEN(AVGQLEN)            
             n = round(AvgQLen);
             njobs = sum(n,1);
             % we now address the problem that round([0.5,0.5]) = [1,1] so
@@ -768,7 +813,11 @@ classdef Network < Model
                     njobs = sum(n,1)';
                 end
             end
-            self.initFromMarginal(n);
+            try
+                self.initFromMarginal(n);
+            catch
+                self.initDefault;
+            end
         end
         
         function initDefault(self, nodes)
@@ -778,11 +827,14 @@ classdef Network < Model
             % closed classes initialized at ref station
             % running jobs are allocated in class id order until all
             % servers are busy
-            self.refreshStruct();  % we force update of the model before we initialize
+            
+            %self.refreshStruct();  % we force update of the model before we initialize
+            
             qn = self.getStruct(false);
             N = qn.njobs';
             if nargin < 2
                 nodes = 1:self.getNumberOfNodes;
+                
             end
             for i=nodes
                 if qn.isstation(i)
@@ -795,14 +847,14 @@ classdef Network < Model
                         end
                         s0(r) = min(n0(r),s);
                         s = s - s0(r);
-                    end
+                    end                    
                     state_i = State.fromMarginalAndStarted(qn,i,n0(:)',s0(:)');
                     switch qn.nodetype(i)
                         case NodeType.Cache
                             state_i = [state_i, 1:qn.nvars(i)];
                     end
                     switch qn.routing(i)
-                        case RoutingStrategy.ID_RR
+                        case RoutingStrategy.ID_RRB
                             % start from first connected queue
                             state_i = [state_i, find(qn.rt(i,:),1)];
                     end
@@ -1033,24 +1085,7 @@ classdef Network < Model
                 end
             end
         end
-        
-        %        function self = isValid(self)
-        % SELF = ISVALID()
-        
-        %% todo
-        %        end
-        
-        function self = update(self)
-            % SELF = UPDATE()
-            
-            self.refreshStruct();
-        end
-        
-        function self = refresh(self)
-            % SELF = REFRESH()
-            
-            self.refreshStruct();
-        end
+       
         
         function self = removeClass(self, jobclass)
             % SELF = REMOVECLASS(SELF, CLASS)

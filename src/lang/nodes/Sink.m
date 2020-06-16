@@ -30,6 +30,11 @@ classdef Sink < Node
             
             sections = {'', self.server, ''};
         end
+        
+        function self = setScheduling(self, class, strategy)
+            %noop
+        end
+        
     end
     
     methods(Access = protected)

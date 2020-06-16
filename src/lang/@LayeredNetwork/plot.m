@@ -48,7 +48,7 @@ for r=findstring(lqnGraph.Nodes.Type,'R')
     end
 end
 
-for r=findstring(lqnGraph.Nodes.Type,'P')
+for r=findstring(lqnGraph.Nodes.Type,'H')
     if r>0
         highlight(h,r,'NodeColor','black')
     end

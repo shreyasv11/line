@@ -155,7 +155,7 @@ if qn.isstation(ind)
                     [ni,nir,sir,kir] = State.toMarginal(qn,ind,inspace,K,Ks,space_buf,space_srv,space_var);
                 end
                 switch qn.routing(ind)
-                    case RoutingStrategy.ID_RR
+                    case RoutingStrategy.ID_RRB
                         idx = find(space_var(end) == qn.varsparam{ind}.outlinks);
                         if idx < length(qn.varsparam{ind}.outlinks)
                             space_var = qn.varsparam{ind}.outlinks(idx+1);

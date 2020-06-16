@@ -6,5 +6,5 @@ end
 if nargin == 1 || wantState
     self.qn.state = self.getState;
 end
-qn = self.qn;
+qn = self.qn.copy;
 end

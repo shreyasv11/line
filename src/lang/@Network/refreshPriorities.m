@@ -7,7 +7,7 @@ function classprio = refreshPriorities(self)
 K = self.getNumberOfClasses();
 classprio = zeros(1,K);
 for r=1:K
-    classprio(r) = self.classes{r}.priority;
+    classprio(r) = self.getClassByIndex(r).priority;
 end
 if ~isempty(self.qn)
     self.qn.setPrio(classprio);

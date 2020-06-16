@@ -12,6 +12,14 @@ classdef ActivityPrecedence
         POST_AND = 'post-AND';
         POST_OR = 'post-OR';
         POST_LOOP = 'post-LOOP';
+        
+        ID_PRE_SEQ  = 1;
+        ID_PRE_AND = 2;
+        ID_PRE_OR = 3;
+        ID_POST_SEQ = 11;
+        ID_POST_AND = 12;
+        ID_POST_OR = 13;
+        ID_POST_LOOP = 14;
     end
     
     properties
@@ -66,6 +74,29 @@ classdef ActivityPrecedence
                 ap{m} = ActivityPrecedence.Sequence(varargin{m},varargin{m+1});
             end
         end
+        
+        function typeId = getPrecedenceId(precedence)
+            % TYPEID = GETPRECEDENCEID(PRECEDENCE)
+            % Classifies the activity precedence
+            switch precedence
+                case ActivityPrecedence.PRE_SEQ
+                    typeId = ActivityPrecedence.ID_PRE_SEQ;
+                case ActivityPrecedence.PRE_AND
+                    typeId = ActivityPrecedence.ID_PRE_AND;
+                case ActivityPrecedence.PRE_OR
+                    typeId = ActivityPrecedence.ID_PRE_OR;
+                case ActivityPrecedence.POST_SEQ
+                    typeId = ActivityPrecedence.ID_POST_SEQ;
+                case ActivityPrecedence.POST_AND
+                    typeId = ActivityPrecedence.ID_POST_AND;
+                case ActivityPrecedence.POST_OR
+                    typeId = ActivityPrecedence.ID_POST_OR;
+                case ActivityPrecedence.POST_LOOP
+                    typeId = ActivityPrecedence.ID_POST_LOOP;
+                otherwise
+                    error('Unrecognized precedence type.');
+            end
+        end        
         
         function ap = Sequence(preAct, postAct)
             % AP = SEQUENCE(PREACT, POSTACT)

@@ -41,6 +41,12 @@ classdef Metric < Copyable
         transient;
     end
     
+    properties (Hidden)
+        stationIndex;
+        classIndex;
+        %nodeIndex;
+    end
+    
     methods (Hidden)
         %Constructor
         function self = Metric(type, class, station)
@@ -48,7 +54,7 @@ classdef Metric < Copyable
             
             self.type = type;
             self.class = class;
-            if exist('station','var')
+            if nargin > 2
                 self.station = station;
             else
                 self.station = '';
@@ -68,6 +74,9 @@ classdef Metric < Copyable
                 case {Metric.TranQLen, Metric.TranTput, Metric.TranUtil}
                     self.transient = true;
             end
+            self.stationIndex = NaN;
+        %    self.nodeIndex = NaN;
+            self.classIndex = NaN;
         end
     end
     
@@ -116,10 +125,16 @@ classdef Metric < Copyable
                     if ~exist('model','var')
                         error('Wrong syntax, use Metric.get(results,model).\n');
                     end
-                    classnames = model.getClassNames();
-                    stationnames = model.getStationNames();
-                    i = findstring(stationnames,self.station.name);
-                    r = findstring(classnames,self.class.name);
+                    if isnan(self.stationIndex)
+                        stationnames = model.getStationNames();
+                        self.stationIndex = findstring(stationnames,self.station.name);
+                    end
+                    i = self.stationIndex;
+                    if isnan(self.classIndex)
+                        classnames = model.getClassNames();
+                        self.classIndex = findstring(classnames,self.class.name);
+                    end
+                    r = self.classIndex;
                     switch self.type
                         case Metric.TranTput
                             %results.Tran.Avg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);
@@ -156,7 +171,7 @@ classdef Metric < Copyable
                                 type = Metric.RespT;
                         end
                         if strcmp(results.metric{i}.class, self.class.name) && strcmp(results.metric{i}.measureType,type) && strcmp(results.metric{i}.station, self.station.name)
-                            chainIdx = find(cellfun(@any,strfind(model.qn.classnames,self.class.name)));
+                            chainIdx = find(cellfun(@any,strfind(model.getStruct.classnames,self.class.name)));
                             %chain = model.getChains{chainIdx};
                             switch self.class.type
                                 case 'closed'
@@ -180,10 +195,16 @@ classdef Metric < Copyable
                     if ~exist('model','var')
                         error('Wrong syntax, use Metric.get(results,model).\n');
                     end
-                    classnames = model.getClassNames();
-                    stationnames = model.getStationNames();
-                    i = findstring(stationnames,self.station.name);
-                    r = findstring(classnames,self.class.name);
+                    if isnan(self.stationIndex)
+                        stationnames = model.getStationNames();
+                        self.stationIndex = findstring(stationnames,self.station.name);
+                    end
+                    i = self.stationIndex;
+                    if isnan(self.classIndex)
+                        classnames = model.getClassNames();
+                        self.classIndex = findstring(classnames,self.class.name);
+                    end
+                    r = self.classIndex;
                     switch self.type
                         case Metric.Util
                             if isempty(results.Avg.U)

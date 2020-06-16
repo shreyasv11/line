@@ -42,7 +42,11 @@ classdef Task < LayeredNetworkElement
             obj.multiplicity = multiplicity;
             obj.scheduling = scheduling;
             obj.setThinkTime(thinkTime);
-            model.objects.tasks{end+1} = obj;
+            model.tasks{end+1} = obj;
+            switch scheduling
+                case 'ref'
+                    model.reftasks{end+1} = obj;
+            end            
         end
         
         function obj = on(obj, parent)

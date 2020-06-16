@@ -5,32 +5,33 @@ nvars = zeros(self.getNumberOfNodes, 1);
 varsparam = cell(self.getNumberOfNodes, 1);
 rtnodes = self.qn.rtnodes;
 for ind=1:self.getNumberOfNodes
-    switch class(self.nodes{ind})
+    node = self.getNodeByIndex(ind);
+    switch class(node)
         case 'Cache'
-            nvars(ind) = sum(self.nodes{ind}.itemLevelCap);
+            nvars(ind) = sum(node.itemLevelCap);
             varsparam{ind} = struct();
             varsparam{ind}.nitems = 0;
-            varsparam{ind}.accost = self.nodes{ind}.accessProb;
+            varsparam{ind}.accost = node.accessProb;
             for r=1:self.getNumberOfClasses
-                if ~self.nodes{ind}.popularity{r}.isDisabled
-                    varsparam{ind}.nitems = max(varsparam{ind}.nitems,self.nodes{ind}.popularity{r}.support(2));
+                if ~node.popularity{r}.isDisabled
+                    varsparam{ind}.nitems = max(varsparam{ind}.nitems,node.popularity{r}.support(2));
                 end
             end
-            varsparam{ind}.cap = self.nodes{ind}.itemLevelCap;
+            varsparam{ind}.cap = node.itemLevelCap;
             varsparam{ind}.pref = cell(1,self.getNumberOfClasses);
             for r=1:self.getNumberOfClasses
-                if self.nodes{ind}.popularity{r}.isDisabled
+                if node.popularity{r}.isDisabled
                     varsparam{ind}.pref{r} = NaN;
                 else
-                    varsparam{ind}.pref{r} = self.nodes{ind}.popularity{r}.evalPMF(1:varsparam{ind}.nitems);
+                    varsparam{ind}.pref{r} = node.popularity{r}.evalPMF(1:varsparam{ind}.nitems);
                 end
             end
-            varsparam{ind}.rpolicy = self.nodes{ind}.replacementPolicy;
-            varsparam{ind}.hitclass = round(self.nodes{ind}.server.hitClass);
-            varsparam{ind}.missclass = round(self.nodes{ind}.server.missClass);
+            varsparam{ind}.rpolicy = node.replacementPolicy;
+            varsparam{ind}.hitclass = round(node.server.hitClass);
+            varsparam{ind}.missclass = round(node.server.missClass);
     end
     switch self.qn.routing(ind)
-        case RoutingStrategy.ID_RR
+        case RoutingStrategy.ID_RRB
             nvars(ind) = nvars(ind) + 1;
             % save indexes of outgoing links
             if isempty(varsparam) % reinstantiate if not a cache

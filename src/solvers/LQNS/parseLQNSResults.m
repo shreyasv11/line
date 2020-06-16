@@ -75,12 +75,12 @@ try
 catch exception %java.io.FileNotFoundException
     if ~exist(filename, 'file')
         disp(['Error: Input XML file ', filename, ' not found']);
-        processors = [];
+        hosts = [];
         tasks = [];
         entries = [];
         requesters = [];
         %providers = [];
-        myLN.processors = processors;
+        myLN.hosts = hosts;
         %myLN.tasks = tasks;
         %myLN.entries = entries;
         
@@ -105,19 +105,19 @@ for i = 0:solverPara.getLength()-1
 end
 
 procList = doc.getElementsByTagName('processor');
-processors = [];
+hosts = [];
 %providers = cell(0); % list of entries that provide services - Entry, Task, Proc
 requesters = cell(0); % list of activities that request services - Act, Task, Proc
 tasks = cell(0); %list of tasks - Task, task ID, Proc, ProcID - Row Index as task ID
 entries = cell(0); %list of entries - Entry, Task ID
 taskID = 1;
-physical = cell(0); %list of actual processors, those thata receive demand for resources
+physical = cell(0); %list of actual hosts, those thata receive demand for resources
 %demand is always indicated in an entry activity
 procID = 1;
 
 clients = []; % list of tasks that act as pure clients (think time)
 for i = 0:procList.getLength()-1
-    %Node - Processor
+    %Node - Host
     procNode = procList.item(i);
     
     if procNode.getNodeType() == Node.ELEMENT_NODE

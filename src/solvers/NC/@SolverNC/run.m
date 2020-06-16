@@ -28,7 +28,7 @@ if qn.nclosedjobs == 0 && length(qn.nodetype)==3 && all(sort(qn.nodetype)' == so
             self.model.nodes{ind}.server.actualMissProb = prob;
         end
     end
-    self.model.refreshChains;
+    self.model.refreshChains(true);
     % start iteration
     [QN,UN,RN,TN,CN,XN,lG,pij,runtime] = solver_nc_cache_analysis(qn, options);
     self.result.Prob.itemProb = pij;

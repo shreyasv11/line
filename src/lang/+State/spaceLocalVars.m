@@ -18,7 +18,7 @@ switch qn.nodetype(ind)
 end
 
 switch qn.routing(ind)
-    case RoutingStrategy.ID_RR
+    case RoutingStrategy.ID_RRB
         space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
 end
 end

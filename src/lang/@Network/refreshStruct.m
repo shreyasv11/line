@@ -11,28 +11,15 @@ servers = self.getStationServers();
 refstat = self.getReferenceStations();
 routing = self.getRoutingStrategies();
 self.qn = NetworkStruct(nodetypes, nodenames, classnames, servers, jobs(:), refstat, routing);
+self.refreshPriorities();
 self.refreshService();
-self.refreshScheduling();
 wantVisits = true;
 if any(nodetypes == NodeType.Cache)
     wantVisits = false;
 end
 self.refreshChains(wantVisits);
-self.refreshCapacity();
-self.refreshPriorities();
-self.refreshLocalVars();
-
+self.refreshLocalVars(); % depends on chains (rtnodes)
 self.refreshSync(); % this assumes that refreshChain is called before
 %self.qn.forks = self.getForks(self.qn.rt);
-
-for c=1:self.qn.nchains
-    self.qn.visits{c}(isnan(self.qn.visits{c})) = 0;
-end
-
-for r=1:self.qn.nclasses
-    if all(self.qn.routing(:,r) == -1)
-        error(sprintf('Routing strategy in class %d is unspecified at all nodes.',r));
-    end
-end
 
 end

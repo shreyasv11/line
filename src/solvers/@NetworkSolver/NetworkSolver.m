@@ -22,7 +22,7 @@ classdef NetworkSolver < Solver
             self.handles.U = [];
             self.handles.W = [];
             self.handles.T = [];
-            if isempty(model.qn)
+            if model.hasStruct()
                 %self.model.sanitize;
                 self.model.refreshStruct(); % force model to refresh
             end

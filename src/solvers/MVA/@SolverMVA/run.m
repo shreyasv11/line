@@ -55,9 +55,9 @@ elseif qn.nclosedjobs == 0 && length(qn.nodetype)==3 && all(sort(qn.nodetype)' =
                     self.model.nodes{ind}.server.actualMissProb(k) = XN(m)/nansum(XN(inchain));
                 end
             end
+            self.model.refreshChains(true);
         end
     end
-    self.model.refreshChains;    
 else % queueing network
     if any(qn.nodetype == NodeType.Cache)
         error('Caching analysis not supported yet by MVA in general networks.');

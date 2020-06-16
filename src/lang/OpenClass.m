@@ -37,7 +37,7 @@ classdef OpenClass < JobClass
                     model.nodes{i}.setScheduling(self, SchedStrategy.FCFS);
                 end
                 if isa(model.nodes{i},'Join')
-                    model.nodes{i}.setStrategy(self,JoinStrategy.Standard);
+                    model.nodes{i}.setStrategy(self,JoinStrategy.STD);
                     model.nodes{i}.setRequired(self,-1);
                 end
                 if ~isempty(model.nodes{i})

@@ -54,7 +54,7 @@ classdef Node < NetworkElement
             self.setRouting(class, RoutingStrategy.PROB, destination, probability);
         end
         
-        function setScheduling(self, class, strategy)
+        function self = setScheduling(self, class, strategy)
             % SETSCHEDULING(CLASS, STRATEGY)
             
             self.input.inputJobClasses{class.index}{2} = strategy;

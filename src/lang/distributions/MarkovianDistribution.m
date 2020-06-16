@@ -10,7 +10,13 @@ classdef MarkovianDistribution < ContinuousDistrib
             
             % Abstract class constructor
             self@ContinuousDistrib(name, numParam, [0,Inf]);
+            
+            self.invSubgenerator = [];
         end
+    end
+    
+    properties (Hidden)
+        invSubgenerator; 
     end
     
     methods
@@ -73,13 +79,26 @@ classdef MarkovianDistribution < ContinuousDistrib
             alpha = map_pie(aph);
         end
         
-        function T = getGenerator(self)
-            % T = GETGENERATOR()            
+        function T = getSubgenerator(self)
+            % T = GETSUBGENERATOR()            
             
             % Get generator
             aph = self.getRepresentation;
             T = aph{1};
         end        
+        
+        function invT = getInverseSubgenerator(self)
+            % T = GETINVERSESUBGENERATOR()            
+           
+            if isempty(self.invSubgenerator)
+                % Get subgenerator
+                T = self.getSubgenerator;
+                self.invSubgenerator = inv(T);
+            end
+            
+            invT = self.invSubgenerator;            
+        end
+        
         
         function mu = getMu(self)
             % MU = GETMU()
@@ -101,6 +120,10 @@ classdef MarkovianDistribution < ContinuousDistrib
     end
     
     methods %(Abstract) % implemented with errors for Octave compatibility
+        
+        function reset(self)
+            self.invSubgenerator = [];
+        end
         
         function update(self,varargin)
             % UPDATE(SELF,VARARGIN)
@@ -154,8 +177,7 @@ classdef MarkovianDistribution < ContinuousDistrib
             % PH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
-            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
-            
+            error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');           
         end
         
         function L = evalLST(self, s)

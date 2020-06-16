@@ -1,4 +1,3 @@
-% A(i,r): mean arrival rate of class r at station i
 function [A] = getAvgArvRHandles(self)
 % [T] = GETAVGARVRHANDLES()
 

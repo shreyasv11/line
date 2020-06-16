@@ -3,7 +3,7 @@ classdef PH < MarkovianDistribution
     %
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
-    
+        
     methods
         function self = PH(alpha, T)
             % SELF = PH(ALPHA, T)
@@ -24,12 +24,12 @@ classdef PH < MarkovianDistribution
             alpha = reshape(alpha,1,length(alpha));
         end
         
-        function T = getGenerator(self)
-            % T = GETGENERATOR()
+        function T = getSubgenerator(self)
+            % T = GETSUBGENERATOR()            
             
-            % Get generator
+            % Get subgenerator
             T = self.getParam(2).paramValue;
-        end
+        end               
         
         function X = sample(self, n)
             % X = SAMPLE(N)
@@ -97,7 +97,7 @@ classdef PH < MarkovianDistribution
             % PH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
-            T = self.getGenerator;
+            T = self.getSubgenerator;
             ph = {T,-T*ones(length(T),1)*self.getInitProb};
         end
         

@@ -3,6 +3,16 @@ classdef LayeredNetworkElement < Element
     %
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
+    
+    properties (Constant)
+        HOST = 0;
+        PROCESSOR = 0;
+        TASK = 1;
+        ENTRY = 2;
+        ACTIVITY =3;
+    end
+    
+    
     methods
         %Constructor
         function self = LayeredNetworkElement(name)

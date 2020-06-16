@@ -5,9 +5,10 @@ classdef (Sealed) JoinStrategy
     % All rights reserved.
     
     properties (Constant)
-        Standard = 'Standard Join';
-        Quorum = 'Partial Join';
-        Guard = 'Partial Join';
+        STD = 'Standard Join';
+        PARTIAL = 'Partial Join';
+        %QUORUm = 'Partial Join';
+        %GUARD = 'Partial Join';
     end
     
     methods (Access = private)
@@ -24,9 +25,9 @@ classdef (Sealed) JoinStrategy
             % TEXT = TOTEXT(TYPE)
             
             switch type
-                case JoinStrategy.Standard
+                case JoinStrategy.STD
                     text = 'Stardard Join';
-                case JoinStrategy.Partial
+                case JoinStrategy.PARTIAL
                     text = 'Partial Join';
             end
         end

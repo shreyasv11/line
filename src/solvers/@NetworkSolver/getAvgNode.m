@@ -14,9 +14,9 @@ elseif nargin == 2
     R=handlers{3};
     T=handlers{4};
 end
-qn = self.model.getStruct;
-
 [QN,UN,RN,TN] = self.getAvg(Q,U,R,T);
+
+qn = self.model.getStruct; % must be called after getAvg
 
 I = self.model.getNumberOfNodes;
 M = self.model.getNumberOfStations;

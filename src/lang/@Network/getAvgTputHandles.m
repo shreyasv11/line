@@ -15,7 +15,6 @@ if isempty(self.handles) || ~isfield(self.handles,'T')
     for i=1:M
         for r=1:K
             T{i,r} = Metric(Metric.Tput, self.classes{r}, self.stations{i});
-            self.addMetric(T{i,r});
             if ~strcmpi(class(self.stations{i}.server),'ServiceTunnel')
                 if isempty(self.stations{i}.server.serviceProcess{r}) || strcmpi(class(self.stations{i}.server.serviceProcess{r}{end}),'Disabled')
                     T{i,r}.disable();
@@ -23,6 +22,7 @@ if isempty(self.handles) || ~isfield(self.handles,'T')
             end
         end
     end
+    self.addMetric(T);
     self.handles.T = T;
 else
     T = self.handles.T;

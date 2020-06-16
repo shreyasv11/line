@@ -84,8 +84,7 @@ classdef Queue < Station
             if ~exist('class','var')
                 for s = 1:length(self.model.classes)
                     distribution{s} = self.server.serviceProcess{1, self.model.classes{s}}{3};
-                end
-                
+                end                
             else
                 try
                     distribution = self.server.serviceProcess{1, class.index}{3};

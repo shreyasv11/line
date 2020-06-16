@@ -21,7 +21,7 @@ classdef Entry < LayeredNetworkElement
             end
             obj@LayeredNetworkElement(name);
             
-            model.objects.entries{end+1} = obj;
+            model.entries{end+1} = obj;
         end
         
         function obj = on(obj, parent)

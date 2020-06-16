@@ -5,10 +5,10 @@ function space = fromMarginalAndStarted(qn, ind, n, s, options)
 % All rights reserved.
 
 if ~exist('options','var')
-    options.force = false;
+    options.force = true;
 end
 if isa(qn,'Network')
-    qn=qn.getStruct();
+    qn = qn.getStruct();
 end
 % generate one initial state such that the marginal queue-lengths are as in vector n
 % n(r): number of jobs at the station in class r
@@ -101,7 +101,7 @@ switch qn.nodetype(ind)
             case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.LCFS}
                 sizeEstimator = multinomialln(n);
                 sizeEstimator = round(sizeEstimator/log(10));
-                if sizeEstimator > 2
+                if sizeEstimator > 2                    
                     if ~isfield(options,'force') || options.force == false
                         error(sprintf('State space size is very large: 1e%d states. Stopping execution. Set options.force=true to bypass this control.\n',sizeEstimator));
                     end

@@ -28,6 +28,10 @@ classdef Source < Station
             end
         end
         
+        function self = setScheduling(self, class, strategy)
+            %noop
+        end
+        
         function setArrival(self, class, distribution)
             % SETARRIVAL(CLASS, DISTRIBUTION)
             
@@ -51,6 +55,6 @@ classdef Source < Station
             distrib = self.arrivalProcess{oclass};
         end
         
-end
+    end
     
 end

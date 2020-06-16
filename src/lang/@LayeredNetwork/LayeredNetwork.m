@@ -3,9 +3,13 @@ classdef LayeredNetwork < Model & Ensemble
     %
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
-    properties
-        objects = struct();    % struct of objects
-        processors = [];       % list of processors
+    
+    properties (GetAccess = 'private', SetAccess='private')
+        aux;
+    end
+    
+    properties (Hidden)
+        indexes = struct();    % struct of objects
         lqnGraph; % digraph representation of all dependencies
         taskGraph; % digraph representation of task dependencies
         layerGraph;
@@ -21,20 +25,45 @@ classdef LayeredNetwork < Model & Ensemble
         
         syncCall = cell(1,0);
         asyncCall = cell(1,0);
-        isCall = cell(1,0);
         syncSource = cell(1,0);
         asyncSource = cell(1,0);
         syncDest = cell(1,0);
         asyncDest = cell(1,0);
         chains = cell(1,0);
         serverName = cell(1,0);
-        
+        isCall = cell(1,0);        
+    end
+    
+    properties
+        hosts = [];
+        tasks = [];
+        reftasks = [];
+        activities = [];
+        entries = [];
         usedFeatures; % cell with structures of booleans listing the used classes
         % it must be accessed via getUsedLangFeatures
     end
     
     methods
         %public methods, including constructor
+        
+        function self = reset(self)
+%                         self.lqnGraph = [];
+%                         self.taskGraph = [];
+%                         self.ensemble = {};
+%             self.aux = struct();
+%             self.hosts = {};
+%             self.tasks = {};
+%             self.reftasks = {};
+%             self.entries = {};
+%             self.activities = {};sc
+%             self.indexes.hosts = [];
+%             self.indexes.tasks = [];
+%             self.indexes.reftasks = [];
+%             self.indexes.entries = [];
+%             self.indexes.activities = [];
+%             self.init;
+        end
         
         % constructor
         function self = LayeredNetwork(name, filename)
@@ -45,13 +74,20 @@ classdef LayeredNetwork < Model & Ensemble
                 [~,name]=fileparts(tempname);
             end
             self@Model(name);
+            self.aux = struct();
             self.lqnGraph = [];
             self.taskGraph = [];
             self.ensemble = {};
-            self.objects.processors = {};
-            self.objects.tasks = {};
-            self.objects.entries = {};
-            self.objects.activities = {};
+            self.hosts = {};
+            self.tasks = {};
+            self.reftasks = {};
+            self.entries = {};
+            self.activities = {};
+            self.indexes.hosts = [];
+            self.indexes.tasks = [];
+            self.indexes.reftasks = [];
+            self.indexes.entries = [];
+            self.indexes.activities = [];
             self.param.Nodes.RespT = [];
             self.param.Nodes.Tput = [];
             self.param.Nodes.Util = [];
@@ -66,7 +102,6 @@ classdef LayeredNetwork < Model & Ensemble
         
         function self = init(self)
             % SELF = INIT()
-            
             self.generateGraph;
             self.initDefault;
             self.param.Nodes.RespT = [];
@@ -78,9 +113,9 @@ classdef LayeredNetwork < Model & Ensemble
             self.param.Edges.QLen = [];
         end
         
-        ensemble = updateEnsemble(self, isBuild, deepUpdate)
+        ensemble = updateEnsemble(self, isBuild)
         ensemble = buildEnsemble(self)
-        ensemble = refreshEnsemble(self, deepUpdate)
+        ensemble = refreshEnsemble(self)
         
         self = generateGraph(self);
         [lqnGraph,taskGraph] = getGraph(self)
@@ -95,7 +130,7 @@ classdef LayeredNetwork < Model & Ensemble
         
         bool = isValid(self)
         self = update(self)
-        self = updateParam(self, AvgTable)
+        self = updateParam(self, AvgTable, netSortAscending)
         self = initDefault(self)
         plot(self)
     end
@@ -113,7 +148,7 @@ classdef LayeredNetwork < Model & Ensemble
         fullName = getNodeFullName(self,node)
         name = getNodeName(self,node,useNode)
         obj = getNodeObject(self,node)
-        proc = getNodeProcessor(self,node)
+        proc = getNodeHost(self,node)
         task = getNodeTask(self,nodeNameOrIdx)
         type = getNodeType(self,nodeNameOrIdx)
         
@@ -122,6 +157,9 @@ classdef LayeredNetwork < Model & Ensemble
     end
     
     methods
+        
+        LQN = getStruct(self);
+            
         function E = getNumberOfLayers(self)
             % E = GETNUMBEROFLAYERS()
             

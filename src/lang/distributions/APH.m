@@ -24,10 +24,10 @@ classdef APH < MarkovianDistribution
             alpha = reshape(alpha,1,length(alpha));
         end
         
-        function T = getGenerator(self)
-            % T = GETGENERATOR()
+        function T = getSubgenerator(self)
+            % T = GETSUBGENERATOR()            
             
-            % Get generator
+            % Get subgenerator
             T = self.getParam(2).paramValue;
         end
         
@@ -86,7 +86,7 @@ classdef APH < MarkovianDistribution
             % APH = GETREPRESENTATION()
             
             % Return the renewal process associated to the distribution
-            T = self.getGenerator;
+            T = self.getSubgenerator;
             APH = {T,-T*ones(length(T),1)*self.getInitProb};
         end
                 

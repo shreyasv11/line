@@ -1,28 +1,19 @@
-classdef Processor  < LayeredNetworkElement
+classdef Processor  < Host
     % A hardware server in a LayeredNetwork.
     %
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     
-    properties
-        multiplicity;       %int
-        scheduling;         %char: ps, fcfs, inf, ref
-        quantum;            %double
-        speedFactor;        %double
-        tasks = [];         %list of tasks
-    end
     
     methods
         %public methods, including constructor
         
         %constructor
-        function obj = Processor(model, name, multiplicity, scheduling, quantum, speedFactor)
+        function self = Processor(model, name, multiplicity, scheduling, quantum, speedFactor)
             % OBJ = PROCESSOR(MODEL, NAME, MULTIPLICITY, SCHEDULING, QUANTUM, SPEEDFACTOR)
-            
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
-            obj@LayeredNetworkElement(name);
             
             if ~exist('multiplicity','var')
                 multiplicity = 1;
@@ -35,22 +26,8 @@ classdef Processor  < LayeredNetworkElement
             end
             if ~exist('speedFactor','var')
                 speedFactor = 1;
-            end
-            
-            obj.multiplicity = multiplicity;
-            obj.scheduling = scheduling;
-            obj.quantum = quantum;
-            obj.speedFactor = speedFactor;
-            model.objects.processors{end+1} = obj;
-            model.processors = [model.processors; obj];
-        end
-        
-        
-        %addTask
-        function obj = addTask(obj, newTask)
-            % OBJ = ADDTASK(OBJ, NEWTASK)
-            
-            obj.tasks = [obj.tasks; newTask];
+            end            
+            self@Host(model, name, multiplicity, scheduling, quantum, speedFactor)
         end
         
     end

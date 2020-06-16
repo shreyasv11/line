@@ -3,8 +3,7 @@ function networks = refreshLayers(self)
 
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
-isBuild = false;
-deepUpdate = true;
-self.updateEnsemble(isBuild, deepUpdate);
+
+self.updateEnsemble(false);
 networks = self.ensemble;
 end

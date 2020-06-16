@@ -150,7 +150,7 @@ switch qn.nodetype(ind)
                 error('The scheduling policy does not admit a discrete state space.\n');
         end
         switch qn.routing(ind)
-            case RoutingStrategy.ID_RR
+            case RoutingStrategy.ID_RRB
                 space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
         end
     case NodeType.Cache
@@ -164,7 +164,7 @@ switch qn.nodetype(ind)
                 space = State.decorate(space,state);
         end
         switch qn.routing(ind)
-            case RoutingStrategy.ID_RR
+            case RoutingStrategy.ID_RRB
                 space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
         end
 end

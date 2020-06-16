@@ -27,9 +27,9 @@ rootElement.setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance
 rootElement.setAttribute('xsi:noNamespaceSchemaLocation', 'lqn.xsd');
 rootElement.setAttribute('name', self.getName());
 
-for p = 1:length(self.processors)
+for p = 1:length(self.hosts)
     %processor
-    curProc = self.processors(p);
+    curProc = self.hosts{p};
     procElement = doc.createElement('processor');
     rootElement.appendChild(procElement);
     procElement.setAttribute('name', curProc.name);
@@ -73,17 +73,17 @@ for p = 1:length(self.processors)
             end
             actElement.setAttribute('call-order', curAct.callOrder);
             actElement.setAttribute('name', curAct.name);
-            for sd=1:length(curAct.synchCallDests)
+            for sd=1:length(curAct.syncCallDests)
                 syncCallElement = doc.createElement('synch-call');
                 actElement.appendChild(syncCallElement);
-                syncCallElement.setAttribute('dest', curAct.synchCallDests(sd));
-                syncCallElement.setAttribute('calls-mean', num2str(curAct.synchCallMeans(sd)));
+                syncCallElement.setAttribute('dest', curAct.syncCallDests(sd));
+                syncCallElement.setAttribute('calls-mean', num2str(curAct.syncCallMeans(sd)));
             end
-            for asd=1:length(curAct.asynchCallDests)
+            for asd=1:length(curAct.asyncCallDests)
                 asyncCallElement = doc.createElement('asynch-call');
                 actElement.appendChild(asyncCallElement);
-                asyncCallElement.setAttribute('dest', curAct.asynchCallDests(asd));
-                asyncCallElement.setAttribute('calls-mean', num2str(curAct.asynchCallMeans(asd)));
+                asyncCallElement.setAttribute('dest', curAct.asyncCallDests(asd));
+                asyncCallElement.setAttribute('calls-mean', num2str(curAct.asyncCallMeans(asd)));
             end
         end
         for ap=1:length(curTask.precedences)

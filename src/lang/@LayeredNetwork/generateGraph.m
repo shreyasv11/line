@@ -5,7 +5,7 @@ function self = generateGraph(self)
 % All rights reserved.
 
 self.lqnGraph = digraph();
-% add processors
+% add hosts
 self.nodeDep = [];
 fullname = {};
 name = {};
@@ -23,14 +23,14 @@ host_entry = {};
 maxjobs = [];
 nodeDep = [];
 ctrp = 0; ctrt = 0; ctre = 0; ctrap = 0; ctras = 0;
-for p=1:length(self.processors)
+for p=1:length(self.hosts)
     ctrp = ctrp + 1;
-    fullname{end+1} = self.processors(p).name;
-    type{end+1} = 'P';
+    fullname{end+1} = self.hosts{p}.name;
+    type{end+1} = 'H';
     hostname = sprintf('P%d',ctrp);
     name{end+1} = sprintf('P%d',ctrp);
     pidx = length(name);
-    object{end+1} = self.processors(p);
+    object{end+1} = self.hosts{p};
     demand(end+1) = 0.0;
     multiplicity(end+1)= object{end}.multiplicity;
     %    boundToEntry(end+1)=false;
@@ -38,36 +38,36 @@ for p=1:length(self.processors)
     host_task{end+1}= '';
     host_entry{end+1}= '';
     nodeDep(end+1,1:3) = [NaN,NaN,NaN];
-    for t=1:length(self.processors(p).tasks)
+    for t=1:length(self.hosts{p}.tasks)
         ctrt = ctrt + 1;
-        fullname{end+1} = self.processors(p).tasks(t).name;
+        fullname{end+1} = self.hosts{p}.tasks(t).name;
         name{end+1} = sprintf('T%d',ctrt);
         tidx = length(name);
         taskname = name{end};
-        demand(end+1) = self.processors(p).tasks(t).thinkTimeMean;
-        object{end+1} = self.processors(p).tasks(t);
+        demand(end+1) = self.hosts{p}.tasks(t).thinkTimeMean;
+        object{end+1} = self.hosts{p}.tasks(t);
         multiplicity(end+1)= object{end}.multiplicity;
         %        boundToEntry(end+1)=false;
         host_proc{end+1}= hostname;
         host_task{end+1}= '';
         host_entry{end+1}= '';
         nodeDep(end+1,1:3) = [pidx,NaN,NaN];
-        switch self.processors(p).tasks(t).scheduling
+        switch self.hosts{p}.tasks(t).scheduling
             case 'ref'
                 type{end+1} = 'R'; % reference task
                 maxjobs(:,end+1) =  multiplicity(end);
             otherwise
                 type{end+1} = 'T';
         end
-        for e=1:length(self.processors(p).tasks(t).entries)
+        for e=1:length(self.hosts{p}.tasks(t).entries)
             ctre = ctre + 1;
-            fullname{end+1} = self.processors(p).tasks(t).entries(e).name;
+            fullname{end+1} = self.hosts{p}.tasks(t).entries(e).name;
             name{end+1} = sprintf('E%d',ctre);
             eidx = length(name);
             entryname = name{end};
             type{end+1} = 'E';
             demand(end+1) = 0.0;
-            object{end+1} = self.processors(p).tasks(t).entries(e);
+            object{end+1} = self.hosts{p}.tasks(t).entries(e);
             multiplicity(end+1)= NaN;
             %            boundToEntry(end+1)=false;
             host_proc{end+1}= hostname;
@@ -75,14 +75,14 @@ for p=1:length(self.processors)
             host_entry{end+1}= '';
             nodeDep(end+1,1:3) = [pidx,tidx,NaN];
         end
-        for a=1:length(self.processors(p).tasks(t).activities)
+        for a=1:length(self.hosts{p}.tasks(t).activities)
             ctras = ctras + 1;
-            fullname{end+1} = self.processors(p).tasks(t).activities(a).name;
-            demand(end+1) = self.processors(p).tasks(t).activities(a).hostDemandMean;
+            fullname{end+1} = self.hosts{p}.tasks(t).activities(a).name;
+            demand(end+1) = self.hosts{p}.tasks(t).activities(a).hostDemandMean;
             %            name{end+1} = sprintf('AS%d(%.3f)',ctras,demand(end));
             name{end+1} = sprintf('AS%d',ctras);
             type{end+1} = 'AS';
-            object{end+1} = self.processors(p).tasks(t).activities(a);
+            object{end+1} = self.hosts{p}.tasks(t).activities(a);
             multiplicity(end+1)= NaN;
             %            boundToEntry(end+1)=false;
             %            if ~isempty(object{end}.boundToEntry)
@@ -117,17 +117,17 @@ myTable.Node = fullname(:);
 myTable.Object = object(:);
 self.lqnGraph = self.lqnGraph.addnode(myTable);
 self.nodeDep = nodeDep;
-proc = self.processors;
+proc = self.hosts;
 EndNodes = [];
 Weight = [];
 EdgeType = [];
 PostType = [];
 PreType = [];
 for p=1:length(proc)
-    tasks_p = proc(p).tasks;
+    tasks_p = proc{p}.tasks;
     for t=1:length(tasks_p)
-        EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,proc(p).tasks(t).name);
-        EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,proc(p).name);
+        EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,proc{p}.tasks(t).name);
+        EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,proc{p}.name);
         Weight(end+1,1) = 1.0;
         EdgeType(end+1,1) = 0; % within task
         PreType(end+1,1) = 0; % pre
@@ -154,21 +154,21 @@ for p=1:length(proc)
                 PostType(end+1,1) = 0; % post
             end
             
-            synchCallDests = sw_act_tp(a).synchCallDests;
-            for sd=1:length(synchCallDests)
+            syncCallDests = sw_act_tp(a).syncCallDests;
+            for sd=1:length(syncCallDests)
                 EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
-                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,synchCallDests{sd});
-                Weight(end+1,1) = sw_act_tp(a).synchCallMeans(sd);
+                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,syncCallDests{sd});
+                Weight(end+1,1) = sw_act_tp(a).syncCallMeans(sd);
                 EdgeType(end+1,1) = 1; % sync
                 PreType(end+1,1) = 0; % pre
                 PostType(end+1,1) = 0; % post
             end
             
-            asynchCallDests = sw_act_tp(a).asynchCallDests;
-            for asd=1:length(asynchCallDests)
+            asyncCallDests = sw_act_tp(a).asyncCallDests;
+            for asd=1:length(asyncCallDests)
                 EndNodes(end+1,1) = findstring(self.lqnGraph.Nodes.Node,sw_act_tp(a).name);
-                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,asynchCallDests{asd});
-                Weight(end+1,1) = sw_act_tp(a).asynchCallMeans(asd);
+                EndNodes(end,2) = findstring(self.lqnGraph.Nodes.Node,asyncCallDests{asd});
+                Weight(end+1,1) = sw_act_tp(a).asyncCallMeans(asd);
                 EdgeType(end+1,1) = 2; % async
                 PreType(end+1,1) = 0; % pre
                 PostType(end+1,1) = 0; % post
@@ -278,10 +278,10 @@ for a=find(cellfun(@(c) strcmpi(c,'NaN'),self.lqnGraph.Nodes.Entry))'
     self.lqnGraph.Nodes.Entry{a} = self.findEntryOfActivity(self.lqnGraph.Nodes.Name{a});
 end
 
-% put processors as target of hosted task
-keep = ([findstring(self.lqnGraph.Nodes.Type,'P'); findstring(self.lqnGraph.Nodes.Type,'R'); findstring(self.lqnGraph.Nodes.Type,'T')]);
+% put hosts as target of hosted task
+keep = ([findstring(self.lqnGraph.Nodes.Type,'H'); findstring(self.lqnGraph.Nodes.Type,'R'); findstring(self.lqnGraph.Nodes.Type,'T')]);
 self.taskGraph = self.lqnGraph.subgraph(keep(keep>0)); % ignore missing types
-% now H contains all tasks and edges to the processors they run on
+% now H contains all tasks and edges to the hosts they run on
 % we add external calls
 
 actset = findstring(self.lqnGraph.Nodes.Type,'AS')';
@@ -305,4 +305,21 @@ self.param.Nodes.Tput=zeros(height(self.lqnGraph.Nodes),1);
 
 self.param.Edges.RespT=zeros(height(self.lqnGraph.Edges),1);
 self.param.Edges.Tput=zeros(height(self.lqnGraph.Edges),1);
+
+if isempty(self.indexes.reftasks)
+    self.indexes.reftasks = findstring(self.lqnGraph.Nodes.Type, 'R');
+end
+if isempty(self.indexes.entries)
+    self.indexes.entries = findstring(self.lqnGraph.Nodes.Type, 'E');
+end
+if isempty(self.indexes.hosts)
+    self.indexes.hosts = findstring(self.lqnGraph.Nodes.Type, 'H');
+end
+if isempty(self.indexes.tasks)
+    self.indexes.tasks = findstring(self.lqnGraph.Nodes.Type, 'T');
+end
+if isempty(self.indexes.activities)
+    self.indexes.activities = findstring(self.lqnGraph.Nodes.Type, 'AS');
+end
+
 end

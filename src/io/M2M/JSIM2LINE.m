@@ -359,7 +359,7 @@ for from=1:length(node_name)
                         %                        P((from-1)*length(classes)+r, (target-1)*length(classes)+r) = prob;
                     end
                 case 'Round Robin'
-                    node{from}.setRouting(jobclass{r},RoutingStrategy.RR);
+                    node{from}.setRouting(jobclass{r},RoutingStrategy.RRB);
                 case 'Join the Shortest Queue (JSQ)'
                     node{from}.setRouting(jobclass{r},RoutingStrategy.JSQ);
                 case 'Disabled'

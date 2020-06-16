@@ -11,16 +11,16 @@ classdef EnsembleSolver < Solver
     end
     
     methods (Hidden)
-        function self = EnsembleSolver(envmodel, name, options)
+        function self = EnsembleSolver(ensmodel, name, options)
             % SELF = ENSEMBLESOLVER(MODEL, NAME, OPTIONS)
             
-            self@Solver(envmodel, name);
+            self@Solver(ensmodel, name);
             if exist('options','var')
                 self.setOptions(options);
             else
                 self.setOptions(EnsembleSolver.defaultOptions);
             end
-            self.ensemble = envmodel.getEnsemble;
+            self.ensemble = ensmodel.getEnsemble;
             self.solvers = {};
         end
     end
@@ -32,42 +32,48 @@ classdef EnsembleSolver < Solver
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function [QN,UN,RT,TT] = getAvg(self)
             % [QN,UN,RT,TT] = GETAVG()
             
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function init(self) % operations before starting to iterate
             % INIT() % OPERATIONS BEFORE STARTING TO ITERATE
             
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function pre(self, it) % operations before an iteration
             % PRE(IT) % OPERATIONS BEFORE AN ITERATION
             
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function [results, runtime] = analyze(self, e) % operations within an iteration
             % [RESULTS, RUNTIME] = ANALYZE(E) % OPERATIONS WITHIN AN ITERATION
             
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function post(self, it) % operations after an iteration
             % POST(IT) % OPERATIONS AFTER AN ITERATION
             
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function finish(self) % operations after interations are completed
             % FINISH() % OPERATIONS AFTER INTERATIONS ARE COMPLETED
-            
             error('Line:AbstractMethodCall','An abstract method was called. The function needs to be overridden by a subclass.');
             
         end
+        
         function bool = converged(self, it) % convergence test at iteration it
             % BOOL = CONVERGED(IT) % CONVERGENCE TEST AT ITERATION IT
             
@@ -124,8 +130,7 @@ classdef EnsembleSolver < Solver
         end
         
         function [runtime, sruntime, results] = run(self)
-            % [RUNTIME, SRUNTIME, RESULTS] = RUN()
-            
+            % [RUNTIME, SRUNTIME, RESULTS] = RUN()            
             T0 = tic;
             it = 0;
             options = self.options;
@@ -135,13 +140,13 @@ classdef EnsembleSolver < Solver
             self.init();
             switch options.method
                 case {'default','serial'}
-                    while ~self.converged(it) & it < options.iter_max
+                    while ~self.converged(it) && it < options.iter_max
                         it = it + 1;
                         if options.verbose
-                            if it==2
-                            fprintf('\nIteration %3d:',it);
+                            if it==1
+                                fprintf('Iteration %3d:',it);
                             else
-                            fprintf('Iteration %3d:',it);
+                                fprintf('\nIteration %3d:',it);
                             end
                         end
                         self.pre(it);

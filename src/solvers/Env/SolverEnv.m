@@ -339,7 +339,7 @@ classdef SolverEnv < EnsembleSolver
             featSupported.setTrue('SchedStrategy_PS');
             featSupported.setTrue('RoutingStrategy_PROB');
             featSupported.setTrue('RoutingStrategy_RAND');
-            featSupported.setTrue('RoutingStrategy_RR'); % with SolverJMT
+            featSupported.setTrue('RoutingStrategy_RRB'); % with SolverJMT
             
             % Customer Classes
             featSupported.setTrue('ClosedClass');

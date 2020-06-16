@@ -33,7 +33,7 @@ if verbose > 0
     disp(['Root element :',char(doc.getDocumentElement().getNodeName())]);
 end
 
-processors = cell(0); %list of processors - Proc
+hosts = cell(0); %list of hosts - Proc
 tasks = cell(0); %list of tasks - Task, ProcID
 entries = cell(0); %list of entries - Entry, TaskID, ProcID
 activities = cell(0); %list of activities - Act, TaskID, ProcID
@@ -48,7 +48,7 @@ actObj = cell(0);
 
 procList = doc.getElementsByTagName('processor');
 for i = 0:procList.getLength()-1
-    %Element - Processor
+    %Element - Host
     procElement = procList.item(i);
     name = char(procElement.getAttribute('name'));
     scheduling = char(procElement.getAttribute('scheduling'));
@@ -64,7 +64,7 @@ for i = 0:procList.getLength()-1
     if isnan(speedFactor)
         speedFactor = 1.0;
     end
-    tempProc = Processor(myLN, name, multiplicity, scheduling, quantum, speedFactor);
+    tempProc = Host(myLN, name, multiplicity, scheduling, quantum, speedFactor);
     procObj{end+1,1} = tempProc;
     
     taskList = procElement.getElementsByTagName('task');
@@ -322,14 +322,14 @@ for i = 0:procList.getLength()-1
                 end
             end
         end
-        
+                
         tasks{end+1,1} = tempTask.name;
         tasks{end,2} = procID;
         tempProc = tempProc.addTask(tempTask);
         taskID = taskID+1;
     end
     
-    processors{end+1,1} = tempProc.name;
+    hosts{end+1,1} = tempProc.name;
     procID = procID+1;
 end
 end

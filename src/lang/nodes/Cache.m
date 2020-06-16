@@ -75,6 +75,10 @@ classdef Cache < StatefulNode
             self.server.actualMissProb = sparse([]);
         end
         
+        function self = setScheduling(self, class, strategy)
+            %noop
+        end
+        
         
         function setHitClass(self, jobinclass, joboutclass)
             % SETHITCLASS(JOBINCLASS, JOBOUTCLASS)
@@ -112,6 +116,7 @@ classdef Cache < StatefulNode
             
             self.accessProb = R;
         end
+        
         
         function setProbRouting(self, class, destination, probability)
             % SETPROBROUTING(CLASS, DESTINATION, PROBABILITY)

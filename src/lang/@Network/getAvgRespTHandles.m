@@ -15,7 +15,6 @@ if isempty(self.handles) || ~isfield(self.handles,'R')
     for i=1:M
         for r=1:K
             R{i,r} = Metric(Metric.RespT, self.classes{r}, self.stations{i});
-            self.addMetric(R{i,r});
             if isa(self.stations{i},'Source')
                 R{i,r}.disable();
             end
@@ -29,6 +28,7 @@ if isempty(self.handles) || ~isfield(self.handles,'R')
             end
         end
     end
+    self.addMetric(R);
     self.handles.R = R;
 else
     R = self.handles.R;

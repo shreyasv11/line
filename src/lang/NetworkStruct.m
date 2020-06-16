@@ -98,7 +98,7 @@ classdef NetworkStruct <handle
                     end
                     for r=1:self.nclasses
                         switch self.routing(ind,r)
-                            case {RoutingStrategy.ID_RR, RoutingStrategy.ID_JSQ}
+                            case {RoutingStrategy.ID_RRB, RoutingStrategy.ID_JSQ}
                                 self.isstatedep(ind,3) = true; % state dependent routing
                         end
                     end
@@ -377,6 +377,7 @@ classdef NetworkStruct <handle
             newObj.nstateful = obj.nstateful;  % number of stations (int)
             newObj.nvars = obj.nvars; % number of local variables
             newObj.nodenames = obj.nodenames;   % name of each node
+            newObj.nodevisits = obj.nodevisits;   % name of each node
             newObj.nodetype = obj.nodetype; % server type in each node
             newObj.phases = obj.phases; % number of phases in each service or arrival process
             newObj.phasessz = obj.phasessz; % number of phases in each service or arrival process

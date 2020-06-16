@@ -103,4 +103,11 @@ TNclass(isnan(TNclass))=0;
 QNclass(RNclass < 10/Distrib.InfRate)=0;
 UNclass(RNclass < 10/Distrib.InfRate)=0;
 RNclass(RNclass < 10/Distrib.InfRate)=0;
+
+%% round to zero numerical perturbations
+QNclass(QNclass < Distrib.Zero)=0;
+UNclass(UNclass < Distrib.Zero)=0;
+RNclass(RNclass < Distrib.Zero)=0;
+TNclass(TNclass < Distrib.Zero)=0;
+
 end

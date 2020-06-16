@@ -28,7 +28,7 @@ for isf=1:qn.nstateful
         case 'Cache'
             self.model.nodes{qn.statefulToNode(isf)}.server.actualHitProb = qn.varsparam{ind}.actualhitprob;
             self.model.nodes{qn.statefulToNode(isf)}.server.actualMissProb = qn.varsparam{ind}.actualmissprob;
-            self.model.refreshChains;
+            self.model.refreshChains(true);
     end
 end
 runtime = toc(T0);

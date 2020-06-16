@@ -14,9 +14,7 @@ nodeNames = self.getNodeNames();
 % connectivity matrix
 connMatrix = zeros(self.getNumberOfNodes);
 for r=1:size(self.links,1)
-    i=findstring(nodeNames,self.links{r}{1}.name);
-    j=findstring(nodeNames,self.links{r}{2}.name);
-    connMatrix(i,j) = 1;
+    connMatrix(self.links{r}{1}, self.links{r}{2}) = 1;
 end
 rtNodesByClass = {};
 rtNodesByStation = {};
@@ -59,9 +57,14 @@ for i=1:M
                 switch self.nodes{i}.output.outputStrategy{k}{2}
                     case RoutingStrategy.PROB
                         if isinf(NK(k)) || ~isa(self.nodes{i},'Sink')
+                            %rtNodes((i-1)*K+k,(j-1)*K+k) = self.modifiedRoutingTable{k,k}(i,j);
                             for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
-                                j = findstring(nodeNames,self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
+                                j = findstring(nodeNames, self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
+                                try
                                 rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
+                                catch
+                                    keyboard
+                                end
                             end
                         end
                     case RoutingStrategy.DISABLED
@@ -72,14 +75,14 @@ for i=1:M
                                 %rtNodes((i-1)*K+k,(j-1)*K+k) = Distrib.Zero;
                             end
                         end
-                    case {RoutingStrategy.RAND, RoutingStrategy.RR, RoutingStrategy.JSQ}
+                    case {RoutingStrategy.RAND, RoutingStrategy.RRB, RoutingStrategy.JSQ}
                         if isinf(NK(k)) % open class
                             for j=1:M
                                 if connMatrix(i,j)>0
                                     rtNodes((i-1)*K+k,(j-1)*K+k)=1/sum(connMatrix(i,:));
                                 end
                             end
-                        elseif (~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink') && ~isa(self.nodes{j},'Sink')) % don't route closed classes out of source nodes
+                        elseif ~isa(self.nodes{i},'Source') && ~isa(self.nodes{i},'Sink') % don't route closed classes out of source nodes
                             connMatrixClosed = connMatrix;
                             if connMatrixClosed(i,self.getNodeIndex(self.getSink))
                                 connMatrixClosed(i,self.getNodeIndex(self.getSink)) = 0;
@@ -188,7 +191,7 @@ for i=1:self.getNumberOfNodes % source
     % since these are classes that cannot arrive to the node
     % unless this column belongs to the source
     colsToIgnore = find(sum(rtNodes,1)==0);
-    if self.hasOpenClasses()
+    if hasOpenClasses
         idxSource = self.getIndexSourceNode;
         colsToIgnore = setdiff(colsToIgnore,(idxSource-1)*K+(1:K));
     end
@@ -224,7 +227,7 @@ for i=1:self.getNumberOfNodes % source
     % this routes open classes back from the sink into the source
     % it will not work with non-renewal arrivals as it choses in which open
     % class to reroute a job with probability depending on the arrival rates
-    if self.hasOpenClasses()
+    if hasOpenClasses
         arvRates(isnan(arvRates)) = 0;
         idxSink = self.getIndexSinkNode;
         for s=self.getIndexOpenClasses

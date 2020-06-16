@@ -42,7 +42,7 @@ classdef Joiner < InputSection
             for i = 1 : length(customerClasses)
                 self.joinJobClasses{i} = customerClasses{i};
                 self.joinRequired{i} = -1;
-                self.joinStrategy{i} = JoinStrategy.Standard;
+                self.joinStrategy{i} = JoinStrategy.STD;
             end
         end
     end

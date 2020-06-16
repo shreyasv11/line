@@ -12,7 +12,7 @@ numOfClasses = length(self.model.classes);
 for i=1:(numOfClasses)
     currentClass = self.model.classes{i,1};
     switch currentNode.input.joinStrategy{currentClass.index}
-        case JoinStrategy.Standard
+        case JoinStrategy.STD
             refClassNode2 = simDoc.createElement('refClass');
             refClassNode2.appendChild(simDoc.createTextNode(currentClass.name));
             strategyNode.appendChild(refClassNode2);

@@ -104,20 +104,20 @@ for net=1:length(graphLayer)
                     jobclass{end}.completes = false;
                     
                     % add artificial classes for synch-calls
-                    for d=1:length(actobj.synchCallDests)
+                    for d=1:length(actobj.syncCallDests)
                         myP = initclass(myP,length(node),length(jobclass));
                         nJobs = 0;
-                        destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.synchCallDests{d})};
+                        destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.syncCallDests{d})};
                         className = [activities{a},'=>',destEntry];
                         jobclass{end+1} = ClosedClass(ensemble{net}, className, nJobs, node{1}, 0);
                         jobclass{end}.completes = false;
                     end
                     
                     % add artificial classes for asynch-calls
-                    for d=1:length(actobj.asynchCallDests)
+                    for d=1:length(actobj.asyncCallDests)
                         myP = initclass(myP,length(node),length(jobclass));
                         nJobs = 0;
-                        destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asynchCallDests{d})};
+                        destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asyncCallDests{d})};
                         className = [activities{a},'->',destEntry];
                         jobclass{end+1} = ClosedClass(ensemble{net}, className, nJobs, node{1}, 0);
                         jobclass{end}.completes = false;
@@ -132,7 +132,7 @@ for net=1:length(graphLayer)
         entries = self.listEntriesOfTask(clientTask{net}{s});
         taskobj = self.getNodeObject(clientTask{net}{s});
         isRefTask = strcmpi(taskobj.scheduling,SchedStrategy.REF);
-        isProcessorInSubmodel = strcmpi(self.getNodeProcessor(clientTask{net}{s}), serverName);
+        isHostInSubmodel = strcmpi(self.getNodeHost(clientTask{net}{s}), serverName);
         for e=1:length(entries) % for all entries in the client task
             activities = self.listActivitiesOfEntry(entries{e});
             entryobj = self.getNodeObject(entries{e});
@@ -204,7 +204,7 @@ for net=1:length(graphLayer)
                 className = activities{a};
                 class_hostdemand = cellfun(@(c) strcmpi(c.name,className),jobclass);
                 
-                if isProcessorInSubmodel
+                if isHostInSubmodel
                     % if host is the server in this submodel
                     % consume hostdemand at the server
                     if isBuild
@@ -265,9 +265,9 @@ for net=1:length(graphLayer)
                 
                 selfLoopProb = 0;
                 %% setup the synchronous calls
-                for d=1:length(actobj.synchCallDests)
+                for d=1:length(actobj.syncCallDests)
                     % first return to the delay in the appropriate class
-                    destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.synchCallDests{d})};
+                    destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.syncCallDests{d})};
                     if self.edgeWeight(self.findEdgeIndex(activities{a},destEntry)) >= 1
                         skipProb = 0;
                     else % call-mean < 1
@@ -294,7 +294,7 @@ for net=1:length(graphLayer)
                             stationlast = 2;
                             classlast = class_synchcall;
                     else
-                        if isProcessorInSubmodel % if host of source is in the model
+                        if isHostInSubmodel % if host of source is in the model
                             % set as the service time, the response time of this call
                                 entryRT = Exp(Distrib.InfRate); % sync-call A=>B has no intrinsic demand at its processor
                                 node{2}.setService(jobclass{class_synchcall}, entryRT);
@@ -340,9 +340,9 @@ for net=1:length(graphLayer)
                 end
                 
                 %% setup the asynchronous calls
-                for d=1:length(actobj.asynchCallDests)
+                for d=1:length(actobj.asyncCallDests)
                     % first return to the delay in the appropriate class
-                    destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asynchCallDests{d})};
+                    destEntry = lqnGraph.Nodes.Name{findstring(lqnGraph.Nodes.Node,actobj.asyncCallDests{d})};
                     className = [activities{a},'->',destEntry];
                     class_asynchcall = cellfun(@(c) strcmpi(c.name,className),jobclass);
                     destEntryRate = 1/self.param.Edges.RespT(self.findEdgeIndex(activities{a},destEntry));
@@ -364,7 +364,7 @@ for net=1:length(graphLayer)
                             act_name = self.getNodeName(actnext);
                             classnext = cellfun(@(c) strcmpi(c.name,act_name), jobclass);
                             edge_a_as = self.findEdgeIndex(self.getNodeIndex(activities{a}),actnext);
-                            if isProcessorInSubmodel
+                            if isHostInSubmodel
                                 %                                myP{classlast,classlast}(stationlast, stationlast)= 1-1/G.Edges.Weight(edge_a_as);
                                 %                                myP{classlast,classnext}(stationlast, 2)= 1/G.Edges.Weight(edge_a_as);
                                 myP{classlast,classlast}(stationlast, stationlast)= selfLoopProb;

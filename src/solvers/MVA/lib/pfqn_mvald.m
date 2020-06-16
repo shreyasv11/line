@@ -46,7 +46,7 @@ while n~=-1
         if p0<eps 
             if warn
                 warning('MVA-LD is numerically unstable on this model, forcing all probabilities to be non-negative.'); 
-                N
+%                N
                 warn=false;
                 isNumStable = false;
             end

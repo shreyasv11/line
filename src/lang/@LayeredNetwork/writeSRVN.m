@@ -10,10 +10,10 @@ fprintf(fid,[num2str(Solver.defaultOptions.iter_max),'\n']);
 fprintf(fid,['-1\n\n']);
 
 %%
-fprintf(fid,'#Processor block\n');
-fprintf(fid,['P ',num2str(length(self.processors)),'\n']);
-for p=1:length(self.processors)
-    curProc = self.processors(p);
+fprintf(fid,'#Host block\n');
+fprintf(fid,['P ',num2str(length(self.hosts)),'\n']);
+for p=1:length(self.hosts)
+    curProc = self.hosts(p);
     switch curProc.scheduling
         case SchedStrategy.INF
             fprintf(fid,['p ',curProc.name,' i','\n']);
@@ -33,13 +33,13 @@ end
 %%
 fprintf(fid,'-1\n\n#Task block\n');
 numTasks = 0;
-for p=1:length(self.processors)
-    curProc = self.processors(p);
+for p=1:length(self.hosts)
+    curProc = self.hosts(p);
     numTasks = numTasks + length(curProc.tasks);
 end
 fprintf(fid,['T ',num2str(numTasks),'\n']);
-for p=1:length(self.processors)
-    curProc = self.processors(p);
+for p=1:length(self.hosts)
+    curProc = self.hosts(p);
     for t=1:length(curProc.tasks)
         curTask = curProc.tasks(t);
         for e=1:length(curTask.entries)
@@ -68,16 +68,16 @@ end
 %%
 fprintf(fid,'-1\n\n#Entry block\n');
 numEntry = 0;
-for p=1:length(self.processors)
-    curProc = self.processors(p);
+for p=1:length(self.hosts)
+    curProc = self.hosts(p);
     for t=1:length(curProc.tasks)
         curTask = curProc.tasks(t);
         numEntry = numEntry + length(curTask.entries);
     end
 end
 fprintf(fid,['E ',num2str(numEntry),'\n']);
-for p=1:length(self.processors)
-    curProc = self.processors(p);
+for p=1:length(self.hosts)
+    curProc = self.hosts(p);
     for t=1:length(curProc.tasks)
         curTask = curProc.tasks(t);
         for e=1:length(curTask.entries)
@@ -95,8 +95,8 @@ end
 
 %%
 fprintf(fid,'-1\n\n#Activity blocks\n');
-for p=1:length(self.processors)
-    curProc = self.processors(p);
+for p=1:length(self.hosts)
+    curProc = self.hosts(p);
     for t=1:length(curProc.tasks)
         curTask = curProc.tasks(t);
         fprintf(fid,['A ',curTask.name,'\n']);
@@ -109,11 +109,11 @@ for p=1:length(self.processors)
             else
                 fprintf(fid,['f ',curAct.name,' 0\n']);
             end
-            for d=1:numel(curAct.synchCallDests)
-                fprintf(fid,['y ',curAct.name,' ',curAct.synchCallDests{d},' ',num2str(curAct.synchCallMeans),'\n']);
+            for d=1:numel(curAct.syncCallDests)
+                fprintf(fid,['y ',curAct.name,' ',curAct.syncCallDests{d},' ',num2str(curAct.syncCallMeans),'\n']);
             end
-            for d=1:numel(curAct.asynchCallDests)
-                fprintf(fid,['z ',curAct.name,' ',curAct.asynchCallDests{d},' ',num2str(curAct.asynchCallMeans),'\n']);
+            for d=1:numel(curAct.asyncCallDests)
+                fprintf(fid,['z ',curAct.name,' ',curAct.asyncCallDests{d},' ',num2str(curAct.asyncCallMeans),'\n']);
             end
         end
         buffer = '';

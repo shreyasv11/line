@@ -7,11 +7,13 @@ function [AvgTable,QT,UT,RT,TT] = getAvgTable(self,Q,U,R,T,keepDisabled)
 
 if ~exist('keepDisabled','var')
     keepDisabled = false;
-end
-
+end  
 M = self.model.getNumberOfStations();
 K = self.model.getNumberOfClasses();
-if nargin == 1
+if nargin == 2
+    keepDisabled = Q;
+    [Q,U,R,T,~] = self.model.getAvgHandles();
+elseif nargin == 1
     [Q,U,R,T,~] = self.model.getAvgHandles();
 end
 if isfinite(self.getOptions.timespan(2))

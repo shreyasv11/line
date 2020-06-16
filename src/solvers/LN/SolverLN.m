@@ -9,6 +9,10 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         initCallAvgTable = {};
     end
     
+    properties (Hidden)
+        successors = {};
+    end
+    
     methods
         function self = reset(self)
             self.initNodeAvgTable = {};
@@ -20,14 +24,14 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             
             self@LayeredNetworkSolver(model, mfilename);
             self@EnsembleSolver(model, mfilename);
-                        
+            
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             self.model.initDefault;
             self.ensemble = self.model.getEnsemble();
             for e=1:self.getNumberOfModels
                 self.setSolver(solverFactory(self.ensemble{e}),e);
             end
-%            model.refreshLayers;            
+            %            model.refreshLayers;
         end
         
         function initFromRawAvgTables(self, NodeAvgTable, CallAvgTable)
@@ -35,7 +39,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             self.initCallAvgTable = CallAvgTable;
         end
         
-        function paramFromRawAvgTables(self, NodeAvgTable, CallAvgTable)            
+        function paramFromRawAvgTables(self, NodeAvgTable, CallAvgTable)
             self.model.param.Nodes.RespT = NodeAvgTable.Phase1ServiceTime;
             self.model.param.Nodes.RespT(isnan(self.model.param.Nodes.RespT)) = 0;
             
@@ -50,7 +54,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
                 etargetidx = self.model.getNodeIndex(CallAvgTable.TargetNode{h});
                 self.model.param.Edges.RespT(edgeidx) = CallAvgTable.Waiting(h) + self.model.param.Nodes.RespT(etargetidx);
                 self.model.param.Nodes.RespT(edgeidx) = abs(self.model.param.Nodes.RespT(edgeidx) - self.model.param.Edges.RespT(edgeidx));
-            end         
+            end
         end
         
         function bool = converged(self, it) % convergence test at iteration it
@@ -68,7 +72,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
                     end
                 end
                 if self.options.verbose == 2
-                    fprintf(1, sprintf('SolverLN error is: %f\n',maxIterErr));
+                    fprintf(1, sprintf('SolverLN error is: %f',maxIterErr));
                 end
                 if maxIterErr < self.options.iter_tol
                     if self.options.verbose
@@ -91,31 +95,33 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
         end
         
         function [result, runtime] = analyze(self, it, e)
-            % [RESULT, RUNTIME] = ANALYZE(IT, E)            
+            % [RESULT, RUNTIME] = ANALYZE(IT, E)
             T0 = tic;
             %self.ensemble{e}.reset();
             self.solvers{e}.resetResults();
-            result = self.solvers{e}.getAvgTable();
+            if it>1  
+                self.ensemble{e}.initFromAvgTableQLen(self.results{it-1,e});
+            end
+            result = self.solvers{e}.getAvgTable(true); % return also zero metrics
             runtime = toc(T0);
         end
         
         function post(self, it) % operations after an iteration
             % POST(IT) % OPERATIONS AFTER AN ITERATION
-            for post_it = 1:2 % do elevator up and down
-                self.model.updateParam({self.results{it,:}});
+            for netSortAscending = [false, true] % do elevator up and down
+                self.model.updateParam({self.results{it,:}}, netSortAscending);
             end
             if it == 1 && ~isempty(self.initNodeAvgTable)
                 self.paramFromRawAvgTables(self.initNodeAvgTable, self.initCallAvgTable);
             end
             self.ensemble = self.model.refreshLayers(); % update Network objects in ensemble
-            %self.model.param.Nodes.RespT
-            %self.model.param.Edges.RespT            
         end
         
         function finish(self) % operations after iterations are completed
             % FINISH() % OPERATIONS AFTER INTERATIONS ARE COMPLETED
-            %fprintf('\n');
-            %nop
+            if self.options.verbose
+                fprintf('\n');
+            end            
         end
         
         function [QN,UN,RN,TN] = getAvg(self,~,~,~,~)
@@ -144,7 +150,7 @@ classdef SolverLN < LayeredNetworkSolver & EnsembleSolver
             % - util of entry is sum of util of its activities
             Avg.Nodes.QLen = Avg.Nodes.RespT .* Avg.Nodes.Tput;
             Avg.Nodes.Util = lqnGraph.Nodes.D .* Avg.Nodes.Tput;
-            procPos = strcmp(lqnGraph.Nodes.Type,'P');
+            procPos = strcmp(lqnGraph.Nodes.Type,'H');
             Avg.Nodes.QLen(procPos) = NaN;
             Avg.Nodes.RespT(procPos) = NaN;
             Avg.Nodes.Tput(procPos) = NaN;

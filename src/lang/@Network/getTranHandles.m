@@ -21,13 +21,13 @@ Ut = cell(M,1); % utilizations
 for i=1:M
     for r=1:K
         Tt{i,r} = Metric(Metric.TranTput, self.classes{r}, self.stations{i});
-        self.addMetric(Tt{i,r});
+        self.addTranMetric(Tt{i,r});
         Qt{i,r} = Metric(Metric.TranQLen, self.classes{r}, self.stations{i});
-        self.addMetric(Qt{i,r});
+        self.addTranMetric(Qt{i,r});
         %        Rt{i,r} = Metric(Metric.TranRespT, self.classes{r}, self.stations{i});
-        %        self.addMetric(Rt{i,r});
+        %        self.addTranMetric(Rt{i,r});
         Ut{i,r} = Metric(Metric.TranUtil, self.classes{r}, self.stations{i});
-        self.addMetric(Ut{i,r});
+        self.addTranMetric(Ut{i,r});
         if isa(self.stations{i},'Source')
             Qt{i,r}.disable();
             %            Rt{i,r}.disable();
