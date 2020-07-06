@@ -1,7 +1,7 @@
 function [G,lG,lZ] = pfqn_mci(D,N,Z,I,variant)
 % [G,LG,LZ] = PFQN_MCI(D,N,Z,I,VARIANT)
 
-% gmvamcint - normalizing constant estimation via Monte Carlo Integration
+% Normalizing constant estimation via Monte Carlo Integration
 %
 % Syntax:
 % [lG,lZ] = gmvamcint(D,N,Z,I,Iest)

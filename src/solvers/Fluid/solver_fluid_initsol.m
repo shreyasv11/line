@@ -16,7 +16,7 @@ for ind=1:qn.nnodes
         state_i = [];
         init_sol_i = [];  % compared to state_i, this does not track disabled classes and removes Inf entries in the Sources
         [~, nir, ~, kir_i] = State.toMarginal(qn, ind, qn.state{isf});
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case {SchedStrategy.EXT}
                 state_i(:,1) = Inf; % fluid does not model infinite buffer?
                 for r=1:size(kir_i,2)

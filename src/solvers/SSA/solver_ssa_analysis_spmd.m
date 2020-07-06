@@ -32,7 +32,7 @@ spmd
             isf = qn.stationToStateful(i);
             TN(i,k) = probSysState*depRates(:,isf,k);
             QN(i,k) = probSysState*SSq(:,(i-1)*K+k);
-            switch qn.sched{i}
+            switch qn.sched(i)
                 case SchedStrategy.INF
                     UN(i,k) = QN(i,k);
                 otherwise

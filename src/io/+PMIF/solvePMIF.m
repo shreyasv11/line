@@ -45,7 +45,7 @@ for j = 1:size(allFilenames,1)
         [~, U, R, X, ~, RT_CDF, ~] = QN_fluid_analysis(qn, [], [], [], myRT, RTrange, options);
         
         for i = 1:qn.nstations
-            if strcmp(qn.sched{i},SchedStrategy.INF)
+            if strcmp(qn.sched(i),SchedStrategy.INF)
                 meanRT = sum(R([1:i-1 i+1:qn.nstations],:),1);
                 break;
             end

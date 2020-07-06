@@ -33,7 +33,7 @@ for i= 1:qn.nnodes
         case NodeType.Delay
             fprintf(fid,'node{%d} = DelayStation(model, ''%s'');\n',i,qn.nodenames{i});
         case NodeType.Queue
-            fprintf(fid,'node{%d} = Queue(model, ''%s'', SchedStrategy.%s);\n', i, qn.nodenames{i}, SchedStrategy.toProperty(qn.sched{qn.nodeToStation(i)}));
+            fprintf(fid,'node{%d} = Queue(model, ''%s'', SchedStrategy.%s);\n', i, qn.nodenames{i}, SchedStrategy.toProperty(qn.sched(qn.nodeToStation(i))));
             if qn.nservers(qn.nodeToStation(i))>1
                 fprintf(fid,'node{%d}.setNumServers(%d);\n', i, qn.nservers(qn.nodeToStation(i)));
             end
@@ -100,7 +100,7 @@ for k=1:qn.nclasses
     for i=1:qn.nstations
         if qn.nodetype(qn.stationToNode(i)) ~= NodeType.Join
             if isprop(model.stations{i},'serviceProcess') && strcmp(class(model.stations{i}.serviceProcess{k}),'Replayer')
-                switch qn.sched{i}
+                switch qn.sched(i)
                     case SchedStrategy.EXT
                         fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Replayer(''%s'')); %% (%s,%s)\n',qn.stationToNode(i),k,model.stations{i}.serviceProcess{k}.params{1}.paramValue,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
                     otherwise
@@ -109,7 +109,7 @@ for k=1:qn.nclasses
             else
                 SCVik = map_scv(PH{i,k});
                 if SCVik >= 0.5
-                    switch qn.sched{i}
+                    switch qn.sched(i)
                         case SchedStrategy.EXT
                             if SCVik == 1
                                 fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Exp.fitMean(%f)); %% (%s,%s)\n',qn.stationToNode(i),k,map_mean(PH{i,k}),qn.nodenames{qn.stationToNode(i)},qn.classnames{k});
@@ -127,7 +127,7 @@ for k=1:qn.nclasses
                     % this could be made more precised by fitting into a 2-state
                     % APH, especially if SCV in [0.5,0.1]
                     nPhases = max(1,round(1/SCVik));
-                    switch qn.sched{i}
+                    switch qn.sched(i)
                         case SchedStrategy.EXT
                             if isnan(PH{i,k}{1})
                                 fprintf(fid,'node{%d}.setArrival(jobclass{%d}, Disabled()); %% (%s,%s)\n',qn.stationToNode(i),k,qn.nodenames{qn.stationToNode(i)},qn.classnames{k});

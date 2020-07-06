@@ -51,10 +51,19 @@ classdef SolverAuto < NetworkSolver
         
         function [QN,UN,RN,TN] = getAvg(self,Q,U,R,T)
             % [QN,UN,RN,TN] = GETAVG(SELF,Q,U,R,T)
-            
+            if nargin ==1
+                [Q,U,R,T] = self.model.getAvgHandles;
+            elseif nargin == 2
+                handlers = Q;
+                Q=handlers{1};
+                U=handlers{2};
+                R=handlers{3};
+                T=handlers{4};
+            end
+                
             % first try with chosen solver, if the method is not available
             % or fails keep going with the other candidates
-            proposedSolvers = {self.chooseSolver(), self.candidates};
+            proposedSolvers = {self.chooseSolver(), self.candidates{:}};
             for s=1:length(proposedSolvers)
                 try
                     [QN,UN,RN,TN] = proposedSolvers{s}.getAvg(Q,U,R,T);

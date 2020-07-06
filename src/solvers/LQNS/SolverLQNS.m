@@ -26,7 +26,7 @@ classdef SolverLQNS < LayeredNetworkSolver
             if options.verbose
                 ignoreWarn = '';
             else
-                ignoreWarn = '-w -a';
+                ignoreWarn = '-w ';
             end
             switch options.method
                 case {'default','lqns'}
@@ -60,20 +60,20 @@ classdef SolverLQNS < LayeredNetworkSolver
             UN = self.result.Avg.Util;
             RN = self.result.Avg.RespT;
             TN = self.result.Avg.Tput;
-        end
+        end   
         
         function [NodeAvgTable,CallAvgTable] = getRawAvgTables(self)
             % [QN,UN,RN,TN] = GETRAWAVGTABLES(SELF,~,~,~,~)
             
             self.run();
             
-            Node = self.model.lqnGraph.Nodes.Node;
+            Node = categorical(self.model.lqnGraph.Nodes.Node);
             Objects = self.model.lqnGraph.Nodes.Object;
             O = length(Objects);
-            NodeType = cell(O,1);
+            NodeType = categorical(O,1);
             for o = 1:O
-                NodeType{o} = class(Objects{o});
-            end
+                NodeType(o,1) = categorical({class(Objects{o})});
+            end            
             Utilization = self.result.RawAvg.Nodes.Utilization;
             Phase1Utilization = self.result.RawAvg.Nodes.Phase1Utilization;
             Phase2Utilization = self.result.RawAvg.Nodes.Phase2Utilization;
@@ -89,22 +89,24 @@ classdef SolverLQNS < LayeredNetworkSolver
             CallIndices = find(self.model.lqnGraph.Edges.Type>0);
             EndNodes = self.model.lqnGraph.Edges.EndNodes(CallIndices,:);
             SourceIndices = findnode(self.model.lqnGraph,EndNodes(:,1));
-            SourceNode = self.model.lqnGraph.Nodes.Node(SourceIndices);
+            SourceNode = categorical(self.model.lqnGraph.Nodes.Node(SourceIndices));
             TargetIndices = findnode(self.model.lqnGraph,EndNodes(:,2));
-            TargetNode = self.model.lqnGraph.Nodes.Node(TargetIndices);
-            CallTypeMap = {'Synchronous';'Asynchronous'};
-            CallType = CallTypeMap(self.model.lqnGraph.Edges.Type(CallIndices));
+            TargetNode = categorical(self.model.lqnGraph.Nodes.Node(TargetIndices));
+            
+            CallTypeMap = [CallType.SYNC;CallType.ASYNC;CallType.FWD];
+            Type = categorical(CallTypeMap(self.model.lqnGraph.Edges.Type(CallIndices)));
             Waiting = self.result.RawAvg.Edges.Waiting(CallIndices);
-            CallAvgTable = Table(SourceNode, TargetNode, CallType, Waiting);
+            CallAvgTable = Table(SourceNode, TargetNode, Type, Waiting);            
         end
         
         function [result, iterations] = parseXMLResults(self, filename)
             % [RESULT, ITERATIONS] = PARSEXMLRESULTS(FILENAME)
-            
+        
             import javax.xml.parsers.*;
             import org.w3c.dom.*;
             import java.io.*;
             
+            lqn = self.model.getStruct;            
             lqnGraph = self.model.getGraph;
             numOfNodes = height(lqnGraph.Nodes);
             numOfEdges = height(lqnGraph.Edges);
@@ -125,9 +127,12 @@ classdef SolverLQNS < LayeredNetworkSolver
             
             [fpath,fname,~] = fileparts(filename);
             resultFilename = [fpath,filesep,fname,'.lqxo'];
-            if verbose > 0
+            if self.options.verbose 
                 fprintf(1,'Parsing LQNS result file: %s\n',resultFilename);
                 warning(warning('query'));
+            end
+            if self.options.keep
+                fprintf(1,'LQNS result file available at: %s\n',resultFilename);
             end
             
             doc = dBuilder.parse(resultFilename);
@@ -146,7 +151,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                 %Element - Host
                 procElement = procList.item(i);
                 procName = char(procElement.getAttribute('name'));
-                procPos = findstring(lqnGraph.Nodes.Node,procName);
+                %procPos = findstring(lqnGraph.Nodes.Node,procName);                
+                procPos = findstring(lqn.names,procName);
                 procResult = procElement.getElementsByTagName('result-processor');
                 uRes = str2double(procResult.item(0).getAttribute('utilization'));
                 Avg.Nodes.ProcUtilization(procPos) = uRes;
@@ -156,7 +162,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                     %Element - Task
                     taskElement = taskList.item(j);
                     taskName = char(taskElement.getAttribute('name'));
-                    taskPos = findstring(lqnGraph.Nodes.Node,taskName);
+                    %taskPos = findstring(lqnGraph.Nodes.Node,taskName);
+                    taskPos = findstring(lqn.names,taskName);
                     taskResult = taskElement.getElementsByTagName('result-task');
                     uRes = str2double(taskResult.item(0).getAttribute('utilization'));
                     p1uRes = str2double(taskResult.item(0).getAttribute('phase1-utilization'));
@@ -174,7 +181,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                         %Element - Entry
                         entryElement = entryList.item(k);
                         entryName = char(entryElement.getAttribute('name'));
-                        entryPos = findstring(lqnGraph.Nodes.Node,entryName);
+                        %entryPos = findstring(lqnGraph.Nodes.Node,entryName);
+                        entryPos = findstring(lqn.names,entryName);
                         entryResult = entryElement.getElementsByTagName('result-entry');
                         uRes = str2double(entryResult.item(0).getAttribute('utilization'));
                         p1uRes = str2double(entryResult.item(0).getAttribute('phase1-utilization'));
@@ -202,7 +210,8 @@ classdef SolverLQNS < LayeredNetworkSolver
                             actElement = actList.item(l);
                             if strcmp(char(actElement.getParentNode().getNodeName()),'task-activities')
                                 actName = char(actElement.getAttribute('name'));
-                                actPos = findstring(lqnGraph.Nodes.Node,actName);
+                                %actPos = findstring(lqnGraph.Nodes.Node,actName);
+                                actPos = findstring(lqn.names,actName);
                                 actResult = actElement.getElementsByTagName('result-activity');
                                 uRes = str2double(actResult.item(0).getAttribute('utilization'));
                                 stRes = str2double(actResult.item(0).getAttribute('service-time'));
@@ -215,15 +224,18 @@ classdef SolverLQNS < LayeredNetworkSolver
                                 Avg.Nodes.ProcWaiting(actPos) = pwRes;
                                 Avg.Nodes.ProcUtilization(actPos) = puRes;
                                 
-                                actID = lqnGraph.Nodes.Name{actPos};
+                                %actID = lqnGraph.Nodes.Name{actPos};
+                                actID = lqn.names{actPos};
                                 %synch-call
                                 synchCalls = actElement.getElementsByTagName('synch-call');
                                 for m = 0:synchCalls.getLength()-1
                                     callElement = synchCalls.item(m);
                                     destName = char(callElement.getAttribute('dest'));
-                                    destPos = findstring(lqnGraph.Nodes.Node,destName);
-                                    destID = lqnGraph.Nodes.Name{destPos};
-                                    callPos = findedge(lqnGraph,actID,destID);
+                                    %destPos = findstring(lqnGraph.Nodes.Node,destName);
+                                    destPos = findstring(lqn.names,destName);
+                                    destID = lqn.names{destPos};
+                                    %callPos = findedge(lqnGraph,actID,destID);
+                                    callPos = findstring(lqn.callnames,[actID,'=>',destID])
                                     callResult = callElement.getElementsByTagName('result-call');
                                     wRes = str2double(callResult.item(0).getAttribute('waiting'));
                                     Avg.Edges.Waiting(callPos) = wRes;
@@ -233,9 +245,12 @@ classdef SolverLQNS < LayeredNetworkSolver
                                 for m = 0:asynchCalls.getLength()-1
                                     callElement = asynchCalls.item(m);
                                     destName = char(callElement.getAttribute('dest'));
-                                    destPos = findstring(lqnGraph.Nodes.Node,destName);
-                                    destID = lqnGraph.Nodes.Name{destPos};
-                                    callPos = findedge(lqnGraph,actID,destID);
+                                    %destPos = findstring(lqnGraph.Nodes.Node,destName);
+                                    destPos = findstring(lqn.names,destName);
+                                    %destID = lqnGraph.Nodes.Name{destPos};
+                                    destID = lqn.name{destPos};
+                                    %callPos = findedge(lqnGraph,actID,destID);
+                                    callPos = findstring(lqn.callnames,[actID,'->',destID]);
                                     callResult = callElement.getElementsByTagName('result-call');
                                     wRes = str2double(callResult.item(0).getAttribute('waiting'));
                                     Avg.Edges.Waiting(callPos) = wRes;

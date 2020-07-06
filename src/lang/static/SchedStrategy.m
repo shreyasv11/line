@@ -5,21 +5,21 @@ classdef (Sealed) SchedStrategy
     % All rights reserved.
     
     properties (Constant)
-        INF = 'inf'; % infinite server
-        FCFS = 'fcfs';
-        LCFS = 'lcfs';
-        SIRO = 'siro'; % service in random order
-        SJF = 'sjf';
-        LJF = 'ljf';
-        PS = 'ps'; % egalitarian PS
-        DPS = 'dps';
-        GPS = 'gps';
-        SEPT = 'sept';
-        LEPT = 'lept';
-        HOL = 'hol';
-        FORK = 'fork';
-        EXT = 'ext'; % external world (open arrival source and sink)
-        REF = 'ref'; % reference node in LayeredNetworks        
+        INF = categorical({'inf'}); % infinite server
+        FCFS = categorical({'fcfs'});
+        LCFS = categorical({'lcfs'});
+        SIRO = categorical({'siro'}); % service in random order
+        SJF = categorical({'sjf'});
+        LJF = categorical({'ljf'});
+        PS = categorical({'ps'}); % egalitarian PS
+        DPS = categorical({'dps'});
+        GPS = categorical({'gps'});
+        SEPT = categorical({'sept'});
+        LEPT = categorical({'lept'});
+        HOL = categorical({'hol'});
+        FORK = categorical({'fork'});
+        EXT = categorical({'ext'}); % external world (open arrival source and sink)
+        REF = categorical({'ref'}); % reference node in LayeredNetworks
         
         ID_INF = 0;
         ID_FCFS = 1;
@@ -35,13 +35,12 @@ classdef (Sealed) SchedStrategy
         ID_HOL = 11;
         ID_FORK = 12;
         ID_EXT = 13;
-        ID_REF = 14;        
+        ID_REF = 14;
     end
     
     methods (Static)
         function id = toId(type)
             % ID = TOID(TYPE)
-            
             switch type
                 case SchedStrategy.INF
                     id = 0;
@@ -75,6 +74,78 @@ classdef (Sealed) SchedStrategy
                     id = 14;
             end
         end
+        
+        function text = toText(type)
+            % TEXT = TOID(TYPE)
+            switch type
+                case SchedStrategy.INF
+                    text = 'inf';
+                case SchedStrategy.FCFS
+                    text = 'fcfs';
+                case SchedStrategy.LCFS
+                    text = 'lcfs';
+                case SchedStrategy.SIRO
+                    text = 'siro';
+                case SchedStrategy.SJF
+                    text = 'sjf';
+                case SchedStrategy.LJF
+                    text = 'ljf';
+                case SchedStrategy.PS
+                    text = 'ps';
+                case SchedStrategy.DPS
+                    text = 'dps';
+                case SchedStrategy.GPS
+                    text = 'gps';
+                case SchedStrategy.SEPT
+                    text = 'sept';
+                case SchedStrategy.LEPT
+                    text = 'lept';
+                case SchedStrategy.HOL
+                    text = 'hol';
+                case SchedStrategy.FORK
+                    text = 'fork';
+                case SchedStrategy.EXT
+                    text = 'ext';
+                case SchedStrategy.REF
+                    text = 'ref';
+            end
+        end
+        
+   function type = fromText(text)
+            % TEXT = TOID(TYPE)
+            switch text
+                case 'inf'
+                    type = SchedStrategy.INF;
+                case 'fcfs'
+                    type = SchedStrategy.FCFS;
+                case 'lcfs'
+                    type = SchedStrategy.LCFS;
+                case 'siro'
+                    type = SchedStrategy.SIRO;
+                case 'sjf'
+                    type = SchedStrategy.SJF;
+                case 'ljf'
+                    type = SchedStrategy.LJF;
+                case 'ps'
+                    type = SchedStrategy.PS;
+                case 'dps'
+                    type = SchedStrategy.DPS;
+                case 'gps'
+                    type = SchedStrategy.GPS;
+                case 'sept'
+                    type = SchedStrategy.SEPT;
+                case 'lept'
+                    type = SchedStrategy.LEPT;
+                case 'hol'
+                    type = SchedStrategy.HOL;
+                case 'fork'
+                    type = SchedStrategy.FORK;
+                case 'ext'
+                    type = SchedStrategy.EXT;
+                case 'ref'
+                    type = SchedStrategy.REF;
+            end
+        end        
         
         function property = toProperty(text)
             % PROPERTY = TOPROPERTY(TEXT)
@@ -113,7 +184,7 @@ classdef (Sealed) SchedStrategy
                 case 'ext'
                     property = 'EXT';
             end
-            
+            property = categorical({property});
         end
         
         function text = toFeature(type)

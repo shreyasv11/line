@@ -10,6 +10,8 @@ classdef LayeredNetworkElement < Element
         TASK = 1;
         ENTRY = 2;
         ACTIVITY =3;
+        CALL = 4;
+        FWD = 5;
     end
     
     

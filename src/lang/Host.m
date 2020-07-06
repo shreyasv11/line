@@ -6,6 +6,7 @@ classdef Host  < LayeredNetworkElement
     
     properties
         multiplicity;       %int
+        replication;        %int
         scheduling;         %char: ps, fcfs, inf, ref
         quantum;            %double
         speedFactor;        %double
@@ -16,13 +17,13 @@ classdef Host  < LayeredNetworkElement
         %public methods, including constructor
         
         %constructor
-        function obj = Host(model, name, multiplicity, scheduling, quantum, speedFactor)
-            % OBJ = HOST(MODEL, NAME, MULTIPLICITY, SCHEDULING, QUANTUM, SPEEDFACTOR)
+        function self = Host(model, name, multiplicity, scheduling, quantum, speedFactor)
+            % self = HOST(MODEL, NAME, MULTIPLICITY, SCHEDULING, QUANTUM, SPEEDFACTOR)
             
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
-            obj@LayeredNetworkElement(name);
+            self@LayeredNetworkElement(name);
             
             if ~exist('multiplicity','var')
                 multiplicity = 1;
@@ -36,19 +37,23 @@ classdef Host  < LayeredNetworkElement
             if ~exist('speedFactor','var')
                 speedFactor = 1;
             end
-            
-            obj.multiplicity = multiplicity;
-            obj.scheduling = scheduling;
-            obj.quantum = quantum;
-            obj.speedFactor = speedFactor;
-            model.hosts{end+1} = obj;
+            self.replication = 1;            
+            self.multiplicity = multiplicity;
+            self.scheduling = scheduling;
+            self.quantum = quantum;
+            self.speedFactor = speedFactor;
+            model.hosts{end+1} = self;
+        end
+        
+        function self=setReplication(self, replication)
+            self.replication = replication;
         end
         
         
         %addTask
-        function obj = addTask(obj, newTask)
-            % OBJ = ADDTASK(OBJ, NEWTASK)
-            obj.tasks = [obj.tasks; newTask];            
+        function self = addTask(self, newTask)
+            % self = ADDTASK(self, NEWTASK)
+            self.tasks = [self.tasks; newTask];            
         end
         
     end

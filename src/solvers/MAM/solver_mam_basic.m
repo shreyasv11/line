@@ -42,7 +42,7 @@ if qn.isopen()
     D0 = {};
     % first build the joint arrival process
     for ist=1:M
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case SchedStrategy.EXT
                 % assemble a MMAP for the arrival process from all classes
                 for k=1:K
@@ -88,7 +88,7 @@ if qn.isopen()
     for ind=1:I
         if qn.isstation(ind)
             ist = qn.nodeToStation(ind);
-            switch qn.sched{ist}
+            switch qn.sched(ist)
                 case SchedStrategy.INF
                     for k=1:K
                         TN(ist,k) = lambda(k)*V(ist,k);
@@ -123,7 +123,7 @@ if qn.isopen()
                             aggrArrivalAtNode = mmap_super_safe({aggrArrivalAtNode, chainArrivalAtNode{c}}, config.space_max, 'default');
                         end
                     end
-                    if strcmp(qn.sched{ist},SchedStrategy.HOL) && any(qn.classprio ~= qn.classprio(1)) % if priorities are not identical
+                    if strcmp(qn.sched(ist),SchedStrategy.HOL) && any(qn.classprio ~= qn.classprio(1)) % if priorities are not identical
                         [uK,iK] = unique(qn.classprio);
                         if length(uK) == length(qn.classprio) % if all priorities are different
                             [Qret{iK}] = MMAPPH1NPPR({aggrArrivalAtNode{[1;2+iK]}}, {pie{ist,iK}}, {D0{ist,iK}}, 'ncMoms', 1);

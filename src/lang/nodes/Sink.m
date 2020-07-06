@@ -22,6 +22,11 @@ classdef Sink < Node
                 self.setModel(model);
                 self.model.addNode(self);
                 self.schedStrategy = SchedStrategy.EXT;
+                if length(model.classes)>1 % Sink created after some closed classes
+                    for r=1:model.getNumberOfClasses
+                        self.setRouting(model.classes{r},RoutingStrategy.DISABLED);
+                    end
+                end
             end
         end
         

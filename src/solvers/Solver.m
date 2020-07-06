@@ -304,7 +304,7 @@ classdef Solver < handle
                     if strcmp(options.method,'fluid'), options.method='default'; end
                     options.method = erase(options.method,'fluid.');
                     solver = SolverFluid(model, options);
-                case {'nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.mmint'}
+                case {'nc','nc.exact','nc.imci','nc.ls','nc.le','nc.panacea','nc.pana','nc.mmint','nc.kt','nc.deterministic','nc.sampling','nc.propfair'}
                     if strcmp(options.method,'nc'), options.method='default'; end
                     options.method = erase(options.method,'nc.');
                     solver = SolverNC(model, options);

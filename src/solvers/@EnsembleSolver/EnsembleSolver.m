@@ -20,7 +20,7 @@ classdef EnsembleSolver < Solver
             else
                 self.setOptions(EnsembleSolver.defaultOptions);
             end
-            self.ensemble = ensmodel.getEnsemble;
+            %self.ensemble = ensmodel.getEnsemble;
             self.solvers = {};
         end
     end
@@ -109,7 +109,7 @@ classdef EnsembleSolver < Solver
         % setSolver(solver, e) : solver is assigned to stage e
         function solver = setSolver(self, solver, e)
             % SOLVER = SETSOLVER(SOLVER, E)
-            solver.options.verbose = self.options.verbose;
+            %solver.options.verbose = self.options.verbose;
             if iscell(solver)
                 self.solvers = solver;
             else
@@ -130,7 +130,7 @@ classdef EnsembleSolver < Solver
         end
         
         function [runtime, sruntime, results] = run(self)
-            % [RUNTIME, SRUNTIME, RESULTS] = RUN()            
+            % [RUNTIME, SRUNTIME, RESULTS] = RUN()
             T0 = tic;
             it = 0;
             options = self.options;
@@ -138,79 +138,45 @@ classdef EnsembleSolver < Solver
             results = cell(1,E);
             sruntime = zeros(1,E); % solver runtimes
             self.init();
-            switch options.method
-                case {'default','serial'}
-                    while ~self.converged(it) && it < options.iter_max
-                        it = it + 1;
-                        if options.verbose
-                            if it==1
-                                fprintf('Iteration %3d:',it);
-                            else
-                                fprintf('\nIteration %3d:',it);
-                            end
-                        end
-                        self.pre(it);
-                        sruntime(it,1:E) = 0;
-                        T0=tic;
+            % nearly identical, but parfor based
+            while ~self.converged(it) && it < options.iter_max
+                it = it + 1;
+                self.pre(it);
+                sruntime(it,1:E) = 0;
+                T0=tic;
+                switch options.method
+                    case {'default','serial'}
                         for e = self.list(it)
-                            self.solvers{e}.options.verbose = 0;
-                        end
-                        %parfor e = self.list(it)
-                        for e = self.list(it)
-                            if 0 %options.verbose
-                                if e==E
-                                    Tpproc=toc(T0);
-                                    donemsg = sprintf(' Runtime: %f seconds.',Tpproc);
-                                end
-                                if it == 1
-                                    donemsg = '';
-                                    textwaitbar(e,E,sprintf('Iteration %3d:',it),donemsg);
-                                elseif it == 2
-                                    textwaitbar(e,E,sprintf('Iteration %3d:',it),donemsg);
-                                else
-                                    textwaitbar(e,E,sprintf('Iteration %3d:',it),donemsg);
-                                end
-                                %if e == 1
-                                %    fprintf('Iteration %d, submodel %d/%d. ',it,e,E);
-                                %else
-                                %    fprintf('Iteration %d, submodel %d/%d. ',it,e,E);
-                                %end
-                            end
                             [results{it,e}, solverTime] = self.analyze(it,e);
                             sruntime(it,e) = sruntime(it,e) + solverTime;
                         end
-                        self.results = results;
-                        if options.verbose
-                            Tpproc=toc(T0);
-                            fprintf(' Runtime: %f seconds.',Tpproc);
-                            T0=tic;
-                            fprintf(' Postprocessing: ');
+                    case {'para'}
+                        parfor e = self.list(it)
+                            [results{it,e}, solverTime] = self.analyze(it,e);
+                            sruntime(it,e) = sruntime(it,e) + solverTime;
                         end
-                        self.post(it);
-                        Tpproc=toc(T0);
-                        if options.verbose
-                            fprintf('%f seconds. ',Tpproc);
-                        end
+                end
+                self.results = results;
+                if options.verbose
+                    Tpproc=toc(T0);
+                    if it>1
+                        fprintf('\nIter %d. ',it);
+                    else
+                        fprintf('Iter %d. ',it);
                     end
-                case {'para'}
-                    %                     while ~self.converged(it) & it < options.iter_max
-                    %                         it = it + 1;
-                    %                         self.pre(it);
-                    %                         sruntime(it,1:E) = 0;
-                    %                         parfor e = self.list(it)
-                    %                             [results{it,e}, solverTime] = self.run(it,e);
-                    %                             sruntime(it,1+e) = sruntime(it,1+e) + solverTime;
-                    %                         end
-                    %                         for e=1:E % cannot be put within parfor
-                    %                             self.results{it,e} = results{it,e};
-                    %                         end
-                    %                         self.post(it);
-                    %                     end
+                    fprintf('Runtime: %f seconds.',Tpproc);
+                    T0=tic;
+                    fprintf(' Postprocessing: ');
+                end
+                self.post(it);
+                Tpproc=toc(T0);
+                if options.verbose
+                    fprintf('%f seconds. ',Tpproc);
+                end
             end
             self.finish();
             runtime = toc(T0);
-        end
-        
+        end       
     end
     
     methods (Static)

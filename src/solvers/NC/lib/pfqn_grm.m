@@ -1,5 +1,5 @@
-function [lGN,lGNr] = pfqn_grm(L,N,Z,samples)
-% [LGN,LGNR] = PFQN_GRM(L,N,Z,SAMPLES)
+function [G,lG,lGr] = pfqn_grm(L,N,Z,samples)
+% [G,LOGG,LOGGR] = PFQN_GRM(L,N,Z,SAMPLES)
 
 % Monte carlo sampling for normalizing constant of a repairmen model
 R = length(N);
@@ -13,10 +13,11 @@ u  = repmat(v',1,length(nnzeros));
 ZL = log(repmat(Z+L(1,nnzeros),size(u,1),1).*u);
 lG = du + -v' + ZL*N';
 den = sum(factln(N));
-lGN = max(lG) - den; % get largest
-lGN = lGN + sum(N)*log(scaleFactor); % rescale
+lG = max(lG) - den; % get largest
+lG = lG + sum(N)*log(scaleFactor); % rescale
 for r=1:R
     lGr = lG - ZL(:,r);
-    lGNr(r) = max(lGr) - den + log(N(r)) + (sum(N)-1)*log(scaleFactor);
+    lGr(r) = max(lGr) - den + log(N(r)) + (sum(N)-1)*log(scaleFactor);
 end
+G = exp(lG);
 end

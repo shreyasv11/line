@@ -45,7 +45,7 @@ end
 % generate local-state space
 switch qn.nodetype(ind)
     case {NodeType.Queue, NodeType.Delay, NodeType.Source}
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case SchedStrategy.EXT
                 for r=1:R
                     if ~isempty(qn.proc) && ~isempty(qn.proc{ist,r}) && any(any(isnan(qn.proc{ist,r}{1}))) % disabled
@@ -154,7 +154,7 @@ switch qn.nodetype(ind)
                 space = State.decorate(space, qn.varsparam{ind}.outlinks(:));
         end
     case NodeType.Cache
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case SchedStrategy.INF
                 % in this policies we only track the jobs in the servers
                 for r=1:R

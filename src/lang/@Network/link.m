@@ -80,7 +80,9 @@ end
 % assign routing for self-looping jobs
 for r=1:R
     if isa(self.classes{r},'SelfLoopingClass')
-        P{r,1:R} = 0 * P{r,1:R};
+        for s=1:R
+            P{r,s} = 0 * P{r,s};
+        end
         P{r,r}(self.classes{r}.reference, self.classes{r}.reference) = 1.0;
     end
 end

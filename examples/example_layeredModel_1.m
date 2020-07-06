@@ -11,15 +11,15 @@ options = SolverLQNS.defaultOptions;
 options.keep = true; % uncomment to keep the intermediate XML files generates while translating the model to LQNS
 
 solver{1} = SolverLQNS(model);
-AvgTable{1} = solver{1}.getAvgTable();
-AvgTable{1}
+AvgTable = solver{1}.getAvgTable();
+AvgTable
 
 useLQNSnaming = true;
-AvgTable{2} = solver{1}.getAvgTable(useLQNSnaming);
-AvgTable{2}
+AvgTable = solver{1}.getAvgTable(useLQNSnaming);
+AvgTable
 
-fprintf(1,'List of submodels (layers), the second station is the processor or task acting as a server within that submodel:\n')
-for e=1:model.getNumberOfLayers
-    fprintf(1,'Submodel (layer) %d:\n',e)
-    model.ensemble{e}.getStationNames
-end
+
+useLQNSnaming = true;
+[AvgTable, CallAvgTable] = solver{1}.getRawAvgTables();
+AvgTable
+CallAvgTable

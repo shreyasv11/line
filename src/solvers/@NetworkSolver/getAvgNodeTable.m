@@ -26,12 +26,12 @@ if isempty(QN)
 elseif ~keepDisabled
     Qval = []; Uval = [];
     Rval = []; Tval = []; Aval=[];
-    Class = {};
+    JobClass = {};
     Node = {};
     for i=1:I
         for k=1:K
             if any(sum([QN(i,k),UN(i,k),RN(i,k),TN(i,k),AN(i,k)])>0)
-                Class{end+1,1} = qn.classnames{k};
+                JobClass{end+1,1} = qn.classnames{k};
                 Node{end+1,1} = qn.nodenames{i};
                 Qval(end+1) = QN(i,k);
                 Uval(end+1) = UN(i,k);
@@ -41,25 +41,27 @@ elseif ~keepDisabled
             end
         end
     end
+    Station = categorical(Station);
+    JobClass = categorical(JobClass);    
     QLen = Qval(:); % we need to save first in a variable named like the column
-    QT = Table(Node,Class,QLen);
+    QT = Table(Node,JobClass,QLen);
     Util = Uval(:); % we need to save first in a variable named like the column
-    UT = Table(Node,Class,Util);
+    UT = Table(Node,JobClass,Util);
     RespT = Rval(:); % we need to save first in a variable named like the column
-    RT = Table(Node,Class,RespT);
+    RT = Table(Node,JobClass,RespT);
     Tput = Tval(:); % we need to save first in a variable named like the column
-    TT = Table(Node,Class,Tput);
+    TT = Table(Node,JobClass,Tput);
     ArvR = Aval(:); % we need to save first in a variable named like the column
-    AT = Table(Node,Class,ArvR);
-    AvgTable = Table(Node,Class,QLen,Util,RespT,ArvR,Tput);
+    AT = Table(Node,JobClass,ArvR);
+    AvgTable = Table(Node,JobClass,QLen,Util,RespT,ArvR,Tput);
 else
     Qval = zeros(I,K); Uval = zeros(I,K);
     Rval = zeros(I,K); Tval = zeros(I,K); Aval = zeros(I,K);
-    Class = cell(K*I,1);
+    JobClass = cell(K*I,1);
     Node = cell(K*I,1);
     for i=1:I
         for k=1:K
-            Class{end+1,1} = qn.classnames{k};
+            JobClass{end+1,1} = qn.classnames{k};
             Node{end+1,1} = qn.nodenames{i};
             Qval((i-1)*K+k) = QN(i,k);
             Uval((i-1)*K+k) = UN(i,k);
@@ -68,16 +70,18 @@ else
             Aval((i-1)*K+k) = AN(i,k);
         end
     end
+    Station = categorical(Station);
+    JobClass = categorical(JobClass);    
     QLen = Qval(:); % we need to save first in a variable named like the column
-    QT = Table(Node,Class,QLen);
+    QT = Table(Node,JobClass,QLen);
     Util = Uval(:); % we need to save first in a variable named like the column
-    UT = Table(Node,Class,Util);
+    UT = Table(Node,JobClass,Util);
     RespT = Rval(:); % we need to save first in a variable named like the column
-    RT = Table(Node,Class,RespT);
+    RT = Table(Node,JobClass,RespT);
     Tput = Tval(:); % we need to save first in a variable named like the column
-    TT = Table(Node,Class,Tput);
+    TT = Table(Node,JobClass,Tput);
     ArvR = Aval(:); % we need to save first in a variable named like the column
-    AT = Table(Node,Class,ArvR);
-    AvgTable = Table(Node,Class,QLen,Util,RespT,ArvR,Tput);
+    AT = Table(Node,JobClass,ArvR);
+    AvgTable = Table(Node,JobClass,QLen,Util,RespT,ArvR,Tput);
 end
 end

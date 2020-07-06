@@ -16,6 +16,9 @@ classdef NetworkSolver < Solver
             % Construct a NetworkSolver with given model, name and options
             % data structure.
             self@Solver(model, name);
+            if isempty(model)
+                error('The model supplied in input is empty');
+            end
             if exist('options','var'), self.setOptions(options); end
             self.result = [];
             self.handles.Q = [];
@@ -358,8 +361,8 @@ classdef NetworkSolver < Solver
             
             % Return cumulative distribution of passage times at steady-state
             error('Line:FeatureNotSupportedBySolver','getTranCdfPassT is not supported by this solver.');
-        end
-        
+        end        
+       
     end
     
     methods (Static)

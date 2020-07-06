@@ -6,6 +6,7 @@ classdef Task < LayeredNetworkElement
     
     properties
         multiplicity;       %int
+        replication;       %int
         scheduling;         %string
         thinkTime;
         thinkTimeMean;      %double
@@ -21,13 +22,13 @@ classdef Task < LayeredNetworkElement
         %public methods, including constructor
         
         %constructor
-        function obj = Task(model, name, multiplicity, scheduling, thinkTime)
-            % OBJ = TASK(MODEL, NAME, MULTIPLICITY, SCHEDULING, THINKTIME)
+        function self = Task(model, name, multiplicity, scheduling, thinkTime)
+            % self = TASK(MODEL, NAME, MULTIPLICITY, SCHEDULING, THINKTIME)
             
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
-            obj@LayeredNetworkElement(name);
+            self@LayeredNetworkElement(name);
             
             if ~exist('multiplicity','var')
                 multiplicity = 1;
@@ -38,110 +39,114 @@ classdef Task < LayeredNetworkElement
             if ~exist('thinkTime','var')
                 thinkTime = Distrib.Zero;
             end
-            
-            obj.multiplicity = multiplicity;
-            obj.scheduling = scheduling;
-            obj.setThinkTime(thinkTime);
-            model.tasks{end+1} = obj;
+            self.replication = 1;
+            self.multiplicity = multiplicity;
+            self.scheduling = scheduling;
+            self.setThinkTime(thinkTime);
+            model.tasks{end+1} = self;
             switch scheduling
                 case 'ref'
-                    model.reftasks{end+1} = obj;
+                    model.reftasks{end+1} = self;
             end            
         end
         
-        function obj = on(obj, parent)
-            % OBJ = ON(OBJ, PARENT)
+        function self = setReplication(self, replication)
+            self.replication = replication;
+        end
+                
+        function self = on(self, parent)
+            % self = ON(self, PARENT)
             
-            parent.addTask(obj);
+            parent.addTask(self);
         end
         
-        function obj = setAsReferenceTask(obj)
-            % OBJ = SETASREFERENCETASK(OBJ)
+        function self = setAsReferenceTask(self)
+            % self = SETASREFERENCETASK(self)
             
-            obj.scheduling = SchedStrategy.REF;
+            self.scheduling = SchedStrategy.REF;
         end
         
-        function obj = setThinkTime(obj, thinkTime)
-            % OBJ = SETTHINKTIME(OBJ, THINKTIME)
+        function self = setThinkTime(self, thinkTime)
+            % self = SETTHINKTIME(self, THINKTIME)
             
             if isnumeric(thinkTime)
                 if thinkTime <= Distrib.Zero
-                    obj.thinkTime = Immediate();
-                    obj.thinkTimeMean = Distrib.Zero;
-                    obj.thinkTimeSCV = Distrib.Zero;
+                    self.thinkTime = Immediate();
+                    self.thinkTimeMean = Distrib.Zero;
+                    self.thinkTimeSCV = Distrib.Zero;
                 else
-                    obj.thinkTime = Exp(1/thinkTime);
-                    obj.thinkTimeMean = thinkTime;
-                    obj.thinkTimeSCV = 1.0;
+                    self.thinkTime = Exp(1/thinkTime);
+                    self.thinkTimeMean = thinkTime;
+                    self.thinkTimeSCV = 1.0;
                 end
             elseif isa(thinkTime,'Distrib')
-                obj.thinkTime = thinkTime;
-                obj.thinkTimeMean = thinkTime.getMean();
-                obj.thinkTimeSCV = thinkTime.getSCV();
+                self.thinkTime = thinkTime;
+                self.thinkTimeMean = thinkTime.getMean();
+                self.thinkTimeSCV = thinkTime.getSCV();
             end
         end
         
         %addEntry
-        function obj = addEntry(obj, newEntry)
-            % OBJ = ADDENTRY(OBJ, NEWENTRY)
+        function self = addEntry(self, newEntry)
+            % self = ADDENTRY(self, NEWENTRY)
             
-            obj.entries = [obj.entries; newEntry];
+            self.entries = [self.entries; newEntry];
         end
         
         %addActivity
-        function obj = addActivity(obj, newAct)
-            % OBJ = ADDACTIVITY(OBJ, NEWACT)
+        function self = addActivity(self, newAct)
+            % self = ADDACTIVITY(self, NEWACT)
             
-            newAct.setParent(obj.name);
-            obj.activities = [obj.activities; newAct];
+            newAct.setParent(self.name);
+            self.activities = [self.activities; newAct];
         end
         
         %setActivity
-        function obj = setActivity(obj, newAct, index)
-            % OBJ = SETACTIVITY(OBJ, NEWACT, INDEX)
+        function self = setActivity(self, newAct, index)
+            % self = SETACTIVITY(self, NEWACT, INDEX)
             
-            obj.activities(index,1) = newAct;
+            self.activities(index,1) = newAct;
         end
         
         %removeActivity
-        function obj = removeActivity(obj, index)
-            % OBJ = REMOVEACTIVITY(OBJ, INDEX)
+        function self = removeActivity(self, index)
+            % self = REMOVEACTIVITY(self, INDEX)
             
-            idxToKeep = [1:index-1,index+1:length(obj.activities)];
-            obj.activities = obj.activities(idxToKeep);
-            obj.actNames = obj.actNames(idxToKeep);
+            idxToKeep = [1:index-1,index+1:length(self.activities)];
+            self.activities = self.activities(idxToKeep);
+            self.actNames = self.actNames(idxToKeep);
         end
         
         %addPrecedence
-        function obj = addPrecedence(obj, newPrec)
-            % OBJ = ADDPRECEDENCE(OBJ, NEWPREC)
+        function self = addPrecedence(self, newPrec)
+            % self = ADDPRECEDENCE(self, NEWPREC)
             
             if iscell(newPrec)
                 for m=1:length(newPrec)
-                    obj.precedences = [obj.precedences; newPrec{m}];
+                    self.precedences = [self.precedences; newPrec{m}];
                 end
             else
-                obj.precedences = [obj.precedences; newPrec];
+                self.precedences = [self.precedences; newPrec];
             end
         end
         
         %setReplyEntry
-        function obj = setReplyEntry(obj, newReplyEntry)
-            % OBJ = SETREPLYENTRY(OBJ, NEWREPLYENTRY)
+        function self = setReplyEntry(self, newReplyEntry)
+            % self = SETREPLYENTRY(self, NEWREPLYENTRY)
             
-            obj.replyEntry = newReplyEntry;
+            self.replyEntry = newReplyEntry;
         end
         
-        function meanHostDemand = getMeanHostDemand(obj, entryName)
-            % MEANHOSTDEMAND = GETMEANHOSTDEMAND(OBJ, ENTRYNAME)
+        function meanHostDemand = getMeanHostDemand(self, entryName)
+            % MEANHOSTDEMAND = GETMEANHOSTDEMAND(self, ENTRYNAME)
             
             % determines the demand posed by the entry entryName
             % the demand is located in the activity of the corresponding entry
             
             meanHostDemand = -1;
-            for j = 1:length(obj.entries)
-                if strcmp(obj.entries(j).name, entryName)
-                    meanHostDemand = obj.entries(j).activities(1).hostDemandMean;
+            for j = 1:length(self.entries)
+                if strcmp(self.entries(j).name, entryName)
+                    meanHostDemand = self.entries(j).activities(1).hostDemandMean;
                     break;
                 end
             end

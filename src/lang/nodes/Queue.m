@@ -54,8 +54,13 @@ classdef Queue < Station
         
         function setNumberOfServers(self, value)
             % SETNUMBEROFSERVERS(VALUE)
-            
-            self.setNumServers(value);
+            switch self.schedStrategy
+                case SchedStrategy.INF
+                    %warning('A request to change the number of servers in an infinite server node has been ignored.');
+                    %ignore
+                otherwise
+                    self.setNumServers(value);
+            end
         end
         
         function setNumServers(self, value)

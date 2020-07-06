@@ -63,8 +63,8 @@ if ~isempty(parsed)
     
     % extract information from servers
     for i = 1:Ms
-        sched{i} = schedTranslate{findstring(schedTranslate(:,1),parsed.servers(i).scheduling), 2 };
-        if strcmp(sched{i}, SchedStrategy.INF)
+        sched(i) = schedTranslate{findstring(schedTranslate(:,1),parsed.servers(i).scheduling), 2 };
+        if strcmp(sched(i), SchedStrategy.INF)
             numservers(i) = Inf;
         else
             numservers(i) = parsed.servers(i).quantity;
@@ -72,8 +72,8 @@ if ~isempty(parsed)
     end
     
     for i = 1:Mw
-        sched{Ms+i} = schedTranslate{findstring(schedTranslate(:,1),parsed.workUnitServers(i).scheduling), 2 };
-        if strcmp(sched{Ms+i}, SchedStrategy.INF)
+        sched(Ms+i) = schedTranslate{findstring(schedTranslate(:,1),parsed.workUnitServers(i).scheduling), 2 };
+        if strcmp(sched(Ms+i), SchedStrategy.INF)
             numservers(Ms+i) = Inf;
         else
             numservers(Ms+i) = parsed.workUnitServers(i).quantity;
@@ -128,7 +128,7 @@ if ~isempty(parsed)
     nodenames = stationnames;
     routing = RoutingStrategy.ID_PROB * ones(size(rates));
     for j=1:size(sched,1)
-        switch sched{j}
+        switch sched(j)
             case SchedStrategy.INF
                 nodetype(j) = NodeType.Delay;
             otherwise

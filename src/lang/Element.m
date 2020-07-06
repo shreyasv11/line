@@ -24,10 +24,11 @@ classdef Element < Copyable
         
         function self = setName(self, name)
             % SELF = SETNAME(NAME)
-            
-            self.name = name;            
+            %self.name = categorical({name});
+            self.name = name;
         end
         
     end
     
 end
+

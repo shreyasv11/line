@@ -29,7 +29,7 @@ if M==2 && all(isinf(N))
     pie = {};
     S = {};
     for i=1:M
-        switch qn.sched{i}
+        switch qn.sched(i)
             case SchedStrategy.EXT
                 na = cellfun(@(x) length(x{1}),{PH{i,:}});
                 A = {PH{i,1}{1},PH{i,1}{2},PH{i,1}{2}};

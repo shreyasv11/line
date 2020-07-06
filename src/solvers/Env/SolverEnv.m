@@ -14,13 +14,13 @@ classdef SolverEnv < EnsembleSolver
     methods
         function self = SolverEnv(renv, solverFactory, options)
             % SELF = SOLVERENV(ENV,SOLVERFACTORY,OPTIONS)
-            self@EnsembleSolver(renv,mfilename,options);
+            self@EnsembleSolver(renv, mfilename,options);
             self.envObj = renv;
-            models = renv.getEnsemble;
+            self.ensemble = renv.getEnsemble;
             env = renv.getEnv;
             self.env = env;
             for e=1:length(self.env)
-                self.setSolver(solverFactory(models{e}),e);
+                self.setSolver(solverFactory(self.ensemble{e}),e);
             end
             
             for e=1:length(self.env)
@@ -63,13 +63,6 @@ classdef SolverEnv < EnsembleSolver
                 end
                 if max(mapes) < self.options.iter_tol
                     bool = true;
-                end
-                if self.options.verbose
-                    fprintf(1,'Iteration %3d, max abs. perc. error: %f\n',it,max(mapes));
-                end
-            else
-                if self.options.verbose
-                    fprintf(1,'Iteration %3d, max abs. perc. error: %f\n',it,Inf);
                 end
             end
         end
@@ -202,7 +195,10 @@ classdef SolverEnv < EnsembleSolver
             self.result.Avg.U = Uval;
             self.result.Avg.T = Tval;
             %    self.result.Avg.C = C;
-            %self.result.runtime = runtime;
+            %self.result.runtime = runtime;            
+                if self.options.verbose
+                    fprintf(1,'\n');
+                end
         end
         
         function name = getName(self)
@@ -257,12 +253,12 @@ classdef SolverEnv < EnsembleSolver
                 TT = Table();
             elseif ~keepDisabled
                 Qval = []; Uval = []; Tval = [];
-                Class = {};
+                JobClass = {};
                 Station = {};
                 for i=1:M
                     for k=1:K
                         if any(sum([QN(i,k),UN(i,k),TN(i,k)])>0)
-                            Class{end+1,1} = self.model.ensemble{1}.classes{k}.name;
+                            JobClass{end+1,1} = self.model.ensemble{1}.classes{k}.name;
                             Station{end+1,1} = self.model.ensemble{1}.stations{i}.name;
                             Qval(end+1) = QN(i,k);
                             Uval(end+1) = UN(i,k);
@@ -271,32 +267,36 @@ classdef SolverEnv < EnsembleSolver
                     end
                 end
                 QLen = Qval(:); % we need to save first in a variable named like the column
-                QT = Table(Station,Class,QLen);
+                QT = Table(Station,JobClass,QLen);
                 Util = Uval(:); % we need to save first in a variable named like the column
-                UT = Table(Station,Class,Util);
+                UT = Table(Station,JobClass,Util);
                 Tput = Tval(:); % we need to save first in a variable named like the column
-                TT = Table(Station,Class,Tput);
-                AvgTable = Table(Station,Class,QLen,Util,Tput);
+                Station = categorical(Station);
+                JobClass = categorical(JobClass);                
+                TT = Table(Station,JobClass,Tput);
+                AvgTable = Table(Station,JobClass,QLen,Util,Tput);
             else
                 Qval = zeros(M,K); Uval = zeros(M,K);
-                Class = cell(K*M,1);
+                JobClass = cell(K*M,1);
                 Station = cell(K*M,1);
                 for i=1:M
                     for k=1:K
-                        Class{(i-1)*K+k} = Q{i,k}.class.name;
+                        JobClass{(i-1)*K+k} = Q{i,k}.class.name;
                         Station{(i-1)*K+k} = Q{i,k}.station.name;
                         Qval((i-1)*K+k) = QN(i,k);
                         Uval((i-1)*K+k) = UN(i,k);
                         Tval((i-1)*K+k) = TN(i,k);
                     end
                 end
+                Station = categorical(Station);
+                JobClass = categorical(JobClass);
                 QLen = Qval(:); % we need to save first in a variable named like the column
-                QT = Table(Station,Class,QLen);
+                QT = Table(Station,JobClass,QLen);
                 Util = Uval(:); % we need to save first in a variable named like the column
-                UT = Table(Station,Class,Util);
+                UT = Table(Station,JobClass,Util);
                 Tput = Tval(:); % we need to save first in a variable named like the column
-                TT = Table(Station,Class,Tput);
-                AvgTable = Table(Station,Class,QLen,Util,Tput);
+                TT = Table(Station,JobClass,Tput);
+                AvgTable = Table(Station,JobClass,QLen,Util,Tput);
             end
         end
     end

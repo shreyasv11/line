@@ -19,7 +19,7 @@ for i=1:M
                 if ~isempty(self.stations{i}.schedStrategyPar) & ~isnan(self.stations{i}.schedStrategyPar) %#ok<AND2>
                     schedparam(i,:) = self.stations{i}.schedStrategyPar;
                 else
-                    switch sched{i}
+                    switch sched(i)
                         case SchedStrategy.SEPT
                             svcTime = zeros(1,K);
                             for k=1:K

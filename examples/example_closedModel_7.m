@@ -32,7 +32,7 @@ for c=2:2:20
     jmt{c} = SolverJMT(model,'seed',23000,'samples',1e4,'verbose',true).getAvgTable.RespT;
     flu{c} = SolverFluid(model).getAvgTable.RespT;
     mva{c} = SolverMVA(model).getAvgTable.RespT;
-    nc{c} = SolverNC(model,'exact').getAvgTable.RespT;
+    nc{c} = SolverNC(model).getAvgTable.RespT;
     catch
     end
 end

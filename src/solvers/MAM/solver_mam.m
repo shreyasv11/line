@@ -45,7 +45,7 @@ if qn.isopen()
     pie = {};
     D0 = {};
     for ist=1:M
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case SchedStrategy.EXT
                 TN(ist,:) = qn.rates(ist,:);
                 TN(ist,isnan(TN(ist,:)))=0;

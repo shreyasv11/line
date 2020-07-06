@@ -4,10 +4,14 @@ function S=cellsum(C)
 %
 % Copyright (c) 2012-2020, Imperial College London
 % All rights reserved.
-S = 0*C{1};
+S = [];
 for i=1:length(C)
     if ~isempty(C{i})
-    S = S + C{i};
+        if isempty(S)
+            S = C{i};
+        else
+            S = S + C{i};
+        end
     end
 end
 end

@@ -28,6 +28,30 @@ classdef Metric < Copyable
         TranUtil = 'Tran Utilization';
         TranTput = 'Tran Throughput';
         TranRespT = 'Tran Response Time';
+        
+        ID_ResidT = 0; % Response Time * Visits
+        ID_RespT = 1; % Response Time for one Visit
+        ID_DropRate = 2;
+        ID_QLen = 3;
+        ID_QueueT = 4;
+        ID_FCRWeight = 5;
+        ID_FCRMemOcc = 6;
+        ID_FJQLen = 7;
+        ID_FJRespT = 8;
+        ID_RespTSink = 9;
+        ID_SysDropR = 10;
+        ID_SysQLen = 11;
+        ID_SysPower = 12;
+        ID_SysRespT = 13;
+        ID_SysTput = 14;
+        ID_Tput = 15;
+        ID_ArvR = 16;
+        ID_TputSink = 17;
+        ID_Util = 18;
+        ID_TranQLen = 19;
+        ID_TranUtil = 20;
+        ID_TranTput = 21;
+        ID_TranRespT = 22;
     end
     
     
@@ -59,7 +83,7 @@ classdef Metric < Copyable
             else
                 self.station = '';
                 self.station.name = '';
-            end
+            end            
             switch self.type
                 case {Metric.TranQLen, Metric.TranUtil, Metric.TranTput}
                     self.simConfInt = NaN;
@@ -117,7 +141,17 @@ classdef Metric < Copyable
             if self.disabled == 1
                 value = NaN;
                 return
+            end            
+            if isnan(self.stationIndex) || self.stationIndex < 0
+                stationnames = model.getStationNames();                
+                self.stationIndex = findstring(stationnames,self.station.name);
             end
+            i = self.stationIndex;
+            if isnan(self.classIndex)
+                classnames = model.getClassNames();
+                self.classIndex = findstring(classnames,self.class.name);
+            end
+            r = self.classIndex;
             
             switch results.solver
                 case 'SolverJMT'
@@ -125,16 +159,6 @@ classdef Metric < Copyable
                     if ~exist('model','var')
                         error('Wrong syntax, use Metric.get(results,model).\n');
                     end
-                    if isnan(self.stationIndex)
-                        stationnames = model.getStationNames();
-                        self.stationIndex = findstring(stationnames,self.station.name);
-                    end
-                    i = self.stationIndex;
-                    if isnan(self.classIndex)
-                        classnames = model.getClassNames();
-                        self.classIndex = findstring(classnames,self.class.name);
-                    end
-                    r = self.classIndex;
                     switch self.type
                         case Metric.TranTput
                             %results.Tran.Avg.T{i,r}.Name = sprintf('Throughput (station %d, class %d)',i,r);

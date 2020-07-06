@@ -30,6 +30,14 @@ end
 state = [];
 space = [];
 if any(n>qn.classcap(isf,:))
+    exceeded = n>qn.classcap(isf,:);
+    for r=find(exceeded)
+        if ~isempty(qn.proc) && ~isempty(qn.proc{isf,r}) && any(any(isnan(qn.proc{isf,r}{1})))
+            warning('State vector at station %d (n=%s) exceeds the class capacity (classcap=%s). Some service classes are disabled.\n',ist,mat2str(n(isf,:)),mat2str(qn.classcap(isf,:)));
+        else
+            warning('State vector at station %d (n=%s) exceeds the class capacity (classcap=%s).\n',ist,mat2str(n(isf,:)),mat2str(qn.classcap(isf,:)));
+        end
+    end															
     return
 end
 if (qn.nservers(ist)>0 && sum(s) > qn.nservers(ist))
@@ -38,7 +46,7 @@ end
 % generate local-state space
 switch qn.nodetype(ind)
     case {NodeType.Queue, NodeType.Delay, NodeType.Source}
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case SchedStrategy.EXT
                 for r=1:R
                     init = State.spaceClosedSingle(K(r),0);
@@ -87,6 +95,7 @@ switch qn.nodetype(ind)
                 end
             case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.LCFS}
                 sizeEstimator = multinomialln(n-s);
+				sizeEstimator = round(sizeEstimator/log(10));													
                 if sizeEstimator > 2
                     if ~isfield(options,'force') || options.force == false
                         error(sprintf('State space size is very large: 1e%d states. Stopping execution. Set options.force=true to bypass this control.\n',round(sizeEstimator/log(10))));
@@ -145,7 +154,7 @@ switch qn.nodetype(ind)
                 error('The scheduling policy does not admit a discrete state space.\n');
         end
     case NodeType.Cache
-        switch qn.sched{ist}
+        switch qn.sched(ist)
             case SchedStrategy.INF
                 % in this policies we only track the jobs in the servers
                 for r=1:R

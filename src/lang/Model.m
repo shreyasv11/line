@@ -4,9 +4,13 @@ classdef Model < Copyable
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     
+    properties (Hidden)
+        attribute;
+        lineVersion;
+    end
+    
     properties
         name;
-        lineVersion;
     end
     
     methods
@@ -17,7 +21,7 @@ classdef Model < Copyable
             lineVersion = '2.0.7';
             lineVersion = strip(lineVersion);
             self.setVersion(lineVersion);
-            self.setName(name);
+            self.setName(name);            
         end
         
         function out = getName(self)
@@ -33,7 +37,7 @@ classdef Model < Copyable
         end
         
         function v = getVersion(self)
-            v = self.version;
+            v = self.lineVersion;
         end        
         
         function self = setVersion(self, version)

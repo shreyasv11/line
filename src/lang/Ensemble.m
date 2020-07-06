@@ -27,6 +27,10 @@ classdef Ensemble < Model
             
             ensemble = self.ensemble;
         end
+        
+        function model = getModel(self, modelIdx)
+            model = self.ensemble{modelIdx};
+        end
     end
     
     methods(Access = protected)

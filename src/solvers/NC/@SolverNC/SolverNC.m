@@ -58,6 +58,7 @@ classdef SolverNC < NetworkSolver
         function options = defaultOptions()
             % OPTIONS = DEFAULTOPTIONS()
             options = lineDefaults('NC');
+            options.samples = 1e5;
         end
     end
 end

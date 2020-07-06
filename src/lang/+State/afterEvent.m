@@ -371,7 +371,7 @@ if qn.isstation(ind)
                                         space_srv(en_wbuf,Ks(sept_class)+kentry) = space_srv(en_wbuf,Ks(sept_class)+kentry) - 1; % bring job in service
                                     end
                                 otherwise
-                                    error('Scheduling strategy %s is not supported.', qn.sched{ist});
+                                    error('Scheduling strategy %s is not supported.', qn.sched(ist));
                             end
                         end
                     end

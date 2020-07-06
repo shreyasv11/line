@@ -6,12 +6,12 @@ function sched = getStationScheduling(self)
 
 for i=1:self.getNumberOfStations()
     if isinf(self.stations{i}.numberOfServers)
-        sched{i,1} = SchedStrategy.INF;
+        sched(i,1) = SchedStrategy.INF;
     else
         if i == self.getIndexSourceStation()
-            sched{i,1} = SchedStrategy.EXT;
+            sched(i,1) = SchedStrategy.EXT;
         else
-            sched{i,1} = self.stations{i}.schedStrategy;
+            sched(i,1) = self.stations{i}.schedStrategy;
         end
     end
 end

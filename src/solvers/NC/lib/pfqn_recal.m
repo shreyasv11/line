@@ -1,5 +1,5 @@
-function G=pfqn_recal(L,N,Z,m0)
-% G=PFQN_RECAL(L,N,Z,M0)
+function [G,lG]=pfqn_recal(L,N,Z,m0)
+% [G,logG]=PFQN_RECAL(L,N,Z,M0)
 [M,R] = size(L);
 Ntot = sum(N);
 G_1 = ones(1,nchoosek(Ntot+M-1,Ntot));
@@ -29,4 +29,5 @@ if nargin<3 || sum(Z)==0
     end
 end
 G = G(1);
+lG = log(G);
 end

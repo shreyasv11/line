@@ -14,7 +14,7 @@ if isempty(prec)
     return
 end
 p = prec(1);
-if strcmpi(G.Nodes.Type{p},'AS')
+if strcmpi(G.Nodes.Type{p},'A')
     % if it is an activity, go recursively
     [entryName, entryFullName] = self.findEntryOfActivity(G.Nodes.Name{p});
 else

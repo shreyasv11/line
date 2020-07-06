@@ -56,15 +56,11 @@ for i=1:M
             for k=1:K
                 switch self.nodes{i}.output.outputStrategy{k}{2}
                     case RoutingStrategy.PROB
-                        if isinf(NK(k)) || ~isa(self.nodes{i},'Sink')
+                        if isinf(NK(k)) || ~isa(self.nodes{i},'Sink') 
                             %rtNodes((i-1)*K+k,(j-1)*K+k) = self.modifiedRoutingTable{k,k}(i,j);
                             for t=1:length(self.nodes{i}.output.outputStrategy{k}{end}) % for all outgoing links
                                 j = findstring(nodeNames, self.nodes{i}.output.outputStrategy{k}{end}{t}{1}.name);
-                                try
                                 rtNodes((i-1)*K+k,(j-1)*K+k) = self.nodes{i}.output.outputStrategy{k}{end}{t}{2};
-                                catch
-                                    keyboard
-                                end
                             end
                         end
                     case RoutingStrategy.DISABLED

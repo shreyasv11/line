@@ -36,7 +36,7 @@ switch options.method
                 isf = qn.stationToStateful(ist);
                 TN(ist,k) = probSysState*depRates(:,isf,k);
                 QN(ist,k) = probSysState*SSq(:,(ist-1)*K+k);
-                switch sched{ist}
+                switch sched(ist)
                     case SchedStrategy.INF
                         UN(ist,k) = QN(ist,k);
                     otherwise
@@ -111,7 +111,7 @@ switch options.method
                 isf = qn.stationToStateful(ist);
                 TN(ist,k) = probSysState*depRates(:,isf,k);
                 QN(ist,k) = probSysState*SSq(:,(ist-1)*K+k);
-                switch sched{ist}
+                switch sched(ist)
                     case SchedStrategy.INF
                         UN(ist,k) = QN(ist,k);
                     otherwise

@@ -7,28 +7,29 @@ classdef Entry < LayeredNetworkElement
     properties
         parent;
         replyActivity = {};
+        openArrivalRate;
     end
     
     methods
         %public methods, including constructor
         
         %constructor
-        function obj = Entry(model, name)
-            % OBJ = ENTRY(MODEL, NAME)
+        function self = Entry(model, name)
+            % SELF = ENTRY(MODEL, NAME)
             
             if ~exist('name','var')
                 error('Constructor requires to specify at least a name.');
             end
-            obj@LayeredNetworkElement(name);
-            
-            model.entries{end+1} = obj;
+            self@LayeredNetworkElement(name);
+            self.openArrivalRate = 0.0;
+            model.entries{end+1} = self;
         end
         
-        function obj = on(obj, parent)
-            % OBJ = ON(OBJ, PARENT)
+        function self = on(self, parent)
+            % SELF = ON(SELF, PARENT)
             
-            parent.addEntry(obj);
-            obj.parent = parent;
+            parent.addEntry(self);
+            self.parent = parent;
         end
         
     end

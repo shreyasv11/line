@@ -35,7 +35,7 @@ eta_1 = zeros(1,M);
 eta = ones(1,M);
 ca = ones(1,M);
 
-if findstring(sched,'fcfs') == -1, options.iter_max=1; end
+if findstring(sched,SchedStrategy.FCFS) == -1, options.iter_max=1; end
 
 it = 0;
 while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
@@ -172,7 +172,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     for i=1:M
         sd = ST0(i,:)>0;
         eta(i) = sum(U(i,:));
-        switch sched{i}
+        switch sched(i)
             case SchedStrategy.FCFS
                 %if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Zero || min(SCV(i,sd))<1 + Distrib.Zero) % check if non-product-form
                 rho(i) = sum(U(i,:)); % true utilization of each server
@@ -204,7 +204,7 @@ while max(abs(1-eta./eta_1)) > options.iter_tol && it <= options.iter_max
     
     for i=1:M
         sd = ST0(i,:)>0;
-        switch sched{i}
+        switch sched(i)
             case SchedStrategy.FCFS
                 %if range(ST0(i,sd))>0 && (max(SCV(i,sd))>1 - Distrib.Zero || min(SCV(i,sd))<1 + Distrib.Zero) % check if non-product-form
                 for k=1:K

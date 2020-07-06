@@ -15,7 +15,7 @@ classdef ClosedClass < JobClass
             % SELF = CLOSEDCLASS(MODEL, NAME, NJOBS, REFSTAT, PRIO)
             
             self@JobClass('closed', name);
-            self.type = 'closed';
+            self.type = JobClassType.CLOSED;
             self.population = njobs;
             self.priority = 0;
             if exist('prio','var')

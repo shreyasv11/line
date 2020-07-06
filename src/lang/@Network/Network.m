@@ -41,9 +41,6 @@ classdef Network < Model
     methods % public methods in class folder
         refreshAG(self) % get agent representation
         
-        function bool = hasStruct(self)
-            bool = isempty(self.qn);
-        end
         sa = getStruct(self, structType, wantState) % get abritrary representation
         %        cn = getCN(self, wantState) % wrapper of getStruct for cache network representation
         %        ag = getAG(self) % get agent representation
@@ -58,7 +55,7 @@ classdef Network < Model
         nodes = resetNetwork(self)
         
         self = link(self, P)
-        [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath)        
+        [loggerBefore,loggerAfter] = linkAndLog(self, nodes, classes, P, wantLogger, logPath)
         function self = linkNetwork(self, P) % obsolete - old name
             % SELF = LINKNETWORK(P) % OBSOLETE - OLD NAME
             
@@ -108,10 +105,14 @@ classdef Network < Model
     
     % PUBLIC METHODS
     methods (Access=public)
-                
+        
+        function bool = hasStruct(self)
+            bool = isempty(self.qn);
+        end
+        
         %Constructor
         function self = Network(modelName)
-            % SELF = NETWORK(MODELNAME)            
+            % SELF = NETWORK(MODELNAME)
             self@Model(modelName);
             self.nodes = {};
             self.stations = {};
@@ -139,17 +140,17 @@ classdef Network < Model
         end
         
         function env = getEnvironment(self)
-            % ENV = GETENVIRONMENT()            
+            % ENV = GETENVIRONMENT()
             env = self.env;
-        end        
-                
+        end
+        
         function self = setEnvironment(self, env)
-            % SELF = SETENVIRONMENT(ENV)            
+            % SELF = SETENVIRONMENT(ENV)
             self.env = env;
-        end        
+        end
         
         function nodes = getNodes(self)
-            % NODES = GETNODES()            
+            % NODES = GETNODES()
             nodes = self.nodes;
         end
         
@@ -193,13 +194,13 @@ classdef Network < Model
             end
         end
         
-		function resetHandles(self)
+        function resetHandles(self)
             self.perfIndex.Avg = {};
             self.perfIndex.Tran = {};
-			self.handles = {};
-		end
-		
-		function reset(self, resetState)
+            self.handles = {};
+        end
+        
+        function reset(self, resetState)
             % RESET(RESETSTATE)
             %
             % If RESETSTATE is true, the model requires re-initialization
@@ -209,8 +210,8 @@ classdef Network < Model
             else
                 resetModel(self, resetState);
             end
-        end        
-		
+        end
+        
         function resetModel(self, resetState)
             % RESETMODEL(RESETSTATE)
             %
@@ -226,10 +227,10 @@ classdef Network < Model
                 self.nodes{ind}.reset();
             end
             self.stationidxs = [];
-%            self.sourceidx = [];
-%            self.sinkidx = [];
+            %            self.sourceidx = [];
+            %            self.sinkidx = [];
         end
-                
+        
         refreshStruct(self);
         
         function [M,R] = getSize(self)
@@ -294,22 +295,25 @@ classdef Network < Model
             if ~isempty(self.qn)
                 classNames = self.qn.classnames;
             else
-            for r=1:getNumberOfClasses(self)
-                classNames{r,1}=self.classes{r}.name;
-            end
+                for r=1:getNumberOfClasses(self)
+                    classNames{r,1}=self.classes{r}.name;
+                end
             end
         end
         
         function nodeNames = getNodeNames(self)
             % NODENAMES = GETNODENAMES()
+            
+            % The commented block causes issues with Logger nodes
+            % see e.g., getting_started_ex7
             %if ~isempty(self.qn)
             %    nodeNames = self.qn.nodenames;
-            %else    
-            M = getNumberOfNodes(self);
-            nodeNames = cell(M,1);
-            for i=1:M
-                nodeNames{i,1} = self.nodes{i}.name;
-            end
+            %else
+                M = getNumberOfNodes(self);
+                nodeNames = cell(M,1);
+                for i=1:M
+                    nodeNames{i,1} = self.nodes{i}.name;
+                end
             %end
         end
         
@@ -407,10 +411,10 @@ classdef Network < Model
         
         function classIndex = getClassIndex(self, name)
             % CLASSINDEX = GETCLASSINDEX(NAME)
-                if isa(name,'JobClass')
+            if isa(name,'JobClass')
                 jobclass = name;
                 name = jobclass.getName();
-            end        
+            end
             classIndex = find(cellfun(@(c) strcmp(c,name),self.getClassNames));
         end
         
@@ -479,20 +483,20 @@ classdef Network < Model
                 class = NaN;
             end
         end
-
+        
         
         function [stateSpace,nodeStateSpace] = getStateSpace(self, varargin)
             error('This method is no longer supported. Use SolverCTMC(model,...).getStateSpace(...) instead.');
-%             try
-%                 [stateSpace,nodeStateSpace] = SolverCTMC(self,'force',true,'verbose',false,varargin{:}).getStateSpace;
-%             catch ME
-%                 switch ME.identifier
-%                     case 'Line:NoCutoff'
-%                         error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., model.getStateSpace(''cutoff'',1).');
-%                     otherwise
-%                         rethrow ME
-%                 end
-%             end
+            %             try
+            %                 [stateSpace,nodeStateSpace] = SolverCTMC(self,'force',true,'verbose',false,varargin{:}).getStateSpace;
+            %             catch ME
+            %                 switch ME.identifier
+            %                     case 'Line:NoCutoff'
+            %                         error('Line:NoCutoff','The model has open chains, it is mandatory to specify a finite cutoff value, e.g., model.getStateSpace(''cutoff'',1).');
+            %                     otherwise
+            %                         rethrow ME
+            %                 end
+            %             end
         end
         
         function summary(self)
@@ -801,7 +805,7 @@ classdef Network < Model
         end
         
         function initFromAvgQLen(self, AvgQLen)
-            % INITFROMAVGQLEN(AVGQLEN)            
+            % INITFROMAVGQLEN(AVGQLEN)
             n = round(AvgQLen);
             njobs = sum(n,1);
             % we now address the problem that round([0.5,0.5]) = [1,1] so
@@ -847,7 +851,7 @@ classdef Network < Model
                         end
                         s0(r) = min(n0(r),s);
                         s = s - s0(r);
-                    end                    
+                    end
                     state_i = State.fromMarginalAndStarted(qn,i,n0(:)',s0(:)');
                     switch qn.nodetype(i)
                         case NodeType.Cache
@@ -893,7 +897,7 @@ classdef Network < Model
             if ~exist('options','var')
                 options = Solver.defaultOptions;
             end
-            [isvalidn] = State.isValid(qn, n, [], options);            
+            [isvalidn] = State.isValid(qn, n, [], options);
             if ~isvalidn
                 %         error('The specified state does not have the correct number of jobs.');
                 warning('Initial state not contained in the state space. Trying to recover.');
@@ -974,11 +978,11 @@ classdef Network < Model
             K = self.getNumberOfClasses;
             qn = self.getStruct;
             [P,Pnodes] = self.getRoutingMatrix();
-            name = {}; sched = {}; type = {}; nservers = [];
+            name = {}; sched = categorical([]); type = {}; nservers = [];
             for i=1:M
                 name{end+1} = self.nodes{i}.name;
                 type{end+1} = class(self.nodes{i});
-                sched{end+1} = self.nodes{i}.schedStrategy;
+                sched(end+1) = self.nodes{i}.schedStrategy;
                 if isa(self.nodes{i},'Station')
                     nservers(end+1) = self.nodes{i}.getNumberOfServers;
                 else
@@ -1005,7 +1009,7 @@ classdef Network < Model
             for i=1:I
                 name{end+1} = self.stations{i}.name;
                 type{end+1} = class(self.stations{i});
-                sched{end+1} = self.stations{i}.schedStrategy;
+                sched(end+1) = self.stations{i}.schedStrategy;
                 for k=1:K
                     if qn.refstat(k)==i
                         jobs(i) = jobs(i) + qn.njobs(k);
@@ -1085,7 +1089,7 @@ classdef Network < Model
                 end
             end
         end
-       
+        
         
         function self = removeClass(self, jobclass)
             % SELF = REMOVECLASS(SELF, CLASS)
@@ -1110,11 +1114,15 @@ classdef Network < Model
                                 self.nodes{i}.schedStrategyPar = self.nodes{i}.schedStrategyPar(remaining);
                                 self.nodes{i}.serviceProcess = self.nodes{i}.serviceProcess(remaining);
                                 self.nodes{i}.classCap = self.nodes{i}.classCap(remaining);
-                                self.nodes{i}.input.inputJobClasses = self.nodes{i}.input.inputJobClasses(remaining);
+                                if length(self.nodes{i}.input.inputJobClasses) >= max(remaining)
+                                    self.nodes{i}.input.inputJobClasses = self.nodes{i}.input.inputJobClasses(remaining);
+                                end
                                 self.nodes{i}.server.serviceProcess = self.nodes{i}.server.serviceProcess(remaining);
                                 self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
                             case 'ClassSwitch'
-                                self.nodes{i}.input.inputJobClasses = self.nodes{i}.input.inputJobClasses(remaining);
+                                if length(self.nodes{i}.input.inputJobClasses) >= max(remaining)
+                                    self.nodes{i}.input.inputJobClasses = self.nodes{i}.input.inputJobClasses(remaining);
+                                end
                                 self.nodes{i}.server.updateClassSwitch(self.nodes{i}.server.csFun(remaining,remaining));
                                 self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
                             case 'Cache'
@@ -1124,7 +1132,7 @@ classdef Network < Model
                                 self.nodes{i}.classCap = self.nodes{i}.classCap(remaining);
                                 self.nodes{i}.input.sourceClasses = self.nodes{i}.input.sourceClasses(remaining);
                                 %self.nodes{i}.server.serviceProcess = self.nodes{i}.server.serviceProcess(remaining);
-                                self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);                                
+                                self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
                             case 'Sink'
                                 self.nodes{i}.output.outputStrategy = self.nodes{i}.output.outputStrategy(remaining);
                         end
@@ -1152,7 +1160,7 @@ classdef Network < Model
             % The list includes all classes but Model and Hidden or
             % Constant or Abstract or Solvers
             self.usedFeatures = SolverFeatureSet;
-        end        
+        end
     end
     
     methods(Access = protected)
@@ -1560,7 +1568,7 @@ classdef Network < Model
             P(isnan(P)) = 0;
         end
         
-       function printInfGen(Q,SS)
+        function printInfGen(Q,SS)
             % PRINTINFGEN(Q,SS)
             SolverCTMC.printInfGen(Q,SS);
         end

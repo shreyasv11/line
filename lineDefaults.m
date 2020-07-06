@@ -64,7 +64,7 @@ switch solverName
         options.keep = false;
     case 'MAM'
         options.timespan = [Inf,Inf];
-    case 'NC'
+    case 'NC'        
         options.samples = 1e6;
         options.timespan = [Inf,Inf];
     case 'SSA'

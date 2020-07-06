@@ -51,7 +51,7 @@ switch options.method
                 for i=1:M
                     sd = rates0(i,:)>0;
                     Ufull(i,sd) = Tfull(i,sd) ./ rates0(i,sd);
-                    switch qn.sched{i}
+                    switch qn.sched(i)
                         case SchedStrategy.FCFS
                             sd = rates0(i,:)>0;
                             %if range(rates0(i,sd))>0 % check if non-product-form
@@ -81,7 +81,7 @@ switch options.method
                 end
                 
                 for i=1:M
-                    switch qn.sched{i}
+                    switch qn.sched(i)
                         case SchedStrategy.FCFS
                             sd = rates0(i,:)>0;
                             %if range(rates0(i,sd))>0 % check if non-product-form
@@ -103,7 +103,7 @@ switch options.method
                 
                 if useSCV
                     for i=1:M
-                        switch qn.sched{i}
+                        switch qn.sched(i)
                             case SchedStrategy.FCFS
                                 for k=1:K
                                     if rates(i,k)>0
@@ -176,7 +176,7 @@ Ufull0 = Ufull;
 for i=1:M
     sd = find(Qfull(i,:)>0);
     Ufull(i,Qfull(i,:)==0)=0;
-    switch qn.sched{i}
+    switch qn.sched(i)
         case SchedStrategy.INF
             for k=sd
                 Ufull(i,k) = Qfull(i,k);
@@ -198,7 +198,7 @@ for i=1:M
     sd = find(Qfull(i,:)>0);
     Rfull(i,Qfull(i,:)==0)=0;
     for k=sd
-        switch qn.sched{i}
+        switch qn.sched(i)
             case SchedStrategy.INF
                 % no-op
             otherwise

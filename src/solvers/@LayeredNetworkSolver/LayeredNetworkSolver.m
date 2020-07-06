@@ -36,13 +36,13 @@ classdef LayeredNetworkSolver < Solver
                 wantLQNSnaming = false;
             end
             [QN,UN,RN,TN] = self.getAvg();
-            Node = self.model.lqnGraph.Nodes.Node;
+            Node = categorical(self.model.lqnGraph.Nodes.Node);
             Objects = self.model.lqnGraph.Nodes.Object;
             O = length(Objects);
-            NodeType = cell(O,1);
+            NodeType = categorical(O,1);
             for o = 1:O
-                NodeType{o} = class(Objects{o});
-            end
+                NodeType(o,1) = categorical({class(Objects{o})});
+            end            
             if wantLQNSnaming
                 Utilization = QN;
                 QT = Table(Node,Utilization);

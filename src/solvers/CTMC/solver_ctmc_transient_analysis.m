@@ -91,7 +91,7 @@ for k=1:K
         qlenAt_t = pit*StateSpaceAggr(:,(i-1)*K+k);
         %QNt{i,k} = cumsum(qlenAt_t.*[0;diff(t)])./t;
         QNt{i,k} = qlenAt_t;
-        switch sched{i}
+        switch sched(i)
             case SchedStrategy.INF
                 UNt{i,k} = QNt{i,k};
             case {SchedStrategy.FCFS, SchedStrategy.HOL, SchedStrategy.SIRO, SchedStrategy.SEPT, SchedStrategy.LEPT, SchedStrategy.SJF}

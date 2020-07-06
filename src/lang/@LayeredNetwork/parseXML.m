@@ -53,7 +53,14 @@ for i = 0:procList.getLength()-1
     name = char(procElement.getAttribute('name'));
     scheduling = char(procElement.getAttribute('scheduling'));
     multiplicity = str2double(char(procElement.getAttribute('multiplicity')));
-    if isnan(multiplicity)
+    replication = str2double(char(procElement.getAttribute('replication')));
+    
+    if isnan(replication)
+        replication=1;
+    end
+    if strcmp(scheduling, 'inf')
+        multiplicity = Inf;
+    elseif isnan(multiplicity)
         multiplicity = 1;
     end
     quantum = str2double(char(procElement.getAttribute('quantum')));
@@ -64,8 +71,9 @@ for i = 0:procList.getLength()-1
     if isnan(speedFactor)
         speedFactor = 1.0;
     end
-    tempProc = Host(myLN, name, multiplicity, scheduling, quantum, speedFactor);
-    procObj{end+1,1} = tempProc;
+    newProc = Processor(myLN, name, multiplicity, scheduling, quantum, speedFactor);
+    newProc.setReplication(replication);
+    procObj{end+1,1} = newProc;
     
     taskList = procElement.getElementsByTagName('task');
     for j = 0:taskList.getLength()-1
@@ -73,8 +81,15 @@ for i = 0:procList.getLength()-1
         taskElement = taskList.item(j);
         name = char(taskElement.getAttribute('name'));
         scheduling = char(taskElement.getAttribute('scheduling'));
+        replication = str2double(char(taskElement.getAttribute('replication')));
+        if isnan(replication)
+            replication=1;
+        end
+        
         multiplicity = str2double(char(taskElement.getAttribute('multiplicity')));
-        if isnan(multiplicity)
+        if strcmp(scheduling, 'inf')
+            multiplicity = Inf;
+        elseif isnan(multiplicity)
             multiplicity = 1;
         end
         thinkTimeMean = str2double(char(taskElement.getAttribute('think-time')));
@@ -86,16 +101,21 @@ for i = 0:procList.getLength()-1
         else
             thinkTime = Exp.fitMean(thinkTimeMean);
         end
-        tempTask = Task(myLN, name, multiplicity, scheduling, thinkTime);
-        taskObj{end+1,1} = tempTask;
+        newTask = Task(myLN, name, multiplicity, scheduling, thinkTime);
+        newTask.setReplication(replication);
+        taskObj{end+1,1} = newTask;
         
         entryList = taskElement.getElementsByTagName('entry');
         for k = 0:entryList.getLength()-1
             %Element - Entry
             entryElement = entryList.item(k);
             name = char(entryElement.getAttribute('name'));
-            tempEntry = Entry(myLN, name);
-            entryObj{end+1,1} = tempEntry;
+            newEntry = Entry(myLN, name);
+            openArrivalRate = str2double(char(entryElement.getAttribute('open-arrival-rate')));
+            if ~isnan(openArrivalRate)
+                newEntry.openArrivalRate = openArrivalRate;
+            end
+            entryObj{end+1,1} = newEntry;
             
             %entry-phase-activities
             entryPhaseActsList = entryElement.getElementsByTagName('entry-phase-activities');
@@ -127,13 +147,13 @@ for i = 0:procList.getLength()-1
                         end
                     end
                     if phase == 1
-                        boundToEntry = tempEntry.name;
+                        boundToEntry = newEntry.name;
                     else
                         boundToEntry = '';
                     end
                     callOrder = char(actElement.getAttribute('call-order'));
-                    tempAct = Activity(myLN, name{phase}, hostDemand, boundToEntry, callOrder);
-                    actObj{end+1,1} = tempAct;
+                    newAct = Activity(myLN, name{phase}, hostDemand, boundToEntry, callOrder);
+                    actObj{end+1,1} = newAct;
                     
                     %synch-call
                     synchCalls = actElement.getElementsByTagName('synch-call');
@@ -141,7 +161,7 @@ for i = 0:procList.getLength()-1
                         callElement = synchCalls.item(m);
                         dest = char(callElement.getAttribute('dest'));
                         mean = str2double(char(callElement.getAttribute('calls-mean')));
-                        tempAct = tempAct.synchCall(dest,mean);
+                        newAct = newAct.synchCall(dest,mean);
                     end
                     
                     %asynch-call
@@ -150,34 +170,34 @@ for i = 0:procList.getLength()-1
                         callElement = asynchCalls.item(m);
                         dest = char(callElement.getAttribute('dest'));
                         mean = str2double(char(callElement.getAttribute('calls-mean')));
-                        tempAct = tempAct.asynchCall(dest,mean);
+                        newAct = newAct.asynchCall(dest,mean);
                     end
                     
-                    activities{end+1,1} = tempAct.name;
+                    activities{end+1,1} = newAct.name;
                     activities{end,2} = taskID;
                     activities{end,3} = procID;
-                    tempTask = tempTask.addActivity(tempAct);
-                    tempAct.parent = tempTask;
+                    newTask = newTask.addActivity(newAct);
+                    newAct.parent = newTask;
                     actID = actID+1;
                 end
                 
                 %precedence
                 for l = 1:length(name)-1
-                    tempPrec = ActivityPrecedence(name(l), name(l+1));
-                    tempTask = tempTask.addPrecedence(tempPrec);
+                    newPrec = ActivityPrecedence(name(l), name(l+1));
+                    newTask = newTask.addPrecedence(newPrec);
                 end
                 
                 %reply-entry
                 if ~isempty(name)
-                    tempEntry.replyActivity{1} = name{1};
+                    newEntry.replyActivity{1} = name{1};
                 end
             end
             
-            entries{end+1,1} = tempEntry.name;
+            entries{end+1,1} = newEntry.name;
             entries{end,2} = taskID;
             entries{end,3} = procID;
-            tempTask = tempTask.addEntry(tempEntry);
-            tempEntry.parent = tempTask;
+            newTask = newTask.addEntry(newEntry);
+            newEntry.parent = newTask;
             entryID = entryID+1;
         end
         
@@ -211,8 +231,8 @@ for i = 0:procList.getLength()-1
                     end
                     boundToEntry = char(actElement.getAttribute('bound-to-entry'));
                     callOrder = char(actElement.getAttribute('call-order'));
-                    tempAct = Activity(myLN, name, hostDemand, boundToEntry, callOrder);
-                    actObj{end+1,1} = tempAct;
+                    newAct = Activity(myLN, name, hostDemand, boundToEntry, callOrder);
+                    actObj{end+1,1} = newAct;
                     
                     %synch-call
                     synchCalls = actElement.getElementsByTagName('synch-call');
@@ -220,7 +240,7 @@ for i = 0:procList.getLength()-1
                         callElement = synchCalls.item(m);
                         dest = char(callElement.getAttribute('dest'));
                         mean = str2double(char(callElement.getAttribute('calls-mean')));
-                        tempAct = tempAct.synchCall(dest,mean);
+                        newAct = newAct.synchCall(dest,mean);
                     end
                     
                     %asynch-call
@@ -229,14 +249,14 @@ for i = 0:procList.getLength()-1
                         callElement = asynchCalls.item(m);
                         dest = char(callElement.getAttribute('dest'));
                         mean = str2double(char(callElement.getAttribute('calls-mean')));
-                        tempAct = tempAct.asynchCall(dest,mean);
+                        newAct = newAct.asynchCall(dest,mean);
                     end
                     
-                    activities{end+1,1} = tempAct.name;
+                    activities{end+1,1} = newAct.name;
                     activities{end,2} = taskID;
                     activities{end,3} = procID;
-                    tempTask = tempTask.addActivity(tempAct);
-                    tempAct.parent = tempTask;
+                    newTask = newTask.addActivity(newAct);
+                    newAct.parent = newTask;
                     actID = actID+1;
                 end
             end
@@ -256,15 +276,30 @@ for i = 0:procList.getLength()-1
                     end
                 end
                 preElement = preList.item(0);
-                preParams = str2double(char(preElement.getAttribute('quorum')));
+                preParams = [];
+                preActList = preElement.getElementsByTagName('activity');
+                if strcmp(preType,ActivityPrecedence.PRE_OR)
+                    preActs = cell(preActList.getLength(),1);
+                    preParams = zeros(postActList.getLength(),1);
+                    for m = 0:preActList.getLength()-1
+                        preActElement = preActList.item(m);
+                        preActs{m+1} = char(preActElement.getAttribute('name'));
+                        preParams(m+1) = str2double(char(preActElement.getAttribute('prob')));
+                    end
+                elseif strcmp(preType,ActivityPrecedence.PRE_AND)
+                    preActs = cell(preActList.getLength(),1);
+                    for m = 0:preActList.getLength()-1
+                        preActElement = preActList.item(m);
+                        preActs{m+1} = char(preActElement.getAttribute('name'));
+                    end
+                    preParams = str2double(char(preElement.getAttribute('quorum')));
+                else % simple PRE
+                    preActs = cell(1,1);
+                    preActElement = preActList.item(0);
+                    preActs{1} = char(preActElement.getAttribute('name'));
+                end
                 if isnan(preParams)
                     preParams = [];
-                end
-                preActList = preElement.getElementsByTagName('activity');
-                preActs = cell(preActList.getLength(),1);
-                for m = 0:preActList.getLength()-1
-                    preActElement = preActList.item(m);
-                    preActs{m+1} = char(preActElement.getAttribute('name'));
                 end
                 
                 %post
@@ -303,9 +338,8 @@ for i = 0:procList.getLength()-1
                         postActs{m+1} = char(postActElement.getAttribute('name'));
                     end
                 end
-                
-                tempPrec = ActivityPrecedence(preActs, postActs, preType, postType, preParams, postParams);
-                tempTask = tempTask.addPrecedence(tempPrec);
+                newPrec = ActivityPrecedence(preActs, postActs, preType, postType, preParams, postParams);
+                newTask = newTask.addPrecedence(newPrec);
             end
             
             %reply-entry
@@ -322,14 +356,14 @@ for i = 0:procList.getLength()-1
                 end
             end
         end
-                
-        tasks{end+1,1} = tempTask.name;
+        
+        tasks{end+1,1} = newTask.name;
         tasks{end,2} = procID;
-        tempProc = tempProc.addTask(tempTask);
+        newProc = newProc.addTask(newTask);
         taskID = taskID+1;
     end
     
-    hosts{end+1,1} = tempProc.name;
+    hosts{end+1,1} = newProc.name;
     procID = procID+1;
 end
 end

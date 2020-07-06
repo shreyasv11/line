@@ -164,7 +164,7 @@ classdef NetworkStruct <handle
             self.schedparam = schedparam;
             self.schedid = zeros(self.nstations,1);
             for i=1:self.nstations
-                self.schedid(i) = SchedStrategy.toId(sched{i});
+                self.schedid(i) = SchedStrategy.toId(sched(i));
             end
         end
         

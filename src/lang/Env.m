@@ -155,7 +155,7 @@ classdef Env < Ensemble
         
         function ET = getStageTable(self)
             E = height(self.envGraph.Nodes);
-            Stage = [];
+            Stage = categorical(0,1);
             HoldT = {};
             type = {};
             if isempty(self.probEnv)
@@ -166,7 +166,7 @@ classdef Env < Ensemble
                 type{e,1} = Semantics.toText(self.envGraph.Nodes.Type{e});
             end
             Prob = self.probEnv(:);
-            Name = self.envGraph.Nodes.Name(:);
+            Name = categorical(self.envGraph.Nodes.Name(:));
             Model = self.ensemble(:);
             for e=1:E
                 HoldT{e,1} = self.holdTime{e};

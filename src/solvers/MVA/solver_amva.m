@@ -23,18 +23,23 @@ if ~exist('sched','var')
     sched = cell(M,1);
     for i=1:M
         if isinf(nservers(i))
-            sched{i} = SchedStrategy.INF;
+            sched(i) = SchedStrategy.INF;
         else
-            sched{i} = SchedStrategy.PS; % default for non-inf servers is PS
+            sched(i) = SchedStrategy.PS; % default for non-inf servers is PS
         end
     end
 end
 
-extSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.EXT),sched));
-infSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.INF),sched));
-dpsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.DPS),sched));
-fcfsSET = find(cellfun(@(x) strcmpi(x,SchedStrategy.FCFS),sched));
-pfSET = union(find(cellfun(@(x) strcmpi(x,SchedStrategy.PS),sched)),find(cellfun(@(x) strcmpi(x,SchedStrategy.SIRO),sched)));
+extSET = find(sched==SchedStrategy.EXT);
+infSET = find(sched==SchedStrategy.INF);
+dpsSET = find(sched==SchedStrategy.DPS);
+fcfsSET = find(sched==SchedStrategy.FCFS);
+if K==1
+    pfSET = find(sched==SchedStrategy.SIRO | sched==SchedStrategy.PS | sched==SchedStrategy.FCFS);
+else
+    pfSET = find(sched==SchedStrategy.SIRO | sched==SchedStrategy.PS);
+end
+
 
 if ~exist('tol','var')
     tol = 1e-6;
@@ -169,7 +174,7 @@ end
 for k=1:M
     for r=1:K
         if V(k,r)*ST(k,r)>0
-            switch sched{k}
+            switch sched(k)
                 case {SchedStrategy.FCFS,SchedStrategy.PS,SchedStrategy.DPS}
                     if sum(U(k,:))>1
                         U(k,r) = min(1,sum(U(k,:))) * V(k,r)*ST(k,r)*X(r) / ((V(k,:).*ST(k,:))*X(:));

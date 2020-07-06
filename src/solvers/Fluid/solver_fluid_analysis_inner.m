@@ -12,7 +12,7 @@ chains = qn.chains;
 delayNodes = zeros(1,qn.nstations);
 delayrefstat = zeros(1,qn.nstations); % delay nodes that are also reference nodes
 for i = 1:qn.nstations
-    if strcmp(qn.sched{i},SchedStrategy.INF)
+    if strcmp(qn.sched(i),SchedStrategy.INF)
         delayNodes(i) = 1;
     end
 end
@@ -62,7 +62,7 @@ for i = 1:qn.nstations
         end
         
         if xi>0
-            switch qn.sched{i}
+            switch qn.sched(i)
                 case SchedStrategy.FCFS
                     wni = 1e-2;
                     w = zeros(1,qn.nclasses);
@@ -81,8 +81,8 @@ for i = 1:qn.nstations
             for k = 1:qn.nclasses
                 idx = sum(sum(phases(1:i-1,:))) + sum( phases(i,1:k-1) );
                 Xservice{i,k} = zeros(phases(i,k),1);
-                for f = 1:phases(i,k)
-                    switch qn.sched{i}
+                for f = 1:phases(i,k)                    
+                    switch qn.sched(i)
                         case SchedStrategy.EXT
                             if f==1
                                 Tfull(i,k) = Tfull(i,k) + (1-sum(Qfull(idx+(2:phases(i,k)))))*Lambda{i,k}(f)*Pi{i,k}(f);
@@ -93,7 +93,7 @@ for i = 1:qn.nstations
                                 Tfull_t{i,k} = Tfull_t{i,k} + ymean_t(:,idx+f)*Lambda{i,k}(f)*Pi{i,k}(f);
                                 Xservice{i,k}(f) = Qfull(idx+f)*Lambda{i,k}(f);
                             end
-                        case {SchedStrategy.PS, SchedStrategy.DPS}
+                        case {SchedStrategy.INF, SchedStrategy.PS, SchedStrategy.DPS}
                             Tfull(i,k) = Tfull(i,k) + Qfull(idx+f)*Lambda{i,k}(f)*Pi{i,k}(f)/xi*min(xi,qn.nservers(i));
                             Tfull_t{i,k} = Tfull_t{i,k} + ymean_t(:,idx+f)*Lambda{i,k}(f)*Pi{i,k}(f)./xi_t.*min(xi_t,qn.nservers(i));
                             Xservice{i,k}(f) = Qfull(idx+f)*Lambda{i,k}(f)/xi*min(xi,qn.nservers(i));
@@ -177,7 +177,7 @@ for i =1:M
     for k = 1:K
         idx = Xservice{i,k}>0;
         Ufull(i,k) = sum(Xservice{i,k}(idx)./ Lambda{i,k}(idx));
-        switch qn.sched{i}
+        switch qn.sched(i)
             case SchedStrategy.FCFS
                 switch options.method
                     case 'statedep'

@@ -1,5 +1,5 @@
-function [XN,QN,UN,CN,lGN]=pfqn_mvams(lambda,L,N,Z,mi,S)
-% [XN,QN,UN,CN,LGN]=PFQN_MVAMS(LAMBDA,L,N,Z,MI,S)
+function [XN,QN,UN,CN,lG]=pfqn_mvams(lambda,L,N,Z,mi,S)
+% [XN,QN,UN,CN,LOGG]=PFQN_MVAMS(LAMBDA,L,N,Z,MI,S)
 
 % this is a general purpose script to handle mixed qns with multi-server nodes
 % S(i) number of servers in station i
@@ -17,20 +17,21 @@ for i=1:M
 end
 if max(S(isfinite(S))) == 1 % if no multi-server nodes
     if any(isinf(N)) % open or mixed model
-        [XN,QN,UN,CN,lGN] = pfqn_mvamx(lambda,L,N,Z,mi);
+        [XN,QN,UN,CN,lG] = pfqn_mvamx(lambda,L,N,Z,mi);
     else % closed model
-        [XN,QN,UN,CN,lGN] = pfqn_mva(L,N,Z,mi);
+        [XN,QN,UN,CN,lG] = pfqn_mva(L,N,Z,mi);
     end
 else % if the model has multi-server nodes
     if any(isinf(N)) % open or mixed model
         if max(mi) == 1
-            lGN = NaN; % NC not available in this case
+            lG = NaN; % NC not available in this case
             [XN,QN,UN,CN] = pfqn_mvaldms(lambda,L,N,Z,S);
         else
             error('Queue replicas not available in exact MVA for mixed models.');
         end
     else
-        [XN,QN,UN,CN,lGN] = pfqn_mvald(L,N,Z,mu);
+        [XN,QN,UN,CN,lG] = pfqn_mvald(L,N,Z,mu);
+        lG=lG(end);
     end
 end
 return

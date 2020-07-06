@@ -22,7 +22,7 @@ classdef OpenClass < JobClass
                 error('The model requires a Sink prior to instantiating open classes.');
             end
             
-            self.type = 'open';
+            self.type = JobClassType.OPEN;
             self.priority = 0;
             if exist('prio','var')
                 self.priority = prio;

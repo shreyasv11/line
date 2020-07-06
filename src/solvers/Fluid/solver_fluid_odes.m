@@ -36,8 +36,8 @@ end
 % to speed up convert sched strings in numerical values
 sched_id = zeros(1,M);
 for i = 1 : M
-    sched_id(i) = SchedStrategy.toId(sched{i});
-    switch sched{i} % source
+    sched_id(i) = SchedStrategy.toId(sched(i));
+    switch sched(i) % source
         case SchedStrategy.DPS
             w(i,:) = schedparam(i,:);
     end

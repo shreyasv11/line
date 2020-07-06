@@ -15,10 +15,12 @@ SysRespT = SysRespT';
 SysTput = SysTput';
 ChainObj = self.model.getChains();
 Chain = cellfun(@(c) c.name,ChainObj,'UniformOutput',false)';
-for c=1:length(Chain)
-    Classes{c,1} = ChainObj{c}.classnames;
+JobClasses = cell(0,1);
+for c=1:length(Chain)    
+    JobClasses(c,1) = {categorical(ChainObj{c}.classnames)};
 end
-CT = Table(Chain, Classes, SysRespT);
-XT = Table(Chain, Classes, SysTput);
-AvgSysChainTable = Table(Chain,Classes, SysRespT, SysTput);
+Chain = categorical(Chain);
+CT = Table(Chain, JobClasses, SysRespT);
+XT = Table(Chain, JobClasses, SysTput);
+AvgSysChainTable = Table(Chain, JobClasses, SysRespT, SysTput);
 end

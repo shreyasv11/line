@@ -22,6 +22,7 @@ function [Gn,lGn]=pfqn_ls(L,N,Z,I)
 Lsum = sum(L,2);
 L = L(Lsum > 1e-4,:);
 [M,R]=size(L);
+samples=[];
 
 if isempty(L) || sum(L(:))<1e-4 || isempty(N) || sum(N)==0
     lGn = - sum(factln(N)) + sum(N.*log(sum(Z,1)));
@@ -31,7 +32,9 @@ elseif ~exist('Z','var') || isempty(Z)
     A = (A+A')/2; % let's get rid of small numerical perturbations
     iA = inv(A);
     x0 = log(umax(1:M-1)/umax(M))'; % move to R^{K-1}
-    samples = mvnrnd(x0,iA,I);
+    if isempty(samples)
+        samples = mvnrnd(x0,iA,I);
+    end    
     T = zeros(I,1);
     h = @(x) simplex_fun(x,L,N);
     for i=1:I
@@ -49,7 +52,9 @@ else % Z>0
     A = (A+A')/2; % let's get rid of small numerical perturbations
     iA = inv(A);
     x0 = [log(umax(1:M-1)/umax(M))',log(vmax)]; % move to R^{K}
-    samples = mvnrnd(x0,iA,I);
+    if isempty(samples)
+        samples = mvnrnd(x0,iA,I);
+    end    
     T = zeros(I,1);
     epsilon=1e-10;
     eN = epsilon*sum(N);

@@ -1,5 +1,5 @@
-function logG = pfqn_pnc2(L,N,Z)
-% LOGG = PFQN_PNC2(L,N,Z)
+function [G,lG]= pfqn_pnc2(L,N,Z)
+% [G,LOGG] = PFQN_PNC2(L,N,Z)
 
 nonzeroClasses = find(N);
 % repairmen integration
@@ -13,6 +13,7 @@ p = 1-10^-order;
 exp1prctile = -log(1-p)/1; % cutoff for exponential term
 w = warning ;
 warning off;
-logG = log(integral(f,0,exp1prctile,'AbsTol',10^-order)) - sum(factln(N));
+lG = log(integral(f,0,exp1prctile,'AbsTol',10^-order)) - sum(factln(N));
+G = exp(lG);
 warning(w);
 end

@@ -9,7 +9,7 @@ classdef JobClass < NetworkElement
         reference; % reference station
         index;
         type;
-        completes; % true if passage through reference station is a completion
+        completes; % true if passage through reference station is a completion        
     end
     
     methods (Hidden)
@@ -19,10 +19,10 @@ classdef JobClass < NetworkElement
             
             self@NetworkElement(name);
             self.priority = 0;
-            self.reference = Node('');
+            self.reference = Node('Unallocated');
             self.index = 1;
             self.type=type;
-            self.completes = true;
+            self.completes = true;            
         end
         
         function self = setReferenceStation(self, source)

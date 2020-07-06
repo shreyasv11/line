@@ -79,9 +79,9 @@ for p=1:length(self.hosts)
             ctras = ctras + 1;
             fullname{end+1} = self.hosts{p}.tasks(t).activities(a).name;
             demand(end+1) = self.hosts{p}.tasks(t).activities(a).hostDemandMean;
-            %            name{end+1} = sprintf('AS%d(%.3f)',ctras,demand(end));
-            name{end+1} = sprintf('AS%d',ctras);
-            type{end+1} = 'AS';
+            %            name{end+1} = sprintf('A%d(%.3f)',ctras,demand(end));
+            name{end+1} = sprintf('A%d',ctras);
+            type{end+1} = 'A';
             object{end+1} = self.hosts{p}.tasks(t).activities(a);
             multiplicity(end+1)= NaN;
             %            boundToEntry(end+1)=false;
@@ -284,7 +284,7 @@ self.taskGraph = self.lqnGraph.subgraph(keep(keep>0)); % ignore missing types
 % now H contains all tasks and edges to the hosts they run on
 % we add external calls
 
-actset = findstring(self.lqnGraph.Nodes.Type,'AS')';
+actset = findstring(self.lqnGraph.Nodes.Type,'A')';
 for s = actset(actset>0)
     source_activity = self.getNodeName(s);
     source_task = self.getNodeTask(source_activity);
@@ -319,7 +319,7 @@ if isempty(self.indexes.tasks)
     self.indexes.tasks = findstring(self.lqnGraph.Nodes.Type, 'T');
 end
 if isempty(self.indexes.activities)
-    self.indexes.activities = findstring(self.lqnGraph.Nodes.Type, 'AS');
+    self.indexes.activities = findstring(self.lqnGraph.Nodes.Type, 'A');
 end
 
 end

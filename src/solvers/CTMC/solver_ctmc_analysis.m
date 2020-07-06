@@ -101,7 +101,7 @@ for k=1:K
         isf = qn.stationToStateful(i);
         TN(i,k) = pi*depRates(wset,isf,k);
         QN(i,k) = pi*StateSpaceAggr(wset,(i-1)*K+k);
-        switch sched{i}
+        switch sched(i)
             case SchedStrategy.INF
                 UN(i,k) = QN(i,k);
             otherwise
