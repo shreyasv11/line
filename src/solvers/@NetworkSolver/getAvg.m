@@ -29,12 +29,12 @@ end
 
 if ~self.hasAvgResults || ~self.options.cache
     try
-        self.run();
+        self.runAnalysis();
     catch ME
         switch ME.identifier
             case {'Line:FeatureNotSupportedBySolver', 'Line:ModelTooLargeToSolve', 'Line:UnspecifiedOption'}
                 if self.options.verbose
-                    fprintf(1,'%s\n',ME.message);
+                    fprintf(1,'\n%s',ME.message);
                 end
                 QNclass=[];
                 UNclass=[];

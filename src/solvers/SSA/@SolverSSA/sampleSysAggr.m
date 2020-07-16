@@ -12,7 +12,7 @@ switch options.method
         options.force = true;
         qn = self.model.getStruct;
         
-        [~, tranSystemState, tranSync] = self.run(options);
+        [~, tranSystemState, tranSync] = self.runAnalysis(options);
         tranSysState = struct();
         tranSysState.handle = self.model.getStatefulNodes';
         tranSysState.t = tranSystemState{1};

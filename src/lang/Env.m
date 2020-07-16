@@ -144,26 +144,28 @@ classdef Env < Ensemble
         function self = setStageName(self, stageId, name)
             self.stageNames{stageId} = name;
         end
-        
-        function self = setStageType(self, stageId, type)
-            if ischar(type)
-                self.stageTypes(stageId) = Semantics.getId(type);
+                
+        function self = setStageType(self, stageId, stageCategory)                      
+            if ischar(stageCategory)
+                self.stageTypes(stageId) = categorical(stageCategory);
+            elseif iscategorical(stageCategory)
+                self.stageTypes(stageId) = stageCategory;
             else
-                self.stageTypes(stageId) = type;
+                error('Stage type must be of type categorical, e.g., categorical("My Semantics").');
             end
         end
         
         function ET = getStageTable(self)
             E = height(self.envGraph.Nodes);
-            Stage = categorical(0,1);
+            Stage = [];
             HoldT = {};
-            type = {};
+            type = categorical([]);
             if isempty(self.probEnv)
                 self.init;
             end
             for e=1:E
                 Stage(e,1) = e;
-                type{e,1} = Semantics.toText(self.envGraph.Nodes.Type{e});
+                type(e,1) = self.envGraph.Nodes.Type{e};
             end
             Prob = self.probEnv(:);
             Name = categorical(self.envGraph.Nodes.Name(:));

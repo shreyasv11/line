@@ -59,6 +59,9 @@ for i = 0:procList.getLength()-1
         replication=1;
     end
     if strcmp(scheduling, 'inf')
+        if isfinite(multiplicity)
+            error('A finite multiplicity is specified for a host processor with inf scheduling. Remove or set it to inf.');
+        end
         multiplicity = Inf;
     elseif isnan(multiplicity)
         multiplicity = 1;
@@ -88,6 +91,9 @@ for i = 0:procList.getLength()-1
         
         multiplicity = str2double(char(taskElement.getAttribute('multiplicity')));
         if strcmp(scheduling, 'inf')
+            if isfinite(multiplicity) 
+                error('A finite multiplicity is specified for a task with inf scheduling. Remove or set it to inf.');
+            end
             multiplicity = Inf;
         elseif isnan(multiplicity)
             multiplicity = 1;

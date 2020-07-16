@@ -9,7 +9,7 @@ else
 end
 switch options.method
     case {'default','serial'}
-        [~, tranSystemState, tranSync] = self.run(options);
+        [~, tranSystemState, tranSync] = self.runAnalysis(options);
         event = tranSync;
         isf = self.model.getStatefulNodeIndex(node);
         sampleNodeState = struct();

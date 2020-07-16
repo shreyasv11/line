@@ -33,12 +33,14 @@ for p = 1:length(self.hosts)
     procElement = doc.createElement('processor');
     rootElement.appendChild(procElement);
     procElement.setAttribute('name', curProc.name);        
-    procElement.setAttribute('scheduling', SchedStrategy.toText(curProc.scheduling));
+    procElement.setAttribute('scheduling', SchedStrategy.toText(curProc.scheduling));    
     procElement.setAttribute('replication', num2str(curProc.replication));
-    if ~strcmp(curProc.scheduling, SchedStrategy.INF)
-        procElement.setAttribute('multiplicity', num2str(curProc.multiplicity));
+    if curProc.scheduling ~= SchedStrategy.INF
+        mult = num2str(curProc.multiplicity);
+        if isinf(mult), mult=1; end
+        procElement.setAttribute('multiplicity', mult);
     end
-    if strcmp(curProc.scheduling, SchedStrategy.PS)
+    if curProc.scheduling== SchedStrategy.PS
         procElement.setAttribute('quantum', num2str(curProc.quantum));
     end
     procElement.setAttribute('speed-factor', num2str(curProc.speedFactor));
@@ -49,10 +51,10 @@ for p = 1:length(self.hosts)
         taskElement.setAttribute('name', curTask.name);
         taskElement.setAttribute('scheduling', SchedStrategy.toText(curTask.scheduling));
         taskElement.setAttribute('replication',  num2str(curTask.replication));
-        if ~strcmp(curTask.scheduling, SchedStrategy.INF)
+        if curTask.scheduling ~= SchedStrategy.INF
             taskElement.setAttribute('multiplicity', num2str(curTask.multiplicity));
         end
-        if strcmp(curTask.scheduling, SchedStrategy.REF)
+        if curTask.scheduling == SchedStrategy.REF
             taskElement.setAttribute('think-time', num2str(curTask.thinkTimeMean));
         end
         for e=1:length(curTask.entries)

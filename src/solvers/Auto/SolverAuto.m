@@ -4,6 +4,15 @@ classdef SolverAuto < NetworkSolver
     % Copyright (c) 2012-2020, Imperial College London
     % All rights reserved.
     
+    properties
+        CANDIDATE_MAM = 1;
+        CANDIDATE_MVA = 2;
+        CANDIDATE_NC = 3;
+        CANDIDATE_FLUID = 4;
+        CANDIDATE_JMT = 5;
+        CANDIDATE_SSA = 6;
+        CANDIDATE_CTMC = 7;
+    end
     
     properties
         candidates; % feasible solvers
@@ -18,12 +27,20 @@ classdef SolverAuto < NetworkSolver
             self.setOptions(Solver.parseOptions(varargin, self.defaultOptions));
             
             % solvers sorted from fastest to slowest
-            solvers = {SolverMAM(model), SolverMVA(model), SolverNC(model), SolverFluid(model), SolverJMT(model), SolverSSA(model), SolverCTMC(model)};
+            solvers = {};
+            solvers{1,self.CANDIDATE_MAM} = SolverMAM(model);
+            solvers{1,self.CANDIDATE_MVA} = SolverMVA(model);
+            solvers{1,self.CANDIDATE_NC} = SolverNC(model);
+            solvers{1,self.CANDIDATE_FLUID} = SolverFluid(model);
+            solvers{1,self.CANDIDATE_JMT} = SolverJMT(model);
+            solvers{1,self.CANDIDATE_SSA} = SolverSSA(model);
+            solvers{1,self.CANDIDATE_CTMC} = SolverCTMC(model);
             wstatus = warning('query');
             %warning off;
             boolSolver = [];
             for s=1:length(solvers)
                 boolSolver(s) = solvers{s}.supports(self.model);
+                solvers{s}.setOptions(self.options);
             end
             self.candidates = {solvers{find(boolSolver)}};
             warning(wstatus);
@@ -41,7 +58,7 @@ classdef SolverAuto < NetworkSolver
             end
         end
         
-        function runtime = run(self, options) % generic method to run the solver
+        function runtime = runAnalysis(self, options) % generic method to run the solver
             % RUNTIME = RUN()
             % Run the solver % GENERIC METHOD TO RUN THE SOLVER
             
@@ -60,10 +77,10 @@ classdef SolverAuto < NetworkSolver
                 R=handlers{3};
                 T=handlers{4};
             end
-                
+            
             % first try with chosen solver, if the method is not available
             % or fails keep going with the other candidates
-            proposedSolvers = {self.chooseSolver(), self.candidates{:}};
+            proposedSolvers = {self.chooseSolver(), self.candidates};
             for s=1:length(proposedSolvers)
                 try
                     [QN,UN,RN,TN] = proposedSolvers{s}.getAvg(Q,U,R,T);
@@ -113,34 +130,30 @@ classdef SolverAuto < NetworkSolver
             % SOLVER = CHOOSESOLVER()
             
             model = self.model;
-            ncoptions = self.options;
             if model.hasProductFormSolution
                 if model.hasSingleChain
-                    %ncoptions = SolverNC.defaultOptions; 
-                    ncoptions.method = 'exact';
-                    solver = SolverNC(model, ncoptions);
+                    %ncoptions = SolverNC.defaultOptions;
+                    solver = self.candidates{self.CANDIDATE_NC};
                 else % MultiChain
                     if model.hasHomogeneousScheduling(SchedStrategy.INF)
-                        solver = SolverMVA(model);
+                        solver = self.candidates{self.CANDIDATE_MVA};
                     elseif model.hasMultiServer
                         if sum(model.getNumberOfJobs) / sum(model.getNumberOfChains) > 30 % likely fluid regime
-                            solver = SolverFluid(model);
+                            solver = self.candidates{self.CANDIDATE_FLUID};
                         elseif sum(model.getNumberOfJobs) / sum(model.getNumberOfChains) > 10 % mid/heavy load
-                            solver = SolverMVA(model);
+                            solver = self.candidates{self.CANDIDATE_MVA};
                         elseif sum(model.getNumberOfJobs) < 5 % light load
-                            %ncoptions = SolverNC.defaultOptions; 
-                            ncoptions.method = 'exact';
-                            solver = SolverNC(model, ncoptions);
+                            solver = self.candidates{self.CANDIDATE_NC};
                         else
-                            solver = SolverMVA(model);
+                            solver = self.candidates{self.CANDIDATE_MVA};
                         end
                     else % product-form, no infinite servers
-                        solver = SolverNC(model);
+                        solver = self.candidates{self.CANDIDATE_NC};
                     end
                 end
             else
-                solver = self.candidates{1}; % take fastest
-            end
+                solver = self.candidates{self.CANDIDATE_MVA};
+            end            
         end
     end
 end

@@ -30,20 +30,31 @@ classdef LayeredNetworkSolver < Solver
     end
     
     methods
-        function [AvgTable,QT,UT,RT,TT] = getAvgTable(self, wantLQNSnaming)
-            % [AVGTABLE,QT,UT,RT,TT] = GETAVGTABLE(WANTLQNSNAMING)
+        function [AvgTable,QT,UT,RT,TT,PT,ST] = getAvgTable(self, useLQNSnaming)
+            % [AVGTABLE,QT,UT,RT,TT,PT,ST] = GETAVGTABLE(USELQNSNAMING)
             if ~exist('wantLQNSnaming','var')
-                wantLQNSnaming = false;
+                useLQNSnaming = false;
             end
             [QN,UN,RN,TN] = self.getAvg();
-            Node = categorical(self.model.lqnGraph.Nodes.Node);
-            Objects = self.model.lqnGraph.Nodes.Object;
-            O = length(Objects);
+            lqn = self.model.getStruct;
+            Node = categorical(lqn.names);
+            O = length(Node);
             NodeType = categorical(O,1);
             for o = 1:O
-                NodeType(o,1) = categorical({class(Objects{o})});
+                switch lqn.type(o)
+                    case LayeredNetworkElement.PROCESSOR
+                        NodeType(o,1) = categorical({'Processor'});
+                    case LayeredNetworkElement.TASK
+                        NodeType(o,1) = categorical({'Task'});
+                    case LayeredNetworkElement.ENTRY
+                        NodeType(o,1) = categorical({'Entry'});
+                    case LayeredNetworkElement.ACTIVITY
+                        NodeType(o,1) = categorical({'Activity'});
+                    case LayeredNetworkElement.CALL
+                        NodeType(o,1) = categorical({'Call'});
+                end
             end            
-            if wantLQNSnaming
+            if useLQNSnaming
                 Utilization = QN;
                 QT = Table(Node,Utilization);
                 ProcUtilization = UN;
@@ -52,8 +63,7 @@ classdef LayeredNetworkSolver < Solver
                 RT = Table(Node,Phase1ServiceTime);
                 Throughput = TN;
                 TT = Table(Node,Throughput);
-                AvgTable = Table(Node, NodeType, Utilization, ProcUtilization,...
-                    Phase1ServiceTime, Throughput);
+                AvgTable = Table(Node, NodeType, Utilization, ProcUtilization, Phase1ServiceTime, Throughput);
             else
                 QLen = QN;
                 QT = Table(Node,QLen);
@@ -63,7 +73,11 @@ classdef LayeredNetworkSolver < Solver
                 RT = Table(Node,RespT);
                 Tput = TN;
                 TT = Table(Node,Tput);
-                AvgTable = Table(Node, NodeType, QLen, Util, RespT, Tput);
+                %SvcT = SN;
+                %ST = Table(Node,SvcT);
+                %ProcUtil = PN;
+                %PT = Table(Node,ProcUtil);
+                AvgTable = Table(Node, NodeType, QLen, Util, RespT, Tput);%, ProcUtil, SvcT);
             end
         end
     end
